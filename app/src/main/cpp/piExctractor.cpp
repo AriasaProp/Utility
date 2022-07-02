@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include "../include/utils/big_decimal.h"
+#include "utils/big_decimal.h"
 
 using namespace std;
 using namespace chrono;
@@ -23,7 +23,7 @@ double wall_clock()
 	return chrono::high_resolution_clock::now().time_since_epoch().count() * ratio;
 }
 
-int main(int argc, char *argv[])
+int piExtractor_main()
 {
 	cout << "my own pi generator version 07/06/2022 (1)" << endl;
 	FILE *input_file = fopen("piDigits.txt", "r");

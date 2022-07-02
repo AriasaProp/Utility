@@ -1,6 +1,3 @@
-/***************************************************************
- * Computing pi with BBP formula.
- **************************************************************/
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
@@ -119,7 +116,7 @@ void Bbp::convHex(double x, char chx[]) {
     }
 }
 
-int main()
+int bbp_main()
 {
     try
     {

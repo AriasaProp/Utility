@@ -13,7 +13,7 @@ typedef long double ld;
 //smallest primitive type
 typedef unsigned char uc;
 
-int main(void)
+int spigot_main(void)
 {
     ul start = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
     ul restart = start;
