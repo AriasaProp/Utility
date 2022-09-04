@@ -65,34 +65,6 @@ BigInteger::~BigInteger()
     words.clear();
 }
 
-size_t BigInteger::bitlength() const
-{
-    if (!words.size())
-        return 0;
-    size_t i = (words.size() - 1) * WORD_BITS;
-    word a = words.back();
-    while (a >>= 1)
-        i++;
-    return i;
-}
-
-size_t BigInteger::count_trailing_zeros() const
-{
-    for (size_t i = 0; i < words.size(); i++)
-    {
-        word w = this->words[i];
-        if (w)
-        {
-            size_t count = 0;
-            for (size_t j = 0; j < WORD_BITS; j++)
-                if ((w >> j) & 1)
-                    count += j;
-            return count + i * WORD_BITS;
-        }
-    }
-    return 0;
-}
-
 BigInteger &BigInteger::set_bit(size_t i)
 {
     const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
@@ -1020,10 +992,11 @@ BigInteger BigInteger::operator/(const BigInteger &b) const
         if (n_words)
             div.insert(div.begin(), n_words, 0);
         quotient.words.reserve(n_words + 1);
-        for (; n && (na = rem.size()); n--)
+        do
         {
             //compare function
             cmp = true;
+	    na = rem.size();
             nb = div.size();
             if (na != nb)
                 cmp = na > nb;
@@ -1068,7 +1041,7 @@ BigInteger BigInteger::operator/(const BigInteger &b) const
             div.back() = lo >> 1;
             if (!div.back())
                 div.pop_back();
-        }
+        } while (n-- && rem.size());
         quotient.neg = this->neg ^ b.neg;
     }
     return quotient;
@@ -1125,10 +1098,11 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
         const size_t n_words = n / WORD_BITS;
         if (n_words)
             div.insert(div.begin(), n_words, 0);
-        for (; n && (na = rem.size()); n--)
+        do
         {
             //compare function
             cmp = true;
+	    na = rem.size();
             nb = div.size();
             if (na != nb)
                 cmp = na > nb;
@@ -1170,7 +1144,7 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
             div.back() = lo >> 1;
             if (!div.back())
                 div.pop_back();
-        }
+        } while (n-- && rem.size());
     }
     return remainder;
 }
