@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cstdio>
+#include <climits>
 
 typedef unsigned int word;
 typedef signed int s_word;
