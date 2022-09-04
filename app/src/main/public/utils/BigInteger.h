@@ -22,10 +22,8 @@ class BigInteger
     bool neg = false;
     std::vector<word> words;
     //helper
-    size_t count_trailing_zeros() const;
     word get_bit(size_t) const;
     void clr_bit(size_t);
-    void split(const BigInteger &, BigInteger *, size_t, size_t);
 
     // math operational function
     BigInteger pow(size_t) const;
@@ -44,7 +42,6 @@ class BigInteger
     //Destructor
     ~BigInteger();
 
-    size_t bitlength() const;
     BigInteger &set_bit(size_t);
     // TODO : need to be more efficiently
     size_t tot() const;
