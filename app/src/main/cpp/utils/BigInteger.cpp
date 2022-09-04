@@ -1,7 +1,7 @@
 #include <cmath>
 #include <chrono>
 #include <iomanip>
-#include "BigInteger.h"
+#include "utils/BigInteger.h"
 //Constructors
 BigInteger::BigInteger() : neg(false) {}
 BigInteger::BigInteger(size_t n, word w, bool neg = false) : neg(neg), words(n, w) {}
