@@ -5,7 +5,7 @@
 //all test
 bool BigInteger_test();
 
-bool app_utils_test()
+bool main()
 {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();

@@ -2,6 +2,6 @@
 
 
 int main() {
-    app_utils_test();
+    
     return 0;
 }
