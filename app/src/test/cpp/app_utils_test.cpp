@@ -5,7 +5,7 @@
 //all test
 bool BigInteger_test();
 
-bool main()
+int main()
 {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
@@ -17,7 +17,7 @@ bool main()
     std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us";
     
     
-    return passed;
+    return 0;
 }
 
 
