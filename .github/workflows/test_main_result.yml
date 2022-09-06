@@ -6,8 +6,8 @@ jobs:
     strategy:
       matrix:
         config:
-          - os: ubuntu-latest
           - os: windows-latest
+          - os: ubuntu-latest
     steps:
       - name: Build on ${{ matrix.config.os }}
         uses: actions/checkout@v3
