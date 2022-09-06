@@ -2,6 +2,9 @@
 #include <chrono>
 #include "app_utils_test.h"
 
+//all test
+bool BigInteger_test();
+
 bool app_utils_test()
 {
     bool passed = true, result;
