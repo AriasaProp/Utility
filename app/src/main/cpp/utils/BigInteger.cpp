@@ -427,12 +427,13 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         std::copy(B.cbegin(), b_split, b0.words.begin());
         std::copy(b_split, B.cend(), b1.words.begin());
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
+        const bool negR = this->neg ^ b.neg;
         *this = z1;
         this->words.insert(this->words.begin(), m2, 0);
         *this += (a1 + a0) * (b0 + b1) - z1 - z0;
         this->words.insert(this->words.begin(), m2, 0);
         *this += z0;
-        this->neg ^= b.neg;
+        this->neg = negR;
         return *this;
     }
     const std::vector<word> aw = this->words, &bw = b.words;
