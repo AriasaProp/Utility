@@ -17,7 +17,7 @@ int main()
     std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us";
     
     
-    return 0;
+    return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
