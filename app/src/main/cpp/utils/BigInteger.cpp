@@ -412,7 +412,6 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         return *this;
 
     const size_t na = this->words.size(), nb = b.words.size();
-    this->neg ^= b.neg;
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
@@ -433,6 +432,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         *this += (a1 + a0) * (b0 + b1) - z1 - z0;
         this->words.insert(this->words.begin(), m2, 0);
         *this += z0;
+        this->neg ^= b.neg;
         return *this;
     }
     const std::vector<word> aw = this->words, &bw = b.words;
@@ -462,6 +462,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     }
     while (this->words.size() && !this->words.back())
         this->words.pop_back();
+    this->neg ^= b.neg;
     return *this;
 }
 
@@ -889,7 +890,6 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         return BigInteger();
     const size_t na = this->words.size(), nb = b.words.size();
     BigInteger result;
-    result.neg = this->neg ^ b.neg;
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
@@ -910,6 +910,7 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         result += (a1 + a0) * (b0 + b1) - z1 - z0;
         result.words.insert(result.words.begin(), m2, 0);
         result += z0;
+        result.neg = this->neg ^ b.neg;
         return result;
     }
     std::vector<word> &rsw = result.words;
@@ -938,6 +939,7 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
     }
     while (rsw.size() && !rsw.back())
         rsw.pop_back();
+    result.neg = this->neg ^ b.neg;
     return result;
 }
 
