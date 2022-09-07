@@ -1,28 +1,24 @@
 #include <iostream>
 #include <chrono>
+#include "utils/BigInteger.h"
 
-//all test
-bool BigInteger_test();
+bool test();
 
-int main()
+int main(int argc, char *argv[])
 {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
     std::cout << "BigInteger code test \n";
-    result = BigInteger_test();
+    result = test();
     passed &= result;
     if(result)
         std::cout << "Passed \n";
     std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us";
-    
-    
+        
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-
-//BigInteger test function
-#include "utils/BigInteger.h"
-bool BigInteger_test()
+bool test()
 {
 	bool passed = true, result;
 	BigInteger a, b;
