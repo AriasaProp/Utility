@@ -2,7 +2,7 @@ name: test_main_result
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Build
         uses: actions/checkout@v3
