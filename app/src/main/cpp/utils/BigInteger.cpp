@@ -2,6 +2,14 @@
 #include <algorithm>
 #include "utils/BigInteger.h"
 
+
+static const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
+static const size_t WORD_BITS_1 = WORD_BITS - 1;
+static const word WORD_MASK = (word)-1;
+static const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
+static const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
+static const size_t LOG2BITS = std::log(2) * WORD_BITS;
+
 //Constructors
 BigInteger::BigInteger() : neg(false) {}
 BigInteger::BigInteger(size_t n, word w, bool neg = false) : neg(neg), words(n, w) {}
@@ -87,7 +95,6 @@ void BigInteger::set_bit(size_t i)
     if (words.size() <= i_word)
         words.resize(i_word + 1);
     this->words[i_word] |= ((word)1) << i_bit;
-    return *this;
 }
 
 size_t BigInteger::tot() const
@@ -95,12 +102,11 @@ size_t BigInteger::tot() const
     return words.size() * WORD_BITS;
 }
 
-// TODO : need to be more efficiently
 char *BigInteger::to_chars() const
 {
     std::vector<char> text;
     std::vector<word> A = this->words;
-    text.reserve(std::log(2) * A.size() * WORD_BITS + 2);
+    text.reserve(LOG2BITS * A.size() + 2);
     word remainder, current;
     while (A.size())
     {
@@ -1242,7 +1248,7 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num)
 {
     std::vector<char> text;
     std::vector<word> A = num.words;
-    text.reserve(std::log(2) * A.size() * WORD_BITS);
+    text.reserve(LOG2BITS * A.size());
     word remainder, current;
     while (A.size())
     {

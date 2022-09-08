@@ -10,12 +10,6 @@
 typedef unsigned int word;
 typedef signed int s_word;
 
-static const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
-static const size_t WORD_BITS_1 = WORD_BITS - 1;
-static const word WORD_MASK = (word)-1;
-static const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
-static const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-
 // TODO : need to be more efficiently
 class BigInteger
 {
