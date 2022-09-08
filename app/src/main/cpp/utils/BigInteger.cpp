@@ -8,7 +8,7 @@ static const size_t WORD_BITS_1 = WORD_BITS - 1;
 static const word WORD_MASK = (word)-1;
 static const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
 static const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-static const size_t LOG2BITS = std::log(2) * WORD_BITS;
+static const long double LOG2BITS = std::log(2) * WORD_BITS;
 
 //Constructors
 BigInteger::BigInteger() : neg(false) {}
