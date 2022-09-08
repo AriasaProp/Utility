@@ -660,7 +660,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
     return *this;
 }
 
-BigInteger BigInteger::operator^=(size_t exponent) const
+BigInteger &BigInteger::operator^=(size_t exponent)
 {
     BigInteger p(*this);
     *this = 1;
