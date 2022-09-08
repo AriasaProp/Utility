@@ -198,5 +198,18 @@ bool test()
 	passed &= result;
 	if ( !result )
 		std::cout << "    '<<=' operator error \n";
+	a = BigInteger("1152921504606846976\0"), b = BigInteger("2\0");
+	// "^" operator test
+	result = ((b ^ 60) == a);
+	passed &= result;
+	if ( !result )
+		std::cout << "    '^' operator error \n";
+	a = BigInteger("1152921504606846976\0"), b = BigInteger("2\0");
+	// "^" operator test
+	result = ((b ^= 60) == a);
+	passed &= result;
+	if ( !result )
+		std::cout << "    '^=' operator error \n";
+	
 	return passed;
 }

@@ -65,15 +65,6 @@ BigInteger::~BigInteger()
     words.clear();
 }
 
-BigInteger &BigInteger::set_bit(size_t i)
-{
-    const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
-    if (words.size() <= i_word)
-        words.resize(i_word + 1);
-    this->words[i_word] |= ((word)1) << i_bit;
-    return *this;
-}
-
 word BigInteger::get_bit(size_t i) const
 {
     const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
@@ -88,6 +79,15 @@ void BigInteger::clr_bit(size_t i)
     if (i_word >= words.size())
         return;
     this->words[i_word] &= ~(1 << i_bit);
+}
+
+void BigInteger::set_bit(size_t i)
+{
+    const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
+    if (words.size() <= i_word)
+        words.resize(i_word + 1);
+    this->words[i_word] |= ((word)1) << i_bit;
+    return *this;
 }
 
 size_t BigInteger::tot() const
@@ -160,21 +160,6 @@ bool BigInteger::can_convert_to_int(int *result) const
     return true;
 }
 
-BigInteger BigInteger::pow(size_t exponent) const
-{
-    BigInteger result(1), p(*this);
-    for (; exponent; exponent >>= 1)
-    {
-        if (exponent & 1)
-        {
-            result = result * p;
-            exponent--;
-        }
-        p *= p;
-    }
-    return result;
-}
-
 BigInteger BigInteger::mod_pow(BigInteger exponent, const BigInteger &modulus) const
 {
     BigInteger result(1), base = (*this) % modulus;
@@ -217,14 +202,15 @@ BigInteger BigInteger::sqrt() const
 }
 BigInteger &BigInteger::operator=(const signed &a)
 {
-    neg = (a < 0);
-    if (words.size())
-        words.clear();
+    this->neg = (a < 0);
+    if (this->words.size())
+        this->words.clear();
     unsigned u = abs(a);
+    size_t i;
     while (u)
     {
-        words.push_back(u);
-        size_t i = WORD_BITS;
+        this->words.push_back(u);
+        i = WORD_BITS;
         while (i--)
             u >>= 1;
     }
@@ -232,8 +218,8 @@ BigInteger &BigInteger::operator=(const signed &a)
 }
 BigInteger &BigInteger::operator=(const BigInteger &a)
 {
-    words = a.words;
-    neg = a.neg;
+    this->words = a.words;
+    this->neg = a.neg;
     return *this;
 }
 
@@ -670,6 +656,22 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             if (!div.back())
                 div.pop_back();
         } while (n-- && rem.size());
+    }
+    return *this;
+}
+
+BigInteger BigInteger::operator^=(size_t exponent) const
+{
+    BigInteger p(*this);
+    *this = 1;
+    for (; exponent; exponent >>= 1)
+    {
+        if (exponent & 1)
+        {
+            *this *= p;
+            exponent--;
+        }
+        p *= p;
     }
     return *this;
 }
@@ -1150,6 +1152,22 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
         } while (n-- && rem.size());
     }
     return remainder;
+}
+
+
+BigInteger BigInteger::operator^(size_t exponent) const
+{
+    BigInteger p = *this, result = 1;
+    for (; exponent; exponent >>= 1)
+    {
+        if (exponent & 1)
+        {
+            result *= p;
+            exponent--;
+        }
+        p *= p;
+    }
+    return result;
 }
 
 BigInteger BigInteger::operator-() const
