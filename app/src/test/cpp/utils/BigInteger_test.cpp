@@ -205,7 +205,7 @@ bool test()
 	if ( !result )
 	{
 		std::cout << "    '^' operator error \n";
-		std::cout << "    b = " << (b^60) << "\n";
+		std::cout << "    b = " << b << " then " << (b ^ 60) << "\n";
 	}
 	// "^=" operator test
 	result = ((b ^= 60) == a);
