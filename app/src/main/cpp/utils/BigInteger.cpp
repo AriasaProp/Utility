@@ -404,20 +404,28 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     const size_t na = this->words.size();
     if (!na)
         return *this;
-    std::vector<word> A = this->words, B = b.words;
+    std::vector<word> A = this->words;
     if ((na <= nb ? na : nb) > 20)
     {
-        const size_t n = na >= nb ? na : nb;
-        const size_t m2 = n / 2 + (n & 1);
+	   std::vector<word> B = b.words;
+        const size_t m2 = na >= nb ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         A.resize(m2 * 2);
         B.resize(m2 * 2);
         BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
         auto a_split = std::next(A.cbegin(), m2);
         std::copy(A.cbegin(), a_split, a0.words.begin());
+	   while (a0.words.size() && !a0.words.back())
+        	  a0.words.pop_back();
         std::copy(a_split, A.cend(), a1.words.begin());
+	   while (a1.words.size() && !a1.words.back())
+        	  a1.words.pop_back();
         auto b_split = std::next(B.cbegin(), m2);
         std::copy(B.cbegin(), b_split, b0.words.begin());
+	   while (b0.words.size() && !b0.words.back())
+        	  b0.words.pop_back();
         std::copy(b_split, B.cend(), b1.words.begin());
+	   while (b1.words.size() && !b1.words.back())
+        	  b1.words.pop_back();
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
         *this = z1;
         this->words.insert(this->words.begin(), m2, 0);
@@ -426,7 +434,8 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         *this += z0;
     }
     else
-  {
+    {
+	   const std::vector<word> &B = b.words;
         this->words.resize(na + nb + 1, 0);
         std::fill(this->words.begin(), this->words.end(), 0);
         word carry[2], aw[2], bw[2]; // temporary value
@@ -1178,9 +1187,7 @@ BigInteger BigInteger::operator^(size_t exponent) const
 
 BigInteger BigInteger::operator-() const
 {
-    BigInteger ret(*this);
-    ret.neg = !this->neg;
-    return ret;
+    return BigInteger(this->words, !this->neg);
 }
 
 BigInteger &BigInteger::operator>>=(size_t n_bits)
@@ -1190,7 +1197,7 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
     size_t j = n_bits / WORD_BITS;
     if (j >= words.size())
     {
-        words.resize(0);
+        this->words.clear();
         return *this;
     }
     if (j)
