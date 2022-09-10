@@ -408,7 +408,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-	   const size_t m2 = na >= nb ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+	   const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         A.resize(m2 * 2);
         B.resize(m2 * 2);
         BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
@@ -426,12 +426,14 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         std::copy(b_split, B.cend(), b1.words.begin());
 	   while (b1.words.size() && !b1.words.back())
         	  b1.words.pop_back();
+        BigInteger result;
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
-        this->words = z1.words;
-        this->words.insert(this->words.begin(), m2, 0);
-        *this += (a1 + a0) * (b0 + b1) - z1 - z0;
-        this->words.insert(this->words.begin(), m2, 0);
-        *this += z0;
+        result = z1;
+        result.words.insert(this->words.begin(), m2, 0);
+        result += (a1 + a0) * (b0 + b1) - (z0 + z1);
+        result.words.insert(this->words.begin(), m2, 0);
+        result += z0;
+        this->words = result.words;
     }
     else
     {
