@@ -429,9 +429,9 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         BigInteger result;
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
         result = z1;
-        result.words.insert(this->words.begin(), m2, 0);
+        result.words.insert(result.words.begin(), m2, 0);
         result += (a1 + a0) * (b0 + b1) - (z0 + z1);
-        result.words.insert(this->words.begin(), m2, 0);
+        result.words.insert(result.words.begin(), m2, 0);
         result += z0;
         this->words = result.words;
     }
