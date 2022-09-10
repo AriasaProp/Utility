@@ -404,6 +404,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     const size_t na = this->words.size();
     if (!na)
         return *this;
+    this->neg ^= b.neg;
     std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
@@ -426,7 +427,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 	   while (b1.words.size() && !b1.words.back())
         	  b1.words.pop_back();
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
-        *this = z1;
+        this->words = z1.words;
         this->words.insert(this->words.begin(), m2, 0);
         *this += (a1 + a0) * (b0 + b1) - z1 - z0;
         this->words.insert(this->words.begin(), m2, 0);
@@ -461,7 +462,6 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     }
     while (this->words.size() && !this->words.back())
         this->words.pop_back();
-    this->neg ^= b.neg;
     return *this;
 }
 
