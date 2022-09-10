@@ -403,12 +403,12 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (!this->words.size())
         return *this;
 
-    const size_t na = this->words.size(), nb = b.words.size();
+    std::vector<word> A = this->words, B = b.words;
+    const size_t na = A.size(), nb = B.size();
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
         const size_t m2 = n / 2 + (n & 1);
-        std::vector<word> A = this->words, B = b.words;
         A.resize(m2 * 2);
         B.resize(m2 * 2);
         BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
@@ -419,38 +419,37 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         std::copy(B.cbegin(), b_split, b0.words.begin());
         std::copy(b_split, B.cend(), b1.words.begin());
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
-        const bool negR = this->neg ^ b.neg;
         *this = z1;
         this->words.insert(this->words.begin(), m2, 0);
         *this += (a1 + a0) * (b0 + b1) - z1 - z0;
         this->words.insert(this->words.begin(), m2, 0);
         *this += z0;
-        this->neg = negR;
-        return *this;
     }
-    const std::vector<word> aw = this->words, &bw = b.words;
-    this->words.clear();
-    this->words.resize(na + nb + 1, 0);
-    word carry[2], A[2], B[2]; // temporary value
-    for (size_t ia = 0, ib; ia < na; ia++)
+    else
     {
-        A[1] = aw[ia] >> WORD_HALF_BITS;
-        A[0] = aw[ia] & WORD_HALF_MASK;
-        for (ib = 0; ib < nb; ib++)
+        this->words.clear();
+        this->words.resize(na + nb + 1, 0);
+        word carry[2], aw[2], bw[2]; // temporary value
+        for (size_t ia = 0, ib; ia < na; ia++)
         {
-            auto i = this->words.begin() + ia + ib;
-            auto j = this->words.end();
-            B[1] = bw[ib] >> WORD_HALF_BITS;
-            B[0] = bw[ib] & WORD_HALF_MASK;
-            carry[0] = aw[ia] * bw[ib];
-            carry[1] = ((A[0] * B[0]) >> WORD_HALF_BITS) + A[1] * B[0];
-            carry[0] = (*(i++) += carry[0]) < carry[0];
-            carry[1] = (carry[1] >> WORD_HALF_BITS) + ((A[0] * B[1] + (carry[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + A[1] * B[1];
-            carry[0] = ((*i += carry[0]) < carry[0]) + ((*(i++) += carry[1]) < carry[1]);
-            while (carry[0] && (i != j))
+            aw[1] = A[ia] >> WORD_HALF_BITS;
+            aw[0] = A[ia] & WORD_HALF_MASK;
+            for (ib = 0; ib < nb; ib++)
+            {
+                auto i = this->words.begin() + ia + ib;
+                auto j = this->words.end();
+                bw[1] = B[ib] >> WORD_HALF_BITS;
+                bw[0] = B[ib] & WORD_HALF_MASK;
+                carry[0] = A[ia] * B[ib];
+                carry[1] = ((aw[0] * bw[0]) >> WORD_HALF_BITS) + aw[1] * bw[0];
                 carry[0] = (*(i++) += carry[0]) < carry[0];
-            if (carry[0])
-                this->words.push_back(carry[0]);
+                carry[1] = (carry[1] >> WORD_HALF_BITS) + ((aw[0] * bw[1] + (carry[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + aw[1] * bw[1];
+                carry[0] = ((*i += carry[0]) < carry[0]) + ((*(i++) += carry[1]) < carry[1]);
+                while (carry[0] && (i != j))
+                    carry[0] = (*(i++) += carry[0]) < carry[0];
+                if (carry[0])
+                    this->words.push_back(carry[0]);
+            }
         }
     }
     while (this->words.size() && !this->words.back())
@@ -668,7 +667,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    BigInteger p(*this);
+    BigInteger p = *this;
     *this = 1;
     for (; exponent; exponent >>= 1)
     {
@@ -895,15 +894,15 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
 
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
-    if (!b.words.size() || !this->words.size())
-        return BigInteger();
-    const size_t na = this->words.size(), nb = b.words.size();
     BigInteger result;
+    if (!b.words.size() || !this->words.size())
+        return result;
+    std::vector<word> A = this->words, B = b.words;
+    const size_t na = A.size(), nb = B.size();
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
         const size_t m2 = n / 2 + (n & 1);
-        std::vector<word> A = this->words, B = b.words;
         A.resize(m2 * 2, 0);
         B.resize(m2 * 2, 0);
         BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
@@ -919,31 +918,32 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         result += (a1 + a0) * (b0 + b1) - z1 - z0;
         result.words.insert(result.words.begin(), m2, 0);
         result += z0;
-        result.neg = this->neg ^ b.neg;
-        return result;
     }
-    std::vector<word> &rsw = result.words;
-    rsw.resize(na + nb + 1);
-    word carry[2], A[2], B[2]; // temporary value
-    for (size_t ia = 0, ib; ia < na; ia++)
+    else
     {
-        A[1] = this->words[ia] >> WORD_HALF_BITS;
-        A[0] = this->words[ia] & WORD_HALF_MASK;
-        for (ib = 0; ib < nb; ib++)
+        std::vector<word> &rsw = result.words;
+        rsw.resize(na + nb + 1);
+        word carry[2], aw[2], bw[2]; // temporary value
+        for (size_t ia = 0, ib; ia < na; ia++)
         {
-            auto i = rsw.begin() + ia + ib;
-            auto j = rsw.end();
-            B[1] = b.words[ib] >> WORD_HALF_BITS;
-            B[0] = b.words[ib] & WORD_HALF_MASK;
-            carry[0] = this->words[ia] * b.words[ib];
-            carry[1] = ((A[0] * B[0]) >> WORD_HALF_BITS) + A[1] * B[0];
-            carry[0] = (*(i++) += carry[0]) < carry[0];
-            carry[1] = (carry[1] >> WORD_HALF_BITS) + ((A[0] * B[1] + (carry[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + A[1] * B[1];
-            carry[0] = ((*i += carry[0]) < carry[0]) + ((*(i++) += carry[1]) < carry[1]);
-            while (carry[0] && (i != j))
+            aw[1] = A[ia] >> WORD_HALF_BITS;
+            aw[0] = A[ia] & WORD_HALF_MASK;
+            for (ib = 0; ib < nb; ib++)
+            {
+                auto i = rsw.begin() + ia + ib;
+                auto j = rsw.end();
+                bw[1] = B[ib] >> WORD_HALF_BITS;
+                bw[0] = B[ib] & WORD_HALF_MASK;
+                carry[0] = A[ia] * B[ib];
+                carry[1] = ((aw[0] * bw[0]) >> WORD_HALF_BITS) + aw[1] * bw0];
                 carry[0] = (*(i++) += carry[0]) < carry[0];
-            if (carry[0])
-                rsw.push_back(carry[0]);
+                carry[1] = (carry[1] >> WORD_HALF_BITS) + ((aw[0] * bw[1] + (carry[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + aw[1] * bw[1];
+                carry[0] = ((*i += carry[0]) < carry[0]) + ((*(i++) += carry[1]) < carry[1]);
+                while (carry[0] && (i != j))
+                    carry[0] = (*(i++) += carry[0]) < carry[0];
+                if (carry[0])
+                    rsw.push_back(carry[0]);
+            }
         }
     }
     while (rsw.size() && !rsw.back())
