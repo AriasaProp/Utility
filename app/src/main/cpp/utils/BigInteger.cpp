@@ -404,11 +404,10 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     const size_t na = this->words.size();
     if (!na)
         return *this;
-    std::vector<word> A = this->words;
+    std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-	   std::vector<word> B = b.words;
-        const size_t m2 = na >= nb ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+	   const size_t m2 = na >= nb ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         A.resize(m2 * 2);
         B.resize(m2 * 2);
         BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
@@ -435,7 +434,6 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     }
     else
     {
-	   const std::vector<word> &B = b.words;
         this->words.resize(na + nb + 1, 0);
         std::fill(this->words.begin(), this->words.end(), 0);
         word carry[2], aw[2], bw[2]; // temporary value
