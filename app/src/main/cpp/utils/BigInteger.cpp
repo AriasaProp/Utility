@@ -895,10 +895,10 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
     BigInteger result;
-    if (!b.words.size() || !this->words.size())
+    const size_t na = this->words.size(), nb = b.words.size();
+    if (!nb || !na)
         return result;
     std::vector<word> A = this->words, B = b.words;
-    const size_t na = A.size(), nb = B.size();
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
@@ -926,16 +926,16 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         word carry[2], aw[2], bw[2]; // temporary value
         for (size_t ia = 0, ib; ia < na; ia++)
         {
-            aw[1] = A[ia] >> WORD_HALF_BITS;
             aw[0] = A[ia] & WORD_HALF_MASK;
+            aw[1] = A[ia] >> WORD_HALF_BITS;
             for (ib = 0; ib < nb; ib++)
             {
                 auto i = rsw.begin() + ia + ib;
                 auto j = rsw.end();
-                bw[1] = B[ib] >> WORD_HALF_BITS;
                 bw[0] = B[ib] & WORD_HALF_MASK;
+                bw[1] = B[ib] >> WORD_HALF_BITS;
                 carry[0] = A[ia] * B[ib];
-                carry[1] = ((aw[0] * bw[0]) >> WORD_HALF_BITS) + aw[1] * bw0];
+                carry[1] = ((aw[0] * bw[0]) >> WORD_HALF_BITS) + aw[1] * bw[0];
                 carry[0] = (*(i++) += carry[0]) < carry[0];
                 carry[1] = (carry[1] >> WORD_HALF_BITS) + ((aw[0] * bw[1] + (carry[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + aw[1] * bw[1];
                 carry[0] = ((*i += carry[0]) < carry[0]) + ((*(i++) += carry[1]) < carry[1]);
@@ -946,8 +946,8 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
             }
         }
     }
-    while (rsw.size() && !rsw.back())
-        rsw.pop_back();
+    while (result.words.size() && !result.words.back())
+        result.words.pop_back();
     result.neg = this->neg ^ b.neg;
     return result;
 }
