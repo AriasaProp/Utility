@@ -395,16 +395,16 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
 }
 BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
-    if (!b.words.size())
+    const size_t nb = b.words.size();
+    if (!nb)
     {
-        words.clear();
-        neg = false;
+        this->words.clear();
+        this->neg = false;
     }
-    if (!this->words.size())
+    const size_t na = this->words.size();
+    if (!na)
         return *this;
-
     std::vector<word> A = this->words, B = b.words;
-    const size_t na = A.size(), nb = B.size();
     if ((na <= nb ? na : nb) > 20)
     {
         const size_t n = na >= nb ? na : nb;
@@ -426,9 +426,9 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         *this += z0;
     }
     else
-    {
-        this->words.clear();
+  {
         this->words.resize(na + nb + 1, 0);
+        std::fill(this->words.begin(), this->words.end(), 0);
         word carry[2], aw[2], bw[2]; // temporary value
         for (size_t ia = 0, ib; ia < na; ia++)
         {
