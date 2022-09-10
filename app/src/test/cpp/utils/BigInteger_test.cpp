@@ -9,18 +9,6 @@ int main(int argc, char *argv[])
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
     std::cout << "BigInteger code test \n";
-    result = test();
-    passed &= result;
-    if(result)
-        std::cout << "Passed \n";
-    std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us";
-        
-    return passed ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-bool test()
-{
-	bool passed = true, result;
 	BigInteger a, b;
     //comparation test
 	a = 9, b = 7;
@@ -205,5 +193,10 @@ bool test()
 	passed &= result;
 	if ( !result )
 		  std::cout << "    '^=' operator error \n";
-	return passed;
+
+    std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us";
+    if(!passed)
+        return EXIT_FAILURE;
+    std::cout << "Passed \n";
+    return EXIT_SUCCESS;
 }
