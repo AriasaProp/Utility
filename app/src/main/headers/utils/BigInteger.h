@@ -10,6 +10,8 @@
 typedef unsigned int word;
 typedef signed int s_word;
 
+static void karatsuba(word *, const word *, const word *);
+
 // TODO : need to be more efficiently
 class BigInteger
 {
@@ -64,7 +66,6 @@ class BigInteger
     BigInteger operator+(const BigInteger &) const;
     BigInteger operator-(const BigInteger &) const;
     BigInteger operator*(const BigInteger &) const;
-    static void karatsuba(word *, const word *, const word *);
     BigInteger operator/(const BigInteger &) const;
     BigInteger operator%(const BigInteger &) const;
     BigInteger operator^(size_t) const;
