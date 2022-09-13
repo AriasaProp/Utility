@@ -10,7 +10,7 @@
 typedef unsigned int word;
 typedef signed int s_word;
 
-static void karatsuba(word *, const word *, const word *);
+static void karatsuba(word *, const word *, const word *, const size_t);
 
 // TODO : need to be more efficiently
 class BigInteger
