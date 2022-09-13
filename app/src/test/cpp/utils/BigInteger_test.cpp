@@ -8,15 +8,15 @@ int main(int argc, char *argv[])
 {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
-    /*
+    
     std::cout << "static karatsuba test \n";
-    std::vector<word> res1(8, 0);
+    //std::vector<word> res1(8, 0);
     const std::vector<word> resA{1002387, 90719736, 145201,0};
     const std::vector<word> resB{9021, 14326711 ,0, 0};
-    karatsuba(res1.data(), resA.data(), resB.data(), 4);
-    std::cout << "correct "<< (BigInteger(resA, false)*BigInteger(resB, false)) << std::endl;
-    std::cout << "function test " << BigInteger(res1, false) << std::endl;
-    */
+    //karatsuba(res1.data(), resA.data(), resB.data(), 4);
+    std::cout << "correct "<< (BigInteger(resA) * BigInteger(resB)) << std::endl;
+    //std::cout << "function test " << BigInteger(res1) << std::endl;
+    
     std::cout << "BigInteger code test \n";
 	BigInteger a, b;
     //comparation test
