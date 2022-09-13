@@ -1372,7 +1372,7 @@ void karatsuba_test()
     }
 }
 
-std::vector<word> karatsuba(const std::vector<word> A, const std::vector<word> B)
+std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
 {
     std::vector<word> result;
     const size_t lenA = A.size(), lenB = B.size();
