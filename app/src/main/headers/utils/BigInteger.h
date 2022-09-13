@@ -10,9 +10,6 @@
 typedef unsigned int word;
 typedef signed int s_word;
 
-void karatsuba_test();
-void karatsuba(word *, const word *, const word *, const size_t);
-
 // TODO : need to be more efficiently
 class BigInteger
 {
@@ -78,5 +75,7 @@ class BigInteger
     BigInteger operator<<(size_t) const;
     // stream operator
     friend std::ostream &operator<<(std::ostream &, const BigInteger &);
+    friend void karatsuba_test();
+    friend void karatsuba(word *, const word *, const word *, const size_t);
 };
 #endif
