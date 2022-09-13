@@ -1385,8 +1385,8 @@ std::vector<word> karatsuba(const std::vector<word> A, const std::vector<word> B
             if (lenA > len2)
             {
                 auto spl = std::next(A.begin(), len2);
-                a_lo = vector<word>(A.begin(), spl);
-                a_hi = vector<word>(spl, A.end());
+                a_lo = std::vector<word>(A.begin(), spl);
+                a_hi = std::vector<word>(spl, A.end());
             }
             else
             {
@@ -1395,8 +1395,8 @@ std::vector<word> karatsuba(const std::vector<word> A, const std::vector<word> B
             if (lenB > len2)
             {
                 auto spl = std::next(B.begin(), len2);
-                b_lo = vector<word>(B.begin(), spl);
-                b_hi = vector<word>(spl, B.end());
+                b_lo = std::vector<word>(B.begin(), spl);
+                b_hi = std::vector<word>(spl, B.end());
             }
             else
             {
