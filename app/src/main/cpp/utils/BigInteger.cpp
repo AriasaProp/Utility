@@ -405,24 +405,28 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-	      const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+	const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         A.resize(m2 * 2);
         B.resize(m2 * 2);
-        BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
+        BigInteger a0, a1, b0, b1;
+        a0.words.resize(m2, 0);
+        a1.words.resize(m2, 0);
+        b0.words.resize(m2, 0);
+        b1.words.resize(m2, 0);
         auto a_split = std::next(A.cbegin(), m2);
         std::copy(A.cbegin(), a_split, a0.words.begin());
-	      while (a0.words.size() && !a0.words.back())
-        	  a0.words.pop_back();
+	while (a0.words.size() && !a0.words.back())
+     	    a0.words.pop_back();
         std::copy(a_split, A.cend(), a1.words.begin());
-	      while (a1.words.size() && !a1.words.back())
-        	  a1.words.pop_back();
+	while (a1.words.size() && !a1.words.back())
+            a1.words.pop_back();
         auto b_split = std::next(B.cbegin(), m2);
         std::copy(B.cbegin(), b_split, b0.words.begin());
-	      while (b0.words.size() && !b0.words.back())
-        	  b0.words.pop_back();
+	while (b0.words.size() && !b0.words.back())
+            b0.words.pop_back();
         std::copy(b_split, B.cend(), b1.words.begin());
-	      while (b1.words.size() && !b1.words.back())
-        	  b1.words.pop_back();
+	while (b1.words.size() && !b1.words.back())
+            b1.words.pop_back();
         BigInteger result;
         const BigInteger z0 = a0 * b0, z1 = a1 * b1;
         result = z1;
@@ -911,7 +915,11 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         const size_t m2 = n / 2 + (n & 1);
         A.resize(m2 * 2, 0);
         B.resize(m2 * 2, 0);
-        BigInteger a0(m2, 0), a1(m2, 0), b0(m2, 0), b1(m2, 0);
+        BigInteger a0, a1, b0, b1;
+        a0.words.resize(m2, 0);
+        a1.words.resize(m2, 0);
+        b0.words.resize(m2, 0);
+        b1.words.resize(m2, 0);
         const auto a_split = std::next(A.cbegin(), m2);
         std::copy(A.cbegin(), a_split, a0.words.begin());
         std::copy(a_split, A.cend(), a1.words.begin());
