@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     std::cout << "static karatsuba test \n";
     word *res1 = new word[8]{0}, *resA = new word[3]{0, 1002387, 9078719736, 14520001}, *resB = new word[3]{0, 0, 14326711,9021}
     BigInteger tes1(
-    BigInteger::karatsuba(res1, resA, resB);
+    karatsuba(res1, resA, resB);
     std::cout << "correct "<< (BigInteger(resA)*BigInteger(resB)) << std::endl;
     std::cout << "function test " << BigInteger(res1) << std::endl;
     std::cout << "BigInteger code test \n";
