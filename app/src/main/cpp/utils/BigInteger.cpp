@@ -11,8 +11,6 @@ static const double LOG2BITS = std::log(2) * WORD_BITS;
 
 //Constructors
 BigInteger::BigInteger() : neg(false) {}
-BigInteger::BigInteger(size_t n, word w, bool neg = false) : neg(neg), words(n, w) {}
-BigInteger::BigInteger(const word *a, const word *b, bool neg = false) : neg(neg), words(a, b) {}
 BigInteger::BigInteger(const BigInteger &a) : neg(a.neg)
 {
     words = a.words;
@@ -65,7 +63,6 @@ BigInteger::BigInteger(const char *C) : neg(false)
         words.pop_back();
 }
 
-BigInteger::BigInteger(const std::vector<word> a, bool neg = false) : neg(neg), words(a) {}
 // Destructors
 BigInteger::~BigInteger()
 {
@@ -901,77 +898,6 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     return r;
 }
 
-void karatsuba_test()
-{
-    BigInteger A("101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010\0");
-    BigInteger res1;
-    res1.words.resize(A.words.size() * 2);
-    karatsuba(res1.words.data(), A.words.data(), A.words.data(), A.words.size());
-    std::cout << (A*A) << std::endl;
-    std::cout << res1 << std::endl;
-}
-
-//len should be powerof2
-void karatsuba(word *result, const word *A, const word *B ,const size_t len)
-{
-    if (len==1)
-    {
-        word a_lo = (*A) & WORD_HALF_MASK;
-        word a_hi = (*A) >> WORD_HALF_BITS;
-        word b_lo = (*B) & WORD_HALF_MASK;
-        word b_hi = (*B) >> WORD_HALF_BITS;
-        word carry0 = (*A) * (*B);
-        word carry1 = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
-        carry0 = (*(result++) += carry0) < carry0;
-        carry1 = (carry1 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry1 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-        carry0 = ((*result += carry0) < carry0) + ((*(result++) += carry1) < carry1);
-        while (carry0)
-            carry0 = (*(result++) += carry0) < carry0;
-    }
-    else
-    {
-        const size_t l2 = len/2;
-        karatsuba(result, A, B, l2);
-        karatsuba(result + len, A + l2, B + l2, l2);
-        word *mid = new word[len * 2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
-        word carry0 = 0, carry1 = 0;
-        size_t i = 0;
-        do
-        {
-            carry0 = (Amid[i] += carry0) < carry0;
-            carry0 += (Amid[i] += A[i]) < A[i];
-            carry1 = (Bmid[i] += carry1) < carry1;
-            carry1 += (Bmid[i] += B[i]) < B[i];
-        } while (++i < l2);
-        if (carry0 | carry1)
-        {
-            Amid[i] = carry0;
-            Bmid[i] = carry1;
-            karatsuba(mid, Amid, Bmid, len);
-        }
-        else
-            karatsuba(mid, Amid, Bmid, l2);
-        delete[] Amid;
-        delete[] Bmid;
-        carry0 = 0;
-        i = 0;
-        do
-        {
-            carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 += mid[i] < (mid[i] -= result[i]);
-            carry0 += mid[i] < (mid[i] -= result[i+l2]);
-        } while (++i < l2);
-        carry0 = 0;
-        i = 0;
-        do
-        {
-            carry0 = (result[i+l2] += carry0) < carry0;
-            carry0 += (result[i+l2] += mid[i]) < mid[i];
-        } while (++i < (l2*3));
-        delete[] mid;
-    }
-}
-
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
     BigInteger result;
@@ -1356,3 +1282,73 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num)
     return out;
 }
 
+static void karatsuba_test()
+{
+    BigInteger A("101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010\0");
+    BigInteger res1;
+    res1.words.resize(A.words.size() * 2);
+    karatsuba(res1.words.data(), A.words.data(), A.words.data(), A.words.size());
+    std::cout << (A*A) << std::endl;
+    std::cout << res1 << std::endl;
+}
+
+//len should be powerof2
+static void karatsuba(word *result, const word *A, const word *B ,const size_t len)
+{
+    if (len==1)
+    {
+        word a_lo = (*A) & WORD_HALF_MASK;
+        word a_hi = (*A) >> WORD_HALF_BITS;
+        word b_lo = (*B) & WORD_HALF_MASK;
+        word b_hi = (*B) >> WORD_HALF_BITS;
+        word carry0 = (*A) * (*B);
+        word carry1 = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+        carry0 = (*(result++) += carry0) < carry0;
+        carry1 = (carry1 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry1 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+        carry0 = ((*result += carry0) < carry0) + ((*(result++) += carry1) < carry1);
+        while (carry0)
+            carry0 = (*(result++) += carry0) < carry0;
+    }
+    else
+    {
+        const size_t l2 = len/2;
+        karatsuba(result, A, B, l2);
+        karatsuba(result + len, A + l2, B + l2, l2);
+        word *mid = new word[len * 2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
+        word carry0 = 0, carry1 = 0;
+        size_t i = 0;
+        do
+        {
+            carry0 = (Amid[i] += carry0) < carry0;
+            carry0 += (Amid[i] += A[i]) < A[i];
+            carry1 = (Bmid[i] += carry1) < carry1;
+            carry1 += (Bmid[i] += B[i]) < B[i];
+        } while (++i < l2);
+        if (carry0 | carry1)
+        {
+            Amid[i] = carry0;
+            Bmid[i] = carry1;
+            karatsuba(mid, Amid, Bmid, len);
+        }
+        else
+            karatsuba(mid, Amid, Bmid, l2);
+        delete[] Amid;
+        delete[] Bmid;
+        carry0 = 0;
+        i = 0;
+        do
+        {
+            carry0 = mid[i] < (mid[i] -= carry0);
+            carry0 += mid[i] < (mid[i] -= result[i]);
+            carry0 += mid[i] < (mid[i] -= result[i+l2]);
+        } while (++i < l2);
+        carry0 = 0;
+        i = 0;
+        do
+        {
+            carry0 = (result[i+l2] += carry0) < carry0;
+            carry0 += (result[i+l2] += mid[i]) < mid[i];
+        } while (++i < (l2*3));
+        delete[] mid;
+    }
+}
