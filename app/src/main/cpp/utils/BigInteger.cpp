@@ -1422,15 +1422,21 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             for(i = 0; i < c0.size(); i++)
             {
                 carry0 = mid[i] < (mid[i] -= carry0);
-                carry0 = mid[i] < (mid[i] -= c0[i]);
+                carry0 += mid[i] < (mid[i] -= c0[i]);
             }
+            for (; carry0 && i < mid.size(); i++)
+                carry0 = mid[i] < (mid[i] -= carry0);
             carry0 = 0;
             for(i = 0; i < result.size(); i++)
             {
                 carry0 = mid[i] < (mid[i] -= carry0);
-                carry0 = mid[i] < (mid[i] -= result[i]);
+                carry0 += mid[i] < (mid[i] -= result[i]);
             }
+            for (; carry0 && i < mid.size(); i++)
+                carry0 = mid[i] < (mid[i] -= carry0);
+            
             result.insert(result.begin(), len2, 0);
+            
             carry0 = 0;
             for(i = 0; i < mid.size(); i++)
             {
