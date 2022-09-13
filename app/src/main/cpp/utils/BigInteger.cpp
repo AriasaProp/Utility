@@ -901,6 +901,67 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     return r;
 }
 
+//len should be powerof2
+static void BigInteger::karatsuba(word *result, const word *A, const word *B ,const size_t len)
+{
+    if (len==1)
+    {
+        word a_lo = (*A) & WORD_HALF_MASK;
+        word a_hi = (*A) >> WORD_HALF_BITS;
+        word b_lo = (*B) & WORD_HALF_MASK;
+        word b_hi = (*B) >> WORD_HALF_BITS;
+        word carry0 = (*A) * (*B);
+        word carry1 = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+        carry0 = (*(result++) += carry0) < carry0;
+        carry1 = (carry1 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry1 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+        carry0 = ((*result += carry0) < carry0) + ((*(result++) += carry1) < carry1);
+        while (carry0)
+            carry0 = (*(result++) += carry0) < carry0;
+    }
+    else
+    {
+        const size_t l2 = len/2;
+        karatsuba(result, A, B, l2);
+        karatsuba(result + len, A + l2, B + l2, l2);
+        word *mid = new word[len * 2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
+        word carry0 = 0, carry1 = 0;
+        size_t i = 0;
+        do
+        {
+            carry0 = (Amid[i] += carry0) < carry0;
+            carry0 += (Amid[i] += A[i]) < A[i];
+            carry1 = (Bmid[i] += carry1) < carry1;
+            carry1 += (Bmid[i] += B[i]) < B[i];
+        } while (++i < l2);
+        if (carry0 | carry1)
+        {
+            Amid[i] = carry0;
+            Bmid[i] = carry1;
+            karatsuba(mid, Amid, Bmid, len);
+        }
+        else
+            karatsuba(mid, Amid, Bmid, l2);
+        delete[] Amid;
+        delete[] Bmid;
+        carry0 = 0;
+        i = 0;
+        do
+        {
+            carry0 = mid[i] < (mid[i] -= carry0);
+            carry0 += mid[i] < (mid[i] -= result[i]);
+            carry0 += mid[i] < (mid[i] -= result[i+l2]);
+        } while (++i < l2);
+        carry0 = 0;
+        i = 0;
+        do
+        {
+            carry0 = (result[i+l2] += carry0) < carry0;
+            carry0 += (result[i+l2] += mid[i]) < mid[i];
+        } while (++i < (l2*3));
+        delete[] mid;
+    }
+}
+
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
     BigInteger result;

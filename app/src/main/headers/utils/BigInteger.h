@@ -64,6 +64,7 @@ class BigInteger
     BigInteger operator+(const BigInteger &) const;
     BigInteger operator-(const BigInteger &) const;
     BigInteger operator*(const BigInteger &) const;
+    static void karatsuba(word *, const word *, const word *);
     BigInteger operator/(const BigInteger &) const;
     BigInteger operator%(const BigInteger &) const;
     BigInteger operator^(size_t) const;
