@@ -65,7 +65,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         words.pop_back();
 }
 
-BigInteger::BigInteger(const std::vector<word> &a, bool neg = false) : neg(neg), words(a) {}
+BigInteger::BigInteger(const std::vector<word> a, bool neg = false) : neg(neg), words(a) {}
 // Destructors
 BigInteger::~BigInteger()
 {
