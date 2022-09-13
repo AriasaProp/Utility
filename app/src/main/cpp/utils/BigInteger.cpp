@@ -1384,7 +1384,7 @@ void karatsuba(word *result, const word *A, const word *B ,const size_t len)
         const size_t l2 = len/2;
         karatsuba(result, A, B, l2);
         karatsuba(result + len, A + l2, B + l2, l2);
-        word *mid = new word[len + l2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
+        word *mid = new word[l2 * 3]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
         word carry0 = 0, carry1 = 0;
         size_t i = 0;
         do
@@ -1420,7 +1420,7 @@ void karatsuba(word *result, const word *A, const word *B ,const size_t len)
         {
             carry0 = (result[i+l2] += carry0) < carry0;
             carry0 += (result[i+l2] += mid[i]) < mid[i];
-        } while (++i < (len+l2));
+        } while (++i < (l2*3));
         delete[] mid;
     }
 }
