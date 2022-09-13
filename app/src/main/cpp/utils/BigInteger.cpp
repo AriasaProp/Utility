@@ -1458,11 +1458,11 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         else if (lenMax==1)
         {
             result.resize(2);
-            word a_lo = (*A) & WORD_HALF_MASK;
-            word a_hi = (*A) >> WORD_HALF_BITS;
-            word b_lo = (*B) & WORD_HALF_MASK;
-            word b_hi = (*B) >> WORD_HALF_BITS;
-            result[0] = (*A) * (*B);
+            word a_lo = A[0] & WORD_HALF_MASK;
+            word a_hi = A[0] >> WORD_HALF_BITS;
+            word b_lo = B[0] & WORD_HALF_MASK;
+            word b_hi = B[0] >> WORD_HALF_BITS;
+            result[0] = A[0] * B[0];
             result[1] = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
             result[1] = (result[1] >> WORD_HALF_BITS) + ((a_lo * b_hi + (result[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
             if (!result.back())
