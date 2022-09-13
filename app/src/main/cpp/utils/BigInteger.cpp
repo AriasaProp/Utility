@@ -1192,7 +1192,10 @@ BigInteger BigInteger::operator^(size_t exponent) const
 
 BigInteger BigInteger::operator-() const
 {
-    return BigInteger(this->words, !this->neg);
+    BigInteger result;
+    result.words = this->words;
+    result.neg = !this->neg;
+    return result;
 }
 
 BigInteger &BigInteger::operator>>=(size_t n_bits)
