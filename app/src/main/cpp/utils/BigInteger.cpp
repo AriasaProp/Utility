@@ -1360,6 +1360,21 @@ void karatsuba_test()
         std::cout << (A*A) << std::endl;
         std::cout << res1 << std::endl;
     }
+    std::cout << "then" << std::endl;
+    {
+        BigInteger A;
+        A.words.push_back(0);
+        A.words.push_back(0);
+        A.words.push_back(89974321);
+        A.words.push_back(1921);
+        //A.words.resize(pow(2, ceil(log(A.words.size())/log(2))), 0);
+        BigInteger res1;
+        res1.words.resize(A.words.size() * 2);
+        karatsuba(res1.words.data(), A.words.data(), A.words.data(), A.words.size());
+        std::cout << A << std::endl;
+        std::cout << (A*A) << std::endl;
+        std::cout << res1 << std::endl;
+    }
 }
 
 //len should be powerof2
@@ -1396,8 +1411,8 @@ void karatsuba(word *result, const word *A, const word *B ,const size_t len)
             carry1 += (Bmid[i] += B[i]) < B[i];
             carry1 += (Bmid[i] += B[i+l2]) < B[i+l2];
         } while (++i < l2);
-        word *mid = new word[len + l2]{0};
-        mid[len] = carry0 * carry1;
+        word *mid = new word[len + l2 + 2]{0};
+        mid[len + 2] = carry0 * carry1;
         karatsuba(mid, Amid, Bmid, l2);
         delete[] Amid;
         delete[] Bmid;
