@@ -405,33 +405,52 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-	const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
-        A.resize(m2 * 2);
-        B.resize(m2 * 2);
-        BigInteger a0, a1, b0, b1;
-        a0.words.resize(m2, 0);
-        a1.words.resize(m2, 0);
-        b0.words.resize(m2, 0);
-        b1.words.resize(m2, 0);
-        auto a_split = std::next(A.cbegin(), m2);
-        std::copy(A.cbegin(), a_split, a0.words.begin());
-	while (a0.words.size() && !a0.words.back())
-     	    a0.words.pop_back();
-        std::copy(a_split, A.cend(), a1.words.begin());
-	while (a1.words.size() && !a1.words.back())
-            a1.words.pop_back();
-        auto b_split = std::next(B.cbegin(), m2);
-        std::copy(B.cbegin(), b_split, b0.words.begin());
-	while (b0.words.size() && !b0.words.back())
-            b0.words.pop_back();
-        std::copy(b_split, B.cend(), b1.words.begin());
-	while (b1.words.size() && !b1.words.back())
-            b1.words.pop_back();
-        BigInteger result;
-        const BigInteger z0 = a0 * b0, z1 = a1 * b1;
-        result = z1;
-        result.words.insert(result.words.begin(), m2, 0);
-        result += (a1 + a0) * (b0 + b1) - (z0 + z1);
+	BigInteger result, a0, a1, b0, b1;
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+        if (na <= m2)
+        {
+            a0.words = A;
+        }
+        else 
+        {
+            A.resize(m2 * 2);
+            a0.words.resize(m2, 0);
+            a1.words.resize(m2, 0);
+            auto a_split = std::next(A.cbegin(), m2);
+            std::copy(A.cbegin(), a_split, a0.words.begin());
+	    while (a0.words.size() && !a0.words.back())
+     	        a0.words.pop_back();
+            std::copy(a_split, A.cend(), a1.words.begin());
+	    while (a1.words.size() && !a1.words.back())
+                a1.words.pop_back();
+        }
+        if (nb <= m2)
+        {
+            b0.words = B;
+        }
+        else
+        {
+            B.resize(m2 * 2);
+            b0.words.resize(m2, 0);
+            b1.words.resize(m2, 0);
+            auto b_split = std::next(B.cbegin(), m2);
+            std::copy(B.cbegin(), b_split, b0.words.begin());
+	    while (b0.words.size() && !b0.words.back())
+                b0.words.pop_back();
+            std::copy(b_split, B.cend(), b1.words.begin());
+	    while (b1.words.size() && !b1.words.back())
+                b1.words.pop_back();
+        }
+        const BigInteger z0 = a0 * b0;
+        if (na > m2 && nb > m2)
+        {
+            const BigInteger z1 = a1 * b1;
+            result = z1;
+            result.words.insert(result.words.begin(), m2, 0);
+            result += (a1 + a0) * (b0 + b1) - z1 - z0;
+        }
+        else
+            result = (a1 + a0) * (b0 + b1) - z0;
         result.words.insert(result.words.begin(), m2, 0);
         result += z0;
         this->words = result.words;
@@ -911,25 +930,52 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
     std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-        const size_t n = na >= nb ? na : nb;
-        const size_t m2 = n / 2 + (n & 1);
-        A.resize(m2 * 2, 0);
-        B.resize(m2 * 2, 0);
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         BigInteger a0, a1, b0, b1;
-        a0.words.resize(m2, 0);
-        a1.words.resize(m2, 0);
-        b0.words.resize(m2, 0);
-        b1.words.resize(m2, 0);
-        const auto a_split = std::next(A.cbegin(), m2);
-        std::copy(A.cbegin(), a_split, a0.words.begin());
-        std::copy(a_split, A.cend(), a1.words.begin());
-        const auto b_split = std::next(B.cbegin(), m2);
-        std::copy(B.cbegin(), b_split, b0.words.begin());
-        std::copy(b_split, B.cend(), b1.words.begin());
-        const BigInteger z0 = a0 * b0, z1 = a1 * b1;
-        result = z1;
-        result.words.insert(result.words.begin(), m2, 0);
-        result += (a1 + a0) * (b0 + b1) - z1 - z0;
+        if (na <= m2)
+        {
+            a0.words = A;
+        }
+        else 
+        {
+            A.resize(m2 * 2);
+            a0.words.resize(m2, 0);
+            a1.words.resize(m2, 0);
+            auto a_split = std::next(A.cbegin(), m2);
+            std::copy(A.cbegin(), a_split, a0.words.begin());
+	    while (a0.words.size() && !a0.words.back())
+     	        a0.words.pop_back();
+            std::copy(a_split, A.cend(), a1.words.begin());
+	    while (a1.words.size() && !a1.words.back())
+                a1.words.pop_back();
+        }
+        if (nb <= m2)
+        {
+            b0.words = B;
+        }
+        else
+        {
+            B.resize(m2 * 2);
+            b0.words.resize(m2, 0);
+            b1.words.resize(m2, 0);
+            auto b_split = std::next(B.cbegin(), m2);
+            std::copy(B.cbegin(), b_split, b0.words.begin());
+	    while (b0.words.size() && !b0.words.back())
+                b0.words.pop_back();
+            std::copy(b_split, B.cend(), b1.words.begin());
+	    while (b1.words.size() && !b1.words.back())
+                b1.words.pop_back();
+        }
+        const BigInteger z0 = a0 * b0;
+        if (na > m2 && nb > m2)
+        {
+            const BigInteger z1 = a1 * b1;
+            result = z1;
+            result.words.insert(result.words.begin(), m2, 0);
+            result += (a1 + a0) * (b0 + b1) - z1 - z0;
+        }
+        else
+            result = (a1 + a0) * (b0 + b1) - z0;
         result.words.insert(result.words.begin(), m2, 0);
         result += z0;
     }
@@ -1338,15 +1384,17 @@ void karatsuba(word *result, const word *A, const word *B ,const size_t len)
         const size_t l2 = len/2;
         karatsuba(result, A, B, l2);
         karatsuba(result + len, A + l2, B + l2, l2);
-        word *mid = new word[len * 2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
+        word *mid = new word[len + l2]{0}, *Amid = new word[len]{0}, *Bmid = new word[len]{0};
         word carry0 = 0, carry1 = 0;
         size_t i = 0;
         do
         {
             carry0 = (Amid[i] += carry0) < carry0;
             carry0 += (Amid[i] += A[i]) < A[i];
+            carry0 += (Amid[i] += A[i+l2]) < A[i+l2];
             carry1 = (Bmid[i] += carry1) < carry1;
             carry1 += (Bmid[i] += B[i]) < B[i];
+            carry1 += (Bmid[i] += B[i+l2]) < B[i+l2];
         } while (++i < l2);
         if (carry0 | carry1)
         {
@@ -1372,7 +1420,7 @@ void karatsuba(word *result, const word *A, const word *B ,const size_t len)
         {
             carry0 = (result[i+l2] += carry0) < carry0;
             carry0 += (result[i+l2] += mid[i]) < mid[i];
-        } while (++i < (l2*3));
+        } while (++i < (len+l2));
         delete[] mid;
     }
 }

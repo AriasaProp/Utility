@@ -8,7 +8,7 @@ int main(int argc, char * argv[]) {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
 
-    std::cout << "static karatsuba test \n";
+    std::cout << "inline karatsuba test \n";
     karatsuba_test();
 
     std::cout << "BigInteger code test \n";
