@@ -902,7 +902,7 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
 }
 
 //len should be powerof2
-static void BigInteger::karatsuba(word *result, const word *A, const word *B ,const size_t len)
+static void karatsuba(word *result, const word *A, const word *B ,const size_t len)
 {
     if (len==1)
     {
