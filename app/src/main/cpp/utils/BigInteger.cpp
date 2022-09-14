@@ -1404,9 +1404,11 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             while (i < j)
             {
                 carry0 = (a_lo[i] += carry0) < carry0;
-                carry0 += (a_lo[i] += a_hi[i]) < a_hi[i];
-                i++;
+                carry0 += (a_lo[i] += a_hi[i]) < a_hi[i++];
             }
+            j = a_lo.size();
+            while (carry0 && i < j)
+                carry0 = (a_lo[i++] += carry0) < carry0;
             if(carry0)
                 a_lo.push_back(carry0);
             carry0 = 0, i = 0, j = b_hi.size();
@@ -1415,6 +1417,9 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 carry0 = (b_lo[i] += carry0) < carry0;
                 carry0 += (b_lo[i] += b_hi[i]) < b_hi[i++];
             }
+            j = b_lo.size();
+            while (carry0 && i < j)
+                carry0 = (b_lo[i++] += carry0) < carry0;
             if(carry0)
                 b_lo.push_back(carry0);
             std::vector<word> mid = karatsuba(a_lo, b_lo);
@@ -1455,7 +1460,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                     result.push_back(carry0);
             }
             else
-                result = mid;
+                result = std::vector<word>(mid);
             result.insert(result.cbegin(), len2, 0);
             carry0 = 0;
             i = 0, j = c0.size();
