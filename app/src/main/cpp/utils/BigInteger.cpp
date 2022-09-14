@@ -1400,8 +1400,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 b_lo = B;
             std::vector<word> c0 = karatsuba(a_lo, b_lo);
             word carry0 = 0;
-            size_t i = 0;
-            while (i < a_hi.size())
+            size_t i = 0, j = a_hi.size();
+            while (i < j)
             {
                 carry0 = (a_lo[i] += carry0) < carry0;
                 carry0 += (a_lo[i] += a_hi[i]) < a_hi[i];
@@ -1409,46 +1409,47 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             }
             if(carry0)
                 a_lo.push_back(carry0);
-            carry0 = 0, i = 0;
-            while (i < b_hi.size())
+            carry0 = 0, i = 0, j = b_hi.size();
+            while (i < j)
             {
                 carry0 = (b_lo[i] += carry0) < carry0;
-                carry0 += (b_lo[i] += b_hi[i]) < b_hi[i];
-                i++;
+                carry0 += (b_lo[i] += b_hi[i]) < b_hi[i++];
             }
             if(carry0)
                 b_lo.push_back(carry0);
             std::vector<word> mid = karatsuba(a_lo, b_lo);
-            carry0 = 0, i = 0;
-            while (i < c0.size())
+            carry0 = 0, i = 0, j = c0.size();
+            while (i < j)
             {
                 carry0 = mid[i] < (mid[i] -= carry0);
-                carry0 += mid[i] < (mid[i] -= c0[i]);
-                i++;
+                carry0 += mid[i] < (mid[i] -= c0[i++]);
             }
-            while (carry0 && (i < mid.size())) 
+            j = mid.size();
+            while (carry0 && (i < j)) 
                 carry0 = mid[i] < (mid[i++] -= carry0);
             if (a_hi.size() && b_hi.size())
             {
                 result = karatsuba(a_hi, b_hi);
-                carry0 = 0, i = 0;
-                while (i < result.size())
+                carry0 = 0, i = 0, j = result.size();
+                while (i < j)
                 {
                     carry0 = mid[i] < (mid[i] -= carry0);
                     carry0 += mid[i] < (mid[i] -= result[i]);
                     i++;
                 }
-                while (carry0 && i < mid.size())
+                j = mid.size();
+                while (carry0 && i < j)
                     carry0 = mid[i] < (mid[i++] -= carry0);
                 result.insert(result.cbegin(), len2, 0);
                 carry0 = 0, i = 0;
-                while (i < mid.size())
+                while (i < j)
                 {
                     carry0 = (result[i] += carry0) < carry0;
                     carry0 += (result[i] += mid[i]) < mid[i];
                     i++;
                 }
-                while (carry0 && (i < result.size()))
+                j = result.size();
+                while (carry0 && (i < j))
                     carry0 = (result[i++] += carry0) < carry0;
                 if(carry0)
                     result.push_back(carry0);
@@ -1457,14 +1458,15 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 result = mid;
             result.insert(result.cbegin(), len2, 0);
             carry0 = 0;
-            i = 0;
-            while (i < c0.size())
+            i = 0, j = c0.size();
+            while (i < j)
             {
                 carry0 = (result[i] += carry0) < carry0;
                 carry0 += (result[i] += c0[i]) < c0[i];
                 i++;
             }
-            while(carry0 && (i < result.size()))
+            j = result.size();
+            while(carry0 && (i < j))
                 carry0 = (result[i++] += carry0) < carry0;
             if(carry0)
                 result.push_back(carry0);
