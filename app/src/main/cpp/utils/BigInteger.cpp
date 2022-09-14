@@ -1384,78 +1384,88 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             std::vector<word> a_hi, a_lo, b_hi, b_lo;
             if (lenA > len2)
             {
-                auto spl = std::next(A.begin(), len2);
-                a_lo = std::vector<word>(A.begin(), spl);
-                a_hi = std::vector<word>(spl, A.end());
+                auto spl = std::next(A.cbegin(), len2);
+                a_lo = std::vector<word>(A.cbegin(), spl);
+                a_hi = std::vector<word>(spl, A.cend());
             }
             else
-            {
                 a_lo = A;
-            }
             if (lenB > len2)
             {
-                auto spl = std::next(B.begin(), len2);
-                b_lo = std::vector<word>(B.begin(), spl);
-                b_hi = std::vector<word>(spl, B.end());
+                auto spl = std::next(B.cbegin(), len2);
+                b_lo = std::vector<word>(B.cbegin(), spl);
+                b_hi = std::vector<word>(spl, B.cend());
             }
             else
-            {
                 b_lo = B;
-            }
             std::vector<word> c0 = karatsuba(a_lo, b_lo);
-            result = karatsuba(a_hi, b_hi);
-            word carry0 = 0, carry1 = 0;
+            word carry0 = 0;
             size_t i = 0;
-            for(i = 0; i < len2; i++)
+            while (i < a_hi.size())
             {
                 carry0 = (a_lo[i] += carry0) < carry0;
                 carry0 += (a_lo[i] += a_hi[i]) < a_hi[i];
-                carry1 = (b_lo[i] += carry1) < carry1;
-                carry1 += (b_lo[i] += b_hi[i]) < b_hi[i];
+                i++;
             }
             if(carry0)
                 a_lo.push_back(carry0);
-            if(carry1)
-                b_lo.push_back(carry1);
+            carry0 = 0, i = 0;
+            while (i < b_hi.size())
+            {
+                carry0 = (b_lo[i] += carry0) < carry0;
+                carry0 += (b_lo[i] += b_hi[i]) < b_hi[i];
+                i++;
+            }
+            if(carry0)
+                b_lo.push_back(carry0);
             std::vector<word> mid = karatsuba(a_lo, b_lo);
-            carry0 = 0;
-            for(i = 0; i < c0.size(); i++)
+            carry0 = 0, i = 0;
+            while (i < c0.size())
             {
                 carry0 = mid[i] < (mid[i] -= carry0);
                 carry0 += mid[i] < (mid[i] -= c0[i]);
+                i++
             }
-            for (; carry0 && i < mid.size(); i++)
-                carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 = 0;
-            for(i = 0; i < result.size(); i++)
+            while (carry0 && (i < mid.size())) 
+                carry0 = mid[i] < (mid[i++] -= carry0);
+            if (a_hi.size() && b_hi.size())
             {
-                carry0 = mid[i] < (mid[i] -= carry0);
-                carry0 += mid[i] < (mid[i] -= result[i]);
+                result = karatsuba(a_hi, b_hi);
+                carry0 = 0, i = 0;
+                while (i < result.size())
+                {
+                    carry0 = mid[i] < (mid[i] -= carry0);
+                    carry0 += mid[i] < (mid[i] -= result[i]);
+                    i++;
+                }
+                while (carry0 && i < mid.size())
+                    carry0 = mid[i] < (mid[i++] -= carry0);
+                result.insert(result.cbegin(), len2, 0);
+                carry0 = 0, i = 0;
+                while (i < mid.size())
+                {
+                    carry0 = (result[i] += carry0) < carry0;
+                    carry0 += (result[i] += mid[i]) < mid[i];
+                    i++;
+                }
+                while (carry0 && (i < result.size()))
+                    carry0 = (result[i++] += carry0) < carry0;
+                if(carry0)
+                    result.push_back(carry0);
             }
-            for (; carry0 && i < mid.size(); i++)
-                carry0 = mid[i] < (mid[i] -= carry0);
-            
-            result.insert(result.begin(), len2, 0);
-            
+            else
+                result = mid;
+            result.insert(result.cbegin(), len2, 0);
             carry0 = 0;
-            for(i = 0; i < mid.size(); i++)
-            {
-                carry0 = (result[i] += carry0) < carry0;
-                carry0 += (result[i] += mid[i]) < mid[i];
-            }
-            for( ;carry0&&i<result.size();i++)
-                carry0 = (result[i] += carry0) < carry0;
-            if(carry0)
-                result.push_back(carry0);
-            result.insert(result.begin(), len2, 0);
-            carry0 = 0;
-            for(i = 0; i < c0.size(); i++)
+            i = 0;
+            while (i < c0.size())
             {
                 carry0 = (result[i] += carry0) < carry0;
                 carry0 += (result[i] += c0[i]) < c0[i];
+                i++;
             }
-            for( ;carry0&&i<result.size();i++)
-                carry0 = (result[i] += carry0) < carry0;
+            while(carry0 && (i < result.size()))
+                carry0 = (result[i++] += carry0) < carry0;
             if(carry0)
                 result.push_back(carry0);
             while (result.size() && !result.back())
