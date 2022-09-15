@@ -1474,6 +1474,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (result[i++] += carry) < carry;
         if (carry)
             result.push_back(carry);
+        while (result.size() && !result.back())
+            result.pop_back();
     }
     return result;
 }
