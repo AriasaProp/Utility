@@ -1352,7 +1352,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
     const size_t lenA = A.size(), lenB = B.size();
     if(lenA && lenB)
     {
-        std::cout << "enter algo" << std::endl;
         const size_t lenMax = lenA >= lenB ? lenA : lenB;
         if (lenMax > 1) {
             const size_t len2 = lenMax / 2;
@@ -1374,7 +1373,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             }
             else
                 b_lo = B;
-            std::cout << "step lo" << std::endl;
             std::vector<word> c0 = karatsuba(a_lo, b_lo);
             word carry0 = 0;
             size_t i = 0, j = a_hi.size();
@@ -1399,8 +1397,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 carry0 = (b_lo[i++] += carry0) < carry0;
             if(carry0)
                 b_lo.push_back(carry0);
-            std::cout << "step mid" << std::endl;
-        
             std::vector<word> mid = karatsuba(a_lo, b_lo);
             carry0 = 0, i = 0, j = c0.size();
             while (i < j)
@@ -1413,8 +1409,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 carry0 = mid[i] < (mid[i++] -= carry0);
             if (a_hi.size() && b_hi.size())
             {
-                std::cout << "step hi" << std::endl;
-        
                 result = karatsuba(a_hi, b_hi);
                 carry0 = 0, i = 0, j = result.size();
                 while (i < j)
@@ -1472,7 +1466,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             if (!result.back())
                 result.pop_back();
         }
-        std::cout << "exit algo" << std::endl;
         
     }
     return result;
