@@ -1340,7 +1340,6 @@ void karatsuba_test()
         A.words.push_back(0);
         A.words.push_back(89974321);
         A.words.push_back(1921);
-        //A.words.resize(pow(2, ceil(log(A.words.size())/log(2))), 0);
         BigInteger res1;
         res1.words = karatsuba(A.words, A.words);
         bool karatsubaRes = (A*A) == res1;
@@ -1371,6 +1370,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto a_split = std::next(A.cbegin(), m2);
             a0 = std::vector<word>(A.cbegin(), a_split);
+            while (a0.size() && !a0.back())
+                a0.pop_back();
             a1 = std::vector<word>(a_split, A.cend());
         }
         else
@@ -1379,6 +1380,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto b_split = std::next(B.cbegin(), m2);
             b0 = std::vector<word>(B.cbegin(), b_split);
+            while (b0.size() && !b0.back())
+                b0.pop_back();
             b1 = std::vector<word>(b_split, B.cend());
         }
         else
@@ -1390,6 +1393,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         //add a0
         word carry = 0;
         size_t i = 0;
+        a0.resize(m2, 0);
         while (i < a1.size())
         {
             carry = (a0[i] += carry) < carry;
@@ -1400,9 +1404,12 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (a0[i++] += carry) < carry;
         if (carry)
             a0.push_back(carry);
+        while (a0.size() && !a0.back())
+            a0.pop_back();
         //add b0
         carry = 0;
         i = 0;
+        b0.resize(m2, 0)
         while (i < b1.size())
         {
             carry = (b0[i] += carry) < carry;
@@ -1413,6 +1420,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (b0[i++] += carry) < carry;
         if (carry)
             b0.push_back(carry);
+        while (b0.size() && !b0.back())
+            b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
         carry = 0;
