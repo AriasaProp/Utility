@@ -1409,7 +1409,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         //add b0
         carry = 0;
         i = 0;
-        b0.resize(m2, 0)
+        b0.resize(m2, 0);
         while (i < b1.size())
         {
             carry = (b0[i] += carry) < carry;
