@@ -1391,71 +1391,77 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         //add a0
         word carry = 0;
         size_t i = 0;
-        for(; i < a1.size(); i++)
+        while (i < a1.size())
         {
             carry = (a0[i] += carry) < carry;
             carry += (a0[i] += a1[i]) < a1[i];
+            i++;
         }
-        for(; carry && i < a0.size(); i++)
-            carry = (a0[i] += carry) < carry;
+        while (carry && i < a0.size())
+            carry = (a0[i++] += carry) < carry;
         if (carry)
             a0.push_back(carry);
         //add b0
         carry = 0;
         i = 0;
-        for(; i < b1.size(); i++)
+        while (i < b1.size())
         {
             carry = (b0[i] += carry) < carry;
             carry += (b0[i] += b1[i]) < b1[i];
+            i++;
         }
-        for(; carry && i < b0.size(); i++)
-            carry = (b0[i] += carry) < carry;
+        while (carry && i < b0.size())
+            carry = (b0[i++] += carry) < carry;
         if (carry)
             b0.push_back(carry);
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
         carry = 0;
         i = 0;
-        for (; i < z0.size(); i++)
+        while (i < z0.size())
         {
             carry = mid[i] < (mid[i] -= carry);
             carry += mid[i] < (mid[i] -= z0[i]);
+            i++;
         }
-        for (; i < mid.size(); i++)
-            carry = mid[i] < (mid[i] -= carry);
+        while (carry && i < mid.size())
+            carry = mid[i] < (mid[i++] -= carry);
         //sub mid with z1
         carry = 0;
         i = 0;
-        for (; i < z1.size(); i++)
+        while (i < z1.size())
         {
             carry = mid[i] < (mid[i] -= carry);
             carry += mid[i] < (mid[i] -= z1[i]);
+            i++;
         }
-        for (; i < mid.size(); i++)
-            carry = mid[i] < (mid[i] -= carry);
+        while (carry && i < mid.size())
+            carry = mid[i] < (mid[i++] -= carry);
         //add mid to result
         carry = 0;
         i = 0;
-        for(; i < mid.size(); i++)
+        while (i < mid.size())
         {
             carry = (result[i] += carry) < carry;
             carry += (result[i] += mid[i]) < mid[i];
+            i++;
         }
-        for(; carry && i < result.size(); i++)
-            carry = (result[i] += carry) < carry;
+        while (carry && i < result.size())
+            carry = (result[i++] += carry) < carry;
         if (carry)
             result.push_back(carry);
         result.insert(result.begin(), m2, 0);
         //add z0 to result
         carry = 0;
         i = 0;
-        for(; i < mid.size(); i++)
+        while (i < z0.size())
         {
             carry = (result[i] += carry) < carry;
             carry += (result[i] += z0[i]) < z0[i];
+            i++;
         }
-        for(; carry && i < result.size(); i++)
-            carry = (result[i] += carry) < carry;
+        while (carry && i < result.size())
+            carry = (result[i++] += carry) < carry;
         if (carry)
             result.push_back(carry);
     }
