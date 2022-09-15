@@ -402,44 +402,30 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (!na)
         return *this;
     this->neg ^= b.neg;
-    std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
-	BigInteger result, a0, a1, b0, b1;
+        const std::vector<word> &A = this->words, &B = b.words;
+	      BigInteger result, a0, a1, b0, b1;
         const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         if (na <= m2)
-        {
             a0.words = A;
-        }
         else 
         {
-            A.resize(m2 * 2);
-            a0.words.resize(m2, 0);
-            a1.words.resize(m2, 0);
             auto a_split = std::next(A.cbegin(), m2);
-            std::copy(A.cbegin(), a_split, a0.words.begin());
-	    while (a0.words.size() && !a0.words.back())
-     	        a0.words.pop_back();
-            std::copy(a_split, A.cend(), a1.words.begin());
-	    while (a1.words.size() && !a1.words.back())
-                a1.words.pop_back();
+            a0.words = std::vector<word>(A.cbegin(), a_split);
+	          while (a0.words.size() && !a0.words.back())
+     	          a0.words.pop_back();
+            a1.words = std::vector<word>(a_split, A.cend());
         }
         if (nb <= m2)
-        {
             b0.words = B;
-        }
         else
         {
-            B.resize(m2 * 2);
-            b0.words.resize(m2, 0);
-            b1.words.resize(m2, 0);
             auto b_split = std::next(B.cbegin(), m2);
-            std::copy(B.cbegin(), b_split, b0.words.begin());
-	    while (b0.words.size() && !b0.words.back())
+            b0.words = std::vector<word>(B.cbegin(), b_split);
+	          while (b0.words.size() && !b0.words.back())
                 b0.words.pop_back();
-            std::copy(b_split, B.cend(), b1.words.begin());
-	    while (b1.words.size() && !b1.words.back())
-                b1.words.pop_back();
+            b1.words = std::vector<word>(b_split, B.cend());
         }
         const BigInteger z0 = a0 * b0;
         if (na > m2 && nb > m2)
@@ -457,6 +443,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     }
     else
     {
+        const std::vector<word> A = this->words, B = b.words;
         this->words.resize(na + nb + 1, 0);
         std::fill(this->words.begin(), this->words.end(), 0);
         word carry[2], aw[2], bw[2]; // temporary value
@@ -927,44 +914,30 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
     const size_t na = this->words.size(), nb = b.words.size();
     if (!nb || !na)
         return result;
-    std::vector<word> A = this->words, B = b.words;
     if ((na <= nb ? na : nb) > 20)
     {
+        const std::vector<word> &A = this->words, &B = b.words;
         const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         BigInteger a0, a1, b0, b1;
         if (na <= m2)
-        {
             a0.words = A;
-        }
         else 
         {
-            A.resize(m2 * 2);
-            a0.words.resize(m2, 0);
-            a1.words.resize(m2, 0);
             auto a_split = std::next(A.cbegin(), m2);
-            std::copy(A.cbegin(), a_split, a0.words.begin());
-	    while (a0.words.size() && !a0.words.back())
-     	        a0.words.pop_back();
-            std::copy(a_split, A.cend(), a1.words.begin());
-	    while (a1.words.size() && !a1.words.back())
-                a1.words.pop_back();
+            a0.words = std::vector<word>(A.cbegin(), a_split);
+	          while (a0.words.size() && !a0.words.back())
+     	          a0.words.pop_back();
+            a1.words = std::vector<word>(a_split, A.cend());
         }
         if (nb <= m2)
-        {
             b0.words = B;
-        }
         else
         {
-            B.resize(m2 * 2);
-            b0.words.resize(m2, 0);
-            b1.words.resize(m2, 0);
             auto b_split = std::next(B.cbegin(), m2);
-            std::copy(B.cbegin(), b_split, b0.words.begin());
-	    while (b0.words.size() && !b0.words.back())
+            b0.words = std::vector<word>(B.cbegin(), b_split);
+	          while (b0.words.size() && !b0.words.back())
                 b0.words.pop_back();
-            std::copy(b_split, B.cend(), b1.words.begin());
-	    while (b1.words.size() && !b1.words.back())
-                b1.words.pop_back();
+            b1.words = std::vector<word>(b_split, B.cend());
         }
         const BigInteger z0 = a0 * b0;
         if (na > m2 && nb > m2)
@@ -981,6 +954,7 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
     }
     else
     {
+        const std::vector<word> A = this->words, B = b.words;
         std::vector<word> &rsw = result.words;
         rsw.resize(na + nb + 1);
         word carry[2], aw[2], bw[2]; // temporary value
