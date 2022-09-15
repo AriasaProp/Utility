@@ -1322,16 +1322,16 @@ void karatsuba_test()
         BigInteger A = 1111111;
         BigInteger res1;
         res1.words = karatsuba(A.words, A.words);
-        std::cout << (A*A) << std::endl;
-        std::cout << res1 << std::endl;
+        bool karatsubaRes = (A*A) == res1;
+        std::cout << (karatsubaRes?"right":"wrong") << std::endl;
     }
     std::cout << "then" << std::endl;
     {
         BigInteger A("101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010\0");
         BigInteger res1;
         res1.words = karatsuba(A.words, A.words);
-        std::cout << (A*A) << std::endl;
-        std::cout << res1 << std::endl;
+        bool karatsubaRes = (A*A) == res1;
+        std::cout << (karatsubaRes?"right":"wrong") << std::endl;
     }
     std::cout << "then" << std::endl;
     {
@@ -1343,9 +1343,8 @@ void karatsuba_test()
         //A.words.resize(pow(2, ceil(log(A.words.size())/log(2))), 0);
         BigInteger res1;
         res1.words = karatsuba(A.words, A.words);
-        std::cout << A << std::endl;
-        std::cout << (A*A) << std::endl;
-        std::cout << res1 << std::endl;
+        bool karatsubaRes = (A*A) == res1;
+        std::cout << (karatsubaRes?"right":"wrong") << std::endl;
     }
 }
 
