@@ -1338,12 +1338,14 @@ void karatsuba_test()
         BigInteger A;
         A.words.push_back(0);
         A.words.push_back(0);
-        A.words.push_back(89974321);
-        A.words.push_back(1921);
+        A.words.push_back(89974321u);
+        A.words.push_back(1921u);
         BigInteger res1;
         res1.words = karatsuba(A.words, A.words);
         bool karatsubaRes = (A*A) == res1;
         std::cout << (karatsubaRes?"right":"wrong") << std::endl;
+        std::cout << (A*A) << std::endl;
+        std::cout << (res1) << std::endl;
     }
 }
 
