@@ -104,10 +104,11 @@ char *BigInteger::to_chars() const
     std::vector<word> A = this->words;
     text.reserve(LOG2BITS * A.size() + 2);
     word remainder, current;
+    size_t i;
     while (A.size())
     {
         remainder = 0;
-        for (size_t i = A.size(); i--;)
+        for (i = A.size(); i--;)
         {
             current = A[i];
             A[i] = 0;
@@ -167,7 +168,7 @@ BigInteger BigInteger::mod_pow(BigInteger exponent, const BigInteger &modulus) c
     BigInteger result(1), base = (*this) % modulus;
     for (; exponent.words.size() > 0; exponent >>= 1)
     {
-        if (exponent.get_bit(0))
+        if (exponent.words[0] & 1)
             result = (result * base) % modulus;
         base = (base * base) % modulus;
     }
@@ -402,14 +403,13 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (!na)
         return *this;
     this->neg ^= b.neg;
-    if ((na <= nb ? na : nb) > 20)
+    if ((na >= nb ? na : nb) > 20)
     {
         const std::vector<word> &A = this->words, &B = b.words;
 	      BigInteger result, a0, a1, b0, b1;
         const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
-        if (na <= m2)
-            a0.words = A;
-        else 
+        const bool hA = na > m2, hB = nb > m2;
+        if (hA)
         {
             auto a_split = std::next(A.cbegin(), m2);
             a0.words = std::vector<word>(A.cbegin(), a_split);
@@ -417,9 +417,9 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
      	          a0.words.pop_back();
             a1.words = std::vector<word>(a_split, A.cend());
         }
-        if (nb <= m2)
-            b0.words = B;
         else
+            a0.words = A;
+        if (hB)
         {
             auto b_split = std::next(B.cbegin(), m2);
             b0.words = std::vector<word>(B.cbegin(), b_split);
@@ -427,8 +427,10 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
                 b0.words.pop_back();
             b1.words = std::vector<word>(b_split, B.cend());
         }
+        else
+            b0.words = B;
         const BigInteger z0 = a0 * b0;
-        if (na > m2 && nb > m2)
+        if (hA && hB)
         {
             const BigInteger z1 = a1 * b1;
             result = z1;
@@ -919,9 +921,8 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
         const std::vector<word> &A = this->words, &B = b.words;
         const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         BigInteger a0, a1, b0, b1;
-        if (na <= m2)
-            a0.words = A;
-        else 
+        const bool hA = na > m2, hB = nb > m2;
+        if (hA)
         {
             auto a_split = std::next(A.cbegin(), m2);
             a0.words = std::vector<word>(A.cbegin(), a_split);
@@ -929,9 +930,9 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
      	          a0.words.pop_back();
             a1.words = std::vector<word>(a_split, A.cend());
         }
-        if (nb <= m2)
-            b0.words = B;
         else
+            a0.words = A;
+        if (hB)
         {
             auto b_split = std::next(B.cbegin(), m2);
             b0.words = std::vector<word>(B.cbegin(), b_split);
@@ -939,8 +940,10 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
                 b0.words.pop_back();
             b1.words = std::vector<word>(b_split, B.cend());
         }
+        else
+            b0.words = B;
         const BigInteger z0 = a0 * b0;
-        if (na > m2 && nb > m2)
+        if (hA && hB)
         {
             const BigInteger z1 = a1 * b1;
             result = z1;
@@ -1349,124 +1352,112 @@ void karatsuba_test()
 std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
 {
     std::vector<word> result;
-    const size_t lenA = A.size(), lenB = B.size();
-    if(lenA && lenB)
+    const size_t na = A.size(), nb = B.size();
+    if (na == 1 && nb == 1)
     {
-        const size_t lenMax = lenA >= lenB ? lenA : lenB;
-        if (lenMax > 1) {
-            const size_t len2 = lenMax / 2;
-            
-            std::vector<word> a_hi, a_lo, b_hi, b_lo;
-            if (lenA > len2)
-            {
-                auto spl = std::next(A.cbegin(), len2);
-                a_lo = std::vector<word>(A.cbegin(), spl);
-                a_hi = std::vector<word>(spl, A.cend());
-            }
-            else
-                a_lo = A;
-            if (lenB > len2)
-            {
-                auto spl = std::next(B.cbegin(), len2);
-                b_lo = std::vector<word>(B.cbegin(), spl);
-                b_hi = std::vector<word>(spl, B.cend());
-            }
-            else
-                b_lo = B;
-            std::vector<word> c0 = karatsuba(a_lo, b_lo);
-            word carry0 = 0;
-            size_t i = 0, j = a_hi.size();
-            while (i < j)
-            {
-                carry0 = (a_lo[i] += carry0) < carry0;
-                carry0 += (a_lo[i] += a_hi[i]) < a_hi[i++];
-            }
-            j = a_lo.size();
-            while (carry0 && i < j)
-                carry0 = (a_lo[i++] += carry0) < carry0;
-            if(carry0)
-                a_lo.push_back(carry0);
-            carry0 = 0, i = 0, j = b_hi.size();
-            while (i < j)
-            {
-                carry0 = (b_lo[i] += carry0) < carry0;
-                carry0 += (b_lo[i] += b_hi[i]) < b_hi[i++];
-            }
-            j = b_lo.size();
-            while (carry0 && i < j)
-                carry0 = (b_lo[i++] += carry0) < carry0;
-            if(carry0)
-                b_lo.push_back(carry0);
-            std::vector<word> mid = karatsuba(a_lo, b_lo);
-            carry0 = 0, i = 0, j = c0.size();
-            while (i < j)
-            {
-                carry0 = mid[i] < (mid[i] -= carry0);
-                carry0 += mid[i] < (mid[i] -= c0[i++]);
-            }
-            j = mid.size();
-            while (carry0 && (i < j)) 
-                carry0 = mid[i] < (mid[i++] -= carry0);
-            if (a_hi.size() && b_hi.size())
-            {
-                result = karatsuba(a_hi, b_hi);
-                carry0 = 0, i = 0, j = result.size();
-                while (i < j)
-                {
-                    carry0 = mid[i] < (mid[i] -= carry0);
-                    carry0 += mid[i] < (mid[i] -= result[i]);
-                    i++;
-                }
-                j = mid.size();
-                while (carry0 && i < j)
-                    carry0 = mid[i] < (mid[i++] -= carry0);
-                result.insert(result.cbegin(), len2, 0);
-                carry0 = 0, i = 0;
-                while (i < j)
-                {
-                    carry0 = (result[i] += carry0) < carry0;
-                    carry0 += (result[i] += mid[i]) < mid[i];
-                    i++;
-                }
-                j = result.size();
-                while (carry0 && (i < j))
-                    carry0 = (result[i++] += carry0) < carry0;
-                if(carry0)
-                    result.push_back(carry0);
-            }
-            else
-                result = std::vector<word>(mid);
-            result.insert(result.cbegin(), len2, 0);
-            carry0 = 0;
-            i = 0, j = c0.size();
-            while (i < j)
-            {
-                carry0 = (result[i] += carry0) < carry0;
-                carry0 += (result[i] += c0[i]) < c0[i];
-                i++;
-            }
-            j = result.size();
-            while(carry0 && (i < j))
-                carry0 = (result[i++] += carry0) < carry0;
-            if(carry0)
-                result.push_back(carry0);
-            while (result.size() && !result.back())
-                result.pop_back();
-        }
-        else if (lenMax==1)
+        word a_hi = A[0] >> WORD_HALF_BITS;
+        word a_lo = A[0] & WORD_HALF_MASK;
+        word b_hi = B[0] >> WORD_HALF_BITS;
+        word b_lo = B[0] & WORD_HALF_MASK;
+        result.push_back(A[0] * B[0]);
+        word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+        carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+        result.push_back(carry);
+    }
+    else if(na && nb)
+    {
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+        std::vector<word> a0, a1, b0, b1;
+        if (na > m2)
         {
-            result.resize(2);
-            word a_lo = A[0] & WORD_HALF_MASK;
-            word a_hi = A[0] >> WORD_HALF_BITS;
-            word b_lo = B[0] & WORD_HALF_MASK;
-            word b_hi = B[0] >> WORD_HALF_BITS;
-            result[0] = A[0] * B[0];
-            result[1] = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
-            result[1] = (result[1] >> WORD_HALF_BITS) + ((a_lo * b_hi + (result[1] & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-            if (!result.back())
-                result.pop_back();
+            auto a_split = std::next(A.cbegin(), m2);
+            a0 = std::vector<word>(A.cbegin(), a_split);
+            a1 = std::vector<word>(a_split, A.cend());
         }
-        
+        else
+            a0.words = A;
+        if (nb > m2)
+        {
+            auto b_split = std::next(B.cbegin(), m2);
+            b0 = std::vector<word>(B.cbegin(), b_split);
+            b1 = std::vector<word>(b_split, B.cend());
+        }
+        else
+            b0.words = B;
+        const std::vector<word> z0 = karatsuba(a0, b0);
+        const std::vector<word> z1 = karatsuba(a1, b1);
+        result = z1;
+        result.insert(result.begin(), m2, 0);
+        //add a0
+        word carry = 0;
+        size_t i = 0;
+        for(; i < a1.size(); i++)
+        {
+            carry = (a0[i] += carry) < carry;
+            carry += (a0[i] += a1[i]) < a1[i];
+        }
+        for(; carry && i < a0.size(); i++)
+            carry = (a0[i] += carry) < carry;
+        if (carry)
+            a0.push_back(carry);
+        //add b0
+        carry = 0;
+        i = 0;
+        for(; i < b1.size(); i++)
+        {
+            carry = (b0[i] += carry) < carry;
+            carry += (b0[i] += b1[i]) < b1[i];
+        }
+        for(; carry && i < b0.size(); i++)
+            carry = (b0[i] += carry) < carry;
+        if (carry)
+            b0.push_back(carry);
+        std::vector<word> mid = karatsuba(a0, b0);
+        //sub mid with z0
+        carry = 0
+        i = 0;
+        for (; i < z0.size(); i++)
+        {
+            carry = mid[i] < (mid[i] -= carry);
+            carry += mid[i] < (mid[i] -= z0[i]);
+        }
+        for (; i < mid.size(); i++)
+            carry = mid[i] < (mid[i] -= carry);
+        //sub mid with z1
+        carry = 0
+        i = 0;
+        for (; i < z1.size(); i++)
+        {
+            carry = mid[i] < (mid[i] -= carry);
+            carry += mid[i] < (mid[i] -= z1[i]);
+        }
+        for (; i < mid.size(); i++)
+            carry = mid[i] < (mid[i] -= carry);
+        //add mid to result
+        carry = 0;
+        i = 0;
+        for(; i < mid.size(); i++)
+        {
+            carry = (result[i] += carry) < carry;
+            carry += (result[i] += mid[i]) < mid[i];
+        }
+        for(; carry && i < result.size(); i++)
+            carry = (result[i] += carry) < carry;
+        if (carry)
+            result.push_back(carry);
+        result.insert(result.words.begin(), m2, 0);
+        //add z0 to result
+        carry = 0;
+        i = 0;
+        for(; i < mid.size(); i++)
+        {
+            carry = (result[i] += carry) < carry;
+            carry += (result[i] += z0[i]) < z0[i];
+        }
+        for(; carry && i < result.size(); i++)
+            carry = (result[i] += carry) < carry;
+        if (carry)
+            result.push_back(carry);
     }
     return result;
 }
