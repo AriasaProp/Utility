@@ -1375,7 +1375,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             a1 = std::vector<word>(a_split, A.cend());
         }
         else
-            a0.words = A;
+            a0 = A;
         if (nb > m2)
         {
             auto b_split = std::next(B.cbegin(), m2);
@@ -1383,7 +1383,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             b1 = std::vector<word>(b_split, B.cend());
         }
         else
-            b0.words = B;
+            b0 = B;
         const std::vector<word> z0 = karatsuba(a0, b0);
         const std::vector<word> z1 = karatsuba(a1, b1);
         result = z1;
@@ -1414,7 +1414,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             b0.push_back(carry);
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
-        carry = 0
+        carry = 0;
         i = 0;
         for (; i < z0.size(); i++)
         {
@@ -1424,7 +1424,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         for (; i < mid.size(); i++)
             carry = mid[i] < (mid[i] -= carry);
         //sub mid with z1
-        carry = 0
+        carry = 0;
         i = 0;
         for (; i < z1.size(); i++)
         {
@@ -1445,14 +1445,14 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (result[i] += carry) < carry;
         if (carry)
             result.push_back(carry);
-        result.insert(result.words.begin(), m2, 0);
+        result.insert(result.begin(), m2, 0);
         //add z0 to result
         carry = 0;
         i = 0;
         for(; i < mid.size(); i++)
         {
             carry = (result[i] += carry) < carry;
-            carry += (result[i] += z0[i]) < z0[i];
+            carry += (result[i] += z0[i]) < z[i];
         }
         for(; carry && i < result.size(); i++)
             carry = (result[i] += carry) < carry;
