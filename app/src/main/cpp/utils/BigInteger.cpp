@@ -416,8 +416,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         }
         else
             b0 = B;
-        const std::vector<word> z0 = karatsuba(a0, b0);
-        const std::vector<word> z1 = karatsuba(a1, b1);
+        std::vector<word> z0 = karatsuba(a0, b0);
+        std::vector<word> z1 = karatsuba(a1, b1);
         result = z1;
         result.insert(result.begin(), m2, 0);
         //add a0 with a1 and b0
