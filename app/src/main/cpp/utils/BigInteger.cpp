@@ -425,7 +425,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         size_t i = 0, j = a1.size();
         while (i < j)
         {
-            carry = (a0[i] += carry0) < carry;
+            carry = (a0[i] += carry) < carry;
             carry += (a0[i] += a1[i]) < a1[i];
             i++;
         }
