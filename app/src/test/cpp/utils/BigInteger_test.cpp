@@ -8,9 +8,6 @@ int main(int argc, char * argv[]) {
     bool passed = true, result;
     auto restart = std::chrono::high_resolution_clock::now();
 
-    std::cout << "inline karatsuba test \n";
-    karatsuba_test();
-
     std::cout << "BigInteger code test \n";
     BigInteger a, b;
     //comparation test
