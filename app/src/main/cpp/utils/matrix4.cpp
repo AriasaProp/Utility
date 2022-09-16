@@ -1,11 +1,12 @@
 #include "utils/matrix4.h"
+#include "../adaptive_funct.h"
 #include <stddef.h>
 
 static const size_t MATRIX_SIZE = sizeof(float) * 16;
 
 //matrix4 constructors
 matrix4::matrix4() {}
-matrix4::matrix4(float[] v)
+matrix4::matrix4(float v[16])
 {
     memcpy(values, v, MATRIX_SIZE);
 }
@@ -48,7 +49,7 @@ matrix4 &matrix4::operator*=(const matrix4 &v)
     float a[16], b[16];
     memcpy(a, this->values, MATRIX_SIZE);
     memcpy(b, v.values, MATRIX_SIZE);
-    for (size_t j = 0; i < 4; i++)
+    for (size_t j = 0; j < 4; j++)
     {
         for (size_t i = 0; i < 4; i++)
         {
@@ -78,7 +79,7 @@ matrix4 matrix4::operator-(const matrix4 &v) const
 matrix4 matrix4::operator*(const matrix4 &v) const
 {
     matrix4 result;
-    for (size_t j = 0; i < 4; i++)
+    for (size_t j = 0; j < 4; j++)
     {
         for (size_t i = 0; i < 4; i++)
         {

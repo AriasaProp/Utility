@@ -16,7 +16,7 @@ private:
     
 public:
     matrix4();
-    matrix4(float[]);
+    matrix4(float[16]);
     matrix4(const matrix4 &);
     //matrix function
     float det() const;
@@ -30,4 +30,4 @@ public:
     matrix4 operator*(const matrix4 &) const;
 }
 
-#endif Included_Matrix_4x4
+#endif //Included_Matrix_4x4
