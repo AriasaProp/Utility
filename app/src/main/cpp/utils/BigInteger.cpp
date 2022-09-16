@@ -446,20 +446,24 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             while (b0.size() && !b0.back())
                 b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
-        //sub mid with z0 and z1
+        //sub mid with z0
         carry0 = 0;
-        i = 0;
-        if(mid.size() < M)
-            mid.resize(M, 0);
-        a0 = z0;
-        a0.resize(M, 0);
-        a1 = z1;
-        a1.resize(M, 0);
-        while (i < M)
+        i = 0, j = z0.size();
+        while (i < j)
         {
             carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 += mid[i] < (mid[i] -= a0[i]);
-            carry0 += mid[i] < (mid[i] -= a1[i]);
+            carry0 += mid[i] < (mid[i] -= z0[i]);
+            i++;
+        }
+        while (carry0 && i < mid.size())
+            carry0 = mid[i] < (mid[i++] -= carry0);
+        //sub mid with z1
+        carry0 = 0;
+        i = 0, j = z1.size();
+        while (i < j)
+        {
+            carry0 = mid[i] < (mid[i] -= carry0);
+            carry0 += mid[i] < (mid[i] -= z1[i]);
             i++;
         }
         while (carry0 && i < mid.size())
