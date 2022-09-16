@@ -422,7 +422,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         result.insert(result.begin(), m2, 0);
         //add a0 with a1
         word carry0 = 0;
-        a0.resize(m2, 0);
         size_t i = 0, j = a1.size();
         while (i < j)
         {
@@ -439,7 +438,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             while (a0.size() && !a0.back())
                 a0.pop_back();
         // add b0 with b1
-        b0.resize(m2, 0);
         i = 0, j = b1.size();
         while (i < j)
         {
@@ -457,56 +455,56 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
                 b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
-        carry0 = 0;
+        carry = 0;
         i = 0, j = z0.size();
         while (i < j)
         {
-            carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 += mid[i] < (mid[i] -= z0[i]);
+            carry = mid[i] < (mid[i] -= carry);
+            carry += mid[i] < (mid[i] -= z0[i]);
             i++;
         }
-        while (carry0 && i < mid.size())
-            carry0 = mid[i] < (mid[i++] -= carry0);
+        while (carry && i < mid.size())
+            carry = mid[i] < (mid[i++] -= carry);
         //sub mid with z1
-        carry0 = 0;
+        carry = 0;
         i = 0, j = z1.size();
         while (i < j)
         {
-            carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 += mid[i] < (mid[i] -= z1[i]);
+            carry = mid[i] < (mid[i] -= carry);
+            carry += mid[i] < (mid[i] -= z1[i]);
             i++;
         }
-        while (carry0 && i < mid.size())
-            carry0 = mid[i] < (mid[i++] -= carry0);
+        while (carry && i < mid.size())
+            carry = mid[i] < (mid[i++] -= carry);
         //add mid to result
-        carry0 = 0;
+        carry = 0;
         i = 0, j = mid.size();
         while (i < j)
         {
-            carry0 = (result[i] += carry0) < carry0;
-            carry0 += (result[i] += mid[i]) < mid[i];
+            carry = (result[i] += carry) < carry;
+            carry += (result[i] += mid[i]) < mid[i];
             i++;
         }
         j = result.size();
-        while (carry0 && i < j)
-            carry0 = (result[i++] += carry0) < carry0;
-        if (carry0)
-            result.push_back(carry0);
+        while (carry && i < j)
+            carry = (result[i++] += carry) < carry;
+        if (carry)
+            result.push_back(carry);
         result.insert(result.begin(), m2, 0);
         //add z0 to result
-        carry0 = 0;
+        carry = 0;
         i = 0, j = z0.size();
         while (i < j)
         {
-            carry0 = (result[i] += carry0) < carry0;
-            carry0 += (result[i] += z0[i]) < z0[i];
+            carry = (result[i] += carry) < carry;
+            carry += (result[i] += z0[i]) < z0[i];
             i++;
         }
         j = result.size();
-        while (carry0 && i < j)
-            carry0 = (result[i++] += carry0) < carry0;
-        if (carry0)
-            result.push_back(carry0);
+        while (carry && i < j)
+            carry = (result[i++] += carry) < carry;
+        if (carry)
+            result.push_back(carry);
         else
             while (result.size() && !result.back())
                 result.pop_back();
@@ -516,14 +514,12 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
 
 BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
-    const size_t nb = b.words.size();
-    if (!nb)
+    if (!b.words.size())
     {
         this->words.clear();
         this->neg = false;
     }
-    const size_t na = this->words.size();
-    if (!na)
+    if (!this->words.size())
         return *this;
     this->neg ^= b.neg;
     this->words = karatsuba(this->words, b.words);
@@ -967,8 +963,7 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
     BigInteger result;
-    const size_t na = this->words.size(), nb = b.words.size();
-    if (!nb || !na)
+    if (!b.words.size() || !this->words.size())
         return result;
     result.neg = this->neg ^ b.neg;
     result.words = karatsuba(this->words, b.words);
