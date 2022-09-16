@@ -1,4 +1,5 @@
 #include "utils/matrix4.h"
+#include <stddef.h>
 
 static const size_t MATRIX_SIZE = sizeof(float) * 16;
 
