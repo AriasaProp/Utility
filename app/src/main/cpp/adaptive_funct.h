@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-void memcpy(void *, void *, const size_t);
+void memcpy(const void *, const void *, const size_t);
 
 #endif //Adaptive_Func

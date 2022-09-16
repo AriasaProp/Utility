@@ -54,12 +54,10 @@ matrix4 &matrix4::operator*=(const matrix4 &v)
         for (size_t i = 0; i < 4; i++)
         {
             size_t j4 = j * 4;
-            this->values[j4 + i] = a[j4] * b[i];
-            this->values[j4 + i] += a[j4+1] * b[i+4];
-            this->values[j4 + i] += a[j4+2] * b[i+8];
-            this->values[j4 + i] += a[j4+3] * b[i+12];
+            this->values[j4 + i] = a[j4] * b[i] + a[j4+1] * b[i+4] + a[j4+2] * b[i+8] + a[j4+3] * b[i+12];
         }
     }
+    return *this;
 }
 //math operation unsafe
 matrix4 matrix4::operator+(const matrix4 &v) const

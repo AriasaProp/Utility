@@ -28,6 +28,5 @@ public:
     matrix4 operator+(const matrix4 &) const;
     matrix4 operator-(const matrix4 &) const;
     matrix4 operator*(const matrix4 &) const;
-}
-
+};
 #endif //Included_Matrix_4x4
