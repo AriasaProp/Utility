@@ -1,9 +1,7 @@
 #ifndef Included_Matrix4
 #define Included_Matrix4
 
-#include "utils/base_matrix.h"
-
-class matrix4: public base_matrix
+class matrix4
 {
 private:
     /*
