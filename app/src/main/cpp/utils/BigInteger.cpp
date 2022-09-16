@@ -421,18 +421,13 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         result = z1;
         result.insert(result.begin(), m2, 0);
         //add a0 with a1 and b0
-        word carry0 = 0, carry1 = 0;
-        size_t i = 0, j;
+        word carry0 = 0;
         a0.resize(m2, 0);
-        a1.resize(m2, 0);
-        b0.resize(m2, 0);
-        b1.resize(m2, 0);
-        while (i < m2)
+        size_t i = 0, j = a1.size();
+        while (i < j)
         {
             carry0 = (a0[i] += carry0) < carry0;
             carry0 += (a0[i] += a1[i]) < a1[i];
-            carry1 = (b0[i] += carry1) < carry1;
-            carry1 += (b0[i] += b1[i]) < b1[i];
             i++;
         }
         if (carry0)
@@ -440,8 +435,16 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         else
             while (a0.size() && !a0.back())
                 a0.pop_back();
-        if (carry1)
-            b0.push_back(carry1);
+        b0.resize(m2, 0);
+        i = 0, j = b1.size();
+        while (i < j)
+        {
+            carry0 = (b0[i] += carry0) < carry0;
+            carry0 += (b0[i] += b1[i]) < b1[i];
+            i++;
+        }
+        if (carry0)
+            b0.push_back(carry0);
         else
             while (b0.size() && !b0.back())
                 b0.pop_back();
