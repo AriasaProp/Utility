@@ -69,22 +69,6 @@ BigInteger::~BigInteger()
     words.clear();
 }
 
-word BigInteger::get_bit(size_t i) const
-{
-    const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
-    if (i_word >= words.size())
-        return 0;
-    return (this->words[i_word] >> i_bit) & 1;
-}
-
-void BigInteger::clr_bit(size_t i)
-{
-    const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
-    if (i_word >= words.size())
-        return;
-    this->words[i_word] &= ~(1 << i_bit);
-}
-
 void BigInteger::set_bit(size_t i)
 {
     const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
@@ -395,7 +379,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
 {
     std::vector<word> result;
     const size_t na = A.size(), nb = B.size();
-    if (na == 1 && nb == 1)
+    const size_t combinedN = na|nb;
+    if (combinedN == 1)
     {
         word a_hi = A[0] >> WORD_HALF_BITS;
         word a_lo = A[0] & WORD_HALF_MASK;
@@ -404,11 +389,12 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         result.push_back(A[0] * B[0]);
         word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
         carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-        result.push_back(carry);
+        if (carry)
+            result.push_back(carry);
     }
-    else if(na && nb)
+    else if(combinedN)
     {
-        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
         std::vector<word> a0, a1, b0, b1;
         if (na > m2)
         {
@@ -434,90 +420,79 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         const std::vector<word> z1 = karatsuba(a1, b1);
         result = z1;
         result.insert(result.begin(), m2, 0);
-        //add a0
-        word carry = 0;
-        size_t i = 0;
+        //add a0 with a1 and b0
+        word carry0 = 0, carry1 = 0;
+        size_t i = 0, j;
         a0.resize(m2, 0);
-        while (i < a1.size())
-        {
-            carry = (a0[i] += carry) < carry;
-            carry += (a0[i] += a1[i]) < a1[i];
-            i++;
-        }
-        while (carry && i < a0.size())
-            carry = (a0[i++] += carry) < carry;
-        if (carry)
-            a0.push_back(carry);
-        while (a0.size() && !a0.back())
-            a0.pop_back();
-        //add b0
-        carry = 0;
-        i = 0;
+        a1.resize(m2, 0);
         b0.resize(m2, 0);
-        while (i < b1.size())
+        b1.resize(m2, 0);
+        while (i < m2)
         {
-            carry = (b0[i] += carry) < carry;
-            carry += (b0[i] += b1[i]) < b1[i];
+            carry0 = (a0[i] += carry0) < carry0;
+            carry0 += (a0[i] += a1[i]) < a1[i];
+            carry1 = (b0[i] += carry1) < carry1;
+            carry1 += (b0[i] += b1[i]) < b1[i];
             i++;
         }
-        while (carry && i < b0.size())
-            carry = (b0[i++] += carry) < carry;
-        if (carry)
-            b0.push_back(carry);
-        while (b0.size() && !b0.back())
-            b0.pop_back();
+        if (carry0)
+            a0.push_back(carry0);
+        else
+            while (a0.size() && !a0.back())
+                a0.pop_back();
+        if (carry1)
+            b0.push_back(carry1);
+        else
+            while (b0.size() && !b0.back())
+                b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
-        //sub mid with z0
-        carry = 0;
+        //sub mid with z0 and z1
+        carry0 = 0;
         i = 0;
-        while (i < z0.size())
+        if(mid.size() < M)
+            mid.resize(M, 0);
+        z0.resize(M, 0);
+        z1.resize(M, 0);
+        while (i < M)
         {
-            carry = mid[i] < (mid[i] -= carry);
-            carry += mid[i] < (mid[i] -= z0[i]);
+            carry0 = mid[i] < (mid[i] -= carry0);
+            carry0 += mid[i] < (mid[i] -= z0[i]);
+            carry0 += mid[i] < (mid[i] -= z1[i]);
             i++;
         }
-        while (carry && i < mid.size())
-            carry = mid[i] < (mid[i++] -= carry);
-        //sub mid with z1
-        carry = 0;
-        i = 0;
-        while (i < z1.size())
-        {
-            carry = mid[i] < (mid[i] -= carry);
-            carry += mid[i] < (mid[i] -= z1[i]);
-            i++;
-        }
-        while (carry && i < mid.size())
-            carry = mid[i] < (mid[i++] -= carry);
+        while (carry0 && i < mid.size())
+            carry0 = mid[i] < (mid[i++] -= carry0);
         //add mid to result
-        carry = 0;
-        i = 0;
-        while (i < mid.size())
+        carry0 = 0;
+        i = 0, j = mid.size();
+        while (i < j)
         {
-            carry = (result[i] += carry) < carry;
-            carry += (result[i] += mid[i]) < mid[i];
+            carry0 = (result[i] += carry0) < carry0;
+            carry0 += (result[i] += mid[i]) < mid[i];
             i++;
         }
-        while (carry && i < result.size())
-            carry = (result[i++] += carry) < carry;
-        if (carry)
-            result.push_back(carry);
+        
+        while (carry0 && i < result.size())
+            carry0 = (result[i++] += carry0) < carry0;
+        if (carry0)
+            result.push_back(carry0);
         result.insert(result.begin(), m2, 0);
         //add z0 to result
-        carry = 0;
+        carry0 = 0;
         i = 0;
-        while (i < z0.size())
+        while (i < M)
         {
-            carry = (result[i] += carry) < carry;
-            carry += (result[i] += z0[i]) < z0[i];
+            carry0 = (result[i] += carry0) < carry0;
+            carry0 += (result[i] += z0[i]) < z0[i];
             i++;
         }
-        while (carry && i < result.size())
-            carry = (result[i++] += carry) < carry;
-        if (carry)
-            result.push_back(carry);
-        while (result.size() && !result.back())
-            result.pop_back();
+        while (carry0 && i < result.size())
+            carry0 = (result[i++] += carry0) < carry0;
+        if (carry0)
+            result.push_back(carry0);
+        else
+            while (result.size() && !result.back())
+                result.pop_back();
     }
     return result;
 }
@@ -535,8 +510,6 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         return *this;
     this->neg ^= b.neg;
     this->words = karatsuba(this->words, b.words);
-    while (this->words.size() && !this->words.back())
-        this->words.pop_back();
     return *this;
 }
 
@@ -980,10 +953,8 @@ BigInteger BigInteger::operator*(const BigInteger &b) const
     const size_t na = this->words.size(), nb = b.words.size();
     if (!nb || !na)
         return result;
-    result.words = karatsuba(this->words, b.words);
-    while (result.words.size() && !result.words.back())
-        result.words.pop_back();
     result.neg = this->neg ^ b.neg;
+    result.words = karatsuba(this->words, b.words);
     return result;
 }
 

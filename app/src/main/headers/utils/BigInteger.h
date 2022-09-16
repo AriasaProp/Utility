@@ -18,8 +18,6 @@ class BigInteger
     bool neg = false;
     std::vector<word> words;
     //helper
-    word get_bit(size_t) const;
-    void clr_bit(size_t);
     void set_bit(size_t);
 
   public:
