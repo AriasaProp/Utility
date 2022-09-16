@@ -416,8 +416,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         }
         else
             b0 = B;
-        std::vector<word> z0 = karatsuba(a0, b0);
-        std::vector<word> z1 = karatsuba(a1, b1);
+        const std::vector<word> z0 = karatsuba(a0, b0);
+        const std::vector<word> z1 = karatsuba(a1, b1);
         result = z1;
         result.insert(result.begin(), m2, 0);
         //add a0 with a1 and b0
@@ -451,13 +451,15 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         i = 0;
         if(mid.size() < M)
             mid.resize(M, 0);
-        z0.resize(M, 0);
-        z1.resize(M, 0);
+        a0.resize(M, 0);
+        a1.resize(M, 0);
+        std::fill(z0.cbegin(),z0.cend(), a0);
+        std::fill(z1.cbegin(),z1.cend(), a1);
         while (i < M)
         {
             carry0 = mid[i] < (mid[i] -= carry0);
-            carry0 += mid[i] < (mid[i] -= z0[i]);
-            carry0 += mid[i] < (mid[i] -= z1[i]);
+            carry0 += mid[i] < (mid[i] -= a0[i]);
+            carry0 += mid[i] < (mid[i] -= a1[i]);
             i++;
         }
         while (carry0 && i < mid.size())
@@ -471,22 +473,23 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry0 += (result[i] += mid[i]) < mid[i];
             i++;
         }
-        
-        while (carry0 && i < result.size())
+        j = result.size();
+        while (carry0 && i < j)
             carry0 = (result[i++] += carry0) < carry0;
         if (carry0)
             result.push_back(carry0);
         result.insert(result.begin(), m2, 0);
         //add z0 to result
         carry0 = 0;
-        i = 0;
-        while (i < M)
+        i = 0, j = z0.size();
+        while (i < j)
         {
             carry0 = (result[i] += carry0) < carry0;
             carry0 += (result[i] += z0[i]) < z0[i];
             i++;
         }
-        while (carry0 && i < result.size())
+        j = result.size();
+        while (carry0 && i < j)
             carry0 = (result[i++] += carry0) < carry0;
         if (carry0)
             result.push_back(carry0);
