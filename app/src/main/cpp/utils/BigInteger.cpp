@@ -451,10 +451,10 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         i = 0;
         if(mid.size() < M)
             mid.resize(M, 0);
+        a0 = z0;
         a0.resize(M, 0);
+        a1 = z1;
         a1.resize(M, 0);
-        std::copy(z0.cbegin(),z0.cend(), a0.cbegin());
-        std::copy(z1.cbegin(),z1.cend(), a1.cbegin());
         while (i < M)
         {
             carry0 = mid[i] < (mid[i] -= carry0);
