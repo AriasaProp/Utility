@@ -39,7 +39,6 @@ int main(int argc, char * argv[]) {
     passed &= result;
     if (!result)
         std::cout << "    '!=' operator error \n";
-    return 0;
 
     // arithmatics operation test
     // "+" operator test
@@ -54,6 +53,7 @@ int main(int argc, char * argv[]) {
     passed &= result;
     if (!result)
         std::cout << "    '+' operator error \n";
+    return 0;
     // "-" operator test
     result = true;
     result &= ((a - b) == b);
