@@ -216,7 +216,7 @@ BigInteger &BigInteger::operator--()
     else
     {
         for (size_t i = 0; i < n && carry0; i++)
-            carry0 = this->words[i] < (this->words[i] -= carry0);
+            carry0 = this->words[i] < (this->words[i] -= carry);
         while (words.size() && !words.back())
             words.pop_back();
     }
@@ -229,7 +229,7 @@ BigInteger &BigInteger::operator++()
     if (this->neg)
     {
         for (size_t i = 0; i < n && carry; i++)
-            carry = this->words[i] < (this->words[i] -= carry0);
+            carry = this->words[i] < (this->words[i] -= carry);
         while (words.size() && !words.back())
             words.pop_back();
     }
