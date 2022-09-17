@@ -26,6 +26,7 @@ class BigInteger
     BigInteger(const BigInteger &);
     BigInteger(const signed &);
     BigInteger(const char *);
+    BigInteger(const std::vector<word> &, bool);
     //Destructor
     ~BigInteger();
     //environment count
@@ -34,7 +35,6 @@ class BigInteger
     double to_double() const;
     bool can_convert_to_int(int *) const;
     // math operational function
-    BigInteger mod_pow(BigInteger, const BigInteger &) const;
     BigInteger sqrt() const;
     // re-initialize operational function
     BigInteger &operator=(const signed &);
