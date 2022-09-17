@@ -35,14 +35,12 @@ BigInteger::BigInteger(const char *C) : neg(false)
     if (*c == '-')
         neg = true, c++;
     // read digits
+    word carry, tmp, a_hi, a_lo, tp;
     for (; *c; c++)
     {
-        word b = *c - '0';
-        if (b >= 10)
-            throw("BigInteger should initialize with number from 0 to 9.");
-        word carry = 0, tmp, a_hi, a_lo, tp;
-        size_t i;
-        for (i = 0; i < words.size(); i++)
+        carry = 0;
+        size_t i = 0, j = words.size();
+        while (i < j)
         {
             tmp = this->words[i] * 10;
             carry = ((tmp += carry) < carry);
@@ -50,14 +48,18 @@ BigInteger::BigInteger(const char *C) : neg(false)
             a_lo = this->words[i] & WORD_HALF_MASK;
             tp = ((a_lo * 10) >> WORD_HALF_BITS) + a_hi * 10;
             carry += (tp >> WORD_HALF_BITS) + ((tp & WORD_HALF_MASK) >> WORD_HALF_BITS);
-            this->words[i] = tmp;
+            this->words[i++] = tmp;
         }
         if (carry)
             words.push_back(carry);
-        for (i = 0; i < words.size() && b; i++)
-            b = (this->words[i] += b) < b;
-        if (b)
-            words.push_back(b);
+        i = 0, j = words.size();
+        carry = *c - '0';
+        if (carry >= 10)
+            throw("BigInteger should initialize with number from 0 to 9.");
+        for (i < words.size() && carry)
+            carry = (this->words[i++] += carry) < carry;
+        if (carry)
+            words.push_back(carry);
     }
     while (words.size() && !words.back())
         words.pop_back();

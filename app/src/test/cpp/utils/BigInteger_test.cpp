@@ -8,10 +8,11 @@ int main(int argc, char * argv[]) {
     bool passed = true;
     bool result;
     auto restart = std::chrono::high_resolution_clock::now();
+
     std::cout << "BigInteger code test \n";
-    BigInteger a, b;
-    //comparation test
-    a = 9, b = 7;
+    if (!passed)
+        return 0;
+    BigInteger a = 9, b = 7;
     // ">" operator test
     result = (a > b) && !(b > a);
     passed &= result;
@@ -195,7 +196,7 @@ int main(int argc, char * argv[]) {
         std::cout << "    '^=' operator error \n";
 
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
-    if (passed)
+    if (!passed)
         std::cout << "Passed \n";
     return EXIT_SUCCESS;
 }
