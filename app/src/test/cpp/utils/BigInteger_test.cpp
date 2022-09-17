@@ -5,18 +5,24 @@
 bool test();
 
 int main(int argc, char * argv[]) {
-    bool passed = true, result;
+    bool passed = true;
+    bool result;
     auto restart = std::chrono::high_resolution_clock::now();
-
 
     std::cout << "BigInteger karatsuba code test \n";
     {
-        std::vector<word> Xr{2820130816u, 4u};
-        BigInteger x(Xr, false);
+        std::vector<word> Xr{2820130816u, 4u}, Yr{1410065408u, 2u};
+        BigInteger x(Xr, false), y(Yr, false);
         std::cout << "    number test is " << x << std::endl;
         std::cout << "    should be      20000000000" << std::endl;
         std::cout << "    result is      " << (x * x) << std::endl;
         std::cout << "    should be      400000000000000000000" << std::endl;
+        std::cout << "    number test is " << y << std::endl;
+        std::cout << "    should be      10000000000" << std::endl;
+        std::cout << "    result is      " << (y * y) << std::endl;
+        std::cout << "    should be      100000000000000000000" << std::endl;
+        
+        return 0;
     }
 
     std::cout << "BigInteger code test \n";
@@ -124,9 +130,9 @@ int main(int argc, char * argv[]) {
     result &= ((b / (-a)) == (-a));
     result &= (((-b) / (-a)) == a);
     result &= (((-b) / a) == (-a));
-    passed &= result;
     if (!result)
         std::cout << "    '/' operator error \n";
+    passed &= result;
     // "*=" operator test
     result = true;
     result &= ((a *= a) == b);
@@ -205,7 +211,7 @@ int main(int argc, char * argv[]) {
     if (!result)
         std::cout << "    '^=' operator error \n";
 
-    std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us";
+    std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
     if (!passed)
         return EXIT_FAILURE;
     std::cout << "Passed \n";

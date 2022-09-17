@@ -509,8 +509,8 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
     if (!b.words.size())
     {
-        this->words.clear();
         this->neg = false;
+        this->words.clear();
     }
     if (!this->words.size())
         return *this;
