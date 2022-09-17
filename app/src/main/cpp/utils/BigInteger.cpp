@@ -408,7 +408,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             std::cout << BigInteger(b1) << std::endl;
         }
         //add a0 with a1
-        
         word carry = 0;
         size_t i = 0, j = a1.size();
         while (i < j)
@@ -424,6 +423,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         while (a0.size() && !a0.back())
             a0.pop_back();
         // add b0 with b1
+        carry = 0;
         i = 0, j = b1.size();
         while (i < j)
         {
