@@ -8,7 +8,7 @@ int main(int argc, char * argv[]) {
     auto restart = std::chrono::high_resolution_clock::now();
     
     std::cout << "BigInteger code test \n";
-    BigInteger a(9), b(7);
+    BigInteger a = 9, b = 7;
     // ">" operator test
     result = (a > b) && !(b > a);
     passed &= result;
