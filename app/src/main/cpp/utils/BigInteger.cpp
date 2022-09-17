@@ -56,7 +56,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         carry = *c - '0';
         if (carry >= 10)
             throw("BigInteger should initialize with number from 0 to 9.");
-        for (i < words.size() && carry)
+        while (i < words.size() && carry)
             carry = (this->words[i++] += carry) < carry;
         if (carry)
             words.push_back(carry);
