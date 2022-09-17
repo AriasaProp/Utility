@@ -8,7 +8,6 @@ int main(int argc, char * argv[]) {
     auto restart = std::chrono::high_resolution_clock::now();
     
     std::cout << "BigInteger code test \n";
-    return 0;
     BigInteger a(9), b(7);
     // ">" operator test
     result = (a > b) && !(b > a);
@@ -40,6 +39,7 @@ int main(int argc, char * argv[]) {
     passed &= result;
     if (!result)
         std::cout << "    '!=' operator error \n";
+    return 0;
 
     // arithmatics operation test
     // "+" operator test
