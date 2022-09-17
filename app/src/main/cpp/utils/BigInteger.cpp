@@ -204,19 +204,18 @@ BigInteger &BigInteger::operator=(const BigInteger &a)
 
 BigInteger &BigInteger::operator--()
 {
-    word carry0 = 1;
-    size_t i;
+    word carry = 1;
     const size_t n = words.size();
     if (this->neg)
     {
-        for (i = 0; i < n && carry0; i++)
-            carry0 = ((this->words[i] += carry0) < carry0);
-        if (carry0)
-            this->words.push_back(carry0);
+        for (size_t i = 0; i < n && carry; i++)
+            carry = ((this->words[i] += carry) < carry);
+        if (carry)
+            this->words.push_back(carry);
     }
     else
     {
-        for (i = 0; i < n && carry0; i++)
+        for (size_t i = 0; i < n && carry0; i++)
             carry0 = this->words[i] < (this->words[i] -= carry0);
         while (words.size() && !words.back())
             words.pop_back();
@@ -225,22 +224,21 @@ BigInteger &BigInteger::operator--()
 }
 BigInteger &BigInteger::operator++()
 {
-    word carry0 = 1;
-    size_t i;
+    word carry = 1;
     const size_t n = words.size();
     if (this->neg)
     {
-        for (i = 0; i < n && carry0; i++)
-            carry0 = this->words[i] < (this->words[i] -= carry0);
+        for (size_t i = 0; i < n && carry; i++)
+            carry = this->words[i] < (this->words[i] -= carry0);
         while (words.size() && !words.back())
             words.pop_back();
     }
     else
     {
-        for (i = 0; i < n && carry0; i++)
-            carry0 = ((this->words[i] += carry0) < carry0);
-        if (carry0)
-            this->words.push_back(carry0);
+        for (size_t i = 0; i < n && carry; i++)
+            carry = ((this->words[i] += carry) < carry);
+        if (carry)
+            this->words.push_back(carry);
     }
     return *this;
 }
