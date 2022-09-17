@@ -434,8 +434,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         //sub mid with z0
         carry = 0;
         i = 0, j = z0.size();
-        if(mid.size() < j)
-            mid.resize(j, 0);
         while (i < j)
         {
             carry = mid[i] < (mid[i] -= carry);
@@ -448,15 +446,14 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         //sub mid with z1
         carry = 0;
         i = 0, j = z1.size();
-        if(mid.size() < j)
-            mid.resize(j, 0);
         while (i < j)
         {
             carry = mid[i] < (mid[i] -= carry);
             carry += mid[i] < (mid[i] -= z1[i]);
             i++;
         }
-        while (carry && i < mid.size())
+        j = mid.size();
+        while (carry && i < j)
             carry = mid[i] < (mid[i++] -= carry);
         //add mid to result
         carry = 0;

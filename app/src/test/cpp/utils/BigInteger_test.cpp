@@ -195,8 +195,7 @@ int main(int argc, char * argv[]) {
         std::cout << "    '^=' operator error \n";
 
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
-    if (!passed)
-        return EXIT_FAILURE;
-    std::cout << "Passed \n";
+    if (passed)
+        std::cout << "Passed \n";
     return EXIT_SUCCESS;
 }
