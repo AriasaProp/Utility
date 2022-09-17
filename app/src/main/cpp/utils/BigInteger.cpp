@@ -378,25 +378,21 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
     }
     else if(combinedN)
     {
-        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         std::vector<word> a0, a1, b0, b1;
         if (na > m2)
         {
-            auto a_split = std::next(A.cbegin(), m2);
-            a0 = std::vector<word>(A.cbegin(), a_split);
-            while (a0.size() && !a0.back())
-                a0.pop_back();
-            a1 = std::vector<word>(a_split, A.cend());
+            auto a_split = std::next(A.begin(), m2);
+            a0 = std::vector<word>(A.begin(), a_split);
+            a1 = std::vector<word>(a_split, A.end());
         }
         else
             a0 = A;
         if (nb > m2)
         {
-            auto b_split = std::next(B.cbegin(), m2);
-            b0 = std::vector<word>(B.cbegin(), b_split);
-            while (b0.size() && !b0.back())
-                b0.pop_back();
-            b1 = std::vector<word>(b_split, B.cend());
+            auto b_split = std::next(B.begin(), m2);
+            b0 = std::vector<word>(B.begin(), b_split);
+            b1 = std::vector<word>(b_split, B.end());
         }
         else
             b0 = B;
@@ -419,9 +415,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (a0[i++] += carry) < carry;
         if (carry)
             a0.push_back(carry);
-        else
-            while (a0.size() && !a0.back())
-                a0.pop_back();
+        while (a0.size() && !a0.back())
+            a0.pop_back();
         // add b0 with b1
         i = 0, j = b1.size();
         if (b0.size() < m2)
@@ -436,9 +431,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (b0[i] += carry) < carry;
         if (carry)
             b0.push_back(carry);
-        else
-            while (b0.size() && !b0.back())
-                b0.pop_back();
+        while (b0.size() && !b0.back())
+            b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
         carry = 0;
@@ -498,9 +492,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (result[i++] += carry) < carry;
         if (carry)
             result.push_back(carry);
-        else
-            while (result.size() && !result.back())
-                result.pop_back();
+        while (result.size() && !result.back())
+            result.pop_back();
     }
     return result;
 }
