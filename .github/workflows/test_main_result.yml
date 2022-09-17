@@ -17,4 +17,4 @@ jobs:
         with:
           gradle-version: 6.1.1
       - name: Gradle Test
-        run: gradle test --stacktrace
+        run: gradle test
