@@ -5,13 +5,14 @@
 bool test();
 
 int main(int argc, char * argv[]) {
-    bool passed = true, result;
+    bool passed = true;
+    bool result;
     auto restart = std::chrono::high_resolution_clock::now();
 
     std::cout << "BigInteger code test \n";
-    BigInteger a, b;
-    //comparation test
-    a = 9, b = 7;
+    if (!passed)
+        return 0;
+    BigInteger a = 9, b = 7;
     // ">" operator test
     result = (a > b) && !(b > a);
     passed &= result;
@@ -113,9 +114,9 @@ int main(int argc, char * argv[]) {
     result &= ((b / (-a)) == (-a));
     result &= (((-b) / (-a)) == a);
     result &= (((-b) / a) == (-a));
-    passed &= result;
     if (!result)
         std::cout << "    '/' operator error \n";
+    passed &= result;
     // "*=" operator test
     result = true;
     result &= ((a *= a) == b);
@@ -194,9 +195,8 @@ int main(int argc, char * argv[]) {
     if (!result)
         std::cout << "    '^=' operator error \n";
 
-    std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us";
+    std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
     if (!passed)
-        return EXIT_FAILURE;
-    std::cout << "Passed \n";
+        std::cout << "Passed \n";
     return EXIT_SUCCESS;
 }

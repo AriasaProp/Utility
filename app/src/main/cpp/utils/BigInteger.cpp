@@ -35,14 +35,12 @@ BigInteger::BigInteger(const char *C) : neg(false)
     if (*c == '-')
         neg = true, c++;
     // read digits
+    word carry, tmp, a_hi, a_lo, tp;
     for (; *c; c++)
     {
-        word b = *c - '0';
-        if (b >= 10)
-            throw("BigInteger should initialize with number from 0 to 9.");
-        word carry = 0, tmp, a_hi, a_lo, tp;
-        size_t i;
-        for (i = 0; i < words.size(); i++)
+        carry = 0;
+        size_t i = 0, j = words.size();
+        while (i < j)
         {
             tmp = this->words[i] * 10;
             carry = ((tmp += carry) < carry);
@@ -50,18 +48,24 @@ BigInteger::BigInteger(const char *C) : neg(false)
             a_lo = this->words[i] & WORD_HALF_MASK;
             tp = ((a_lo * 10) >> WORD_HALF_BITS) + a_hi * 10;
             carry += (tp >> WORD_HALF_BITS) + ((tp & WORD_HALF_MASK) >> WORD_HALF_BITS);
-            this->words[i] = tmp;
+            this->words[i++] = tmp;
         }
         if (carry)
             words.push_back(carry);
-        for (i = 0; i < words.size() && b; i++)
-            b = (this->words[i] += b) < b;
-        if (b)
-            words.push_back(b);
+        i = 0, j = words.size();
+        carry = *c - '0';
+        if (carry >= 10)
+            throw("BigInteger should initialize with number from 0 to 9.");
+        for (i < words.size() && carry)
+            carry = (this->words[i++] += carry) < carry;
+        if (carry)
+            words.push_back(carry);
     }
     while (words.size() && !words.back())
         words.pop_back();
-}
+} 
+
+BigInteger::BigInteger(std::vector<word> v, bool neg = false) : words(v), neg(neg) {}
 
 // Destructors
 BigInteger::~BigInteger()
@@ -145,18 +149,6 @@ bool BigInteger::can_convert_to_int(int *result) const
     else
         *result = 0;
     return true;
-}
-
-BigInteger BigInteger::mod_pow(BigInteger exponent, const BigInteger &modulus) const
-{
-    BigInteger result(1), base = (*this) % modulus;
-    for (; exponent.words.size() > 0; exponent >>= 1)
-    {
-        if (exponent.words[0] & 1)
-            result = (result * base) % modulus;
-        base = (base * base) % modulus;
-    }
-    return result;
 }
 
 BigInteger BigInteger::sqrt() const
@@ -274,16 +266,13 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
     }
     else
     {
-        if (na != nb)
+        if (na < nb)
         {
-            if (na < nb)
-            {
-                A.swap(B);
-                this->neg = !this->neg;
-                na = A.size(), nb = B.size();
-            }
+            A.swap(B);
+            this->neg = !this->neg;
+            na = A.size(), nb = B.size();
         }
-        else
+        else if (na == nb)
         {
             i = na;
             while (i--)
@@ -335,16 +324,13 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
     }
     else
     {
-        if (na != nb)
+        if (na < nb)
         {
-            if (na < nb)
-            {
-                A.swap(B);
-                na = A.size(), nb = B.size();
-                this->neg = !this->neg;
-            }
+            A.swap(B);
+            na = A.size(), nb = B.size();
+            this->neg = !this->neg;
         }
-        else
+        else if (na == nb)
         {
             i = na;
             while (i--)
@@ -394,25 +380,21 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
     }
     else if(combinedN)
     {
-        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
         std::vector<word> a0, a1, b0, b1;
         if (na > m2)
         {
-            auto a_split = std::next(A.cbegin(), m2);
-            a0 = std::vector<word>(A.cbegin(), a_split);
-            while (a0.size() && !a0.back())
-                a0.pop_back();
-            a1 = std::vector<word>(a_split, A.cend());
+            auto a_split = std::next(A.begin(), m2);
+            a0 = std::vector<word>(A.begin(), a_split);
+            a1 = std::vector<word>(a_split, A.end());
         }
         else
             a0 = A;
         if (nb > m2)
         {
-            auto b_split = std::next(B.cbegin(), m2);
-            b0 = std::vector<word>(B.cbegin(), b_split);
-            while (b0.size() && !b0.back())
-                b0.pop_back();
-            b1 = std::vector<word>(b_split, B.cend());
+            auto b_split = std::next(B.begin(), m2);
+            b0 = std::vector<word>(B.begin(), b_split);
+            b1 = std::vector<word>(b_split, B.end());
         }
         else
             b0 = B;
@@ -429,15 +411,14 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry += (a0[i] += a1[i]) < a1[i];
             i++;
         }
-        j = a0.size();
-        while (carry && i < j)
+        while (carry && i < m2)
             carry = (a0[i++] += carry) < carry;
         if (carry)
             a0.push_back(carry);
-        else
-            while (a0.size() && !a0.back())
-                a0.pop_back();
+        while (a0.size() && !a0.back())
+            a0.pop_back();
         // add b0 with b1
+        carry = 0;
         i = 0, j = b1.size();
         while (i < j)
         {
@@ -445,14 +426,12 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry += (b0[i] += b1[i]) < b1[i];
             i++;
         }
-        j = b0.size();
-        while (carry && i < j)
+        while (carry && i < m2)
             carry = (b0[i] += carry) < carry;
         if (carry)
             b0.push_back(carry);
-        else
-            while (b0.size() && !b0.back())
-                b0.pop_back();
+        while (b0.size() && !b0.back())
+            b0.pop_back();
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
         carry = 0;
@@ -463,7 +442,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry += mid[i] < (mid[i] -= z0[i]);
             i++;
         }
-        while (carry && i < mid.size())
+        j = mid.size();
+        while (carry && i < j)
             carry = mid[i] < (mid[i++] -= carry);
         //sub mid with z1
         carry = 0;
@@ -474,11 +454,14 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry += mid[i] < (mid[i] -= z1[i]);
             i++;
         }
-        while (carry && i < mid.size())
+        j = mid.size();
+        while (carry && i < j)
             carry = mid[i] < (mid[i++] -= carry);
         //add mid to result
         carry = 0;
         i = 0, j = mid.size();
+        if (result.size() < j)
+            result.resize(j, 0);
         while (i < j)
         {
             carry = (result[i] += carry) < carry;
@@ -505,9 +488,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             carry = (result[i++] += carry) < carry;
         if (carry)
             result.push_back(carry);
-        else
-            while (result.size() && !result.back())
-                result.pop_back();
+        while (result.size() && !result.back())
+            result.pop_back();
     }
     return result;
 }
@@ -516,8 +498,8 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
     if (!b.words.size())
     {
-        this->words.clear();
         this->neg = false;
+        this->words.clear();
     }
     if (!this->words.size())
         return *this;
@@ -858,16 +840,13 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
     }
     else
     {
-        if (na != nb)
+        if (na < nb)
         {
-            if (na < nb)
-            {
-                A.swap(B);
-                na = A.size(), nb = B.size();
-                r.neg = !r.neg;
-            }
+            A.swap(B);
+            na = A.size(), nb = B.size();
+            r.neg = !r.neg;
         }
-        else
+        else if (na == nb)
         {
             i = na;
             while (i--)
@@ -920,16 +899,13 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     }
     else
     {
-        if (na != nb)
+        if (na < nb)
         {
-            if (na < nb)
-            {
-                A.swap(B);
-                na = A.size(), nb = B.size();
-                r.neg = !r.neg;
-            }
+            A.swap(B);
+            na = A.size(), nb = B.size();
+            r.neg = !r.neg;
         }
-        else
+        else if (na == nb)
         {
             i = na;
             while (i--)
@@ -1034,8 +1010,7 @@ BigInteger BigInteger::operator/(const BigInteger &b) const
                 i = na;
                 while (i--)
                 {
-                    carry0 = rem[i];
-                    carry1 = div[i];
+                    carry0 = rem[i], carry1 = div[i];
                     if (carry0 != carry1)
                     {
                         cmp = carry0 > carry1;
@@ -1091,8 +1066,7 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
         i = na;
         while (i--)
         {
-            carry0 = rem[i];
-            carry1 = div[i];
+            carry0 = rem[i], carry1 = div[i];
             if (carry0 != carry1)
             {
                 cmp = carry0 > carry1;
@@ -1140,8 +1114,7 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
                 i = na;
                 while (i--)
                 {
-                    carry0 = rem[i];
-                    carry1 = div[i];
+                    carry0 = rem[i], carry1 = div[i];
                     if (carry0 != carry1)
                     {
                         cmp = carry0 > carry1;
@@ -1178,7 +1151,6 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
     return remainder;
 }
 
-
 BigInteger BigInteger::operator^(size_t exponent) const
 {
     BigInteger p = *this, result = 1;
@@ -1196,10 +1168,7 @@ BigInteger BigInteger::operator^(size_t exponent) const
 
 BigInteger BigInteger::operator-() const
 {
-    BigInteger result;
-    result.words = this->words;
-    result.neg = !this->neg;
-    return result;
+    return BigInteger(this->words, !this->neg);
 }
 
 BigInteger &BigInteger::operator>>=(size_t n_bits)
@@ -1214,7 +1183,6 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
     }
     if (j)
         this->words.erase(this->words.begin(), this->words.begin() + j);
-
     const size_t n_len = words.size();
     n_bits %= WORD_BITS;
     if (n_bits)
