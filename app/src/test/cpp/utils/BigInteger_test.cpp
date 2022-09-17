@@ -12,8 +12,9 @@ int main(int argc, char * argv[]) {
     std::cout << "BigInteger karatsuba code test \n";
     {
         std::vector<word> Xr{2820130816u, 4u};
-        BigInteger x(Xr);
+        BigInteger x(Xr, false);
         std::cout << "    number test is " << x << std::endl;
+        std::cout << "    should be      20000000000" << std::endl;
         std::cout << "    result is      " << (x * x) << std::endl;
         std::cout << "    should be      400000000000000000000" << std::endl;
     }
