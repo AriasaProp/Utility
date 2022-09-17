@@ -11,7 +11,7 @@ int main(int argc, char * argv[]) {
 
     std::cout << "BigInteger karatsuba code test \n";
     {
-        std::vector<word> xa{2147483648u, 4045935368u, 41841393u, 1u}
+        std::vector<word> xa{2147483648u, 4045935368u, 41841393u, 1u};
         BigInteger x(xa, false);
         std::cout << "    number test is " << x << std::endl;
         std::cout << "    result is      " << (x *= x) << std::endl;
