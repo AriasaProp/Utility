@@ -400,13 +400,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         const std::vector<word> z1 = karatsuba(a1, b1);
         result = z1;
         result.insert(result.begin(), m2, 0);
-        {
-            std::cout << "before" << std::endl;
-            std::cout << BigInteger(a0) << std::endl;
-            std::cout << BigInteger(a1) << std::endl;
-            std::cout << BigInteger(b0) << std::endl;
-            std::cout << BigInteger(b1) << std::endl;
-        }
         //add a0 with a1
         word carry = 0;
         size_t i = 0, j = a1.size();
@@ -437,11 +430,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
             b0.push_back(carry);
         while (b0.size() && !b0.back())
             b0.pop_back();
-        {
-            std::cout << "after" << std::endl;
-            std::cout << BigInteger(a0) << std::endl;
-            std::cout << BigInteger(b0) << std::endl;
-        }
         std::vector<word> mid = karatsuba(a0, b0);
         //sub mid with z0
         carry = 0;
