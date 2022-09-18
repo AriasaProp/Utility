@@ -47,7 +47,7 @@ struct big_decimal
 	
 	//helpers
 	string to_string() const;
-	long get_integer() const;
+	int get_integer() const;
 	double to_double() const;
 	size_t get_precision() const;
 	int64_t get_exponent() const;
