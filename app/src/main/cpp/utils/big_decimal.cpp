@@ -22,8 +22,7 @@ void big_decimal::fft_ensure_table(int k) const {
     size_t length = (size_t) 1 << k;
     double omega = 2 * M_PI / length;
     length /= 2;
-
-    vector<std::complex<double>> sub_table;
+    std::vector<std::complex<double>> sub_table;
     for (size_t c = 0; c < length; c++)
     {
         double angle = omega * c;
@@ -44,20 +43,16 @@ void big_decimal::fft_forward(std::complex<double> *T, int k) const
     }
     size_t length = (size_t) 1 << k;
     size_t half_length = length / 2;
-    const vector<std::complex<double>> & local_table = twiddle_table[k];
+    const std::vector<std::complex<double>> & local_table = twiddle_table[k];
     for (size_t c = 0; c < half_length; c++)
     {
         auto twiddle_factor = local_table[c];
-
         std::complex<double>a = T[c];
         std::complex<double>b = T[c + half_length];
-
         T[c] = a + b;
         T[c + half_length] = (a - b) * twiddle_factor;
     }
-
     fft_forward(T, k - 1);
-
     fft_forward(T + half_length, k - 1);
 }
 void big_decimal::fft_inverse(std::complex<double>* T, int k) const
@@ -74,9 +69,9 @@ void big_decimal::fft_inverse(std::complex<double>* T, int k) const
     size_t half_length = length / 2;
     fft_inverse(T, k - 1);
     fft_inverse(T + half_length, k - 1);
-    const vector < complex < double >> & local_table = twiddle_table[k];
+    const std::vector<std::complex<double>> &local_table = twiddle_table[k];
     for (size_t c = 0; c < half_length; c++) {
-        auto twiddle_factor = conj(local_table[c]);
+        auto twiddle_factor = std::conj(local_table[c]);
         std::complex<double>a = T[c];
         std::complex<double>b = T[c + half_length] * twiddle_factor;
         T[c] = a + b;
@@ -201,10 +196,10 @@ std::string big_decimal::to_string(size_t digits) const
     std::string str;
     int64_t exponent = to_string_trimmed(digits, str);
     if (mag == 0)
-        return (sign ? string("0.") : string("-0.")) + str;
+        return (sign ? std::string("0.") : std::string("-0.")) + str;
 
     std::string after_decimal = (exponent >= 0) ? "" : str.substr((size_t)(str.size() + exponent), (size_t) - exponent);
-    return string(sign ? "" : "-") + std::to_string((long long) T[L - 1]) + "." + after_decimal;
+    return std::string(sign ? "" : "-") + std::to_string((long long) T[L - 1]) + "." + after_decimal;
 }
 
 std::string big_decimal::to_string_sci() const
@@ -234,7 +229,7 @@ std::string big_decimal::to_string_sci(size_t digits) const
     }
 
     if (!sign)
-        str = string("-") + str;
+        str = std::string("-") + str;
 
     return str;
 }

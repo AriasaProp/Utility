@@ -11,7 +11,7 @@ private:
 	bool sign;	 //  true = positive or zero, false = negative
 	int64_t exp; //  Exponent
 	size_t L;	 //  Length
-	unique_ptr<uint32_t[]> T;
+	std::unique_ptr<uint32_t[]> T;
 
 	mutable std::vector<std::vector<std::complex<double>>> twiddle_table;
 
