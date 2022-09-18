@@ -5,17 +5,15 @@
 #include <memory>
 #include <vector>
 
-using namespace std;
-
-struct big_decimal
+class big_decimal
 {
-  private:
+private:
 	bool sign;	 //  true = positive or zero, false = negative
 	int64_t exp; //  Exponent
 	size_t L;	 //  Length
 	unique_ptr<uint32_t[]> T;
 
-	mutable vector<vector<complex<double>>> twiddle_table;
+	mutable std::vector<std::vector<complex<double>>> twiddle_table;
 
 	//fft function
 	void fft_ensure_table(int k) const;
@@ -26,17 +24,17 @@ struct big_decimal
 	void fft_to_int(const complex<double> *T, size_t length, uint32_t *A, size_t AL) const;
 
 	//  Internal helpers
-	int64_t to_string_trimmed(size_t, string &) const;
+	int64_t to_string_trimmed(size_t, std::string &) const;
 	void compres_posible_value();
-	string to_string(size_t) const;
-	string to_string_sci() const;
-	string to_string_sci(size_t) const;
+	std::string to_string(size_t) const;
+	std::string to_string_sci() const;
+	std::string to_string_sci(size_t) const;
 	int count_decimal_front(double &) const;
 	uint32_t word_at(int64_t) const;
 	big_decimal rcp() const;
 	big_decimal rcp(size_t) const;
 
-  public:
+public:
 	// Constructors
 	big_decimal();
 	big_decimal(const big_decimal &);
@@ -46,7 +44,7 @@ struct big_decimal
 	~big_decimal();
 	
 	//helpers
-	string to_string() const;
+	std::string to_string() const;
 	int get_integer() const;
 	double to_double() const;
 	size_t get_precision() const;

@@ -138,7 +138,7 @@ void big_decimal::fft_to_int(const complex<double>* T, size_t length, uint32_t *
 }
 
 //internal helpers
-int64_t big_decimal::to_string_trimmed(size_t digits, string &str) const {
+int64_t big_decimal::to_string_trimmed(size_t digits, std::string &str) const {
     if (L == 0)
     {
         str = "0";
@@ -191,31 +191,31 @@ void big_decimal::compres_posible_value() {
     while (V[L - 1] == 0)
         --L;
 }
-string big_decimal::to_string(size_t digits) const
+std::string big_decimal::to_string(size_t digits) const
 {
     if (L == 0)
         return "0.";
     int64_t mag = exp + L;
     if (mag > 1 || mag < 0)
         return to_string_sci();
-    string str;
+    std::string str;
     int64_t exponent = to_string_trimmed(digits, str);
     if (mag == 0)
         return (sign ? string("0.") : string("-0.")) + str;
 
-    string after_decimal = (exponent >= 0) ? "" : str.substr((size_t)(str.size() + exponent), (size_t) - exponent);
+    std::string after_decimal = (exponent >= 0) ? "" : str.substr((size_t)(str.size() + exponent), (size_t) - exponent);
     return string(sign ? "" : "-") + std::to_string((long long) T[L - 1]) + "." + after_decimal;
 }
 
-string big_decimal::to_string_sci() const
+std::string big_decimal::to_string_sci() const
 {
     return to_string_sci(0);
 }
-string big_decimal::to_string_sci(size_t digits) const
+std::string big_decimal::to_string_sci(size_t digits) const
 {
     if (L == 0)
         return "0.";
-    string str;
+    std::string str;
     int64_t exponent = to_string_trimmed(digits, str);
 
     {
@@ -330,8 +330,9 @@ big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x |
     T[0] = x;
 }
 
-big_decimal::big_decimal(const double &x) : sign(x > 0)
+big_decimal::big_decimal(const double &x)
 {
+  this->sign = (x >= 0);
 	if (!x)
 		return;
 	this->exp = -2;
@@ -348,7 +349,7 @@ big_decimal::big_decimal(const double &x) : sign(x > 0)
 big_decimal::~big_decimal() {}
 
 //Helpers
-string big_decimal::to_string() const
+std::string big_decimal::to_string() const
 {
     return to_string(0);
 }
