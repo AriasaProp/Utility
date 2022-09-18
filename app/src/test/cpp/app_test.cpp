@@ -10,5 +10,5 @@ int main(int argv, char *args[])
     
     passed &= big_decimal_test();
     
-    return passed ? EXIT_SUCCESS : EXIT_FAILURE;
+    return !passed;
 }
