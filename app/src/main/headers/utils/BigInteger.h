@@ -47,7 +47,7 @@ class BigInteger
     BigInteger &operator*=(const BigInteger &);
     BigInteger &operator/=(const BigInteger &);
     BigInteger &operator%=(const BigInteger &);
-    BigInteger &operator**=(size_t);
+    BigInteger &operator^=(size_t);
     // compare operator function
     bool operator==(const BigInteger &) const;
     bool operator!=(const BigInteger &) const;
@@ -61,7 +61,7 @@ class BigInteger
     BigInteger operator*(const BigInteger &) const;
     BigInteger operator/(const BigInteger &) const;
     BigInteger operator%(const BigInteger &) const;
-    BigInteger operator**(size_t) const;
+    BigInteger operator^(size_t) const;
     BigInteger operator-() const;
     // shift operator function
     BigInteger &operator>>=(size_t);

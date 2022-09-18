@@ -3,6 +3,11 @@ plugins {
     id 'cpp-unit-test'
 }
 
+tasks.withType(CppCompile).configureEach {
+    // Define a compiler options
+    compilerArgs.add '-Wall -O3'
+}
+
 application {
     targetMachines = [
         machines.windows.x86_64, machines.windows.x86, 
