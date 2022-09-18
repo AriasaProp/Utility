@@ -5,7 +5,7 @@ plugins {
 
 tasks.withType(CppCompile).configureEach {
     // Define a compiler options
-    compilerArgs.add '-Wall -O3'
+    compilerArgs.addAll ['-Wall', '-O3']
 }
 
 application {
