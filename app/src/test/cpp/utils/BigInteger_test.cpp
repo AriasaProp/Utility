@@ -2,7 +2,8 @@
 #include <chrono>
 #include "utils/BigInteger.h"
 
-int main(int argc, char * argv[]) {
+bool BigInteger_test()
+{
     bool passed = true;
     bool result;
     auto restart = std::chrono::high_resolution_clock::now();
@@ -180,6 +181,7 @@ int main(int argc, char * argv[]) {
     if (!result)
         std::cout << "    '<<=' operator error \n";
     a = BigInteger("1152921504606846976\0"), b = 2;
+    return passed;
     // "^" operator test
     result = ((b ^ 60) == a);
     passed &= result;
@@ -191,10 +193,6 @@ int main(int argc, char * argv[]) {
     if (!result)
         std::cout << "    '^=' operator error \n";
     
-    //return 0;
-
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
-    if (!passed)
-        std::cout << "Passed \n";
-    return EXIT_SUCCESS;
+    return passed;
 }

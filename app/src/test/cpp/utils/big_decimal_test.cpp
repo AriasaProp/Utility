@@ -1,6 +1,6 @@
 #include "utils/big_decimal.h"
 
-int main(int argc, char * argv[])
+bool big_decimal_test()
 {
     std::cout << "big_decimal test begin! " << std::endl;
     
@@ -13,5 +13,5 @@ int main(int argc, char * argv[])
     std::cout << y << std::endl;
     std::cout << z << std::endl;
     
-    return EXIT_SUCCESS;
+    return true;
 }
