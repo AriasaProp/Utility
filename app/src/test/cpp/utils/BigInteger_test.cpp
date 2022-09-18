@@ -180,17 +180,20 @@ int main(int argc, char * argv[]) {
     if (!result)
         std::cout << "    '<<=' operator error \n";
     a = BigInteger("1152921504606846976\0"), b = 2;
+    /*
     // "^" operator test
     result = ((b ^ 60) == a);
     passed &= result;
     if (!result)
         std::cout << "    '^' operator error \n";
-    return 0;
+    
+    */
     // "^=" operator test
     result = ((b ^= 60) == a);
     passed &= result;
     if (!result)
         std::cout << "    '^=' operator error \n";
+    //return 0;
 
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
     if (!passed)
