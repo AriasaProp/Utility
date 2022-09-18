@@ -186,13 +186,12 @@ int main(int argc, char * argv[]) {
     passed &= result;
     if (!result)
         std::cout << "    '^' operator error \n";
-    
-    */
     // "^=" operator test
     result = ((b ^= 60) == a);
     passed &= result;
     if (!result)
         std::cout << "    '^=' operator error \n";
+    */
     //return 0;
 
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
