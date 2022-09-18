@@ -327,17 +327,40 @@ big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x |
 
 big_decimal::big_decimal(const double &x)
 {
-  this->sign = (x >= 0);
-	if (!x)
+	if (x == 0.0)
 		return;
-	this->exp = -2;
-	this->L = 5;
-	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[5]);
-	this->T[0] = uint32_t(x * 1000000000000000000.);
-	this->T[1] = uint32_t(x * 1000000000.);
-	this->T[2] = uint32_t(x);
-	this->T[3] = uint32_t(x / 1000000000.);
-	this->T[4] = uint32_t(x / 1000000000000000000.);
+  std::string xstr = std::to_string(x);
+	if (xstr[0] == '-')
+      this->sign = true;
+  xstr.erase(0, 1);
+  size_t dot = xstr.find('.', 0);
+  size_t i;
+	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[6]{0});
+  std::string top = xstr.substr(0, dot);
+  for (i = 0; i < 9 && top.length(); i++)
+	    this->T[2] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
+  for (i = 0; i < 9 && top.length(); i++)
+	    this->T[1] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
+	for (i = 0; i < 9 && top.length(); i++)
+	    this->T[0] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
+	
+  std::string bot = xstr.substr(dot, xstr.length()-1);
+	for (i = 9; i-- && bot.length(); i++)
+	{
+	    this->T[3] += std::pow(10, i) * uint32_t(bot.front() - '0');
+	    bot.erase(0, 1);
+	}
+	for (i = 9; i-- && bot.length(); i++)
+	{
+	    this->T[4] += std::pow(10, i) * uint32_t(bot.front() - '0');
+	    bot.erase(0, 1);
+	}
+	for (i = 9; i-- && bot.length(); i++)
+	{
+	    this->T[5] += std::pow(10, i) * uint32_t(bot.front() - '0');
+	    bot.erase(0, 1);
+	}
+  
 }
 
 //Destructors
