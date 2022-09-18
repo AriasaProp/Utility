@@ -23,34 +23,34 @@ void big_decimal::fft_ensure_table(int k) const {
     double omega = 2 * M_PI / length;
     length /= 2;
 
-    vector<complex<double>> sub_table;
+    vector<std::complex<double>> sub_table;
     for (size_t c = 0; c < length; c++)
     {
         double angle = omega * c;
-        auto twiddle_factor = complex<double>(cos(angle), sin(angle));
+        auto twiddle_factor = std::complex<double>(cos(angle), sin(angle));
         sub_table.push_back(twiddle_factor);
     }
-    twiddle_table.push_back(move(sub_table));
+    twiddle_table.push_back(std::move(sub_table));
 }
-void big_decimal::fft_forward(complex<double> *T, int k) const
+void big_decimal::fft_forward(std::complex<double> *T, int k) const
 {
     if (k == 1)
     {
-        complex<double>a = T[0];
-        complex<double>b = T[1];
+        std::complex<double>a = T[0];
+        std::complex<double>b = T[1];
         T[0] = a + b;
         T[1] = a - b;
         return;
     }
     size_t length = (size_t) 1 << k;
     size_t half_length = length / 2;
-    const vector<complex<double>> & local_table = twiddle_table[k];
+    const vector<std::complex<double>> & local_table = twiddle_table[k];
     for (size_t c = 0; c < half_length; c++)
     {
         auto twiddle_factor = local_table[c];
 
-        complex<double>a = T[c];
-        complex<double>b = T[c + half_length];
+        std::complex<double>a = T[c];
+        std::complex<double>b = T[c + half_length];
 
         T[c] = a + b;
         T[c + half_length] = (a - b) * twiddle_factor;
@@ -60,12 +60,12 @@ void big_decimal::fft_forward(complex<double> *T, int k) const
 
     fft_forward(T + half_length, k - 1);
 }
-void big_decimal::fft_inverse(complex<double>* T, int k) const
+void big_decimal::fft_inverse(std::complex<double>* T, int k) const
 {
     if (k == 1)
     {
-        complex<double>a = T[0];
-        complex<double>b = T[1];
+        std::complex<double>a = T[0];
+        std::complex<double>b = T[1];
         T[0] = a + b;
         T[1] = a - b;
         return;
@@ -77,23 +77,23 @@ void big_decimal::fft_inverse(complex<double>* T, int k) const
     const vector < complex < double >> & local_table = twiddle_table[k];
     for (size_t c = 0; c < half_length; c++) {
         auto twiddle_factor = conj(local_table[c]);
-        complex<double>a = T[c];
-        complex<double>b = T[c + half_length] * twiddle_factor;
+        std::complex<double>a = T[c];
+        std::complex<double>b = T[c + half_length] * twiddle_factor;
         T[c] = a + b;
         T[c + half_length] = a - b;
     }
 }
-void big_decimal::fft_pointwise(complex<double>* T,
-    const complex<double>* A, int k) const {
+void big_decimal::fft_pointwise(std::complex<double>* T,
+    const std::complex<double>* A, int k) const {
     size_t length = (size_t) 1 << k;
     for (size_t c = 0; c < length; c++) {
         T[c] = T[c] * A[c];
     }
 }
-void big_decimal::int_to_fft(complex<double>* T, int k,
+void big_decimal::int_to_fft(std::complex<double>* T, int k,
     const uint32_t * A, size_t AL) const {
     size_t fft_length = (size_t) 1 << k;
-    complex<double>* Tstop = T + fft_length;
+    std::complex<double>* Tstop = T + fft_length;
     if (fft_length < 3 * AL)
         throw "FFT length is too small.";
     for (size_t c = 0; c < AL; c++) {
@@ -106,9 +106,9 @@ void big_decimal::int_to_fft(complex<double>* T, int k,
         * T++ = word;
     }
     while (T < Tstop)
-        *(T++) = complex<double>(0, 0);
+        *(T++) = std::complex<double>(0, 0);
 }
-void big_decimal::fft_to_int(const complex<double>* T, size_t length, uint32_t * A, size_t AL) const {
+void big_decimal::fft_to_int(const std::complex<double>* T, size_t length, uint32_t * A, size_t AL) const {
     uint64_t carry = 0;
     for (size_t c = 0; c < AL; c++) {
         double f_point;
@@ -319,14 +319,14 @@ big_decimal big_decimal::rcp(size_t p) const
 //Constructors
 big_decimal::big_decimal(): sign(true), exp(0), L(0) {}
 big_decimal::big_decimal(const big_decimal &x): sign(x.sign), exp(x.exp), L(x.L) {
-    T = unique_ptr<uint32_t[]>(new uint32_t[x.L]);
+    T = std::unique_ptr<uint32_t[]>(new uint32_t[x.L]);
     memcpy(T.get(), x.T.get(), x.L * sizeof(uint32_t));
 }
 big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x | sign), exp(0), L(x != 0)
 {
     if (!x)
         return;
-    T = unique_ptr<uint32_t[]>(new uint32_t[1]);
+    T = std::unique_ptr<uint32_t[]>(new uint32_t[1]);
     T[0] = x;
 }
 
@@ -337,7 +337,7 @@ big_decimal::big_decimal(const double &x)
 		return;
 	this->exp = -2;
 	this->L = 5;
-	this->T = unique_ptr<uint32_t[]>(new uint32_t[5]);
+	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[5]);
 	this->T[0] = uint32_t(x * 1000000000000000000.);
 	this->T[1] = uint32_t(x * 1000000000.);
 	this->T[2] = uint32_t(x);
@@ -385,7 +385,7 @@ big_decimal &big_decimal::operator=(const big_decimal &x)
     sign = x.sign;
     exp = x.exp;
     L = x.L;
-    T = unique_ptr < uint32_t[] > (new uint32_t[x.L]);
+    T = std::unique_ptr < uint32_t[] > (new uint32_t[x.L]);
     memcpy(T.get(), x.T.get(), x.L * sizeof(uint32_t));
     return *this;
 }
@@ -410,7 +410,7 @@ big_decimal big_decimal::operator+(const big_decimal & x) const {
 
     if (sign == x.sign) {
         z.sign = sign;
-        z.T = unique_ptr < uint32_t[] > (new uint32_t[z.L + 1]);
+        z.T = std::unique_ptr < uint32_t[] > (new uint32_t[z.L + 1]);
         uint32_t carry = 0;
         for (size_t c = 0; bot < top; bot++, c++) {
             uint32_t word = word_at(bot) + x.word_at(bot) + carry;
@@ -438,7 +438,7 @@ big_decimal big_decimal::operator+(const big_decimal & x) const {
                 }
             }
         }
-        z.T = unique_ptr < uint32_t[] > (new uint32_t[z.L]);
+        z.T = std::unique_ptr < uint32_t[] > (new uint32_t[z.L]);
         int32_t carry = 0;
         if (ucmp) {
             z.sign = sign;
@@ -487,7 +487,7 @@ big_decimal big_decimal::operator-(const big_decimal & x) const {
     z.L = (uint32_t) TL;
     if (sign != x.sign) {
         z.sign = sign;
-        z.T = unique_ptr < uint32_t[] > (new uint32_t[z.L + 1]);
+        z.T = std::unique_ptr < uint32_t[] > (new uint32_t[z.L + 1]);
         uint32_t carry = 0;
         for (size_t c = 0; bot < top; bot++, c++) {
             uint32_t word = word_at(bot) + x.word_at(bot) + carry;
@@ -515,7 +515,7 @@ big_decimal big_decimal::operator-(const big_decimal & x) const {
                 }
             }
         }
-        z.T = unique_ptr < uint32_t[] > (new uint32_t[z.L]);
+        z.T = std::unique_ptr < uint32_t[] > (new uint32_t[z.L]);
         int32_t carry = 0;
         if (ucmp) {
             z.sign = sign;
@@ -561,7 +561,7 @@ big_decimal big_decimal::operator*(const uint32_t & x) const
     z.sign = sign;
     z.exp = exp;
     z.L = L;
-    z.T = unique_ptr<uint32_t[]>(new uint32_t[z.L + 1]);
+    z.T = std::unique_ptr<uint32_t[]>(new uint32_t[z.L + 1]);
 
     uint64_t carry = 0;
     for (size_t c = 0; c < L; c++) {
@@ -602,7 +602,7 @@ big_decimal big_decimal::operator*(const big_decimal & x) const {
     z.sign = (sign == x.sign);
     z.exp = Aexp + Bexp;
     z.L = AL + BL;
-    z.T = unique_ptr < uint32_t[] > (new uint32_t[z.L]);
+    z.T = std::unique_ptr < uint32_t[] > (new uint32_t[z.L]);
 
     int k = 0;
     size_t length = 1;
@@ -614,12 +614,12 @@ big_decimal big_decimal::operator*(const big_decimal & x) const {
     if (k > 29)
         throw "FFT size limit exceeded.";
 
-    complex<double> *Ta = new complex<double>[length];
-    complex<double> *Tb = new complex<double>[length];
+    std::complex<double> *Ta = new std::complex<double>[length];
+    std::complex<double> *Tb = new std::complex<double>[length];
 
     fft_ensure_table(k); {
-        complex<double>* T = Ta;
-        complex<double>* Tstop = T + length;
+        std::complex<double>* T = Ta;
+        std::complex<double>* Tstop = T + length;
         for (size_t c = 0; c < AL; c++) {
             uint32_t word = AT[c];
 
@@ -632,10 +632,10 @@ big_decimal big_decimal::operator*(const big_decimal & x) const {
 
         while (T < Tstop)
             *
-            T++ = complex<double>(0, 0);
+            T++ = std::complex<double>(0, 0);
     } {
-        complex<double>* T = Tb;
-        complex<double>* Tstop = T + length;
+        std::complex<double>* T = Tb;
+        std::complex<double>* Tstop = T + length;
         for (size_t c = 0; c < BL; c++) {
             uint32_t word = BT[c];
 
@@ -647,7 +647,7 @@ big_decimal big_decimal::operator*(const big_decimal & x) const {
         }
         while (T < Tstop)
             *
-            T++ = complex<double>(0, 0);
+            T++ = std::complex<double>(0, 0);
     }
 
     fft_forward(Ta, k);

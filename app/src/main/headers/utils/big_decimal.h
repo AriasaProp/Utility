@@ -13,15 +13,15 @@ private:
 	size_t L;	 //  Length
 	unique_ptr<uint32_t[]> T;
 
-	mutable std::vector<std::vector<complex<double>>> twiddle_table;
+	mutable std::vector<std::vector<std::complex<double>>> twiddle_table;
 
 	//fft function
 	void fft_ensure_table(int k) const;
-	void fft_forward(complex<double> *T, int k) const;
-	void fft_inverse(complex<double> *T, int k) const;
-	void fft_pointwise(complex<double> *T, const complex<double> *A, int k) const;
-	void int_to_fft(complex<double> *T, int k, const uint32_t *A, size_t AL) const;
-	void fft_to_int(const complex<double> *T, size_t length, uint32_t *A, size_t AL) const;
+	void fft_forward(std::complex<double> *T, int k) const;
+	void fft_inverse(std::complex<double> *T, int k) const;
+	void fft_pointwise(std::complex<double> *T, const std::complex<double> *A, int k) const;
+	void int_to_fft(std::complex<double> *T, int k, const uint32_t *A, size_t AL) const;
+	void fft_to_int(const std::complex<double> *T, size_t length, uint32_t *A, size_t AL) const;
 
 	//  Internal helpers
 	int64_t to_string_trimmed(size_t, std::string &) const;
