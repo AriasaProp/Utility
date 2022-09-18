@@ -78,8 +78,7 @@ void big_decimal::fft_inverse(std::complex<double>* T, int k) const
         T[c + half_length] = a - b;
     }
 }
-void big_decimal::fft_pointwise(std::complex<double>* T,
-    const std::complex<double>* A, int k) const {
+void big_decimal::fft_pointwise(std::complex<double>* T, const std::complex<double>* A, int k) const {
     size_t length = (size_t) 1 << k;
     for (size_t c = 0; c < length; c++) {
         T[c] = T[c] * A[c];
@@ -104,25 +103,25 @@ void big_decimal::int_to_fft(std::complex<double>* T, int k,
         *(T++) = std::complex<double>(0, 0);
 }
 void big_decimal::fft_to_int(const std::complex<double>* T, size_t length, uint32_t * A, size_t AL) const {
+    uint32_t word;
     uint64_t carry = 0;
+    uint64_t i_point;
+    double f_point;
     for (size_t c = 0; c < AL; c++) {
-        double f_point;
-        uint64_t i_point;
-        uint32_t word;
 
-        f_point = ( * T++).real() / length;
+        f_point = (*(T++)).real() / length;
         i_point = (uint64_t)(f_point + 0.5);
         carry += i_point;
         word = carry % 1000;
         carry /= 1000;
 
-        f_point = ( * T++).real() / length;
+        f_point = (*(T++)).real() / length;
         i_point = (uint64_t)(f_point + 0.5);
         carry += i_point;
         word += (carry % 1000) * 1000;
         carry /= 1000;
 
-        f_point = ( * T++).real() / length;
+        f_point = (*(T++)).real() / length;
         i_point = (uint64_t)(f_point + 0.5);
         carry += i_point;
         word += (carry % 1000) * 1000000;
@@ -336,7 +335,7 @@ big_decimal::big_decimal(const double &x)
   size_t dot = xstr.find('.', 0);
   size_t i;
   this->exp = -3;
-  this->L = 5;
+  this->L = 6;
 	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[6]{0});
   std::string top = xstr.substr(0, dot);
   for (i = 0; i < 9 && top.length(); i++)
@@ -354,7 +353,7 @@ big_decimal::big_decimal(const double &x)
 	    this->T[0] += std::pow(10, i) * uint32_t(top.back() - '0');
 	    top.pop_back();
   }
-  std::string bot = xstr.substr(dot, xstr.length()-1);
+  std::string bot = xstr.substr(dot+1, xstr.length()-1);
 	for (i = 9; i-- && bot.length(); )
 	{
 	    this->T[3] += std::pow(10, i) * uint32_t(bot.front() - '0');
@@ -386,7 +385,6 @@ int big_decimal::get_integer() const
     int r = 0;
     if ((L < abs(exp)) || (exp > 0))
         return r;
-    int64_t top = L + exp, bot = exp;
     r = int(T.get()[-exp]);
     return sign ? r : -r;
 }
