@@ -713,7 +713,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
     return *this;
 }
 
-BigInteger &BigInteger::operator^=(size_t exponent)
+BigInteger &BigInteger::operator**=(size_t exponent)
 {
     std::vector<word> p = this->words;
     this->words = std::vector<word>{1};
@@ -1151,7 +1151,7 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
     return remainder;
 }
 
-BigInteger BigInteger::operator^(size_t exponent) const
+BigInteger BigInteger::operator**(size_t exponent) const
 {
     std::vector<word> p = this->words, result{1};
     bool sign = this->neg;
