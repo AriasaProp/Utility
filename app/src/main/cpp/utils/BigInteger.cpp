@@ -65,7 +65,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         words.pop_back();
 } 
 
-BigInteger::BigInteger(std::vector<word> v, bool neg = false) : words(v), neg(neg) {}
+BigInteger::BigInteger(std::vector<word> v, bool neg = false) : neg(neg), words(v) {}
 
 // Destructors
 BigInteger::~BigInteger()
@@ -442,7 +442,10 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         }
         j = mid.size();
         while (carry && i < j)
-            carry = mid[i] < (mid[i++] -= carry);
+        {
+            carry = mid[i] < (mid[i] -= carry);
+            i++;
+        }
         //sub mid with z1
         carry = 0;
         i = 0, j = z1.size();
@@ -454,7 +457,10 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         }
         j = mid.size();
         while (carry && i < j)
-            carry = mid[i] < (mid[i++] -= carry);
+        {
+            carry = mid[i] < (mid[i] -= carry);
+            i++;
+        }
         //add mid to result
         carry = 0;
         i = 0, j = mid.size();

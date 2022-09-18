@@ -1,9 +1,4 @@
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <chrono>
-#include <thread>
 #include <cstdint>
 #include <cstring>
 #include <complex>
@@ -31,42 +26,49 @@ struct big_decimal
 	void fft_to_int(const complex<double> *T, size_t length, uint32_t *A, size_t AL) const;
 
 	//  Internal helpers
-	int64_t to_string_trimmed(size_t digits, string &str) const;
+	int64_t to_string_trimmed(size_t, string &) const;
 	void compres_posible_value();
+	string to_string(size_t) const;
+	string to_string_sci() const;
+	string to_string_sci(size_t) const;
+	int count_decimal_front(double &) const;
+	uint32_t word_at(int64_t) const;
+	big_decimal rcp() const;
+	big_decimal rcp(size_t) const;
 
   public:
 	// Constructors
 	big_decimal();
-	big_decimal(const big_decimal &x);
-	big_decimal(const uint32_t &x, const bool &sign = true);
-	//big_decimal(const double &x);
+	big_decimal(const big_decimal &);
+	big_decimal(const uint32_t &, const bool &);
+	big_decimal(const double &);
 	//Destructors
 	~big_decimal();
-
-	//Helpers
-	string to_string(size_t digits = 0) const;
-	string to_string_sci(size_t digits = 0) const;
+	
+	//helpers
+	string to_string() const;
+	long get_integer() const;
+	double to_double() const;
 	size_t get_precision() const;
 	int64_t get_exponent() const;
-	uint32_t word_at(int64_t mag) const;
-	long get_integer() const;
-	long double to_double() const;
-	int count_decimal_front(double &out) const;
+	
+	//re-initialize
+	big_decimal &operator=(const big_decimal &);
 
-	//Aritmathics
-	void negate();
-	big_decimal operator+(const big_decimal &x) const;
-	big_decimal operator-(const big_decimal &x) const;
-	big_decimal operator*(const uint32_t &x) const;
-	big_decimal operator*(const big_decimal &x) const;
-	big_decimal rcp(size_t p) const;
-	big_decimal rcp() const;
-	big_decimal operator/(const uint32_t &x) const;
-	big_decimal operator/(const big_decimal &x) const;
-	//Aritmathics sets
-	big_decimal operator=(const big_decimal &x);
-	big_decimal operator+=(const big_decimal &x);
-	big_decimal operator-=(const big_decimal &x);
-	big_decimal operator*=(const big_decimal &x);
-	big_decimal operator/=(const big_decimal &x);
+	//operational math unsafe
+	big_decimal operator-() const;
+	big_decimal operator+(const big_decimal &) const;
+	big_decimal operator-(const big_decimal &) const;
+	big_decimal operator*(const uint32_t &) const;
+	big_decimal operator*(const big_decimal &) const;
+	big_decimal operator/(const uint32_t &) const;
+	big_decimal operator/(const big_decimal &) const;
+	//operational math safe
+	big_decimal &operator+=(const big_decimal &);
+	big_decimal &operator-=(const big_decimal &);
+	big_decimal &operator*=(const big_decimal &);
+	big_decimal &operator/=(const big_decimal &);
+	
+	//output
+	friend std::ostream &operator<<(std::ostream &, const big_decimal &);
 };

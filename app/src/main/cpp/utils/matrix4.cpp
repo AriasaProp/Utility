@@ -18,16 +18,15 @@ matrix4::matrix4(const matrix4 &other)
 //matriks function
 float matrix4::det() const
 {
-    float result;
-    result += values[0] * values[5] * values[10] * values[15];
-    result += values[1] * values[6] * values[11] * values[12];
-    result += values[2] * values[7] * values[8] * values[13];
-    result += values[3] * values[4] * values[9] * values[14];
-    result -= values[0] * values[7] * values[10] * values[13];
-    result -= values[1] * values[4] * values[11] * values[14];
-    result -= values[2] * values[5] * values[8] * values[11];
-    result -= values[3] * values[6] * values[9] * values[12];
-    return result;
+    return
+        values[0] * values[5] * values[10] * values[15]
+      + values[1] * values[6] * values[11] * values[12]
+      + values[2] * values[7] * values[8] * values[13]
+      + values[3] * values[4] * values[9] * values[14]
+      - values[0] * values[7] * values[10] * values[13]
+      - values[1] * values[4] * values[11] * values[14]
+      - values[2] * values[5] * values[8] * values[11]
+      - values[3] * values[6] * values[9] * values[12];
 }
 
 
