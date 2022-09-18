@@ -338,12 +338,20 @@ big_decimal::big_decimal(const double &x)
 	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[6]{0});
   std::string top = xstr.substr(0, dot);
   for (i = 0; i < 9 && top.length(); i++)
-	    this->T[2] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
+  {
+	    this->T[2] += std::pow(10, i) * uint32_t(top.back() - '0');
+	    top.pop_back();
+  }
   for (i = 0; i < 9 && top.length(); i++)
-	    this->T[1] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
+  {
+	    this->T[1] += std::pow(10, i) * uint32_t(top.back() - '0');
+	    top.pop_back();
+  }
 	for (i = 0; i < 9 && top.length(); i++)
-	    this->T[0] += std::pow(10, i) * uint32_t(top.pop_back() - '0');
-	
+	{
+	    this->T[0] += std::pow(10, i) * uint32_t(top.back() - '0');
+	    top.pop_back();
+  }
   std::string bot = xstr.substr(dot, xstr.length()-1);
 	for (i = 9; i-- && bot.length(); i++)
 	{
