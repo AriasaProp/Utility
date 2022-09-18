@@ -3,12 +3,10 @@ plugins {
     id 'cpp-unit-test'
 }
 
-tasks.withType(CppCompile).configureEach {
-    // Define a compiler options
-    compilerArgs.addAll ['-Wall', '-O3']
-}
-
 application {
+    binaries.configureEach {
+        compileTask.get().compilerArgs.addAll(['-Wall', '-O3']) 
+    }
     targetMachines = [
         machines.windows.x86_64, machines.windows.x86, 
         machines.linux.x86_64, machines.linux.x86,
