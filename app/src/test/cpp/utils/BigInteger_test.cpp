@@ -4,20 +4,20 @@
 
 bool BigInteger_test()
 {
-    bool passed = true;
-    bool result;
-    auto restart = std::chrono::high_resolution_clock::now();
-    
     {
-        BigInteger a = 127;
+        BigInteger x = 127;
         size_t igr = 1;
-        while(igr < 100)
+        while(igr < 5)
         {
             std::cout << " on temp : " << igr << std::endl;
-            a ^= igr;
+            std::cout << " result : " << x << std::endl;
+            x ^= igr;
             igr++;
         }
     }
+    bool passed = true;
+    bool result;
+    auto restart = std::chrono::high_resolution_clock::now();
     
     std::cout << "BigInteger code test \n";
     BigInteger a = 9, b = 7;
