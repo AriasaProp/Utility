@@ -11,9 +11,9 @@ bool BigInteger_test()
     {
         BigInteger a = 127;
         size_t igr = 1;
-        while(i < 100)
+        while(igr < 100)
         {
-            std::cout << " on temp : " << igr << endl;
+            std::cout << " on temp : " << igr << std::endl;
             a ^= igr;
             igr++;
         }
