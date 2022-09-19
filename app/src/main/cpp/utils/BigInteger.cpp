@@ -723,7 +723,7 @@ BigInteger &BigInteger::operator^=(size_t exponent)
 {
     std::vector<word> p = this->words, temp;
     this->words = std::vector<word>{1};
-    this->neg = (exponent&1) ? this->neg : true;
+    this->neg = (exponent&1) ? this->neg : false;
     for (; exponent; exponent >>= 1)
     {
         if (exponent & 1)
