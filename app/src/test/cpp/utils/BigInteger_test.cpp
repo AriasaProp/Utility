@@ -4,7 +4,7 @@
 
 bool BigInteger_test()
 {
-    if (false) {
+    if (true) {
         BigInteger x = 127;
         size_t igr = 1;
         while(igr < 4)

@@ -721,18 +721,19 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    std::vector<word> p = this->words;
+    std::vector<word> p = this->words, temp;
     this->words = std::vector<word>{1};
-    if(!(exponent & 1))
-        this->neg ^= this->neg;
+    this->neg = (exponent&1) ? this->neg : true;
     for (; exponent; exponent >>= 1)
     {
         if (exponent & 1)
         {
-            this->words = karatsuba(this->words, p);
+            temp = karatsuba(this->words, p);
+            this->words = temp;
             exponent--;
         }
-        p = karatsuba(p, p);
+        temp = karatsuba(p, p);
+        p = temp;
     }
     return *this;
 }
@@ -1159,18 +1160,18 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
 
 BigInteger BigInteger::operator^(size_t exponent) const
 {
-    std::vector<word> p = this->words, result{1};
-    bool sign = this->neg;
-    if (!(exponent & 1))
-        sign ^= sign;
+    std::vector<word> p = this->words, temp, result{1};
+    bool sign = (exponent&1) ? this->neg : false;
     for (; exponent; exponent >>= 1)
     {
         if (exponent & 1)
         {
-            result = karatsuba(result, p);
+            temp = karatsuba(result, p);
+            result = temp;
             exponent--;
         }
-        p = karatsuba(p, p);
+        temp = karatsuba(p, p);
+        p = temp;
     }
     return BigInteger(result, sign);
 }
