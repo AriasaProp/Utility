@@ -7,7 +7,7 @@ bool BigInteger_test()
     if (true) {
         BigInteger x = 127;
         size_t igr = 1;
-        while(igr < 4)
+        while(igr < 5)
         {
             std::cout << " on temp : " << igr << std::endl;
             std::cout << " result : " << x << std::endl;
