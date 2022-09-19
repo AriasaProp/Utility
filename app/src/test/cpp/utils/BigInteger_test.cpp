@@ -7,23 +7,21 @@ bool BigInteger_test()
     bool passed = true;
     bool result;
     auto restart = std::chrono::high_resolution_clock::now();
-    try
+    
     {
         BigInteger a = BigInteger("1152921504606846976\0"), b = 2;
         // "^" operator test
-        result = ((b ^ 60) == a);
+        result = ((b ^ 32) == a);
         passed &= result;
         if (!result)
             std::cout << "    '^' operator error \n";
         // "^=" operator test
-        result = ((b ^= 60) == a);
+        result = ((b ^= 32) == a);
         passed &= result;
         if (!result)
             std::cout << "    '^=' operator error \n";
 
     }
-    catch (...)
-        std::cout << "error" << std::endl;
     
     std::cout << "BigInteger code test \n";
     BigInteger a = 9, b = 7;
