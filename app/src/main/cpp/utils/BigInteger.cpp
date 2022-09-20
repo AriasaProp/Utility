@@ -182,7 +182,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         carry = *c - '0';
         if (carry > 9)
             throw("BigInteger should initialize with number from 0 to 9.");
-        add_a_word(this->words, carry);
+        add_a_word(this->words, 0, carry);
     }
 } 
 
