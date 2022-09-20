@@ -29,14 +29,14 @@ void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 
 void add_word(std::vector<word> &a, std::vector<word> b)
 {
-    size_t i = 0;
-    word carry = 0;
     if (a.size() < b.size())
         a.resize(b.size(), 0);
+    size_t i = 0;
+    word carry = 0;
     for (size_t j = b.size(); i < j; i++)
     {
-        carry = ((a[i] += carry) < carry);
-        carry += ((a[i] += b[i]) < b[i]);
+        carry = (a[i] += carry) < carry;
+        carry += (a[i] += b[i]) < b[i];
     }
     for (size_t j = a.size(); i < j && carry; i++)
         carry = (a[i] += carry) < carry;
