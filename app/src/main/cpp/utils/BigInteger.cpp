@@ -38,33 +38,28 @@ void add_word(std::vector<word> &a, std::vector<word> b)
         carry = (a[i] += carry) < carry;
         carry += (a[i] += b[i]) < b[i];
     }
-    for (size_t j = a.size(); i < j && carry; i++)
-        carry = (a[i] += carry) < carry;
-    if (carry)
-        a.push_back(carry);
+    add_a_word(a, i, carry);
 }
 // a should be greater or equal than b
 bool sub_word(std::vector<word> &a, std::vector<word> b)
 {
-    bool sw = false;
     size_t i = a.size();
-    const size_t nb = b.size();
-    if (i < nb)
+    bool sw = false;
     {
-        a.swap(b);
-        sw = true;
-    }
-    else if (i == nb)
-    {
-        while (i--)
+        const size_t nb = b.size();
+        if (i < nb)
         {
-            if (a[i] < b[i])
-            {
-                a.swap(b);
-                sw = true;
-                break;
-            }
+            a.swap(b);
+            sw = true;
         }
+        else if (i == nb)
+            while (i--)
+                if (a[i] < b[i])
+                {
+                    a.swap(b);
+                    sw = true;
+                    break;
+                }
     }
     i = 0;
     word carry = 0;
@@ -73,10 +68,7 @@ bool sub_word(std::vector<word> &a, std::vector<word> b)
         carry = a[i] < (a[i] -= carry);
         carry += a[i] < (a[i] -= b[i]);
     }
-    for (size_t j = a.size(); i < j && carry; i++)
-        carry = a[i] < (a[i] -= carry);
-    while (a.size() && !a.back())
-        a.pop_back();
+    sub_a_word(a, i, carry);
     return sw;
 }
 
@@ -105,6 +97,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto a_split = std::next(A.begin(), m2);
             a0 = std::vector<word>(A.begin(), a_split);
+            while (a0.size() && !a0.back())
+                a0.pop_back();
             a1 = std::vector<word>(a_split, A.end());
         }
         else
@@ -113,6 +107,8 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto b_split = std::next(B.begin(), m2);
             b0 = std::vector<word>(B.begin(), b_split);
+            while (b0.size() && !b0.back())
+                b0.pop_back();
             b1 = std::vector<word>(b_split, B.end());
         }
         else
