@@ -9,12 +9,132 @@ static const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
 static const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
 static const double LOG2BITS = std::log(2) * WORD_BITS;
 
+//private function for repeated use
+
+void add_a_word(std::vector<word> &a, size_t &i, word carry)
+{
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = ((a[i] += carry) < carry);
+    if (carry)
+        a.push_back(carry);
+}
+// a should be greater or equal than carry
+void sub_a_word(std::vector<word> &a, size_t &i, word carry)
+{
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = a[i] < (a[i] -= carry);
+    while (a.size() && !a.back())
+        a.pop_back();
+}
+
+void add_word(std::vector<word> &a, const std::vector<word> &b)
+{
+    size_t i = 0;
+    word carry = 0;
+    if (a.size() < b.size())
+        a.resize(b.size(), 0);
+    for (size_t j = b.size(); i < j; i++)
+    {
+        carry = ((a[i] += carry) < carry);
+        carry += ((a[i] += b[i]) < b[i]);
+    }
+    add_a_word(a, i, carry);
+}
+// a should be greater or equal than b
+bool sub_word(std::vector<word> &a, std::vector<word> b)
+{
+    bool sw = false;
+    size_t i = a.size();
+    const size_t nb = b.size();
+    if (i < nb)
+    {
+        a.swap(b);
+        sw = true;
+    }
+    else if (i == nb)
+    {
+        while (i--)
+        {
+            if (a[i] < b[i])
+            {
+                a.swap(b);
+                sw = true;
+                break;
+            }
+        }
+    }
+    i = 0;
+    word carry = 0;
+    for (size_t j = b.size(); i < j; i++)
+    {
+        carry = a[i] < (a[i] -= carry);
+        carry += a[i] < (a[i] -= b[i]);
+    }
+    sub_a_word(a, i, carry);
+    return sw;
+}
+
+std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
+{
+    std::vector<word> result;
+    const size_t na = A.size(), nb = B.size();
+    const size_t combinedN = na|nb;
+    if (combinedN == 1)
+    {
+        word a_hi = A[0] >> WORD_HALF_BITS;
+        word a_lo = A[0] & WORD_HALF_MASK;
+        word b_hi = B[0] >> WORD_HALF_BITS;
+        word b_lo = B[0] & WORD_HALF_MASK;
+        result.push_back(A[0] * B[0]);
+        word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+        carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+        if (carry)
+            result.push_back(carry);
+    }
+    else if(combinedN)
+    {
+        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+        std::vector<word> a0, a1, b0, b1;
+        if (na > m2)
+        {
+            auto a_split = std::next(A.begin(), m2);
+            a0 = std::vector<word>(A.begin(), a_split);
+            a1 = std::vector<word>(a_split, A.end());
+        }
+        else
+            a0 = A;
+        if (nb > m2)
+        {
+            auto b_split = std::next(B.begin(), m2);
+            b0 = std::vector<word>(B.begin(), b_split);
+            b1 = std::vector<word>(b_split, B.end());
+        }
+        else
+            b0 = B;
+        const std::vector<word> z0 = karatsuba(a0, b0);
+        const std::vector<word> z1 = karatsuba(a1, b1);
+        result = z1;
+        add_word(a0, a1);
+        add_word(b0, b1);
+        std::vector<word> mid = karatsuba(a0, b0);
+        sub_word(mid, z0);
+        sub_word(mid, z1);
+        result.insert(result.begin(), m2, 0);
+        add_word(result, mid);
+        result.insert(result.begin(), m2, 0);
+        add_word(result, z0);
+        while (result.size() && !result.back())
+            result.pop_back();
+    }
+    return result;
+}
+
+
+//initialize BigInteger functions
+
 //Constructors
 BigInteger::BigInteger() : neg(false) {}
-BigInteger::BigInteger(const BigInteger &a) : neg(a.neg)
-{
-    words = a.words;
-}
+BigInteger::BigInteger(const BigInteger &a) : neg(a.neg), words(a.words) {}
 BigInteger::BigInteger(const signed &i) : neg(i < 0)
 {
     unsigned u = abs(i);
@@ -54,15 +174,10 @@ BigInteger::BigInteger(const char *C) : neg(false)
             words.push_back(carry);
         i = 0, j = words.size();
         carry = *c - '0';
-        if (carry >= 10)
+        if (carry > 9)
             throw("BigInteger should initialize with number from 0 to 9.");
-        while (i < words.size() && carry)
-            carry = (this->words[i++] += carry) < carry;
-        if (carry)
-            words.push_back(carry);
+        add_a_word(this->words, 0, carry);
     }
-    while (words.size() && !words.back())
-        words.pop_back();
 } 
 
 BigInteger::BigInteger(std::vector<word> v, bool neg = false) : neg(neg), words(v) {}
@@ -202,22 +317,6 @@ BigInteger &BigInteger::operator=(const BigInteger &a)
     return *this;
 }
 
-void add_a_word(std::vector<word> &a, size_t i, word carry)
-{
-    for (size_t j = a.size(); i < j && carry; i++)
-        carry = ((a[i] += carry) < carry);
-    if (carry)
-        a.push_back(carry);
-}
-// a should be greater or equal than carry
-void sub_a_word(std::vector<word> &a, size_t i, word carry)
-{
-    for (size_t j = a.size(); i < j && carry; i++)
-        carry = a[i] < (a[i] -= carry);
-    while (a.size() && !a.back())
-        a.pop_back();
-}
-
 BigInteger &BigInteger::operator--()
 {
     if (this->neg)
@@ -235,55 +334,6 @@ BigInteger &BigInteger::operator++()
     return *this;
 }
 
-void add_word(std::vector<word> &a, const std::vector<word> &b)
-{
-    size_t i = 0;
-    word carry = 0;
-    if (a.size() < b.size())
-        a.resize(b.size(), 0);
-    for (size_t j = b.size(); i < j; i++)
-    {
-        carry = ((a[i] += carry) < carry);
-        carry += ((a[i] += b[i]) < b[i]);
-    }
-    add_a_word(a, i, carry);
-}
-// a should be greater or equal than b
-bool sub_word(std::vector<word> &a, std::vector<word> b)
-{
-    bool sw = false;
-    size_t i = 0;
-    {
-        size_t i = a.size(), nb = b.size();
-        if (i < nb)
-        {
-            a.swap(b);
-            sw = true;
-        }
-        else if (i == nb)
-        {
-            while (i--)
-            {
-                if (a[i] < b[i])
-                {
-                    a.swap(b);
-                    sw = true;
-                    break;
-                }
-            }
-        }
-    }
-    i = 0;
-    word carry = 0;
-    for (size_t j = b.size(); i < j; i++)
-    {
-        carry = a[i] < (a[i] -= carry);
-        carry += a[i] < (a[i] -= b[i]);
-    }
-    sub_a_word(a, i, carry);
-    return sw;
-}
-
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
     if (this->neg ^ b.neg)
@@ -298,9 +348,6 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
 {
-    word carry0 = 0, carry1;
-    std::vector<word> &A = this->words, B = b.words;
-    size_t na = A.size(), nb = B.size(), i;
     if (this->neg ^ b.neg)
         add_word(this->words, b.words);
     else
@@ -309,145 +356,6 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
             this->neg = b.neg;
     }
     return *this;
-}
-
-std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
-{
-    std::vector<word> result;
-    const size_t na = A.size(), nb = B.size();
-    const size_t combinedN = na|nb;
-    if (combinedN == 1)
-    {
-        word a_hi = A[0] >> WORD_HALF_BITS;
-        word a_lo = A[0] & WORD_HALF_MASK;
-        word b_hi = B[0] >> WORD_HALF_BITS;
-        word b_lo = B[0] & WORD_HALF_MASK;
-        result.push_back(A[0] * B[0]);
-        word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
-        carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-        if (carry)
-            result.push_back(carry);
-    }
-    else if(combinedN)
-    {
-        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
-        std::vector<word> a0, a1, b0, b1;
-        if (na > m2)
-        {
-            auto a_split = std::next(A.begin(), m2);
-            a0 = std::vector<word>(A.begin(), a_split);
-            a1 = std::vector<word>(a_split, A.end());
-        }
-        else
-            a0 = A;
-        if (nb > m2)
-        {
-            auto b_split = std::next(B.begin(), m2);
-            b0 = std::vector<word>(B.begin(), b_split);
-            b1 = std::vector<word>(b_split, B.end());
-        }
-        else
-            b0 = B;
-        const std::vector<word> z0 = karatsuba(a0, b0);
-        const std::vector<word> z1 = karatsuba(a1, b1);
-        result = z1;
-        result.insert(result.begin(), m2, 0);
-        //add a0 with a1
-        word carry = 0;
-        size_t i = 0, j = a1.size();
-        while (i < j)
-        {
-            carry = (a0[i] += carry) < carry;
-            carry += (a0[i] += a1[i]) < a1[i];
-            i++;
-        }
-        while (carry && i < m2)
-            carry = (a0[i++] += carry) < carry;
-        if (carry)
-            a0.push_back(carry);
-        while (a0.size() && !a0.back())
-            a0.pop_back();
-        // add b0 with b1
-        carry = 0;
-        i = 0, j = b1.size();
-        while (i < j)
-        {
-            carry = (b0[i] += carry) < carry;
-            carry += (b0[i] += b1[i]) < b1[i];
-            i++;
-        }
-        while (carry && i < m2)
-            carry = (b0[i] += carry) < carry;
-        if (carry)
-            b0.push_back(carry);
-        while (b0.size() && !b0.back())
-            b0.pop_back();
-        std::vector<word> mid = karatsuba(a0, b0);
-        //sub mid with z0
-        carry = 0;
-        i = 0, j = z0.size();
-        while (i < j)
-        {
-            carry = mid[i] < (mid[i] -= carry);
-            carry += mid[i] < (mid[i] -= z0[i]);
-            i++;
-        }
-        j = mid.size();
-        while (carry && i < j)
-        {
-            carry = mid[i] < (mid[i] -= carry);
-            i++;
-        }
-        //sub mid with z1
-        carry = 0;
-        i = 0, j = z1.size();
-        while (i < j)
-        {
-            carry = mid[i] < (mid[i] -= carry);
-            carry += mid[i] < (mid[i] -= z1[i]);
-            i++;
-        }
-        j = mid.size();
-        while (carry && i < j)
-        {
-            carry = mid[i] < (mid[i] -= carry);
-            i++;
-        }
-        //add mid to result
-        carry = 0;
-        i = 0, j = mid.size();
-        if (result.size() < j)
-            result.resize(j, 0);
-        while (i < j)
-        {
-            carry = (result[i] += carry) < carry;
-            carry += (result[i] += mid[i]) < mid[i];
-            i++;
-        }
-        j = result.size();
-        while (carry && i < j)
-            carry = (result[i++] += carry) < carry;
-        if (carry)
-            result.push_back(carry);
-        result.insert(result.begin(), m2, 0);
-        //add z0 to result
-        carry = 0;
-        i = 0, j = z0.size();
-        while (i < j)
-        {
-            carry = (result[i] += carry) < carry;
-            carry += (result[i] += z0[i]) < z0[i];
-            i++;
-        }
-        j = result.size();
-        while (carry && i < j)
-            carry = (result[i++] += carry) < carry;
-        if (carry)
-            result.push_back(carry);
-        while (result.size() && !result.back())
-            result.pop_back();
-    }
-    return result;
 }
 
 BigInteger &BigInteger::operator*=(const BigInteger &b)
