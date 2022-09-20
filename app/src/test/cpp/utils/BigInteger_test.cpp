@@ -64,7 +64,11 @@ bool BigInteger_test()
     result &= (((-b) + (-b)) == (-a));
     passed &= result;
     if (!result)
+    {
+        std::cout << "    b + b = " << (b + b) << std::endl;
+        std::cout << "    a + -b = " << (a + (-b)) << std::endl;
         std::cout << "    '+' operator error \n";
+    }
     // "-" operator test
     result = true;
     result &= ((a - b) == b);

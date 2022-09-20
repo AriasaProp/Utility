@@ -14,7 +14,7 @@ static const double LOG2BITS = std::log(2) * WORD_BITS;
 void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 {
     for (size_t j = a.size(); i < j && carry; i++)
-        carry = ((a[i] += carry) < carry);
+        carry = (a[i] += carry) < carry;
     if (carry)
         a.push_back(carry);
 }
