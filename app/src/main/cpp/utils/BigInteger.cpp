@@ -53,13 +53,18 @@ bool sub_word(std::vector<word> &a, std::vector<word> b)
             sw = true;
         }
         else if (i == nb)
+        {
             while (i--)
-                if (a[i] < b[i])
+            {
+                if (a[i] != b[i])
                 {
-                    a.swap(b);
-                    sw = true;
+                    
+                    if (sw = a[i] < b[i])
+                        a.swap(b);
                     break;
                 }
+            }
+        }
     }
     i = 0;
     word carry = 0;
