@@ -202,102 +202,97 @@ BigInteger &BigInteger::operator=(const BigInteger &a)
     return *this;
 }
 
+void add_a_word(std::vector<word> &a, size_t i, word carry)
+{
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = ((a[i] += carry) < carry);
+    if (carry)
+        a.push_back(carry);
+}
+// a should be greater or equal than carry
+void sub_a_word(std::vector<word> &a, size_t i, word carry)
+{
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = a[i] < (a[i] -= carry);
+    while (a.size() && !a.back())
+        a.pop_back();
+}
+
 BigInteger &BigInteger::operator--()
 {
-    word carry = 1;
-    const size_t n = words.size();
     if (this->neg)
-    {
-        for (size_t i = 0; i < n && carry; i++)
-            carry = ((this->words[i] += carry) < carry);
-        if (carry)
-            this->words.push_back(carry);
-    }
+        add_a_word(this->words, 0, 1);
     else
-    {
-        for (size_t i = 0; i < n && carry; i++)
-            carry = this->words[i] < (this->words[i] -= carry);
-        while (words.size() && !words.back())
-            words.pop_back();
-    }
+        sub_a_word(this->words, 0, 1);
     return *this;
 }
 BigInteger &BigInteger::operator++()
 {
-    word carry = 1;
-    const size_t n = words.size();
     if (this->neg)
-    {
-        for (size_t i = 0; i < n && carry; i++)
-            carry = this->words[i] < (this->words[i] -= carry);
-        while (words.size() && !words.back())
-            words.pop_back();
-    }
+        sub_a_word(this->words, 0, 1);
     else
-    {
-        for (size_t i = 0; i < n && carry; i++)
-            carry = ((this->words[i] += carry) < carry);
-        if (carry)
-            this->words.push_back(carry);
-    }
+        add_a_word(this->words, 0, 1);
     return *this;
 }
 
-BigInteger &BigInteger::operator+=(const BigInteger &b)
+void add_word(std::vector<word> &a, const std::vector<word> &b)
 {
-    word carry0 = 0, carry1;
-    std::vector<word> &A = this->words, B = b.words;
-    size_t na = A.size(), nb = B.size(), i;
-    if (this->neg == b.neg)
+    size_t i = 0;
+    word carry = 0;
+    if (a.size() < b.size())
+        a.resize(b.size(), 0);
+    for (size_t j = b.size(); i < j; i++)
     {
-        const size_t n = na >= nb ? na : nb;
-        A.resize(n, 0);
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = ((A[i] += carry0) < carry0);
-            carry0 += ((A[i] += B[i]) < B[i]);
-        }
-        for (; i < n && carry0; i++)
-            carry0 = ((A[i] += carry0) < carry0);
-        if (carry0)
-            A.push_back(carry0);
+        carry = ((a[i] += carry) < carry);
+        carry += ((a[i] += b[i]) < b[i]);
     }
-    else
+    add_a_word(a, i, carry);
+}
+// a should be greater or equal than b
+bool sub_word(std::vector<word> &a, std::vector<word> b)
+{
+    bool sw = false;
+    size_t i = 0;
     {
-        if (na < nb)
+        size_t i = a.size(), nb = b.size();
+        if (i < nb)
         {
-            A.swap(B);
-            this->neg = !this->neg;
-            na = A.size(), nb = B.size();
+            a.swap(b);
+            sw = true;
         }
-        else if (na == nb)
+        else if (i == nb)
         {
-            i = na;
             while (i--)
             {
-                carry0 = A[i], carry1 = B[i];
-                if (carry0 != carry1)
+                if (a[i] < b[i])
                 {
-                    if (carry0 < carry1)
-                    {
-                        A.swap(B);
-                        this->neg = !this->neg;
-                    }
+                    a.swap(b);
+                    sw = true;
                     break;
                 }
             }
         }
-        carry0 = 0;
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = A[i] < (A[i] -= carry0);
-            carry0 += A[i] < (A[i] -= B[i]);
-        }
-        for (; i < na && carry0; i++)
-            carry0 = A[i] < (A[i] -= carry0);
-        while (A.size() && !A.back())
-            A.pop_back();
     }
+    i = 0;
+    word carry = 0;
+    for (size_t j = b.size(); i < j; i++)
+    {
+        carry = a[i] < (a[i] -= carry);
+        carry += a[i] < (a[i] -= b[i]);
+    }
+    sub_a_word(a, i, carry);
+    return sw;
+}
+
+BigInteger &BigInteger::operator+=(const BigInteger &b)
+{
+    if (this->neg ^ b.neg)
+    {
+        if (sub_word(this->words, b.words))
+            this->neg = b.neg;
+    }
+    else
+        add_word(this->words, b.words);
     return *this;
 }
 
@@ -306,55 +301,12 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
     word carry0 = 0, carry1;
     std::vector<word> &A = this->words, B = b.words;
     size_t na = A.size(), nb = B.size(), i;
-    if (this->neg != b.neg)
-    {
-        const size_t n = na >= nb ? na : nb;
-        A.resize(n, 0);
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = (A[i] += carry0) < carry0;
-            carry0 += (A[i] += B[i]) < B[i];
-        }
-        for (; i < n && carry0; i++)
-            carry0 = (A[i] += carry0) < carry0;
-        if (carry0)
-            A.push_back(carry0);
-    }
+    if (this->neg ^ b.neg)
+        add_word(this->words, b.words);
     else
     {
-        if (na < nb)
-        {
-            A.swap(B);
-            na = A.size(), nb = B.size();
-            this->neg = !this->neg;
-        }
-        else if (na == nb)
-        {
-            i = na;
-            while (i--)
-            {
-                carry0 = A[i], carry1 = B[i];
-                if (carry0 != carry1)
-                {
-                    if (carry0 < carry1)
-                    {
-                        A.swap(B);
-                        this->neg = !this->neg;
-                    }
-                    break;
-                }
-            }
-        }
-        carry0 = 0;
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = A[i] < (A[i] -= carry0);
-            carry0 += A[i] < (A[i] -= B[i]);
-        }
-        for (; i < na && carry0; i++)
-            carry0 = A[i] < (A[i] -= carry0);
-        while (A.size() && !A.back())
-            A.pop_back();
+        if (sub_word(this->words, b.words))
+            this->neg = b.neg;
     }
     return *this;
 }

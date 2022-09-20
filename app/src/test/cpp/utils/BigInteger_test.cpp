@@ -7,7 +7,7 @@ bool BigInteger_test()
     if (true) {
         BigInteger x = 2;
         size_t igr = 1;
-        while(igr < 60)
+        while(igr < 4)
         {
             std::cout << "\r" << std::flush;
             std::cout << "(" << igr;
