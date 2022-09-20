@@ -77,7 +77,7 @@ void BigInteger::set_bit(size_t i)
 {
     const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
     if (words.size() <= i_word)
-        words.resize(i_word + 1);
+        words.resize(i_word + 1, 0);
     this->words[i_word] |= ((word)1) << i_bit;
 }
 
@@ -251,7 +251,7 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
     if (this->neg == b.neg)
     {
         const size_t n = na >= nb ? na : nb;
-        A.resize(n);
+        A.resize(n, 0);
         for (i = 0; i < nb; i++)
         {
             carry0 = ((A[i] += carry0) < carry0);
@@ -309,7 +309,7 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
     if (this->neg != b.neg)
     {
         const size_t n = na >= nb ? na : nb;
-        A.resize(n);
+        A.resize(n, 0);
         for (i = 0; i < nb; i++)
         {
             carry0 = (A[i] += carry0) < carry0;
@@ -721,19 +721,19 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    std::vector<word> p = this->words, temp;
+    std::vector<word> p = this->words;
     this->words = std::vector<word>{1};
     this->neg = (exponent&1) ? this->neg : false;
-    for (; exponent; exponent >>= 1)
+    while (exponent)
     {
         if (exponent & 1)
         {
-            temp = karatsuba(this->words, p);
-            this->words = temp;
-            exponent--;
+            if (p.size() > this->words.size()) 
+                this->words.resize(p.size(), 0);
+            this->words = karatsuba(this->words, p);
         }
-        temp = karatsuba(p, p);
-        p = temp;
+        p = karatsuba(p, p);
+        exponent >>= 1;
     }
     return *this;
 }
@@ -834,7 +834,7 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
     if (r.neg == b.neg)
     {
         const size_t n = std::max(na, nb);
-        A.resize(n);
+        A.resize(n, 0);
         for (i = 0; i < nb; i++)
         {
             carry0 = (A[i] += carry0) < carry0;
@@ -893,7 +893,7 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     if (this->neg != b.neg)
     {
         const size_t n = std::max(na, nb);
-        A.resize(n);
+        A.resize(n, 0);
         for (i = 0; i < nb; i++)
         {
             carry0 = (A[i] += carry0) < carry0;
