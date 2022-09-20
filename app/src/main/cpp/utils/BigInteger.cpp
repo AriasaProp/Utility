@@ -27,7 +27,7 @@ void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
         a.pop_back();
 }
 
-void add_word(std::vector<word> &a, const std::vector<word> &b)
+void add_word(std::vector<word> &a, std::vector<word> b)
 {
     size_t i = 0;
     word carry = 0;
@@ -38,7 +38,10 @@ void add_word(std::vector<word> &a, const std::vector<word> &b)
         carry = ((a[i] += carry) < carry);
         carry += ((a[i] += b[i]) < b[i]);
     }
-    add_a_word(a, i, carry);
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = (a[i] += carry) < carry;
+    if (carry)
+        a.push_back(carry);
 }
 // a should be greater or equal than b
 bool sub_word(std::vector<word> &a, std::vector<word> b)
@@ -70,7 +73,10 @@ bool sub_word(std::vector<word> &a, std::vector<word> b)
         carry = a[i] < (a[i] -= carry);
         carry += a[i] < (a[i] -= b[i]);
     }
-    sub_a_word(a, i, carry);
+    for (size_t j = a.size(); i < j && carry; i++)
+        carry = a[i] < (a[i] -= carry);
+    while (a.size() && !a.back())
+        a.pop_back();
     return sw;
 }
 
