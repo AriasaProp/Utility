@@ -169,7 +169,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         while (i < j)
         {
             tmp = this->words[i] * 10;
-            carry = ((tmp += carry) < carry);
+            carry = (tmp += carry) < carry;
             a_hi = this->words[i] >> WORD_HALF_BITS;
             a_lo = this->words[i] & WORD_HALF_MASK;
             tp = ((a_lo * 10) >> WORD_HALF_BITS) + a_hi * 10;
