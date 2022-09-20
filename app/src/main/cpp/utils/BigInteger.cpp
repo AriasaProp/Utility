@@ -11,7 +11,7 @@ static const double LOG2BITS = std::log(2) * WORD_BITS;
 
 //private function for repeated use
 
-void add_a_word(std::vector<word> &a, size_t &i, word carry)
+void add_a_word(std::vector<word> &a, size_t i = 0, word carry)
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = ((a[i] += carry) < carry);
@@ -19,7 +19,7 @@ void add_a_word(std::vector<word> &a, size_t &i, word carry)
         a.push_back(carry);
 }
 // a should be greater or equal than carry
-void sub_a_word(std::vector<word> &a, size_t &i, word carry)
+void sub_a_word(std::vector<word> &a, size_t i = 0, word carry)
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = a[i] < (a[i] -= carry);
@@ -176,7 +176,7 @@ BigInteger::BigInteger(const char *C) : neg(false)
         carry = *c - '0';
         if (carry > 9)
             throw("BigInteger should initialize with number from 0 to 9.");
-        add_a_word(this->words, 0, carry);
+        add_a_word(this->words, carry);
     }
 } 
 
@@ -320,17 +320,17 @@ BigInteger &BigInteger::operator=(const BigInteger &a)
 BigInteger &BigInteger::operator--()
 {
     if (this->neg)
-        add_a_word(this->words, 0, 1);
+        add_a_word(this->words, (word)1);
     else
-        sub_a_word(this->words, 0, 1);
+        sub_a_word(this->words, (word)1);
     return *this;
 }
 BigInteger &BigInteger::operator++()
 {
     if (this->neg)
-        sub_a_word(this->words, 0, 1);
+        sub_a_word(this->words, (word)1);
     else
-        add_a_word(this->words, 0, 1);
+        add_a_word(this->words, (word)1);
     return *this;
 }
 
