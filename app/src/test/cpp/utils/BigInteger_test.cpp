@@ -7,11 +7,12 @@ bool BigInteger_test()
     if (true) {
         BigInteger x = 2;
         size_t igr = 1;
-        while(igr < 5)
+        while(igr < 60)
         {
-            std::cout << " on temp : " << igr << std::endl;
+            std::cout << "\r" << std::flush;
+            std::cout << "(" << igr;
             x ^= igr;
-            std::cout << " result : " << x << std::endl;
+            std::cout << ") " << x;
             igr++;
         }
     }
