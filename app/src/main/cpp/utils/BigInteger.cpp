@@ -39,9 +39,10 @@ void add_word(std::vector<word> &a, const std::vector<word> &b)
         carry += ((a[i] += b[i]) < b[i]);
     }
     add_a_word(a, i, carry);
+    return a;
 }
 // a should be greater or equal than b
-bool sub_word(std::vector<word> &a, std::vector<word> b)
+bool sub_word(std::vector<word> &a, std::vector<word> &b)
 {
     bool sw = false;
     size_t i = a.size();
@@ -336,25 +337,29 @@ BigInteger &BigInteger::operator++()
 
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
+    std::vector<word> A = this->words;
     if (this->neg ^ b.neg)
     {
-        if (sub_word(this->words, b.words))
+        if (sub_word(A, b.words))
             this->neg = b.neg;
     }
     else
-        add_word(this->words, b.words);
+        add_word(A, b.words);
+    this->words = A;
     return *this;
 }
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
 {
+    std::vector<word> A = this->words;
     if (this->neg ^ b.neg)
-        add_word(this->words, b.words);
+        add_word(A, b.words);
     else
     {
-        if (sub_word(this->words, b.words))
+        if (sub_word(A, b.words))
             this->neg = b.neg;
     }
+    this->words = A;
     return *this;
 }
 
