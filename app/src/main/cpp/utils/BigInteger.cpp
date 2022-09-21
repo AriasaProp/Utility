@@ -11,6 +11,22 @@ static const double LOG2BITS = std::log(2) * WORD_BITS;
 
 //private function for repeated use
 
+// +1 mean a is greater, -1 mean a is less, 0 mean equal
+int compare(const std::vector<word> &a, const std::vector<word> &b)
+{
+    size_t i = this->words.size(), nb = b.words.size();
+    if (i != nb)
+        return i > nb ? +1 : -1;
+    word A, B;
+    while (i--)
+    {
+        A = a[i], B = b[i];
+        if (A != B)
+            return A > B ? +1 : -1;
+    }
+    return 0;
+}
+
 void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 {
     for (size_t j = a.size(); i < j && carry; i++)
@@ -43,32 +59,11 @@ void add_word(std::vector<word> &a, std::vector<word> b)
 // a should be greater or equal than b
 bool sub_word(std::vector<word> &a, std::vector<word> b)
 {
-    size_t i = a.size();
-    bool sw = false;
-    {
-        const size_t nb = b.size();
-        if (i < nb)
-        {
-            a.swap(b);
-            sw = true;
-        }
-        else if (i == nb)
-        {
-            while (i--)
-            {
-                if (a[i] != b[i])
-                {
-                    
-                    if (sw = a[i] < b[i])
-                        a.swap(b);
-                    break;
-                }
-            }
-        }
-    }
-    i = 0;
+    bool sw = compare(a, b) < 0;
+    if (sw)
+        a.swap(b);
     word carry = 0;
-    for (size_t j = b.size(); i < j; i++)
+    for (size_t i = 0, j = b.size(); i < j; i++)
     {
         carry = a[i] < (a[i] -= carry);
         carry += a[i] < (a[i] -= b[i]);
@@ -386,6 +381,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 BigInteger &BigInteger::operator/=(const BigInteger &b)
 {
     word carry0 = 0, carry1;
+    
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
     //compare function
@@ -459,18 +455,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
             }
             if (cmp)
             {
-                carry0 = 0;
-                for (i = 0; i < nb; i++)
-                {
-                    carry0 = rem[i] < (rem[i] -= carry0);
-                    carry0 += rem[i] < (rem[i] -= div[i]);
-                }
-                for (; i < na && carry0; i++)
-                {
-                    carry0 = rem[i] < (rem[i] -= carry0);
-                }
-                while (rem.size() && !rem.back())
-                    rem.pop_back();
+                sub_word(rem, div);
                 set_bit(n);
             }
             //reverse shift one by one
@@ -562,16 +547,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             }
             if (cmp)
             {
-                carry0 = 0;
-                for (i = 0; i < nb; i++)
-                {
-                    carry0 = rem[i] < (rem[i] -= carry0);
-                    carry0 += rem[i] < (rem[i] -= div[i]);
-                }
-                for (; i < na && carry0; i++)
-                    carry0 = rem[i] < (rem[i] -= carry0);
-                while (rem.size() && !rem.back())
-                    rem.pop_back();
+                sub_word(rem, div);
             }
             //reverse shift one by one
             nb--;
@@ -608,6 +584,7 @@ BigInteger &BigInteger::operator^=(size_t exponent)
     }
     return *this;
 }
+
 
 bool BigInteger::operator==(const BigInteger &b) const
 {
@@ -699,118 +676,22 @@ bool BigInteger::operator>(const BigInteger &b) const
 BigInteger BigInteger::operator+(const BigInteger &b) const
 {
     BigInteger r(*this);
-    word carry0 = 0, carry1;
-    std::vector<word> &A = r.words, B = b.words;
-    size_t na = A.size(), nb = B.size(), i;
     if (r.neg == b.neg)
-    {
-        const size_t n = std::max(na, nb);
-        A.resize(n, 0);
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = (A[i] += carry0) < carry0;
-            carry0 += (A[i] += B[i]) < B[i];
-        }
-        for (; i < n && carry0; i++)
-            carry0 = ((A[i] += carry0) < carry0);
-        if (carry0)
-            A.push_back(carry0);
-    }
+        add_word(r.words, b.words)
     else
-    {
-        if (na < nb)
-        {
-            A.swap(B);
-            na = A.size(), nb = B.size();
+        if (sub_word(r.words, b.words))
             r.neg = !r.neg;
-        }
-        else if (na == nb)
-        {
-            i = na;
-            while (i--)
-            {
-                carry0 = A[i], carry1 = B[i];
-                if (carry0 != carry1)
-                {
-                    if (carry0 < carry1)
-                    {
-                        A.swap(B);
-                        r.neg = !r.neg;
-                    }
-                    break;
-                }
-            }
-        }
-        carry0 = 0;
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = A[i] < (A[i] -= carry0);
-            carry0 += A[i] < (A[i] -= B[i]);
-        }
-        for (; i < na && carry0; i++)
-            carry0 = A[i] < (A[i] -= carry0);
-        while (A.size() && !A.back())
-            A.pop_back();
-    }
     return r;
 }
 
 BigInteger BigInteger::operator-(const BigInteger &b) const
 {
     BigInteger r(*this);
-    std::vector<word> &A = r.words, B = b.words;
-    size_t na = A.size(), nb = B.size(), i;
-    word carry0 = 0, carry1 = 0;
     if (this->neg != b.neg)
-    {
-        const size_t n = std::max(na, nb);
-        A.resize(n, 0);
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = (A[i] += carry0) < carry0;
-            carry0 += (A[i] += B[i]) < B[i];
-        }
-        for (; i < n && carry0; i++)
-            carry0 = ((A[i] += carry0) < carry0);
-        if (carry0)
-            A.push_back(carry0);
-    }
+        add_word(r.words, b.words);
     else
-    {
-        if (na < nb)
-        {
-            A.swap(B);
-            na = A.size(), nb = B.size();
+        if (sub_word(r.words, b.words))
             r.neg = !r.neg;
-        }
-        else if (na == nb)
-        {
-            i = na;
-            while (i--)
-            {
-                carry0 = A[i], carry1 = B[i];
-                if (carry0 != carry1)
-                {
-                    if (carry0 < carry1)
-                    {
-                        A.swap(B);
-                        r.neg = !r.neg;
-                    }
-                    break;
-                }
-            }
-        }
-        carry0 = 0;
-        for (i = 0; i < nb; i++)
-        {
-            carry0 = A[i] < (A[i] -= carry0);
-            carry0 += A[i] < (A[i] -= B[i]);
-        }
-        for (; i < na && carry0; i++)
-            carry0 = A[i] < (A[i] -= carry0);
-        while (A.size() && !A.back())
-            A.pop_back();
-    }
     return r;
 }
 
@@ -1031,18 +912,18 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
 
 BigInteger BigInteger::operator^(size_t exponent) const
 {
-    std::vector<word> p = this->words, temp, result{1};
+    std::vector<word> p = this->words, result{1};
     bool sign = (exponent&1) ? this->neg : false;
     for (; exponent; exponent >>= 1)
     {
         if (exponent & 1)
         {
-            temp = karatsuba(result, p);
-            result = temp;
+            if (result.size() < p.size())
+                result.resize(p.size(), 0);
+            result = karatsuba(result, p);
             exponent--;
         }
-        temp = karatsuba(p, p);
-        p = temp;
+        p = karatsuba(p, p);
     }
     return BigInteger(result, sign);
 }
