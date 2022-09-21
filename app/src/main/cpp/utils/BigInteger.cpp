@@ -489,19 +489,19 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    std::vector<word> p = this->words;
-    this->words = std::vector<word>{1};
-    this->neg = (exponent&1) ? this->neg : false;
+    std::vector<word> p = this->words, &r = this->words;
+    r = std::vector<word>{1};
+    this->neg = (this->neg & (exponent & 1));
     while (exponent)
     {
         if (exponent & 1)
         {
-            if (p.size() > this->words.size()) 
-                this->words.resize(p.size(), 0);
-            this->words = karatsuba(this->words, p);
+            if (p.size() > r.size()) 
+                r.resize(p.size(), 0);
+            r = karatsuba(r, p);
         }
-        p = karatsuba(p, p);
         exponent >>= 1;
+        p = karatsuba(p, p);
     }
     return *this;
 }
@@ -691,20 +691,21 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
 
 BigInteger BigInteger::operator^(size_t exponent) const
 {
-    std::vector<word> p = this->words, result{1};
-    bool sign = (exponent&1) ? this->neg : false;
-    for (; exponent; exponent >>= 1)
+    BigInteger result = 1;
+    std::vector<word> p = this->words, &r = result.words;
+    result.neg = this->neg & (exponent & 1);
+    while (exponent)
     {
         if (exponent & 1)
         {
-            if (result.size() < p.size())
-                result.resize(p.size(), 0);
-            result = karatsuba(result, p);
-            exponent--;
+            if (r.size() < p.size())
+                r.resize(p.size(), 0);
+            r = karatsuba(r, p);
         }
+        exponent >>= 1;
         p = karatsuba(p, p);
     }
-    return BigInteger(result, sign);
+    return result;
 }
 
 BigInteger BigInteger::operator-() const
