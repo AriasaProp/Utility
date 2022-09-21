@@ -13,7 +13,8 @@ template<typename T> T MAX(const T & x, const T & y)
 }
 
 //fft function
-void big_decimal::fft_ensure_table(int k) const {
+void big_decimal::fft_ensure_table(int k) const
+{
     int current_k = (int) twiddle_table.size() - 1;
     if (current_k >= k)
         return;
@@ -326,50 +327,39 @@ big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x |
 
 big_decimal::big_decimal(const double &x)
 {
-	if (x == 0.0)
-		return;
-  std::string xstr = std::to_string(x);
-	if (xstr[0] == '-')
-      this->sign = true;
-  xstr.erase(0, 1);
-  size_t dot = xstr.find('.', 0);
-  size_t i;
-  this->exp = -3;
-  this->L = 6;
-	this->T = std::unique_ptr<uint32_t[]>(new uint32_t[6]{0});
-  std::string top = xstr.substr(0, dot);
-  for (i = 0; i < 9 && top.length(); i++)
-  {
-	    this->T[2] += std::pow(10, i) * uint32_t(top.back() - '0');
-	    top.pop_back();
-  }
-  for (i = 0; i < 9 && top.length(); i++)
-  {
-	    this->T[1] += std::pow(10, i) * uint32_t(top.back() - '0');
-	    top.pop_back();
-  }
-	for (i = 0; i < 9 && top.length(); i++)
-	{
-	    this->T[0] += std::pow(10, i) * uint32_t(top.back() - '0');
-	    top.pop_back();
-  }
-  std::string bot = xstr.substr(dot+1, xstr.length()-1);
-	for (i = 9; i-- && bot.length(); )
-	{
-	    this->T[3] += std::pow(10, i) * uint32_t(bot.front() - '0');
-	    bot.erase(0, 1);
-	}
-	for (i = 9; i-- && bot.length(); )
-	{
-	    this->T[4] += std::pow(10, i) * uint32_t(bot.front() - '0');
-	    bot.erase(0, 1);
-	}
-	for (i = 9; i-- && bot.length(); )
-	{
-	    this->T[5] += std::pow(10, i) * uint32_t(bot.front() - '0');
-	    bot.erase(0, 1);
-	}
-  
+    if (x == 0.0)
+        return;
+    std::string xstr = std::to_string(x);
+    if (xstr[0] == '-')
+    {
+        this->sign = true;
+        xstr.erase(0, 1);
+    }
+    size_t i = xstr.find('.', 0), j, k;
+    std::string top = xstr.substr(0, i);
+    std::string bot = xstr.substr(++i, xstr.size());
+    i = top.length() % 9;
+    if (i)
+        top.insert(0, 9 - i, '0');
+    i = bot.length() % 9;
+    if (i)
+        bot.insert(bot.length() - 1, 9 - i, '0');
+    
+    std::vector<uint32_t> tempv;
+    while (bot.length())
+    {
+        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
+        bot.resize(bot.size() - 9);
+    }
+    this->exp = -tempv.size();
+    while (top.length())
+    {
+        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
+        top.resize(top.size() - 9);
+    }
+    this->L = tempv.size();
+    T = std::unique_ptr<uint32_t[]>(new uint32_t[tempv.size()]);
+    memcpy(T.get(), tempv.data(), this->L * sizeof(uint32_t));
 }
 
 //Destructors
