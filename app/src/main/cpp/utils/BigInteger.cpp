@@ -491,7 +491,11 @@ BigInteger &BigInteger::operator^=(size_t exponent)
     while (exponent)
     {
         if (exponent & 1)
+        {
+            if (r.size() < p.size())
+                r.resize(p.size(), 0);
             r = karatsuba(r, p);
+        }
         exponent >>= 1;
         p = karatsuba(p, p);
     }
