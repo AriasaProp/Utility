@@ -2,17 +2,17 @@
 #include <algorithm>
 #include "utils/BigInteger.h"
 
-static const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
-static const size_t WORD_BITS_1 = WORD_BITS - 1;
-static const word WORD_MASK = (word)-1;
-static const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
-static const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-static const double LOG2BITS = std::log(2) * WORD_BITS;
+const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
+const size_t WORD_BITS_1 = WORD_BITS - 1;
+const word WORD_MASK = (word)-1;
+const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
+const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
+const double LOG2BITS = std::log(2) * WORD_BITS;
 
 //private function for repeated use
 
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const std::vector<word> &a, const std::vector<word> &b)
+int compare(const std::vector<word> &a, const std::vector<word> &b) const
 {
     size_t i = a.size();
     const size_t nb = b.size();
@@ -28,7 +28,7 @@ int compare(const std::vector<word> &a, const std::vector<word> &b)
     return 0;
 }
 
-void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
+void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = (a[i] += carry) < carry;
@@ -36,7 +36,7 @@ void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
         a.push_back(carry);
 }
 // a should be greater or equal than carry
-void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
+void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = a[i] < (a[i] -= carry);
@@ -44,7 +44,7 @@ void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
         a.pop_back();
 }
 
-void add_word(std::vector<word> &a, std::vector<word> b)
+void add_word(std::vector<word> &a, std::vector<word> b) const
 {
     if (a.size() < b.size())
         a.resize(b.size(), 0);
@@ -58,7 +58,7 @@ void add_word(std::vector<word> &a, std::vector<word> b)
     add_a_word(a, i, carry);
 }
 // a should be greater or equal than b
-bool sub_word(std::vector<word> &a, std::vector<word> b)
+bool sub_word(std::vector<word> &a, std::vector<word> b) const
 {
     bool sw = compare(a, b) < 0;
     if (sw)
@@ -74,7 +74,7 @@ bool sub_word(std::vector<word> &a, std::vector<word> b)
     return sw;
 }
 
-std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
+std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B) const
 {
     std::vector<word> result;
     const size_t na = A.size(), nb = B.size();
