@@ -12,7 +12,7 @@ const double LOG2BITS = std::log(2) * WORD_BITS;
 //private function for repeated use
 
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const std::vector<word> &a, const std::vector<word> &b) const
+int compare(const std::vector<word> &a, const std::vector<word> &b)
 {
     size_t i = a.size();
     const size_t nb = b.size();
@@ -28,7 +28,7 @@ int compare(const std::vector<word> &a, const std::vector<word> &b) const
     return 0;
 }
 
-void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
+void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = (a[i] += carry) < carry;
@@ -36,7 +36,7 @@ void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
         a.push_back(carry);
 }
 // a should be greater or equal than carry
-void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
+void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 {
     for (size_t j = a.size(); i < j && carry; i++)
         carry = a[i] < (a[i] -= carry);
@@ -44,7 +44,7 @@ void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1) const
         a.pop_back();
 }
 
-void add_word(std::vector<word> &a, std::vector<word> b) const
+void add_word(std::vector<word> &a, std::vector<word> b)
 {
     if (a.size() < b.size())
         a.resize(b.size(), 0);
@@ -58,7 +58,7 @@ void add_word(std::vector<word> &a, std::vector<word> b) const
     add_a_word(a, i, carry);
 }
 // a should be greater or equal than b
-bool sub_word(std::vector<word> &a, std::vector<word> b) const
+bool sub_word(std::vector<word> &a, std::vector<word> b)
 {
     bool sw = compare(a, b) < 0;
     if (sw)
@@ -74,7 +74,7 @@ bool sub_word(std::vector<word> &a, std::vector<word> b) const
     return sw;
 }
 
-std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B) const
+std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
 {
     std::vector<word> result;
     const size_t na = A.size(), nb = B.size();
