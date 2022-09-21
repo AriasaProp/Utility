@@ -99,8 +99,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto a_split = std::next(A.begin(), m2);
             a0 = std::vector<word>(A.begin(), a_split);
-            while (a0.size() && !a0.back())
-                a0.pop_back();
             a1 = std::vector<word>(a_split, A.end());
         }
         else
@@ -109,8 +107,6 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         {
             auto b_split = std::next(B.begin(), m2);
             b0 = std::vector<word>(B.begin(), b_split);
-            while (b0.size() && !b0.back())
-                b0.pop_back();
             b1 = std::vector<word>(b_split, B.end());
         }
         else
