@@ -672,7 +672,7 @@ BigInteger BigInteger::operator%(const BigInteger &b) const
             div.insert(div.begin(), n_words, 0);
         do
         {
-            if (compare(rem, div))
+            if (compare(rem, div) >= 0)
                 sub_word(rem, div);
             word hi, lo = div[0];
             for (i = 0, j = div.size() - 1; i < j; i++)
