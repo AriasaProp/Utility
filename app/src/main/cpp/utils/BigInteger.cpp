@@ -146,9 +146,8 @@ BigInteger::BigInteger(const signed &i) : neg(i < 0)
 }
 
 // in constructor should begin with sign or number, add '\0' in last world to close number
-BigInteger::BigInteger(const char *C) : neg(false)
+BigInteger::BigInteger(const char *c) : neg(false)
 {
-    char *c = C;
     // read sign
     if (*c == '-')
         neg = true, c++;
