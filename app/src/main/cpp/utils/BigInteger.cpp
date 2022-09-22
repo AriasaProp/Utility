@@ -115,7 +115,7 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         add_word(b0, b1);
         std::vector<word> mid = karatsuba(a0, b0);
         sub_word(mid, z0);
-        sub_word(mid, resul);
+        sub_word(mid, result);
         result.insert(result.begin(), m2, 0);
         add_word(result, mid);
         result.insert(result.begin(), m2, 0);
