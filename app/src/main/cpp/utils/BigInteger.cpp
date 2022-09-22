@@ -150,7 +150,7 @@ BigInteger::BigInteger(const char *c) : neg(false)
 {
     // read sign
     if (*c == '-')
-        neg = true, c++;
+        this->neg = true, c++;
     // read digits
     word carry, tmp, a_hi, a_lo, tp;
     while (*c)
@@ -275,9 +275,10 @@ BigInteger BigInteger::sqrt() const
     }
     std::vector<word> n = this->words;
     BigInteger result;
+    std::vector<word> tmp;
     for (; bit >= 0; bit -= 2)
     {
-        std::vector<word> tmp = result.words;
+        tmp = result.words;
         const size_t i_word = bit / WORD_BITS;
         if (tmp.size() <= i_word)
             tmp.resize(i_word + 1, 0);
@@ -291,7 +292,6 @@ BigInteger BigInteger::sqrt() const
                 result.words.resize(n_i_word + 1, 0);
             result.words[n_i_word] |= word(1) << (n_bit % WORD_BITS);
         }
-        // result shifting 1
         if (result.words.size())
         {
             word hi, lo = result.words[0];
@@ -306,6 +306,8 @@ BigInteger BigInteger::sqrt() const
                 result.words.pop_back();
         }
     }
+    while (result.words.size() && !result.words.back())
+        result.words.pop_back();
     return result;
 }
 //re-initialize
