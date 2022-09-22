@@ -146,15 +146,14 @@ BigInteger::BigInteger(const signed &i) : neg(i < 0)
 }
 
 // in constructor should begin with sign or number, add '\0' in last world to close number
-BigInteger::BigInteger(const char *C) : neg(false)
+BigInteger::BigInteger(char *c) : neg(false)
 {
-    const char *c = C;
     // read sign
     if (*c == '-')
         neg = true, c++;
     // read digits
     word carry, tmp, a_hi, a_lo, tp;
-    for (; *c; c++)
+    while (*c)
     {
         carry = 0;
         size_t i = 0, j = words.size();
@@ -175,10 +174,11 @@ BigInteger::BigInteger(const char *C) : neg(false)
         if (carry > 9)
             throw("BigInteger should initialize with number from 0 to 9.");
         add_a_word(this->words, 0, carry);
+        c++;
     }
 } 
 
-BigInteger::BigInteger(std::vector<word> v, bool neg = false) : neg(neg), words(v) {}
+BigInteger::BigInteger(const std::vector<word> &v, bool neg = false) : neg(neg), words(v) {}
 
 // Destructors
 BigInteger::~BigInteger()
@@ -262,7 +262,6 @@ bool BigInteger::can_convert_to_int(int *result) const
 
 BigInteger BigInteger::sqrt() const
 {
-    BigInteger n = *this;
     size_t bit;
     if (!this->words.size())
         bit = 0;
@@ -274,26 +273,47 @@ BigInteger BigInteger::sqrt() const
         if (bit & 1)
             bit ^= 1;
     }
+    std::vector<word> n = this->words;
     BigInteger result;
     for (; bit >= 0; bit -= 2)
     {
-        BigInteger tmp = result;
-        tmp.set_bit(bit);
-        if (n >= tmp)
+        std::vector<word> tmp = result.words;
+        const size_t i_word = bit / WORD_BITS;
+        if (tmp.size() <= i_word)
+            tmp.resize(i_word + 1, 0);
+        tmp[i_word] |= word(1) << (bit % WORD_BITS);
+        if (compare(n, tmp) >= 0)
         {
-            n -= tmp;
-            result.set_bit(bit + 1);
+            sub_word(n, tmp);
+            const size_t n_bit = bit + 1;
+            const size_t n_i_word = n_bit / WORD_BITS;
+            if (result.words.size() <= n_i_word)
+                result.words.resize(n_i_word + 1, 0);
+            result.words[n_i_word] |= word(1) << (n_bit % WORD_BITS);
         }
-        result >>= 1;
+        // result shifting 1
+        if (result.words.size())
+        {
+            word hi, lo = result.words[0];
+            for (size_t i = 0, j = result.words.size() - 1; i < j; i++)
+            {
+                hi = result.words[i + 1];
+                result.words[i] = (hi << WORD_BITS_1) | (lo >> 1);
+                lo = hi;
+            }
+            result.words.back() = lo >> 1;
+            if (result.words.size() && !result.words.back())
+                result.words.pop_back();
+        }
     }
     return result;
 }
 //re-initialize
 BigInteger &BigInteger::operator=(const signed &a)
 {
-    this->neg = (a < 0);
     if (this->words.size())
         this->words.clear();
+    this->neg = (a < 0);
     unsigned u = abs(a);
     size_t i;
     while (u)
@@ -615,31 +635,32 @@ BigInteger BigInteger::operator-() const
 
 BigInteger &BigInteger::operator>>=(size_t n_bits)
 {
-    if (!n_bits)
-        return *this;
-    size_t j = n_bits / WORD_BITS;
-    if (j >= words.size())
-    {
-        this->words.clear();
-        return *this;
-    }
-    if (j)
-        this->words.erase(this->words.begin(), this->words.begin() + j);
-    const size_t n_len = words.size();
-    n_bits %= WORD_BITS;
     if (n_bits)
     {
-        word hi, lo = this->words[0];
-        const size_t r_shift = WORD_BITS - n_bits;
-        for (size_t i = 0; i < (n_len - 1); i++)
+        size_t j = n_bits / WORD_BITS;
+        if (j >= words.size())
         {
-            hi = this->words[i + 1];
-            this->words[i] = (hi << r_shift) | (lo >> n_bits);
-            lo = hi;
+            this->words.clear();
+            return *this;
         }
-        this->words.back() = lo >> n_bits;
-        while (this->words.size() && !this->words.back())
-            this->words.pop_back();
+        if (j)
+            this->words.erase(this->words.begin(), this->words.begin() + j);
+        const size_t n_len = words.size();
+        n_bits %= WORD_BITS;
+        if (n_bits)
+        {
+            word hi, lo = this->words[0];
+            const size_t r_shift = WORD_BITS - n_bits;
+            for (size_t i = 0; i < (n_len - 1); i++)
+            {
+                hi = this->words[i + 1];
+                this->words[i] = (hi << r_shift) | (lo >> n_bits);
+                lo = hi;
+            }
+            this->words.back() = lo >> n_bits;
+            while (this->words.size() && !this->words.back())
+                this->words.pop_back();
+        }
     }
     return *this;
 }
