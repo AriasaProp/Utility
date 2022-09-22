@@ -25,7 +25,7 @@ class BigInteger
     BigInteger();
     BigInteger(const BigInteger &);
     BigInteger(const signed &);
-    BigInteger(char *);
+    BigInteger(const char *);
     BigInteger(const std::vector<word> &, bool);
     //Destructor
     ~BigInteger();
