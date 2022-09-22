@@ -528,7 +528,7 @@ bool BigInteger::operator>(const BigInteger &b) const
 
 BigInteger BigInteger::operator+(const BigInteger &b) const
 {
-    if (r.neg == b.neg)
+    if (this->neg == b.neg)
     {
         BigInteger r(*this);
         add_word(r.words, b.words);
