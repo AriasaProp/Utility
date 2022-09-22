@@ -263,6 +263,7 @@ bool BigInteger::can_convert_to_int(int *result) const
 
 BigInteger BigInteger::sqrt() const
 {
+    BigInteger n = *this;
     size_t bit;
     if (!this->words.size())
         bit = 0;
@@ -274,36 +275,17 @@ BigInteger BigInteger::sqrt() const
         if (bit & 1)
             bit ^= 1;
     }
-    std::vector<word> n = this->words;
-    BigInteger result(std::vector<word>(bit/WORD_BITS + 1, 0));
-    std::vector<word> tmp;
+    BigInteger result;
     for (; bit >= 0; bit -= 2)
     {
-        tmp = result.words;
-        const size_t i_word = bit / WORD_BITS;
-        tmp[i_word] |= word(1) << (bit % WORD_BITS);
-        if (compare(n, tmp) >= 0)
+        BigInteger tmp = result;
+        tmp.set_bit(bit);
+        if (n >= tmp)
         {
-            sub_word(n, tmp);
-            const size_t n_bit = bit + 1;
-            const size_t n_i_word = n_bit / WORD_BITS;
-            if (result.words.size() <= n_i_word)
-                result.words.resize(n_i_word + 1, 0);
-            result.words[n_i_word] |= word(1) << (n_bit % WORD_BITS);
+            n -= tmp;
+            result.set_bit(bit + 1);
         }
-        if (result.words.size())
-        {
-            word hi, lo = result.words[0];
-            for (size_t i = 0, j = result.words.size() - 1; i < j; i++)
-            {
-                hi = result.words[i + 1];
-                result.words[i] = (hi << WORD_BITS_1) | (lo >> 1);
-                lo = hi;
-            }
-            result.words.back() = lo >> 1;
-            if (result.words.size() && !result.words.back())
-                result.words.pop_back();
-        }
+        result >>= 1;
     }
     return result;
 }
