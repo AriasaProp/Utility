@@ -275,14 +275,12 @@ BigInteger BigInteger::sqrt() const
             bit ^= 1;
     }
     std::vector<word> n = this->words;
-    BigInteger result;
+    BigInteger result(std::vector<word>(bit/WORD_BITS + 1, 0));
     std::vector<word> tmp;
     for (; bit >= 0; bit -= 2)
     {
         tmp = result.words;
         const size_t i_word = bit / WORD_BITS;
-        if (tmp.size() <= i_word)
-            tmp.resize(i_word + 1, 0);
         tmp[i_word] |= word(1) << (bit % WORD_BITS);
         if (compare(n, tmp) >= 0)
         {
@@ -307,8 +305,6 @@ BigInteger BigInteger::sqrt() const
                 result.words.pop_back();
         }
     }
-    while (result.words.size() && !result.words.back())
-        result.words.pop_back();
     return result;
 }
 //re-initialize
