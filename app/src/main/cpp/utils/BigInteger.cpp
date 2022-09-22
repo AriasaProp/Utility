@@ -331,7 +331,7 @@ BigInteger &BigInteger::operator++()
 
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
-    return *this = (*this - b);
+    return *this = (*this + b);
 }
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
