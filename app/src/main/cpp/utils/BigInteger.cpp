@@ -110,13 +110,12 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
         else
             b0 = B;
         const std::vector<word> z0 = karatsuba(a0, b0);
-        const std::vector<word> z1 = karatsuba(a1, b1);
-        result = z1;
+        result = karatsuba(a1, b1);
         add_word(a0, a1);
         add_word(b0, b1);
         std::vector<word> mid = karatsuba(a0, b0);
         sub_word(mid, z0);
-        sub_word(mid, z1);
+        sub_word(mid, resul);
         result.insert(result.begin(), m2, 0);
         add_word(result, mid);
         result.insert(result.begin(), m2, 0);
