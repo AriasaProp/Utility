@@ -154,10 +154,13 @@ BigInteger::BigInteger(const char *C) : neg(false)
         this->neg = true, c++;
     // read digits
     word carry, tmp, a_hi, a_lo, tp;
+    size_t i, j;
     while (*c)
     {
-        carry = 0;
-        size_t i = 0, j = words.size();
+        carry = *c - '0';
+        if (carry > 9)
+            throw("BigInteger should initialize with number from 0 to 9.");
+        i = 0, j = this->words.size();
         while (i < j)
         {
             tmp = this->words[i] * 10;
@@ -170,11 +173,6 @@ BigInteger::BigInteger(const char *C) : neg(false)
         }
         if (carry)
             words.push_back(carry);
-        i = 0, j = words.size();
-        carry = *c - '0';
-        if (carry > 9)
-            throw("BigInteger should initialize with number from 0 to 9.");
-        add_a_word(this->words, 0, carry);
         c++;
     }
 } 
