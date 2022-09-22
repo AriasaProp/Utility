@@ -77,51 +77,54 @@ std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> 
     std::vector<word> result;
     const size_t na = A.size(), nb = B.size();
     const size_t combinedN = na|nb;
-    if (combinedN == 1)
+    if (combinedN)
     {
-        word a_hi = A[0] >> WORD_HALF_BITS;
-        word a_lo = A[0] & WORD_HALF_MASK;
-        word b_hi = B[0] >> WORD_HALF_BITS;
-        word b_lo = B[0] & WORD_HALF_MASK;
-        result.push_back(A[0] * B[0]);
-        word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
-        carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-        if (carry)
-            result.push_back(carry);
-    }
-    else if(combinedN)
-    {
-        const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
-        std::vector<word> a0, a1, b0, b1;
-        if (na > m2)
+        if (combinedN > 1)
         {
-            auto a_split = std::next(A.begin(), m2);
-            a0 = std::vector<word>(A.begin(), a_split);
-            a1 = std::vector<word>(a_split, A.end());
+            const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
+            std::vector<word> a0, a1, b0, b1;
+            if (na > m2)
+            {
+                auto a_split = std::next(A.begin(), m2);
+                a0 = std::vector<word>(A.begin(), a_split);
+                a1 = std::vector<word>(a_split, A.end());
+            }
+            else
+                a0 = A;
+            if (nb > m2)
+            {
+                auto b_split = std::next(B.begin(), m2);
+                b0 = std::vector<word>(B.begin(), b_split);
+                b1 = std::vector<word>(b_split, B.end());
+            }
+            else
+                b0 = B;
+            result = karatsuba(a1, b1);
+            const std::vector<word> z0 = karatsuba(a0, b0);
+            add_word(a0, a1);
+            add_word(b0, b1);
+            std::vector<word> mid = karatsuba(a0, b0);
+            sub_word(mid, z0);
+            sub_word(mid, result);
+            result.insert(result.begin(), m2, 0);
+            add_word(result, mid);
+            result.insert(result.begin(), m2, 0);
+            add_word(result, z0);
+            while (result.size() && !result.back())
+                result.pop_back();
         }
         else
-            a0 = A;
-        if (nb > m2)
         {
-            auto b_split = std::next(B.begin(), m2);
-            b0 = std::vector<word>(B.begin(), b_split);
-            b1 = std::vector<word>(b_split, B.end());
+            word a_hi = A[0] >> WORD_HALF_BITS;
+            word a_lo = A[0] & WORD_HALF_MASK;
+            word b_hi = B[0] >> WORD_HALF_BITS;
+            word b_lo = B[0] & WORD_HALF_MASK;
+            result.push_back(A[0] * B[0]);
+            word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            if (carry)
+                result.push_back(carry);
         }
-        else
-            b0 = B;
-        const std::vector<word> z0 = karatsuba(a0, b0);
-        result = karatsuba(a1, b1);
-        add_word(a0, a1);
-        add_word(b0, b1);
-        std::vector<word> mid = karatsuba(a0, b0);
-        sub_word(mid, z0);
-        sub_word(mid, result);
-        result.insert(result.begin(), m2, 0);
-        add_word(result, mid);
-        result.insert(result.begin(), m2, 0);
-        add_word(result, z0);
-        while (result.size() && !result.back())
-            result.pop_back();
     }
     return result;
 }
