@@ -26,7 +26,7 @@ class BigInteger
     BigInteger(const BigInteger &);
     BigInteger(const signed &);
     BigInteger(char *);
-    BigInteger(std::vector<word>, bool);
+    BigInteger(const std::vector<word> &, bool);
     //Destructor
     ~BigInteger();
     //environment count
