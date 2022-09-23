@@ -266,12 +266,14 @@ BigInteger BigInteger::sqrt() const
     size_t bit = this->words.size();
     if (bit)
     {
+        BigInteger n = *this, tmp;
+        tmp.words.reserve(bit);
+        result.words.reserve(bit+1);
         bit = (bit - 1) * WORD_BITS;
         for (word i = this->words.back(); i; i >>= 1)
             bit++;
         if (bit & 1)
             bit ^= 1;
-        BigInteger n = *this;
         for (; bit >= 0; bit -= 2){
             result >>= 1;
             BigInteger tmp = result;
