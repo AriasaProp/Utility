@@ -263,7 +263,7 @@ bool BigInteger::can_convert_to_int(int *result) const
 BigInteger BigInteger::sqrt() const
 {
     BigInteger result;
-    size_t bit = this->words.size();
+    int bit = this->words.size();
     if (bit)
     {
         BigInteger n = *this, tmp;
@@ -274,11 +274,13 @@ BigInteger BigInteger::sqrt() const
             bit++;
         if (bit & 1)
             bit ^= 1;
-        for (; bit >= 0; bit -= 2){
+        for (; bit >= 0; bit -= 2)
+        {
             result >>= 1;
             tmp.words = result.words;
             tmp.set_bit(bit);
-            if (n >= tmp){
+            if (n >= tmp)
+            {
                n -= tmp;
                result.set_bit(bit + 1);
             }
