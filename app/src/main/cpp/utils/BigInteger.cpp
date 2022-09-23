@@ -75,7 +75,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     {
         carry = a[i] < (a[i] -= carry);
         carry += a[i] < (a[i] -= b[i]);
-        i++
+        i++;
     }
     sub_a_word(a, i, carry);
 }
