@@ -268,7 +268,7 @@ BigInteger BigInteger::sqrt() const
     {
         BigInteger n = *this, tmp;
         tmp.words.reserve(bit);
-        result.words.reserve(bit+1, 0);
+        result.words.reserve(bit+1);
         bit = (bit - 1) * WORD_BITS;
         for (word i = this->words.back(); i; i >>= 1)
             bit++;
