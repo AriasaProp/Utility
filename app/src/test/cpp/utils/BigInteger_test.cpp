@@ -197,7 +197,10 @@ bool BigInteger_test()
     result = (b.sqrt() == a);
     passed &= result;
     if (!result)
+    {
+        std::cout << "    " << b.sqrt() << " \n";
         std::cout << "    sqrt function error \n";
+    }
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
     return passed;
 }
