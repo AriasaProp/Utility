@@ -262,21 +262,26 @@ bool BigInteger::can_convert_to_int(int *result) const
 //math operational
 BigInteger BigInteger::sqrt() const
 {
-    BigInteger result, temp, remain = *this;
-    std::vector<word> &R = result.words, &T = temp.words, &RM = remain.words;
-    T.resize(remain.size(), 0);
-    for (size_t i = RM.size(); i--;)
+    BigInteger result;
+    size_t bit = this->words.size();
+    if (bit)
     {
-        BigInteger c = RM.back();
-        word x = (sqrt((temp^2) - (c*4)) - temp) / 2;
-        R.push_back(a);
-        temp = result;
-        temp *= 2;
-        
-        sub_word(RM, T);
-        
+        bit = (bit - 1) * WORD_BITS;
+        for (word i = this->words.back(); i; i >>= 1)
+            bit++;
+        if (bit & 1)
+            bit ^= 1;
+        BigInteger n = *this;
+        for (; bit >= 0; bit -= 2){
+            Num tmp = result;
+            tmp.set_bit(bit);
+            if (n >= tmp){
+               n -= tmp;
+               result.set_bit(bit + 1);
+            }
+            result >>= 1;
+        }
     }
-    
     return result;
 }
 //re-initialize
