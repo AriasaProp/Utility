@@ -273,7 +273,7 @@ BigInteger BigInteger::sqrt() const
             bit ^= 1;
         BigInteger n = *this;
         for (; bit >= 0; bit -= 2){
-            Num tmp = result;
+            BigInteger tmp = result;
             tmp.set_bit(bit);
             if (n >= tmp){
                n -= tmp;
