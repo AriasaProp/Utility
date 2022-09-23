@@ -105,12 +105,12 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
             add_word(a1, A);
             add_word(b1, B);
             karatsuba(a1, a1, b1);
-            sub_word(a1, z0);
+            karatsuba(b1, A, B);
+            sub_word(a1, b1);
             sub_word(a1, dst);
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, a1);
             dst.insert(dst.begin(), m2, 0);
-            karatsuba(b1, A, B);
             add_word(dst, b1);
             while (dst.size() && !dst.back())
                 dst.pop_back();
@@ -262,30 +262,8 @@ bool BigInteger::can_convert_to_int(int *result) const
 //math operational
 BigInteger BigInteger::sqrt() const
 {
-    BigInteger n = *this;
-    size_t bit;
-    if (!this->words.size())
-        bit = 0;
-    else
-    {
-        bit = (this->words.size() - 1) * WORD_BITS;
-        for (word a = words.back(); a; a >>= 1)
-            bit++;
-        if (bit & 1)
-            bit ^= 1;
-    }
-    BigInteger result;
-    for (; bit >= 0; bit -= 2)
-    {
-        BigInteger tmp = result;
-        tmp.set_bit(bit);
-        if (n >= tmp)
-        {
-            n -= tmp;
-            result.set_bit(bit + 1);
-        }
-        result >>= 1;
-    }
+    BigInteger result, ;
+    
     return result;
 }
 //re-initialize
