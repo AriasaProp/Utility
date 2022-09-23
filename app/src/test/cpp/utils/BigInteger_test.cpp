@@ -191,14 +191,12 @@ bool BigInteger_test()
     passed &= result;
     if (!result)
         std::cout << "    '^=' operator error \n";
-    /*
     // sqrt function test
     a = BigInteger("378920211652129\0"), b = BigInteger("19465873\0");
     result = (a.sqrt() == b);
     passed &= result;
     if (!result)
         std::cout << "    sqrt function error \n";
-    */
     std::cout << "In : " << std::chrono::duration_cast < std::chrono::microseconds > (std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
     return passed;
 }
