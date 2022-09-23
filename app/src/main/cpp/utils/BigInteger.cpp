@@ -47,14 +47,18 @@ void sub_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
 // a should clone from the base, b not
 void add_word(std::vector<word> &a, const std::vector<word> &b)
 {
-    if (a.size() < b.size())
-        a.resize(b.size(), 0);
+    const size_t j = b.size();
+    if (!j)
+        return;
+    if (a.size() < j)
+        a.resize(j, 0);
     size_t i = 0;
     word carry = 0;
-    for (size_t j = b.size(); i < j; i++)
+    while (i < j)
     {
         carry = (a[i] += carry) < carry;
         carry += (a[i] += b[i]) < b[i];
+        i++;
     }
     add_a_word(a, i, carry);
 }
@@ -62,73 +66,74 @@ void add_word(std::vector<word> &a, const std::vector<word> &b)
 // a should clone from the base, b not
 void sub_word(std::vector<word> &a, const std::vector<word> &b)
 {
+    const size_t j = b.size();
+    if (!j)
+        return;
     word carry = 0;
     size_t i = 0;
-    for (size_t j = b.size(); i < j; i++)
+    while (i < j)
     {
         carry = a[i] < (a[i] -= carry);
         carry += a[i] < (a[i] -= b[i]);
+        i++
     }
     sub_a_word(a, i, carry);
 }
 
-std::vector<word> karatsuba(const std::vector<word> &A, const std::vector<word> &B)
+void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
-    std::vector<word> result;
+    dst.clear();
     const size_t na = A.size(), nb = B.size();
-    const size_t combinedN = na|nb;
+    const size_t combinedN = na | nb;
     if (combinedN)
     {
+        dst.reserve(na + nb);
         if (combinedN > 1)
         {
-            const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1));
-            std::vector<word> a0, a1, b0, b1;
-            if (na > m2)
-            {
-                auto a_split = std::next(A.begin(), m2);
-                a0 = std::vector<word>(A.begin(), a_split);
-                a1 = std::vector<word>(a_split, A.end());
-            }
-            else
-                a0 = A;
-            if (nb > m2)
-            {
-                auto b_split = std::next(B.begin(), m2);
-                b0 = std::vector<word>(B.begin(), b_split);
-                b1 = std::vector<word>(b_split, B.end());
-            }
-            else
-                b0 = B;
-            result = karatsuba(a1, b1);
-            const std::vector<word> z0 = karatsuba(a0, b0);
-            add_word(a0, a1);
-            add_word(b0, b1);
-            std::vector<word> mid = karatsuba(a0, b0);
-            sub_word(mid, z0);
-            sub_word(mid, result);
-            result.insert(result.begin(), m2, 0);
-            add_word(result, mid);
-            result.insert(result.begin(), m2, 0);
-            add_word(result, z0);
-            while (result.size() && !result.back())
-                result.pop_back();
+            const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
+            if (A.size() < M)
+                A.resize(M, 0);
+            auto split = std::next(A.begin(), m2);
+            std::vector<word> a1 = std::vector<word>(split, A.end());
+            A.resize(m2);
+            if (B.size() < M)
+                B.resize(M, 0);
+            split = std::next(B.begin(), m2);
+            std::vector<word> b1 = std::vector<word>(split, B.end());
+            B.resize(m2);
+            karatsuba(dst, a1, b1);
+            std::vector<word> z0;
+            karatsuba(z0, A, B);
+            add_word(A, a1);
+            add_word(B, b1);
+            karatsuba(a1, A, B);
+            sub_word(a1, z0);
+            sub_word(a1, dst);
+            dst.insert(dst.begin(), m2, 0);
+            add_word(dst, a1);
+            dst.insert(dst.begin(), m2, 0);
+            add_word(dst, z0);
+            while (dst.size() && !dst.back())
+                dst.pop_back();
         }
-        else
+        else if (A[0] && B[0])
         {
             word a_hi = A[0] >> WORD_HALF_BITS;
             word a_lo = A[0] & WORD_HALF_MASK;
             word b_hi = B[0] >> WORD_HALF_BITS;
             word b_lo = B[0] & WORD_HALF_MASK;
-            result.push_back(A[0] * B[0]);
+            dst.push_back(A[0] * B[0]);
             word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
             carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
             if (carry)
-                result.push_back(carry);
+                dst.push_back(carry);
         }
     }
-    return result;
 }
-
+void karatsuba(std::vector<word> &A, std::vector<word> &B)
+{
+    karatsuba(A, A, B);
+}
 
 //initialize BigInteger functions
 
@@ -185,7 +190,7 @@ BigInteger::~BigInteger()
 {
     words.clear();
 }
-
+//environment count
 void BigInteger::set_bit(size_t i)
 {
     const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
@@ -259,7 +264,7 @@ bool BigInteger::can_convert_to_int(int *result) const
         *result = 0;
     return true;
 }
-
+//math operational
 BigInteger BigInteger::sqrt() const
 {
     BigInteger n = *this;
@@ -349,7 +354,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (!this->words.size())
         return *this;
     this->neg ^= b.neg;
-    this->words = karatsuba(this->words, b.words);
+    karatsuba(this->words, b.words);
     return *this;
 }
 
@@ -471,20 +476,21 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    std::vector<word> p = this->words, &r = this->words;
-    r = std::vector<word>{1};
-    this->neg = this->neg & (exponent & 1);
-    while (exponent)
+    if (this->words.size())
     {
-        if (exponent & 1)
+        std::vector<word> p = this->words, &r = this->words;
+        r = std::vector<word>{1};
+        this->neg = this->neg & (exponent & 1);
+        while (exponent)
         {
-            if (r.size() < p.size())
-                r.resize(p.size(), 0);
-            r = karatsuba(r, p);
+            if (exponent & 1)
+                karatsuba(r, p);
+            exponent >>= 1;
+            karatsuba(p, p);
         }
-        exponent >>= 1;
-        p = karatsuba(p, p);
     }
+    else if (!exponent)
+        throw ("Undefined result!");
     return *this;
 }
 
