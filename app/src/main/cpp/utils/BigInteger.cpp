@@ -130,10 +130,6 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
         }
     }
 }
-void karatsuba(std::vector<word> &A, std::vector<word> &B)
-{
-    karatsuba(A, A, B);
-}
 
 //initialize BigInteger functions
 
@@ -354,7 +350,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (!this->words.size())
         return *this;
     this->neg ^= b.neg;
-    karatsuba(this->words, b.words);
+    karatsuba(this->words, this->words, b.words);
     return *this;
 }
 
@@ -484,9 +480,9 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                karatsuba(r, p);
+                karatsuba(r, r, p);
             exponent >>= 1;
-            karatsuba(p, p);
+            karatsuba(p, p, p);
         }
     }
     else if (!exponent)
