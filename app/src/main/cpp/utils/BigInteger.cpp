@@ -289,8 +289,8 @@ BigInteger BigInteger::sqrt() const
                 word hi, lo = R[0];
                 for (size_t i = 0, j = R.size() - 1; i < j; i++)
                 {
-                    hi = R.words[i + 1];
-                    R.words[i] = (hi << WORD_BITS_1) | (lo >> 1);
+                    hi = R[i + 1];
+                    R[i] = (hi << WORD_BITS_1) | (lo >> 1);
                     lo = hi;
                 }
                 R.back() = lo >> 1;
