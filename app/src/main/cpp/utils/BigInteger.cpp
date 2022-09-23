@@ -273,13 +273,13 @@ BigInteger BigInteger::sqrt() const
             bit ^= 1;
         BigInteger n = *this;
         for (; bit >= 0; bit -= 2){
+            result >>= 1;
             BigInteger tmp = result;
             tmp.set_bit(bit);
             if (n >= tmp){
                n -= tmp;
                result.set_bit(bit + 1);
             }
-            result >>= 1;
         }
     }
     return result;
@@ -612,7 +612,7 @@ BigInteger BigInteger::operator-() const
 
 BigInteger &BigInteger::operator>>=(size_t n_bits)
 {
-    if (n_bits)
+    if (n_bits && this->words.size())
     {
         size_t j = n_bits / WORD_BITS;
         if (j >= words.size())

@@ -192,7 +192,7 @@ bool BigInteger_test()
     if (!result)
         std::cout << "    '^=' operator error \n";
     // sqrt function test
-    a = BigInteger("378920211652129\0"), b = BigInteger("19465873\0");
+    a = BigInteger("49\0"), b = BigInteger("7\0");
     result = (a.sqrt() == b);
     passed &= result;
     if (!result)
