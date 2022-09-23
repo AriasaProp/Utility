@@ -267,7 +267,7 @@ BigInteger BigInteger::sqrt() const
     if (bit)
     {
         BigInteger n = *this;
-        std::vector<word> &N = n->words, &R = result.words;
+        std::vector<word> &N = n.words, &R = result.words;
         R.resize(bit + 1, 0);
         bit = (bit - 1) * WORD_BITS;
         for (word i = this->words.back(); i; i >>= 1)
