@@ -266,9 +266,9 @@ BigInteger BigInteger::sqrt() const
     int bit = this->words.size();
     if (bit)
     {
-        BigInteger n = *this, tmp;
-        tmp.words.reserve(bit);
-        result.words.reserve(bit+1);
+        BigInteger n = *this;
+        std::vector<word> &N = n->words, &R = result.words;
+        R.resize(bit + 1, 0);
         bit = (bit - 1) * WORD_BITS;
         for (word i = this->words.back(); i; i >>= 1)
             bit++;
@@ -276,15 +276,28 @@ BigInteger BigInteger::sqrt() const
             bit ^= 1;
         for (; bit >= 0; bit -= 2)
         {
-            tmp = result;
-            tmp.set_bit(bit);
-            if (n >= tmp)
+            std::vector<word> tmp = R;
+            tmp[bit / WORD_BITS] |= word(1) << (bit % WORD_BITS);
+            if (compare(N, tmp) >= 0)
             {
-               n -= tmp;
-               result.set_bit(bit + 1);
+                sub_word(N, tmp);
+                const size_t bit_next = bit + 1;
+                R[bit_next / WORD_BITS] |= word(1) << (bit_next % WORD_BITS);
             }
-            result >>= 1;
+            //result >>= 1;
+            {
+                word hi, lo = R[0];
+                for (size_t i = 0, j = R.size() - 1; i < j; i++)
+                {
+                    hi = R.words[i + 1];
+                    R.words[i] = (hi << WORD_BITS_1) | (lo >> 1);
+                    lo = hi;
+                }
+                R.back() = lo >> 1;
+            }
         }
+        while (R.size() && !R.back())
+            R.pop_back();
     }
     return result;
 }
@@ -336,7 +349,27 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
 {
-    return *this = (*this - b);
+    if (this->neg != b.neg)
+        add_word(this->words, b.words);
+    else
+    {
+        std::vector<word> tmp = b.words;
+        switch (compare(this->words, b.words))
+        {
+            case -1:
+                this->neg = !this->neg;
+                tmp = this->words;
+                this->words = b.words;
+            case 1:
+                sub_word(this->words, tmp);
+                break;
+            case 0:
+            default:
+                this->words.clear();
+                break;
+        }
+    }
+    return *this;
 }
 
 BigInteger &BigInteger::operator*=(const BigInteger &b)
@@ -560,33 +593,7 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
 
 BigInteger BigInteger::operator-(const BigInteger &b) const
 {
-    if (this->neg != b.neg)
-    {
-        BigInteger r(*this);
-        add_word(r.words, b.words);
-        return r;
-    }
-    else
-    {
-        switch (compare(this->words, b.words))
-        {
-            case 1:
-            {
-                BigInteger r(*this);
-                sub_word(r.words, b.words);
-                return r;
-            }
-            case -1:
-            {
-                BigInteger r(b.words, !this->neg);
-                sub_word(r.words, this->words);
-                return r;
-            }
-            case 0:
-            default:
-                return BigInteger();
-        }
-    }
+    return BigInteger(*this) -= b;
 }
 
 BigInteger BigInteger::operator*(const BigInteger &b) const
@@ -626,13 +633,12 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
         }
         if (j)
             this->words.erase(this->words.begin(), this->words.begin() + j);
-        const size_t n_len = words.size();
         n_bits %= WORD_BITS;
         if (n_bits)
         {
             word hi, lo = this->words[0];
             const size_t r_shift = WORD_BITS - n_bits;
-            for (size_t i = 0; i < (n_len - 1); i++)
+            for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
             {
                 hi = this->words[i + 1];
                 this->words[i] = (hi << r_shift) | (lo >> n_bits);
