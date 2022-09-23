@@ -102,17 +102,16 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
             std::vector<word> b1 = std::vector<word>(split, B.end());
             B.resize(m2);
             karatsuba(dst, a1, b1);
-            std::vector<word> z0;
-            karatsuba(z0, A, B);
-            add_word(A, a1);
-            add_word(B, b1);
-            karatsuba(a1, A, B);
+            add_word(a1, A);
+            add_word(b1, B);
+            karatsuba(a1, a1, b1);
             sub_word(a1, z0);
             sub_word(a1, dst);
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, a1);
             dst.insert(dst.begin(), m2, 0);
-            add_word(dst, z0);
+            karatsuba(b1, A, B);
+            add_word(dst, b1);
             while (dst.size() && !dst.back())
                 dst.pop_back();
         }
