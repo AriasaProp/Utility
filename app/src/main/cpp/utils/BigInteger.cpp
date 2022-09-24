@@ -575,7 +575,8 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                     lo = hi;
                     */
                     (*carried) >>= n_bits;
-                    (*carried) |= *(++carried) << r_shift;
+                    (*carried) |= *(carried + 1) << r_shift;
+                    carried++;
                 }
                 (*carried) >>= n_bits;
                 //this->words.back() = lo >> n_bits;
