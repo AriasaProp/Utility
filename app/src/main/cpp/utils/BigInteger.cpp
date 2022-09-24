@@ -597,7 +597,8 @@ BigInteger &BigInteger::operator<<=(size_t bits)
             while (carried != endCarried)
             {
                 *carried <<= n;
-                *carried |= *(carried++) >> l_shift;
+                *carried |= *(carried + 1) >> l_shift;
+                carried++;
             }
             *carried <<= n;
             if (lo)
