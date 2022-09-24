@@ -349,11 +349,13 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
         switch (compare(this->words, b.words))
         {
             case -1:
+            {
                 this->neg = b.neg;
                 std::vector<word> tmp = this->words;
                 this->words = b.words;
                 sub_word(this->words, tmp);
                 break;
+            }
             case 1:
                 sub_word(this->words, b.words);
                 break;
@@ -375,11 +377,13 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
         switch (compare(this->words, b.words))
         {
             case -1:
+            {
                 this->neg = !this->neg;
                 std::vector<word> tmp = this->words;
                 this->words = b.words;
                 sub_word(this->words, tmp);
                 break;
+            }
             case 1:
                 sub_word(this->words, b.words);
                 break;
