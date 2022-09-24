@@ -520,7 +520,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             //reverse shift one by one
             carry0 = 0;
             carry1 = div[0];
-            for (i = 0, j = div.size() - 1; i < j; i++)
+            for (i = 0, n = div.size() - 1; i < n; i++)
             {
                 carry0 = div[i + 1];
                 div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
@@ -529,7 +529,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             div.back() = carry1 >> 1;
             if (!div.back())
                 div.pop_back();
-        } while (n-- && rem.size());
+        } while (j-- && rem.size());
     }
     return *this;
 }
