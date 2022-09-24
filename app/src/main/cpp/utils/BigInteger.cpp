@@ -263,29 +263,37 @@ bool BigInteger::can_convert_to_int(int *result) const
 BigInteger BigInteger::sqrt() const
 {
     BigInteger result;
-    int bit = this->words.size();
-    if (bit)
+    size_t i = this->words.size();
+    if (i)
     {
-        std::vector<word> n = this->words, &R = result.words, tmp;
-        R.resize(bit + 1, 0);
-        bit = (bit - 1) * WORD_BITS;
-        for (word i = this->words.back(); i; i >>= 1)
-            bit++;
-        if (bit & 1)
-            bit ^= 1;
-        for (; bit >= 0; bit -= 2)
+        int bit_l = (i - 1) * WORD_BITS;
+        for (word carry = this->words.back(); carry; carry >>= 1)
+            bit_l++;
+        if (bit_l & 1)
+            bit_l++;
+        BigInteger remaining, temp_red;
+        while ((bit_l -= 2) >= 0)
         {
-            tmp = R;
-            tmp[bit / WORD_BITS] |= ((word)1) << (bit % WORD_BITS);
-            if (compare(n, tmp) >= 0)
+            word carrying = (this->words[bit_l / WORD_BITS] >> (bit_l % WORD_BITS)) & ((word)3);
+            remaining <<= 2;
+            remaining += carrying;
+            if (result.words.size())
             {
-                sub_word(n, tmp);
-                result.set_bit(bit + 1);
+                result <<= 1;
+                temp_red = result;
+                temp_red <<= 1;
             }
-            result >>= 1;
+            if (!temp_red.words.size())
+                temp_red.words.push_back(0);
+            temp_red.words[0] |= ((word)1);
+            if (compare(remaining.words, temp_red.words) >= 0)
+            {
+                sub_word(remaining.words, temp_red.words);
+                if (!result.words.size())
+                    result.words.push_back(0);
+                result.words[0] |= ((word)1);
+            }
         }
-        while (R.size() && !R.back())
-            R.pop_back();
     }
     return result;
 }
