@@ -566,7 +566,6 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                 std::vector<word>::iterator carried = this->words.begin(), endCarried = this->words.end() - 1;
                 //word hi, lo = this->words[0];
                 const size_t r_shift = WORD_BITS - n_bits;
-                *carried >>= n_bits;
                 //for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
                 while (carried != endCarried)
                 {
@@ -575,9 +574,10 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                     this->words[i] = (lo >> n_bits) | (hi << r_shift);
                     lo = hi;
                     */
-                    *carried |= *(++carried) << r_shift;
-                    *carried >>= n_bits;
+                    (*carried) >>= n_bits;
+                    (*carried) |= *(++carried) << r_shift;
                 }
+                (*carried) >>= n_bits;
                 //this->words.back() = lo >> n_bits;
                 while (this->words.size() && !this->words.back())
                     this->words.pop_back();
