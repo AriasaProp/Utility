@@ -357,8 +357,10 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
                 break;
             }
             case 1:
+            {
                 sub_word(this->words, b.words);
                 break;
+            }
             case 0:
             default:
                 this->words.clear();
