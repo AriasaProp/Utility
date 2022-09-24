@@ -342,6 +342,8 @@ BigInteger &BigInteger::operator++()
 
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
+    return *this = *this + b;
+    /*
     if (this->neg == b.neg)
         add_word(this->words, b.words);
     else
@@ -368,6 +370,7 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
         }
     }
     return *this;
+    */
 }
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
