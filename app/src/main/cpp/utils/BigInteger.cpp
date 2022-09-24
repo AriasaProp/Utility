@@ -598,15 +598,19 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
         switch (compare(this->words, b.words))
         {
             case 1:
+            {
                 r.words = this->words;
                 r.neg = this->neg;
                 sub_word(r.words, b.words);
                 break;
+            }
             case -1:
+            {
                 r.words = b.words;
                 r.neg = b.neg;
                 sub_word(r.words, this->words);
                 break;
+            }
             case 0:
             default:
                 break;
@@ -629,15 +633,19 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
         switch (compare(this->words, b.words))
         {
             case 1:
+            {
                 r.words = this->words;
                 r.neg = this->neg;
                 sub_word(r.words, b.words);
                 break;
+            }
             case -1:
+            {
                 r.words = b.words;
                 r.neg = b.neg;
                 sub_word(r.words, this->words);
                 break;
+            }
             case 0:
             default:
                 break;
@@ -676,55 +684,55 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
     if (n_bits && this->words.size())
     {
         size_t j = n_bits / WORD_BITS;
-        if (j >= words.size())
+        if (j < words.size())
         {
-            this->words.clear();
-            return *this;
-        }
-        if (j)
             this->words.erase(this->words.begin(), this->words.begin() + j);
-        n_bits %= WORD_BITS;
-        if (n_bits)
-        {
-            word hi, lo = this->words[0];
-            const size_t r_shift = WORD_BITS - n_bits;
-            for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
+            n_bits %= WORD_BITS;
+            if (n_bits)
             {
-                hi = this->words[i + 1];
-                this->words[i] = (hi << r_shift) | (lo >> n_bits);
-                lo = hi;
+                word hi, lo = this->words[0];
+                const size_t r_shift = WORD_BITS - n_bits;
+                for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
+                {
+                    hi = this->words[i + 1];
+                    this->words[i] = (hi << r_shift) | (lo >> n_bits);
+                    lo = hi;
+                }
+                this->words.back() = lo >> n_bits;
+                while (this->words.size() && !this->words.back())
+                    this->words.pop_back();
             }
-            this->words.back() = lo >> n_bits;
-            while (this->words.size() && !this->words.back())
-                this->words.pop_back();
         }
+        else
+            this->words.clear();
     }
     return *this;
 }
 
-BigInteger &BigInteger::operator<<=(size_t n_bits)
+BigInteger &BigInteger::operator<<=(size_t bits)
 {
-    if (!n_bits)
-        return *this;
-    const size_t j = n_bits / WORD_BITS;
-    n_bits %= WORD_BITS;
-    if (n_bits)
+    if (bits)
     {
-        const size_t l_shift = WORD_BITS - n_bits;
-        size_t i = this->words.size() - 1;
-        word hi = this->words.back(), lo = hi >> l_shift;
-        if (lo)
-            this->words.push_back(lo);
-        while (i--)
+        size_t n = bits % WORD_BITS;
+        if (n)
         {
-            lo = this->words[i];
-            this->words[i + 1] = (hi << n_bits) | (lo >> l_shift);
-            hi = lo;
+            const size_t l_shift = WORD_BITS - n;
+            size_t i = this->words.size() - 1;
+            word hi = this->words.back(), lo = hi >> l_shift;
+            if (lo)
+                this->words.push_back(lo);
+            while (i--)
+            {
+                lo = this->words[i];
+                this->words[i + 1] = (hi << n) | (lo >> l_shift);
+                hi = lo;
+            }
+            this->words[0] = hi << n;
         }
-        this->words[0] = hi << n_bits;
+        n = bits / WORD_BITS;
+        if (n)
+            this->words.insert(this->words.begin(), n, 0);
     }
-    if (j)
-        this->words.insert(this->words.begin(), j, 0);
     return *this;
 }
 
