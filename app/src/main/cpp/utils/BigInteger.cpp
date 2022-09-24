@@ -342,11 +342,9 @@ BigInteger &BigInteger::operator++()
 
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
-    //return *this = *this + b;
-    std::vector<word> t;
     if (this->neg == b.neg)
     {
-        t = b.words;
+        std::vector<word> t = b.words;
         add_word(this->words, t);
     }
     else
@@ -354,25 +352,18 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
         switch (compare(this->words, b.words))
         {
             case -1:
-            {
-                t = this->words;
+                std::vector<word> t = this->words;
                 this->neg = b.neg;
                 this->words = b.words;
                 sub_word(this->words, t);
                 break;
-            }
             case 1:
-            {
-                t = b.words;
-                sub_word(this->words, t);
+                sub_word(this->words, b.words);
                 break;
-            }
             case 0:
             default:
-            {
                 this->words.clear();
                 break;
-            }
         }
     }
     return *this;
@@ -387,13 +378,11 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
         switch (compare(this->words, b.words))
         {
             case -1:
-            {
                 this->neg = !this->neg;
                 std::vector<word> tmp = this->words;
                 this->words = b.words;
                 sub_word(this->words, tmp);
                 break;
-            }
             case 1:
                 sub_word(this->words, b.words);
                 break;
@@ -413,10 +402,11 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
         this->neg = false;
         this->words.clear();
     }
-    if (!this->words.size())
-        return *this;
-    this->neg ^= b.neg;
-    karatsuba(this->words, this->words, b.words);
+    if (this->words.size())
+    {
+        this->neg ^= b.neg;
+        karatsuba(this->words, this->words, b.words);
+    }
     return *this;
 }
 
@@ -491,15 +481,15 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
         word carry0, carry1;
         size_t j = rem.size();
         size_t i = div.size();
-        size_t n = (j - i) * WORD_BITS;
+        j = (j - i) * WORD_BITS;
         for (carry0 = rem.back(); carry0; carry0 >>= 1)
-            n++;
+            j++;
         for (carry1 = div.back(); carry1; carry1 >>= 1)
-            n--;
-        const size_t n_bits = n % WORD_BITS;
-        if (n_bits)
+            j--;
+        size_t n = j % WORD_BITS;
+        if (n)
         {
-            const size_t l_shift = WORD_BITS - n_bits;
+            const size_t l_shift = WORD_BITS - n;
             carry0 = div.back();
             carry1 = carry0 >> l_shift;
             if (carry1)
@@ -508,27 +498,28 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             while (i--)
             {
                 carry1 = div[i];
-                div[i + 1] = (carry0 << n_bits) | (carry1 >> l_shift);
+                div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
                 carry0 = carry1;
             }
-            div[0] = carry0 << n_bits;
+            div[0] = carry0 << n;
         }
-        const size_t n_words = n / WORD_BITS;
-        if (n_words)
-            div.insert(div.begin(), n_words, 0);
+        n = j / WORD_BITS;
+        if (n)
+            div.insert(div.begin(), n, 0);
         do
         {
             if (compare(rem, div) >= 0)
                 sub_word(rem, div);
             //reverse shift one by one
-            word hi, lo = div[0];
+            carry0 = 0;
+            carry1 = div[0];
             for (i = 0, j = div.size() - 1; i < j; i++)
             {
-                hi = div[i + 1];
-                div[i] = (hi << WORD_BITS_1) | (lo >> 1);
-                lo = hi;
+                carry0 = div[i + 1];
+                div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
+                carry1 = carry0;
             }
-            div.back() = lo >> 1;
+            div.back() = carry1 >> 1;
             if (!div.back())
                 div.pop_back();
         } while (n-- && rem.size());
