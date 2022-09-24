@@ -39,7 +39,7 @@ class BigInteger
     // re-initialize operational function
     BigInteger &operator=(const signed &);
     BigInteger &operator=(const BigInteger &);
-    // safe operational math function
+    // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
     BigInteger &operator+=(const BigInteger &);
@@ -48,6 +48,8 @@ class BigInteger
     BigInteger &operator/=(const BigInteger &);
     BigInteger &operator%=(const BigInteger &);
     BigInteger &operator^=(size_t);
+    BigInteger &operator>>=(size_t);
+    BigInteger &operator<<=(size_t);
     // compare operator function
     bool operator==(const BigInteger &) const;
     bool operator!=(const BigInteger &) const;
@@ -55,7 +57,7 @@ class BigInteger
     bool operator>=(const BigInteger &) const;
     bool operator<(const BigInteger &) const;
     bool operator>(const BigInteger &) const;
-    // unsafe operational math function
+    // unsafe operator function
     BigInteger operator+(const BigInteger &) const;
     BigInteger operator-(const BigInteger &) const;
     BigInteger operator*(const BigInteger &) const;
@@ -63,9 +65,6 @@ class BigInteger
     BigInteger operator%(const BigInteger &) const;
     BigInteger operator^(size_t) const;
     BigInteger operator-() const;
-    // shift operator function
-    BigInteger &operator>>=(size_t);
-    BigInteger &operator<<=(size_t);
     BigInteger operator>>(size_t) const;
     BigInteger operator<<(size_t) const;
     // stream operator
