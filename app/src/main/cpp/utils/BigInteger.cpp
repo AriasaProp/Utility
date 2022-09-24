@@ -343,7 +343,7 @@ BigInteger &BigInteger::operator++()
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
     //return *this = *this + b;
-    std::vector<word> t
+    std::vector<word> t;
     if (this->neg == b.neg)
     {
         t = b.words;
