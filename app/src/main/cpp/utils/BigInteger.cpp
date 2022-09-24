@@ -567,7 +567,7 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                 //word hi, lo = this->words[0];
                 const size_t r_shift = WORD_BITS - n_bits;
                 *carried >>= n_bits;
-                for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
+                //for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
                 while (carried != endCarried)
                 {
                   /*
