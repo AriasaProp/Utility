@@ -342,35 +342,40 @@ BigInteger &BigInteger::operator++()
 
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
-    return *this = *this + b;
-    /*
+    //return *this = *this + b;
+    std::vector<word> t
     if (this->neg == b.neg)
-        add_word(this->words, b.words);
+    {
+        t = b.words;
+        add_word(this->words, t);
+    }
     else
     {
         switch (compare(this->words, b.words))
         {
             case -1:
             {
+                t = this->words;
                 this->neg = b.neg;
-                std::vector<word> tmp = this->words;
                 this->words = b.words;
-                sub_word(this->words, tmp);
+                sub_word(this->words, t);
                 break;
             }
             case 1:
             {
-                sub_word(this->words, b.words);
+                t = b.words;
+                sub_word(this->words, t);
                 break;
             }
             case 0:
             default:
+            {
                 this->words.clear();
                 break;
+            }
         }
     }
     return *this;
-    */
 }
 
 BigInteger &BigInteger::operator-=(const BigInteger &b)
