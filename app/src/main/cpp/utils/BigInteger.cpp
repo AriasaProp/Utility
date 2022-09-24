@@ -423,18 +423,18 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
     this->words.clear();
     if (compare(rem, div) >= 0)
     {
-        word carry0 = 0, carry1;
+        word carry0, carry1;
         this->neg ^= b.neg;
         //shifting count
         size_t j = rem.size();
         size_t i = div.size();
-        size_t n = (j - i) * WORD_BITS;
+        j = (j - i) * WORD_BITS;
         for (carry0 = rem.back(); carry0; carry0 >>= 1)
-            n++;
+            j++;
         for (carry1 = div.back(); carry1; carry1 >>= 1)
-            n--;
-        const size_t n_bits = n % WORD_BITS;
-        if (n_bits)
+            j--;
+        size_t n = j % WORD_BITS;
+        if (n)
         {
             const size_t l_shift = WORD_BITS - n_bits;
             carry0 = div.back();
@@ -450,30 +450,29 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
             }
             div[0] = carry0 << n_bits;
         }
-        const size_t n_words = n / WORD_BITS;
-        if (n_words)
-            div.insert(div.begin(), n_words, 0);
-        this->words.reserve(n_words + 1);
-        words.resize(n_words + 1, 0);
+        n = j / WORD_BITS;
+        if (n)
+            div.insert(div.begin(), n, 0);
+        this->words.resize(n + 1, 0);
         do
         {
             if (compare(rem, div) >= 0)
             {
                 sub_word(rem, div);
-                this->words[n / WORD_BITS] |= word(1) << (n % WORD_BITS);
+                this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
             }
             //reverse shift one by one
-            word hi, lo = div[0];
-            for (i = 0, j = div.size() - 1; i < j; i++)
+            carry1 = div[0];
+            for (i = 0, n = div.size() - 1; i < n; i++)
             {
-                hi = div[i + 1];
-                div[i] = (hi << WORD_BITS_1) | (lo >> 1);
-                lo = hi;
+                carry0 = div[i + 1];
+                div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
+                carry1 = carry0;
             }
-            div.back() = lo >> 1;
+            div.back() = carry1 >> 1;
             if (!div.back())
                 div.pop_back();
-        } while (n-- && rem.size());
+        } while (j-- && rem.size());
         while (this->words.size() && !this->words.back())
             this->words.pop_back();
     }
