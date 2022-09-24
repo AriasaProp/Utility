@@ -592,16 +592,16 @@ BigInteger &BigInteger::operator<<=(size_t bits)
         {
             const size_t l_shift = WORD_BITS - n;
             std::vector<word>::reverse_iterator carried = this->words.rbegin();
-            size_t i = this->words.size() - 1;
-            word lo = this->words.back() >> l_shift;
+            std::vector<word>::reverse_iterator endCarried = this->words.rend() - 1;
+            word lo = *carried >> l_shift;
+            while (carried != endCarried)
+            {
+                *carried <<= n;
+                *carried |= *(carried++) >> l_shift;
+            }
+            *carried <<= n;
             if (lo)
                 this->words.push_back(lo);
-            while (i)
-            {
-                this->words[i] <<= n;
-                this->words[i] |= this->words[--i] >> l_shift;
-            }
-            this->words[i] <<= n;
         }
         n = bits / WORD_BITS;
         if (n)
