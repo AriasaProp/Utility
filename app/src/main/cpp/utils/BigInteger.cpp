@@ -445,10 +445,10 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
             while (i--)
             {
                 carry1 = div[i];
-                div[i + 1] = (carry0 << n_bits) | (carry1 >> l_shift);
+                div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
                 carry0 = carry1;
             }
-            div[0] = carry0 << n_bits;
+            div[0] = carry0 << n;
         }
         n = j / WORD_BITS;
         if (n)
