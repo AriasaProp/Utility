@@ -436,7 +436,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         size_t n = j % WORD_BITS;
         if (n)
         {
-            const size_t l_shift = WORD_BITS - n_bits;
+            const size_t l_shift = WORD_BITS - n;
             carry0 = div.back();
             carry1 = carry0 >> l_shift;
             if (carry1)
