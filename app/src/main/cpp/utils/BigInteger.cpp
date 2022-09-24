@@ -559,27 +559,20 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
         size_t j = n_bits / WORD_BITS;
         if (j < words.size())
         {
-            this->words.erase(this->words.begin(), this->words.begin() + j);
+            std::vector<word>::iterator carried = this->words.begin();
+            this->words.erase(carried, carried + j);
+            std::vector<word>::iterator endCarried = this->words.end() - 1;
             n_bits %= WORD_BITS;
             if (n_bits)
             {
-                std::vector<word>::iterator carried = this->words.begin(), endCarried = this->words.end() - 1;
-                //word hi, lo = this->words[0];
                 const size_t r_shift = WORD_BITS - n_bits;
-                //for (size_t i = 0, j = this->words.size() - 1; i < j; i++)
+                *carried >>= n_bits;
                 while (carried != endCarried)
                 {
-                  /*
-                    hi = this->words[i + 1];
-                    this->words[i] = (lo >> n_bits) | (hi << r_shift);
-                    lo = hi;
-                    */
-                    (*carried) >>= n_bits;
-                    (*carried) |= *(carried + 1) << r_shift;
+                    *carried |= *(carried + 1) << r_shift;
                     carried++;
+                    *carried >>= n_bits;
                 }
-                (*carried) >>= n_bits;
-                //this->words.back() = lo >> n_bits;
                 while (this->words.size() && !this->words.back())
                     this->words.pop_back();
             }
@@ -598,17 +591,17 @@ BigInteger &BigInteger::operator<<=(size_t bits)
         if (n)
         {
             const size_t l_shift = WORD_BITS - n;
+            std::vector<word>::reverse_iterator carried = this->words.rbegin();
             size_t i = this->words.size() - 1;
-            word hi = this->words.back(), lo = hi >> l_shift;
+            word lo = this->words.back() >> l_shift;
             if (lo)
                 this->words.push_back(lo);
-            while (i--)
+            while (i)
             {
-                lo = this->words[i];
-                this->words[i + 1] = (hi << n) | (lo >> l_shift);
-                hi = lo;
+                this->words[i] <<= n;
+                this->words[i] |= this->words[--i] >> l_shift;
             }
-            this->words[0] = hi << n;
+            this->words[i] <<= n;
         }
         n = bits / WORD_BITS;
         if (n)
