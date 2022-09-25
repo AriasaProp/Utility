@@ -566,13 +566,13 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
             {
                 std::vector<word>::iterator endCarried = this->words.end() - 1;
                 const size_t r_shift = WORD_BITS - n_bits;
+                *carried >>= n_bits;
                 while (carried != endCarried)
                 {
-                    *carried >>= n_bits;
                     *carried |= *(carried + 1) << r_shift;
                     carried++;
+                    *carried >>= n_bits;
                 }
-                *carried >>= n_bits;
                 if (*carried) 
                     this->words.pop_back();
             }
