@@ -266,7 +266,7 @@ BigInteger BigInteger::sqrt() const
     size_t n = this->words.size();
     if (n)
     {
-        int bit_l = (n - 1) * WORD_BITS;
+        size_t bit_l = (n - 1) * WORD_BITS;
         word carry = this->words.back();
         while (carry)
             bit_l++, carry >>= 1;
@@ -289,7 +289,7 @@ BigInteger BigInteger::sqrt() const
             if (remaining >= temp_red)
             {
                 remaining -= temp_red;
-                result += carry;
+                result += word(1);
             }
         }
     }
@@ -628,7 +628,7 @@ bool BigInteger::operator<=(const BigInteger &b) const
 bool BigInteger::operator>=(const BigInteger &b) const
 {
     if (this->neg != b.neg)
-        return !this->neg;
+        return b.neg;
     return 0 <= (compare(this->words, b.words) * (this->neg ? -1 : +1));
 }
 bool BigInteger::operator<(const BigInteger &b) const
