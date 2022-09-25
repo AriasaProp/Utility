@@ -594,8 +594,6 @@ BigInteger &BigInteger::operator<<=(size_t bits)
             std::vector<word>::reverse_iterator carried = this->words.rbegin();
             std::vector<word>::reverse_iterator endCarried = this->words.rend() - 1;
             word lo = *carried >> l_shift;
-            if (lo)
-                this->words.push_back(lo);
             while (carried != endCarried)
             {
                 *carried <<= n;
@@ -603,6 +601,8 @@ BigInteger &BigInteger::operator<<=(size_t bits)
                 carried++;
             }
             *carried <<= n;
+            if (lo)
+                this->words.push_back(lo);
         }
         n = bits / WORD_BITS;
         if (n)
