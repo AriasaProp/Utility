@@ -573,7 +573,7 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                     carried++;
                     *carried >>= n_bits;
                 }
-                if (*carried) 
+                if (*endCarried == 0) 
                     this->words.pop_back();
             }
         }
