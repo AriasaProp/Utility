@@ -273,9 +273,10 @@ BigInteger BigInteger::sqrt() const
         if (bit_l & 1)
             bit_l++;
         BigInteger remaining, temp_red;
-        while ((bit_l -= 2) >= 0)
+        while (bit_l)
         {
-            carry = (this->words[bit_l / WORD_BITS] >> (bit_l % WORD_BITS)) & ((word)3);
+            bit_l -= 2;
+            carry = (this->words[bit_l / WORD_BITS] >> (bit_l % WORD_BITS)) & word(3);
             remaining <<= 2;
             remaining += carry;
             if (result.words.size())
@@ -284,16 +285,11 @@ BigInteger BigInteger::sqrt() const
                 temp_red = result;
                 temp_red <<= 1;
             }
-            if (!temp_red.words.size())
-                temp_red.words.push_back(0);
-            carry = 1;
-            temp_red.words[0] |= carry;
-            if (compare(remaining.words, temp_red.words) >= 0)
+            temp_red += word(1);
+            if (remaining >= temp_red)
             {
-                sub_word(remaining.words, temp_red.words);
-                if (!result.words.size())
-                    result.words.push_back(0);
-                result.words[0] |= carry;
+                remaining -= temp_red;
+                result += carry;
             }
         }
     }
