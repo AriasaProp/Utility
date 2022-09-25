@@ -561,19 +561,19 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
         {
             std::vector<word>::iterator carried = this->words.begin();
             this->words.erase(carried, carried + j);
-            std::vector<word>::iterator endCarried = this->words.end() - 1;
             n_bits %= WORD_BITS;
             if (n_bits)
             {
+                std::vector<word>::iterator endCarried = this->words.end() - 1;
                 const size_t r_shift = WORD_BITS - n_bits;
-                *carried >>= n_bits;
                 while (carried != endCarried)
                 {
+                    *carried >>= n_bits;
                     *carried |= *(carried + 1) << r_shift;
                     carried++;
-                    *carried >>= n_bits;
                 }
-                while (this->words.size() && !this->words.back())
+                *carried >>= n_bits;
+                if (*carried) 
                     this->words.pop_back();
             }
         }
@@ -594,6 +594,8 @@ BigInteger &BigInteger::operator<<=(size_t bits)
             std::vector<word>::reverse_iterator carried = this->words.rbegin();
             std::vector<word>::reverse_iterator endCarried = this->words.rend() - 1;
             word lo = *carried >> l_shift;
+            if (lo)
+                this->words.push_back(lo);
             while (carried != endCarried)
             {
                 *carried <<= n;
@@ -601,8 +603,6 @@ BigInteger &BigInteger::operator<<=(size_t bits)
                 carried++;
             }
             *carried <<= n;
-            if (lo)
-                this->words.push_back(lo);
         }
         n = bits / WORD_BITS;
         if (n)
