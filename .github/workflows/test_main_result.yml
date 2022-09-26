@@ -19,7 +19,7 @@ jobs:
       - name: Gradle Test
         run: gradle test
       - name: Upload Result
-        uses: actions/upload-artifac@v3
+        uses: actions/upload-artifact@v3
         with:
            name: output
            path: ${{github.workspace}}/app/build
