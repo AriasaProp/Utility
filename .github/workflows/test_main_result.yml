@@ -1,7 +1,7 @@
 name: test_main_result
 on: [push]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Build
@@ -18,8 +18,3 @@ jobs:
           gradle-version: 6.1.1
       - name: Gradle Test
         run: gradle test
-      - name: Upload Result
-        uses: actions/upload-artifact@v3
-        with:
-           name: output
-           path: ${{github.workspace}}/app/build
