@@ -415,6 +415,8 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 
 BigInteger &BigInteger::operator/=(const BigInteger &b)
 {
+    if (b.words.size()==0)
+        throw ("Undefined number cause devided by 0");
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
     if (compare(rem, div) >= 0)
