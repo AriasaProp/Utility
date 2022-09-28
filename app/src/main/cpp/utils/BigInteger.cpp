@@ -80,32 +80,35 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
+void karatsuba(std::vector<word> &dst, const std::vector<word> &B)
 {
-    dst.clear();
-    const size_t na = A.size(), nb = B.size();
-    const size_t combinedN = na | nb;
-    if (combinedN)
+    const size_t na = dst.size(), nb = B.size();
+    if (na && nb)
     {
-        dst.reserve(na + nb);
+        dst.reserve(na + nb + 1);
+        const size_t combinedN = na | nb;
         if (combinedN > 1)
         {
             const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
-            if (A.size() < M)
-                A.resize(M, 0);
-            auto split = std::next(A.begin(), m2);
-            std::vector<word> a1 = std::vector<word>(split, A.end());
-            A.resize(m2);
-            if (B.size() < M)
-                B.resize(M, 0);
-            split = std::next(B.begin(), m2);
-            std::vector<word> b1 = std::vector<word>(split, B.end());
-            B.resize(m2);
-            karatsuba(dst, a1, b1);
-            add_word(a1, A);
-            add_word(b1, B);
-            karatsuba(a1, a1, b1);
-            karatsuba(b1, A, B);
+            std::vector<word> a0 = dst;
+            if (na <= m2)
+                a0.resize(M, 0);
+            auto split = std::next(a0.begin(), m2);
+            std::vector<word> a1 = std::vector<word>(split, a0.end());
+            a0.resize(m2);
+            std::vector<word> b0 = B;
+            if (nb <= m2)
+                b0.resize(M, 0);
+            split = std::next(b0.begin(), m2);
+            std::vector<word> b1 = std::vector<word>(split, b0.end());
+            b0.resize(m2);
+            dst = a1;
+            karatsuba(dst, b1);
+            add_word(a1, a0);
+            add_word(b1, b0);
+            karatsuba(a1, b1);
+            b1 = a0;
+            karatsuba(b1, b0);
             sub_word(a1, b1);
             sub_word(a1, dst);
             dst.insert(dst.begin(), m2, 0);
@@ -115,18 +118,25 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
             while (dst.size() && !dst.back())
                 dst.pop_back();
         }
-        else if (A[0] && B[0])
+        else if (dst[0] && B[0])
         {
-            word a_hi = A[0] >> WORD_HALF_BITS;
-            word a_lo = A[0] & WORD_HALF_MASK;
+            word a_hi = dst[0] >> WORD_HALF_BITS;
+            word a_lo = dst[0] & WORD_HALF_MASK;
             word b_hi = B[0] >> WORD_HALF_BITS;
             word b_lo = B[0] & WORD_HALF_MASK;
-            dst.push_back(A[0] * B[0]);
-            word carry = ((a_lo * b_lo) >> WORD_HALF_BITS) + a_hi * b_lo;
+            word carry = dst[0] * B[0];
+            dst.clear();
+            dst.push_back(carry);
+            carry = a_lo * b_lo;
+            carry = (carry >> WORD_HALF_BITS) + a_hi * b_lo;
             carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
             if (carry)
                 dst.push_back(carry);
         }
+    }
+    else
+    {
+      dst.clear();
     }
 }
 
@@ -355,6 +365,7 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
                 break;
             case 0:
             default:
+                this->neg = false;
                 this->words.clear();
                 break;
         }
@@ -386,6 +397,7 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
                 break;
             case 0:
             default:
+                this->neg = false;
                 this->words.clear();
                 break;
         }
@@ -403,7 +415,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (this->words.size())
     {
         this->neg ^= b.neg;
-        karatsuba(this->words, this->words, b.words);
+        karatsuba(this->words, b.words);
     }
     return *this;
 }
@@ -535,9 +547,9 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                karatsuba(r, r, p);
+                karatsuba(r, p);
             exponent >>= 1;
-            karatsuba(p, p, p);
+            karatsuba(p, p);
         }
     }
     else if (!exponent)
