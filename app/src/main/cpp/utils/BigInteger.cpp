@@ -80,7 +80,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, const std::vector<word> &B)
+void karatsuba(std::vector<word> &dst, std::vector<word> B)
 {
     const size_t na = dst.size(), nb = B.size();
     if (na && nb)
@@ -94,13 +94,13 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &B)
             if (na < M)
                 a0.resize(M, 0);
             std::vector<word>::iterator split = std::next(a0.begin(), m2);
-            std::vector<word> a1 = std::vector<word>(split, a0.end());
+            std::vector<word>(split, a0.end());
             a0.resize(m2);
-            std::vector<word> b0(B.begin(), B.end());
             if (nb < M)
-                b0.resize(M, 0);
-            split = std::next(b0.begin(), m2);
-            std::vector<word> b1 = std::vector<word>(split, b0.end());
+                B.resize(M, 0);
+            split = std::next(B.begin(), m2);
+            std::vector<word> b0(B.begin(), split);
+            std::vector<word> b1(split, B.end());
             b0.resize(m2);
             dst = a1;
             karatsuba(dst, b1);
