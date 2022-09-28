@@ -266,25 +266,20 @@ BigInteger BigInteger::sqrt() const
     size_t n = this->words.size();
     if (n)
     {
-        size_t bit_l = (n - 1) * WORD_BITS;
-        word carry = this->words.back();
-        while (carry)
-            bit_l++, carry >>= 1;
-        if (bit_l & 1)
-            bit_l++;
+        n = (n - 1) * WORD_BITS;
+        for (word carry = this->words.back(); carry; carry >>= 1)
+            n++;
+        if (n & 1)
+            n++;
         BigInteger remaining, temp_red;
-        while (bit_l)
+        while (n)
         {
-            bit_l -= 2;
-            carry = (this->words[bit_l / WORD_BITS] >> (bit_l % WORD_BITS)) & word(3);
+            n -= 2;
             remaining <<= 2;
-            remaining += carry;
-            if (result.words.size())
-            {
-                result <<= 1;
-                temp_red = result;
-                temp_red <<= 1;
-            }
+            remaining += (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
+            result <<= 1;
+            temp_red = result;
+            temp_red <<= 1;
             temp_red += word(1);
             if (remaining >= temp_red)
             {
