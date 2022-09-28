@@ -85,19 +85,19 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &B)
     const size_t na = dst.size(), nb = B.size();
     if (na && nb)
     {
-        dst.reserve(na + nb + 1);
+        dst.reserve(na + nb);
         const size_t combinedN = na | nb;
         if (combinedN > 1)
         {
             const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
-            std::vector<word> a0 = dst;
-            if (na <= m2)
+            std::vector<word> a0(dst.begin(), dst.end());
+            if (na < M)
                 a0.resize(M, 0);
             auto split = std::next(a0.begin(), m2);
             std::vector<word> a1 = std::vector<word>(split, a0.end());
             a0.resize(m2);
-            std::vector<word> b0 = B;
-            if (nb <= m2)
+            std::vector<word> b0(B.begin(), B.end());
+            if (nb < M)
                 b0.resize(M, 0);
             split = std::next(b0.begin(), m2);
             std::vector<word> b1 = std::vector<word>(split, b0.end());
