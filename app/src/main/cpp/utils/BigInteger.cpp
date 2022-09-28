@@ -93,7 +93,7 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &B)
             std::vector<word> a0(dst.begin(), dst.end());
             if (na < M)
                 a0.resize(M, 0);
-            auto split = std::next(a0.begin(), m2);
+            std::vector<word>::iterator split = std::next(a0.begin(), m2);
             std::vector<word> a1 = std::vector<word>(split, a0.end());
             a0.resize(m2);
             std::vector<word> b0(B.begin(), B.end());
