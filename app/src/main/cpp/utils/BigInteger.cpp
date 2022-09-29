@@ -80,9 +80,8 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, const std::vector<word> &aa, const std::vector<word> &B)
+void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
-    const std::vector<word> A = dst;
     dst.clear();
     const size_t na = A.size(), nb = B.size();
     if (na && nb)
@@ -95,32 +94,29 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &aa, const std::v
                 n = (na >= nb) ? na : nb,
                 m2 = n / 2 + (n & 1),
                 M = m2 * 2;
-            std::vector<word> a0(A);
             if (na < M)
-                a0.resize(M, 0);
-            std::vector<word>::iterator split = std::next(a0.begin(), m2);
-            std::vector<word> a1(split, a0.end());
-            a0.resize(m2);
-            std::vector<word> b0(B);
+                A.resize(M, 0);
+            std::vector<word>::iterator split = std::next(A.begin(), m2);
+            std::vector<word> a1(split, A.end());
+            A.resize(m2);
             if (nb < M)
-                b0.resize(M, 0);
-            split = std::next(b0.begin(), m2);
-            std::vector<word> b1(split, b0.end());
-            b0.resize(m2);
-            dst = a1;
+                B.resize(M, 0);
+            split = std::next(B.begin(), m2);
+            std::vector<word> b1(split, B.end());
+            B.resize(m2);
             karatsuba(dst, a1, b1); // hi
-            add_word(a1, a0);
-            add_word(b1, b0);
+            add_word(a1, A);
+            add_word(b1, B);
             karatsuba(a1, a1, b1); // mid
-            b1 = a0;
-            karatsuba(b1, a0, b0); // lo
-            sub_word(a1, b1);
+            karatsuba(b1, A, B); // lo
             sub_word(a1, dst);
+            sub_word(a1, b1);
+            //should not be wrap around
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, a1);
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, b1);
-            
+            //truncate result dst
             while (dst.size() && !dst.back())
                 dst.pop_back();
         }
@@ -423,28 +419,29 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 
 BigInteger &BigInteger::operator/=(const BigInteger &b)
 {
-    if (b.words.size()==0)
-        throw ("Undefined number cause devided by 0");
+    if (!b.words.size())
+        throw ("Undefined number cause /0 !");
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
     if (compare(rem, div) >= 0)
     {
-        word carry0, carry1;
         this->neg ^= b.neg;
         //shifting count
         size_t j = rem.size();
         size_t i = div.size();
         j = (j - i) * WORD_BITS;
-        for (carry0 = rem.back(); carry0; carry0 >>= 1)
-            j++;
-        for (carry1 = div.back(); carry1; carry1 >>= 1)
-            j--;
+        word carry0 = rem.back();
+        while (carry0)
+            j++, carry0 >>= 1;
+        carry0 = div.back();
+        while (carry0)
+            j--, carry0 >>= 1;
         size_t n = j % WORD_BITS;
         if (n)
         {
             const size_t l_shift = WORD_BITS - n;
             carry0 = div.back();
-            carry1 = carry0 >> l_shift;
+            word carry1 = carry0 >> l_shift;
             if (carry1)
                 div.push_back(carry1);
             i--;
@@ -486,54 +483,58 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
 }
 BigInteger &BigInteger::operator%=(const BigInteger &b)
 {
-    std::vector<word> &rem = this->words, div = b.words;
-    if (compare(rem, div) >= 0)
+    if (b.words.size())
     {
-        //shifting count
-        word carry0, carry1;
-        size_t j = rem.size();
-        size_t i = div.size();
-        j = (j - i) * WORD_BITS;
-        for (carry0 = rem.back(); carry0; carry0 >>= 1)
-            j++;
-        for (carry1 = div.back(); carry1; carry1 >>= 1)
-            j--;
-        size_t n = j % WORD_BITS;
-        if (n)
+        std::vector<word> &rem = this->words, div = b.words;
+        if (compare(rem, div) >= 0)
         {
-            const size_t l_shift = WORD_BITS - n;
+            //shifting count
+            size_t j = rem.size();
+            size_t i = div.size();
+            j = (j - i) * WORD_BITS;
+            word carry0 = rem.back();
+            for (carry0)
+                j++, carry0 >>= 1;
             carry0 = div.back();
-            carry1 = carry0 >> l_shift;
-            if (carry1)
-                div.push_back(carry1);
-            i--;
-            while (i--)
+            for (carry0)
+                j--, carry0 >>= 1;
+            size_t n = j % WORD_BITS;
+            if (n)
             {
-                carry1 = div[i];
-                div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
-                carry0 = carry1;
+                const size_t l_shift = WORD_BITS - n;
+                carry0 = div.back();
+                word carry1 = carry0 >> l_shift;
+                if (carry1)
+                    div.push_back(carry1);
+                i--;
+                while (i--)
+                {
+                    carry1 = div[i];
+                    div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
+                    carry0 = carry1;
+                }
+                div[0] = carry0 << n;
             }
-            div[0] = carry0 << n;
+            n = j / WORD_BITS;
+            if (n)
+                div.insert(div.begin(), n, 0);
+            do
+            {
+                if (compare(rem, div) >= 0)
+                    sub_word(rem, div);
+                //reverse shift one by one
+                carry1 = div[0];
+                for (i = 0, n = div.size() - 1; i < n; i++)
+                {
+                    carry0 = div[i + 1];
+                    div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
+                    carry1 = carry0;
+                }
+                div.back() = carry1 >> 1;
+                if (!div.back())
+                    div.pop_back();
+            } while (j-- && rem.size());
         }
-        n = j / WORD_BITS;
-        if (n)
-            div.insert(div.begin(), n, 0);
-        do
-        {
-            if (compare(rem, div) >= 0)
-                sub_word(rem, div);
-            //reverse shift one by one
-            carry1 = div[0];
-            for (i = 0, n = div.size() - 1; i < n; i++)
-            {
-                carry0 = div[i + 1];
-                div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
-                carry1 = carry0;
-            }
-            div.back() = carry1 >> 1;
-            if (!div.back())
-                div.pop_back();
-        } while (j-- && rem.size());
     }
     return *this;
 }
@@ -584,7 +585,10 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
             }
         }
         else
+        {
+            this->neg = false;
             this->words.clear();
+        }
     }
     return *this;
 }
