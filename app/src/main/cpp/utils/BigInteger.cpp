@@ -80,8 +80,9 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, const std::vector<word> &A, const std::vector<word> &B)
+void karatsuba(std::vector<word> &dst, const std::vector<word> &aa, const std::vector<word> &B)
 {
+    const std::vector<word> A = dst;
     dst.clear();
     const size_t na = A.size(), nb = B.size();
     if (na && nb)
@@ -90,30 +91,36 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &A, const std::ve
         const size_t combinedN = na | nb;
         if (combinedN > 1)
         {
-            const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
-            std::vector<word> a0 = A;
+            const size_t
+                n = (na >= nb) ? na : nb,
+                m2 = n / 2 + (n & 1),
+                M = m2 * 2;
+            std::vector<word> a0(A);
             if (na < M)
                 a0.resize(M, 0);
             std::vector<word>::iterator split = std::next(a0.begin(), m2);
             std::vector<word> a1(split, a0.end());
             a0.resize(m2);
-            std::vector<word> b0 = B;
+            std::vector<word> b0(B);
             if (nb < M)
                 b0.resize(M, 0);
             split = std::next(b0.begin(), m2);
             std::vector<word> b1(split, b0.end());
             b0.resize(m2);
-            karatsuba(dst, a1, b1);
+            dst = a1;
+            karatsuba(dst, a1, b1); // hi
             add_word(a1, a0);
             add_word(b1, b0);
-            karatsuba(a1, a1, b1);
-            karatsuba(b1, a0, b0);
+            karatsuba(a1, a1, b1); // mid
+            b1 = a0;
+            karatsuba(b1, a0, b0); // lo
             sub_word(a1, b1);
             sub_word(a1, dst);
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, a1);
             dst.insert(dst.begin(), m2, 0);
             add_word(dst, b1);
+            
             while (dst.size() && !dst.back())
                 dst.pop_back();
         }
@@ -132,8 +139,6 @@ void karatsuba(std::vector<word> &dst, const std::vector<word> &A, const std::ve
                 dst.push_back(carry);
         }
     }
-    else
-      dst.clear();
 }
 
 //initialize BigInteger functions
