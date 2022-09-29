@@ -465,7 +465,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
                 this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
             }
             //reverse shift one by one
-            carry1 = div[0];
+            word carry1 = div[0];
             for (i = 0, n = div.size() - 1; i < n; i++)
             {
                 carry0 = div[i + 1];
@@ -523,7 +523,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
                 if (compare(rem, div) >= 0)
                     sub_word(rem, div);
                 //reverse shift one by one
-                carry1 = div[0];
+                word carry1 = div[0];
                 for (i = 0, n = div.size() - 1; i < n; i++)
                 {
                     carry0 = div[i + 1];
