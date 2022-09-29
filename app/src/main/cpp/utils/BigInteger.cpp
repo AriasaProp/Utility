@@ -80,9 +80,10 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, std::vector<word> B)
+void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
-    const size_t na = dst.size(), nb = B.size();
+    dst.clear();
+    const size_t na = A.size(), nb = B.size();
     if (na && nb)
     {
         dst.reserve(na + nb);
@@ -91,22 +92,20 @@ void karatsuba(std::vector<word> &dst, std::vector<word> B)
         {
             const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
             if (na < M)
-                dst.resize(M, 0);
-            std::vector<word>::iterator split = std::next(dst.begin(), m2);
-            std::vector<word> a0(dst.begin(), split);
-            std::vector<word> a1(split, dst.end());
+                A.resize(M, 0);
+            std::vector<word>::iterator split = std::next(A.begin(), m2);
+            std::vector<word> a0(A.begin(), split);
+            std::vector<word> a1(split, A.end());
             if (nb < M)
                 B.resize(M, 0);
             split = std::next(B.begin(), m2);
             std::vector<word> b0(B.begin(), split);
             std::vector<word> b1(split, B.end());
-            dst = a1;
-            karatsuba(dst, b1);
+            karatsuba(dst, a1, b1);
             add_word(a1, a0);
             add_word(b1, b0);
-            karatsuba(a1, b1);
-            b1 = a0;
-            karatsuba(b1, b0);
+            karatsuba(a1, a1, b1);
+            karatsuba(b1, a0, b0);
             sub_word(a1, b1);
             sub_word(a1, dst);
             dst.insert(dst.begin(), m2, 0);
@@ -116,14 +115,13 @@ void karatsuba(std::vector<word> &dst, std::vector<word> B)
             while (dst.size() && !dst.back())
                 dst.pop_back();
         }
-        else if (dst[0] && B[0])
+        else if (A[0] && B[0])
         {
-            word a_hi = dst[0] >> WORD_HALF_BITS;
-            word a_lo = dst[0] & WORD_HALF_MASK;
+            word a_hi = A[0] >> WORD_HALF_BITS;
+            word a_lo = A[0] & WORD_HALF_MASK;
             word b_hi = B[0] >> WORD_HALF_BITS;
             word b_lo = B[0] & WORD_HALF_MASK;
-            word carry = dst[0] * B[0];
-            dst.clear();
+            word carry = A[0] * B[0];
             dst.push_back(carry);
             carry = a_lo * b_lo;
             carry = (carry >> WORD_HALF_BITS) + a_hi * b_lo;
@@ -413,7 +411,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (this->words.size())
     {
         this->neg ^= b.neg;
-        karatsuba(this->words, b.words);
+        karatsuba(this->words, this->words, b.words);
     }
     return *this;
 }
@@ -545,9 +543,9 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                karatsuba(r, p);
+                karatsuba(r, r, p);
             exponent >>= 1;
-            karatsuba(p, p);
+            karatsuba(p, p, p);
         }
     }
     else if (!exponent)
