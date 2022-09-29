@@ -493,10 +493,10 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             size_t i = div.size();
             j = (j - i) * WORD_BITS;
             word carry0 = rem.back();
-            for (carry0)
+            while (carry0)
                 j++, carry0 >>= 1;
             carry0 = div.back();
-            for (carry0)
+            while (carry0)
                 j--, carry0 >>= 1;
             size_t n = j % WORD_BITS;
             if (n)
