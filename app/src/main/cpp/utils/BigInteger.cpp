@@ -80,7 +80,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
+void karatsuba(std::vector<word> &dst, const std::vector<word> &A, const std::vector<word> &B)
 {
     dst.clear();
     const size_t na = A.size(), nb = B.size();
@@ -91,16 +91,18 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
         if (combinedN > 1)
         {
             const size_t m2 = (na >= nb) ? (na / 2 + (na & 1)) : (nb / 2 + (nb & 1)), M = m2 * 2;
+            std::vector<word> a0 = A;
             if (na < M)
-                A.resize(M, 0);
-            std::vector<word>::iterator split = std::next(A.begin(), m2);
-            std::vector<word> a0(A.begin(), split);
-            std::vector<word> a1(split, A.end());
+                a0.resize(M, 0);
+            std::vector<word>::iterator split = std::next(a0.begin(), m2);
+            std::vector<word> a1(split, a0.end());
+            a0.resize(m2);
+            std::vector<word> b0 = B;
             if (nb < M)
-                B.resize(M, 0);
-            split = std::next(B.begin(), m2);
-            std::vector<word> b0(B.begin(), split);
-            std::vector<word> b1(split, B.end());
+                b0.resize(M, 0);
+            split = std::next(b0.begin(), m2);
+            std::vector<word> b1(split, b0.end());
+            b0.resize(m2);
             karatsuba(dst, a1, b1);
             add_word(a1, a0);
             add_word(b1, b0);
@@ -131,15 +133,13 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
         }
     }
     else
-    {
       dst.clear();
-    }
 }
 
 //initialize BigInteger functions
 
 //Constructors
-BigInteger::BigInteger() : neg(false) {}
+BigInteger::BigInteger() {}
 BigInteger::BigInteger(const BigInteger &a) : neg(a.neg), words(a.words) {}
 BigInteger::BigInteger(const signed &i) : neg(i < 0)
 {
