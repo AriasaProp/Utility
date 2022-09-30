@@ -269,29 +269,87 @@ bool BigInteger::can_convert_to_int(int *result) const
 //math operational
 BigInteger BigInteger::sqrt() const
 {
+    
     BigInteger result;
     size_t n = this->words.size();
     if (n)
     {
         n = (n - 1) * WORD_BITS;
-        for (word carry = this->words.back(); carry; carry >>= 1)
-            n++;
+        word carry = this->words.back();
+        while (carry)
+            n++, carry >>= 1;
         if (n & 1)
             n++;
-        BigInteger remaining, temp_red;
+        std::vector<word> remaining(1, 0), temp_red(1, 0);
+        std::vector<word>::reverse_iterator cur, ending;
+        size_t i, j;
         while (n)
         {
             n -= 2;
-            remaining <<= 2;
-            remaining += (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
-            result <<= 1;
-            temp_red = result;
-            temp_red <<= 1;
-            temp_red += word(1);
-            if (remaining >= temp_red)
+            //remaining shift
+            const size_t l_shift = WORD_BITS - 2;
+            cur = remaining.rbegin();
+            ending = remaining.rend() - 1;
+            carry = *cur >> l_shift;
+            while (cur != ending)
             {
-                remaining -= temp_red;
-                result += word(1);
+                *cur = (*cur << 2) | (*(cur + 1) >> l_shift);
+                cur++;
+            }
+            *cur <<= 2;
+            *cur |= (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
+            if (carry)
+                remaining.push_back(carry);
+
+            //result  and temo_red shift if possible
+            if (result.words.size())
+            {
+                cur = result.words.rbegin();
+                ending = result.words.rend() - 1;
+                carry = *cur >> WORD_BITS_1;
+                while (cur != ending)
+                {
+                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
+                    cur++;
+                }
+                *cur <<= 1;
+                if (carry)
+                    result.words.push_back(carry);
+
+                temp_red = result.words;
+                
+                cur = temp_red.rbegin();
+                ending = temp_red.rend() - 1;
+                carry = *cur >> WORD_BITS_1;
+                while (cur != ending)
+                {
+                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
+                    cur++;
+                }
+                if (carry)
+                    temp_red.push_back(carry);
+            }
+            // add 1 bit to compare with remaining
+            temp_red[0] = (temp_red[0] << 1) | 1;
+
+            if (compare(remaining, temp_red) >= 0)
+            {
+                i = 0, j = temp_red.size();
+                carry = 0;
+                while (i < j)
+                {
+                    carry = remaining[i] < (remaining[i] -= carry);
+                    carry += remaining[i] < (remaining[i] -= temp_red[i]);
+                    i++;
+                }
+                j = remaining.size();
+                while (i < j && carry)
+                {
+                    carry = remaining[i] < (remaining[i] -= carry);
+                    i++;
+                }
+
+                result += 1;
             }
         }
     }
