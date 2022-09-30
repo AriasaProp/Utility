@@ -266,11 +266,12 @@ bool BigInteger::can_convert_to_int(int *result) const
         *result = 0;
     return true;
 }
+
 //math operational
 BigInteger BigInteger::sqrt() const
 {
     
-    BigInteger result;
+    std::vector<word> result(1,0);
     size_t n = this->words.size();
     if (n)
     {
@@ -302,33 +303,31 @@ BigInteger BigInteger::sqrt() const
                 remaining.push_back(carry);
 
             //result  and temo_red shift if possible
-            if (result.words.size())
+            cur = result.rbegin();
+            ending = result.rend() - 1;
+            carry = *cur >> WORD_BITS_1;
+            while (cur != ending)
             {
-                cur = result.words.rbegin();
-                ending = result.words.rend() - 1;
-                carry = *cur >> WORD_BITS_1;
-                while (cur != ending)
-                {
-                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
-                    cur++;
-                }
-                *cur <<= 1;
-                if (carry)
-                    result.words.push_back(carry);
-
-                temp_red = result.words;
-                
-                cur = temp_red.rbegin();
-                ending = temp_red.rend() - 1;
-                carry = *cur >> WORD_BITS_1;
-                while (cur != ending)
-                {
-                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
-                    cur++;
-                }
-                if (carry)
-                    temp_red.push_back(carry);
+                *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
+                cur++;
             }
+            *cur <<= 1;
+            if (carry)
+                result.push_back(carry);
+
+            temp_red = result;
+            
+            cur = temp_red.rbegin();
+            ending = temp_red.rend() - 1;
+            carry = *cur >> WORD_BITS_1;
+            while (cur != ending)
+            {
+                *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
+                cur++;
+            }
+            if (carry)
+                temp_red.push_back(carry);
+            
             // add 1 bit to compare with remaining
             temp_red[0] = (temp_red[0] << 1) | 1;
 
@@ -349,11 +348,14 @@ BigInteger BigInteger::sqrt() const
                     i++;
                 }
 
-                result += 1;
+                result[0] |= 1;
             }
         }
+        
+        while (result.size() && result.back())
+            result.pop_back();
     }
-    return result;
+    return BigInteger(result, false);
 }
 //re-initialize
 BigInteger &BigInteger::operator=(const signed &a)
