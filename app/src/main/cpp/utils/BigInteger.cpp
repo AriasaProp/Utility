@@ -305,8 +305,8 @@ BigInteger BigInteger::sqrt() const
             //result  and temo_red shift if possible
             if (result.words.size())
             {
-                cur = result.rbegin();
-                ending = result.rend() - 1;
+                cur = result.words.rbegin();
+                ending = result.words.rend() - 1;
                 carry = *cur >> WORD_BITS_1;
                 while (cur != ending)
                 {
@@ -315,9 +315,9 @@ BigInteger BigInteger::sqrt() const
                 }
                 *cur <<= 1;
                 if (carry)
-                    result.push_back(carry);
+                    result.words.push_back(carry);
     
-                temp_red = result;
+                temp_red = result.words;
                 
                 cur = temp_red.rbegin();
                 ending = temp_red.rend() - 1;
