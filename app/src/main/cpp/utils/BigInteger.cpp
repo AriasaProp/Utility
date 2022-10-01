@@ -270,7 +270,6 @@ bool BigInteger::can_convert_to_int(int *result) const
 //math operational
 BigInteger BigInteger::sqrt() const
 {
-    
     BigInteger result;
     size_t n = this->words.size();
     if (n)
@@ -289,7 +288,7 @@ BigInteger BigInteger::sqrt() const
         while (n)
         {
             n -= 2;
-            //remaining shift left
+            //remaining shift left 2
             carry = remaining.back() >> l_shift;
             for (i = remaining.size() - 1; i; i--)
                 remaining[i] = (remaining[i] << 2) | (remaining[i - 1] >> l_shift);
@@ -297,7 +296,7 @@ BigInteger BigInteger::sqrt() const
             remaining[i] |= (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
             if (carry)
                 remaining.push_back(carry);
-            //result shift left with test
+            //result shift 1 left with test
             carry = res.back() >> WORD_BITS_1;
             for (i = res.size() - 1; i; i--)
                 res[i] = (res[i] << 1) | (res[i - 1] >> WORD_BITS_1);
@@ -319,7 +318,7 @@ BigInteger BigInteger::sqrt() const
             }
             res[0] &= setLast;
         }
-        // shift right to get pure result
+        // shift 1 right to get pure result
         for (i = 0, j = res.size() - 1; i < j; i++)
             res[i] = (res[i + 1] << WORD_BITS_1) | (res[i] >> 1);
         res.back() >>= 1;
@@ -327,92 +326,6 @@ BigInteger BigInteger::sqrt() const
             res.pop_back();
     }
     return result;
-    /*
-    BigInteger result;
-    size_t n = this->words.size();
-    if (n)
-    {
-        n = (n - 1) * WORD_BITS;
-        word carry = this->words.back();
-        while (carry)
-            n++, carry >>= 1;
-        if (n & 1)
-            n++;
-        std::vector<word> remaining(1, 0), temp_red(1, 0);
-        std::vector<word>::reverse_iterator cur, ending;
-        size_t i, j;
-        const size_t l_shift = WORD_BITS - 2;
-        while (n)
-        {
-            n -= 2;
-            //remaining shift
-            cur = remaining.rbegin();
-            ending = remaining.rend() - 1;
-            carry = *cur >> l_shift;
-            while (cur != ending)
-            {
-                *cur = (*cur << 2) | (*(cur + 1) >> l_shift);
-                cur++;
-            }
-            *cur <<= 2;
-            *cur |= (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
-            if (carry)
-                remaining.push_back(carry);
-
-            //result  and temo_red shift if possible
-            if (result.words.size())
-            {
-                cur = result.words.rbegin();
-                ending = result.words.rend() - 1;
-                carry = *cur >> WORD_BITS_1;
-                while (cur != ending)
-                {
-                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
-                    cur++;
-                }
-                *cur <<= 1;
-                if (carry)
-                    result.words.push_back(carry);
-    
-                temp_red = result.words;
-                
-                cur = temp_red.rbegin();
-                ending = temp_red.rend() - 1;
-                carry = *cur >> WORD_BITS_1;
-                while (cur != ending)
-                {
-                    *cur = (*cur << 1) | (*(cur + 1) >> WORD_BITS_1);
-                    cur++;
-                }
-                if (carry)
-                    temp_red.push_back(carry);
-            }
-            // add 1 bit to compare with remaining
-            temp_red[0] = (temp_red[0] << 1) | 1;
-
-            if (compare(remaining, temp_red) >= 0)
-            {
-                i = 0, j = temp_red.size();
-                carry = 0;
-                while (i < j)
-                {
-                    carry = remaining[i] < (remaining[i] -= carry);
-                    carry += remaining[i] < (remaining[i] -= temp_red[i]);
-                    i++;
-                }
-                j = remaining.size();
-                while (i < j && carry)
-                {
-                    carry = remaining[i] < (remaining[i] -= carry);
-                    i++;
-                }
-
-                result += 1;
-            }
-        }
-    }
-    return result;
-    */
 }
 //re-initialize
 BigInteger &BigInteger::operator=(const signed &a)
@@ -537,16 +450,15 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
 BigInteger &BigInteger::operator/=(const BigInteger &b)
 {
     if (!b.words.size())
-        throw ("Undefined number cause /0 !");
+        throw ("Undefined number cause / 0 !");
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
     if (compare(rem, div) >= 0)
     {
         this->neg ^= b.neg;
         //shifting count
-        size_t j = rem.size();
         size_t i = div.size();
-        j = (j - i) * WORD_BITS;
+        size_t j = (rem.size() - i) * WORD_BITS;
         word carry0 = rem.back();
         while (carry0)
             j++, carry0 >>= 1;
@@ -557,18 +469,12 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         if (n)
         {
             const size_t l_shift = WORD_BITS - n;
-            carry0 = div.back();
-            word carry1 = carry0 >> l_shift;
-            if (carry1)
-                div.push_back(carry1);
-            i--;
-            while (i--)
-            {
-                carry1 = div[i];
-                div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
-                carry0 = carry1;
-            }
-            div[0] = carry0 << n;
+            carry0 = div.back() >> l_shift;
+            while (--i)
+                div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
+            div[i] <<= n;
+            if (carry0)
+                div.push_back(carry0);
         }
         n = j / WORD_BITS;
         if (n)
@@ -582,14 +488,9 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
                 this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
             }
             //reverse shift one by one
-            word carry1 = div[0];
-            for (i = 0, n = div.size() - 1; i < n; i++)
-            {
-                carry0 = div[i + 1];
-                div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
-                carry1 = carry0;
-            }
-            div.back() = carry1 >> 1;
+            for (i = 0, n = div.size() - 1; i < n; i++) 
+            		div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
+            div[i] >>= 1;
             if (!div.back())
                 div.pop_back();
         } while (j-- && rem.size());
@@ -606,9 +507,8 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
         if (compare(rem, div) >= 0)
         {
             //shifting count
-            size_t j = rem.size();
             size_t i = div.size();
-            j = (j - i) * WORD_BITS;
+            size_t j = (rem.size() - i) * WORD_BITS;
             word carry0 = rem.back();
             while (carry0)
                 j++, carry0 >>= 1;
@@ -619,18 +519,12 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
             if (n)
             {
                 const size_t l_shift = WORD_BITS - n;
-                carry0 = div.back();
-                word carry1 = carry0 >> l_shift;
-                if (carry1)
-                    div.push_back(carry1);
-                i--;
-                while (i--)
-                {
-                    carry1 = div[i];
-                    div[i + 1] = (carry0 << n) | (carry1 >> l_shift);
-                    carry0 = carry1;
-                }
-                div[0] = carry0 << n;
+                carry0 = div.back() >> l_shift;
+                while (--i)
+                    div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
+                div[i] <<= n;
+                if (carry0)
+                    div.push_back(carry0);
             }
             n = j / WORD_BITS;
             if (n)
@@ -640,14 +534,9 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
                 if (compare(rem, div) >= 0)
                     sub_word(rem, div);
                 //reverse shift one by one
-                word carry1 = div[0];
-                for (i = 0, n = div.size() - 1; i < n; i++)
-                {
-                    carry0 = div[i + 1];
-                    div[i] = (carry0 << WORD_BITS_1) | (carry1 >> 1);
-                    carry1 = carry0;
-                }
-                div.back() = carry1 >> 1;
+                for (i = 0, n = div.size() - 1; i < n; i++) 
+                    div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
+                div[i] >>= 1;
                 if (!div.back())
                     div.pop_back();
             } while (j-- && rem.size());
