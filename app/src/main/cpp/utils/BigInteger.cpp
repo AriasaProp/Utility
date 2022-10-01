@@ -281,14 +281,71 @@ BigInteger BigInteger::sqrt() const
             n++, carry >>= 1;
         if (n & 1)
             n++;
+        std::vector<word> remaining(1, 0), &res = result.words;
+        res.push_back(0);
+        size_t i, j;
+        const size_t l_shift = WORD_BITS - 2;
+        const word setLast = ~word(1);
+        while (n)
+        {
+            n -= 2;
+            //remaining shift left
+            carry = remaining.back() >> l_shift;
+            for (i = remaining.size() - 1; i; i--)
+                remaining[i] = (remaining[i] << 2) | (remaining[i - 1] >> l_shift);
+            remaining[i] <<= 2;
+            remaining[i] |= (this->words[n / WORD_BITS] >> (n % WORD_BITS)) & word(3);
+            if (carry)
+                remaining.push_back(carry);
+            //result shift left with test
+            carry = res.back() >> WORD_BITS_1;
+            for (i = res.size() - 1; i; i--)
+                res[i] = (res[i] << 1) | (res[i - 1] >> WORD_BITS_1);
+            res[i] = (res[i] << 1) | 1;
+            if (carry)
+                res.push_back(carry);
+            // compare result test with remaining
+            if (compare(remaining, res) >= 0)
+            {
+                carry = 0;
+                for (i = 0, j = res.size(); i < j; i++)
+                {
+                    carry = remaining[i] < (remaining[i] -= carry);
+                    carry += remaining[i] < (remaining[i] -= res[i]);
+                }
+                for (j = remaining.size(); i < j && carry; i++)
+                    carry = remaining[i] < (remaining[i] -= carry);
+                res[0] |= 2;
+            }
+            res[0] &= setLast;
+        }
+        // shift right to get pure result
+        for (i = 0, j = res.size() - 1; i < j; i++)
+            res[i] = (res[i + 1] << WORD_BITS_1) | (res[i] >> 1);
+        res.back() >>= 1;
+        while (res.size() && !res.back())
+            res.pop_back();
+    }
+    return result;
+    /*
+    BigInteger result;
+    size_t n = this->words.size();
+    if (n)
+    {
+        n = (n - 1) * WORD_BITS;
+        word carry = this->words.back();
+        while (carry)
+            n++, carry >>= 1;
+        if (n & 1)
+            n++;
         std::vector<word> remaining(1, 0), temp_red(1, 0);
         std::vector<word>::reverse_iterator cur, ending;
         size_t i, j;
+        const size_t l_shift = WORD_BITS - 2;
         while (n)
         {
             n -= 2;
             //remaining shift
-            const size_t l_shift = WORD_BITS - 2;
             cur = remaining.rbegin();
             ending = remaining.rend() - 1;
             carry = *cur >> l_shift;
@@ -355,6 +412,7 @@ BigInteger BigInteger::sqrt() const
         }
     }
     return result;
+    */
 }
 //re-initialize
 BigInteger &BigInteger::operator=(const signed &a)
