@@ -609,7 +609,6 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         this->words.push_back(1);
     else if (cmp > 0)
     {
-        this->neg ^= b.neg;
         //shifting count
         size_t i = div.size();
         size_t j = (rem.size() - i) * WORD_BITS;
