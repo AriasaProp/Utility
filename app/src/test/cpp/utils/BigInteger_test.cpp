@@ -195,6 +195,7 @@ bool BigInteger_test() {
             if ((q * 4 + r - t) < (t * n))
             {
                 std::cout << N;
+                generated++;
                 n = ((q * 3 + r) - t * N) * 10 / t;
                 r = (r - t * N) * 10;
                 q *= 10;
