@@ -1,5 +1,8 @@
 name: test_main_result
-on: [push]
+on:
+  push:
+    paths:
+    - 'app/src/**'
 jobs:
   test:
     runs-on: ubuntu-latest
