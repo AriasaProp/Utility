@@ -380,13 +380,13 @@ BigInteger &BigInteger::operator+=(const s_word &b)
         add_a_word(this->words, 0, B);
     else
     {
-        if ((this->words.size() == 1) && (this->words[0] < B))
+        if ((this->words.size() > 1) || (this->words[0] > B))
+            sub_a_word(this->words, 0, B);
+        else if (this->words[0] < B)
         {
             this->neg = !this->neg;
             this->words[0] = B - this->words[0];
         }
-        else if ((this->words.size() > 1) || (this->words[0] > B))
-            sub_a_word(this->words, 0, B);
         else
         {
             this->neg = false;
@@ -436,13 +436,13 @@ BigInteger &BigInteger::operator-=(const s_word &b)
         add_a_word(this->words, 0, B);
     else
     {
-        if ((this->words.size() == 1) && (this->words[0] < B))
+        if ((this->words.size() > 1) || (this->words[0] > B))
+            sub_a_word(this->words, 0, B);
+        else if (this->words[0] < B)
         {
             this->neg = !this->neg;
             this->words[0] = B - this->words[0];
         }
-        else if ((this->words.size() > 1) || (this->words[0] > B))
-            sub_a_word(this->words, 0, B);
         else
         {
             this->neg = false;
@@ -926,7 +926,7 @@ BigInteger BigInteger::operator+(const s_word &b) const
         {
             r.neg = this->neg;
             r.words = this->words;
-            sub_word(r.words, b.words);
+            sub_a_word(r.words, 0, B);
         }
         else if (this->words[0] < B)
         {
