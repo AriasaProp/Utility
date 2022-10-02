@@ -377,24 +377,20 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
     }
     else
     {
-        switch (compare(this->words, b.words))
+        int cmp = compare(this->words, b.words);
+        if (cmp < 0)
         {
-            case -1:
-            {
-                std::vector<word> t = this->words;
-                this->neg = b.neg;
-                this->words = b.words;
-                sub_word(this->words, t);
-            }
-                break;
-            case 1:
-                sub_word(this->words, b.words);
-                break;
-            case 0:
-            default:
-                this->neg = false;
-                this->words.clear();
-                break;
+            std::vector<word> t = this->words;
+            this->neg = b.neg;
+            this->words = b.words;
+            sub_word(this->words, t);
+        }
+        else if (cmp > 0)
+            sub_word(this->words, b.words);
+        else
+        {
+            this->neg = false;
+            this->words.clear();
         }
     }
     return *this;
@@ -406,27 +402,23 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
         add_word(this->words, b.words);
     else
     {
-        switch (compare(this->words, b.words))
+        int cmp = compare(this->words, b.words);
+        if (cmp < 0)
         {
-            case -1:
-            {
-                this->neg = !this->neg;
-                std::vector<word> t = this->words;
-                this->words = b.words;
-                sub_word(this->words, t);
-            }
-                break;
-            case 1:
-            {
-                std::vector<word> t = b.words;
-                sub_word(this->words, t);
-            }
-                break;
-            case 0:
-            default:
-                this->neg = false;
-                this->words.clear();
-                break;
+            this->neg = !this->neg;
+            std::vector<word> t = this->words;
+            this->words = b.words;
+            sub_word(this->words, t);
+        }
+        else if (cmp > 0)
+        {
+            std::vector<word> t = b.words;
+            sub_word(this->words, t);
+        }
+        else
+        {
+            this->neg = false;
+            this->words.clear();
         }
     }
     return *this;
@@ -675,25 +667,18 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
     }
     else
     {
-        switch (compare(this->words, b.words))
+        int cmp = compare(this->words, b.words);
+        if (cmp > 0)
         {
-            case 1:
-            {
-                r.words = this->words;
-                r.neg = this->neg;
-                sub_word(r.words, b.words);
-                break;
-            }
-            case -1:
-            {
-                r.words = b.words;
-                r.neg = b.neg;
-                sub_word(r.words, this->words);
-                break;
-            }
-            case 0:
-            default:
-                break;
+            r.words = this->words;
+            r.neg = this->neg;
+            sub_word(r.words, b.words);
+        }
+        else if (cmp < 0)
+        {
+            r.words = b.words;
+            r.neg = b.neg;
+            sub_word(r.words, this->words);
         }
     }
     return r;
@@ -710,25 +695,18 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     }
     else
     {
-        switch (compare(this->words, b.words))
+        int cmp = compare(this->words, b.words);
+        if (cmp > 0)
         {
-            case 1:
-            {
-                r.words = this->words;
-                r.neg = this->neg;
-                sub_word(r.words, b.words);
-                break;
-            }
-            case -1:
-            {
-                r.words = b.words;
-                r.neg = b.neg;
-                sub_word(r.words, this->words);
-                break;
-            }
-            case 0:
-            default:
-                break;
+            r.words = this->words;
+            r.neg = this->neg;
+            sub_word(r.words, b.words);
+        }
+        else if (cmp < 0)
+        {
+            r.words = b.words;
+            r.neg = !this->neg;
+            sub_word(r.words, this->words);
         }
     }
     return r;
@@ -791,5 +769,4 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num)
     out << text.data();
     return out;
 }
-
 
