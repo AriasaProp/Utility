@@ -42,10 +42,15 @@ class BigInteger
     // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
+    BigInteger &operator+=(const s_word &);
     BigInteger &operator+=(const BigInteger &);
+    BigInteger &operator-=(const s_word &);
     BigInteger &operator-=(const BigInteger &);
+    BigInteger &operator*=(const s_word &);
     BigInteger &operator*=(const BigInteger &);
+    BigInteger &operator/=(const s_word &);
     BigInteger &operator/=(const BigInteger &);
+    BigInteger &operator%=(const s_word &);
     BigInteger &operator%=(const BigInteger &);
     BigInteger &operator^=(size_t);
     BigInteger &operator>>=(size_t);
@@ -58,10 +63,15 @@ class BigInteger
     bool operator<(const BigInteger &) const;
     bool operator>(const BigInteger &) const;
     // unsafe operator function
+    BigInteger operator+(const s_word &) const;
     BigInteger operator+(const BigInteger &) const;
+    BigInteger operator-(const s_word &) const;
     BigInteger operator-(const BigInteger &) const;
+    BigInteger operator*(const s_word &) const;
     BigInteger operator*(const BigInteger &) const;
+    BigInteger operator/(const s_word &) const;
     BigInteger operator/(const BigInteger &) const;
+    BigInteger operator%(const s_word &) const;
     BigInteger operator%(const BigInteger &) const;
     BigInteger operator^(size_t) const;
     BigInteger operator-() const;

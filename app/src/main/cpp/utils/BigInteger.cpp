@@ -368,6 +368,34 @@ BigInteger &BigInteger::operator++()
     return *this;
 }
 
+BigInteger &BigInteger::operator+=(const s_word &b)
+{
+    const word B = word(abs(b));
+    if (!this->words.size())
+		{
+				this->neg = b < 0;
+				this->words.push_back(B);
+		}
+    else if (this->neg == (b < 0))
+        add_a_word(this->words, 0, B);
+    else
+    {
+        if ((this->words.size() == 1) && (this->words[0] < B))
+        {
+            this->neg = !this->neg;
+            this->words[0] = B - this->words[0];
+        }
+        else if ((this->words.size() > 1) || (this->words[0] > B))
+            sub_a_word(this->words, 0, B);
+        else
+        {
+            this->neg = false;
+            this->words.clear();
+        }
+    }
+    return *this;
+}
+
 BigInteger &BigInteger::operator+=(const BigInteger &b)
 {
     if (this->neg == b.neg)
@@ -387,6 +415,34 @@ BigInteger &BigInteger::operator+=(const BigInteger &b)
         }
         else if (cmp > 0)
             sub_word(this->words, b.words);
+        else
+        {
+            this->neg = false;
+            this->words.clear();
+        }
+    }
+    return *this;
+}
+
+BigInteger &BigInteger::operator-=(const s_word &b)
+{
+    const word B = word(abs(b));
+    if (!this->words.size())
+		{
+				this->neg = b >= 0;
+				this->words.push_back(B);
+		}
+    else if (this->neg != (b < 0))
+        add_a_word(this->words, 0, B);
+    else
+    {
+        if ((this->words.size() == 1) && (this->words[0] < B))
+        {
+            this->neg = !this->neg;
+            this->words[0] = B - this->words[0];
+        }
+        else if ((this->words.size() > 1) || (this->words[0] > B))
+            sub_a_word(this->words, 0, B);
         else
         {
             this->neg = false;
@@ -424,6 +480,40 @@ BigInteger &BigInteger::operator-=(const BigInteger &b)
     return *this;
 }
 
+BigInteger &BigInteger::operator*=(const s_word &b)
+{
+    if (b == 0)
+    {
+        this->neg = false;
+        this->words.clear();
+    }
+    const size_t j = this->words.size();
+    if (j)
+    {
+        this->neg ^= (b < 0);
+        const word B = word(abs(b));
+        word A[j];
+        std::copy(this->words.begin(), this->words.end(), A);
+        const word b_hi = B >> WORD_HALF_BITS;
+        const word b_lo = B & WORD_HALF_MASK;
+        word a_hi, a_lo, carry = 0;
+        for (size_t i = 0; i < j; i++)
+        {
+            this->words[i] = carry;
+            a_hi = A[i] >> WORD_HALF_BITS;
+            a_lo = A[i] & WORD_HALF_MASK;
+            this->words[i] += A[i] * B;
+            carry = a_lo * b_lo;
+            carry >>= WORD_HALF_BITS;
+            carry += a_hi * b_lo;
+            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+        }
+        if (carry)
+            this->words.push_back(carry);
+    }
+    return *this;
+}
+
 BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
     if (!b.words.size())
@@ -439,13 +529,85 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     return *this;
 }
 
+BigInteger &BigInteger::operator/=(const s_word &b)
+{
+    if (b == 0)
+        throw("Undefined number cause / 0 !");
+    const word B = word(abs(b));
+    std::vector<word> rem = this->words, div{B};
+    this->words.clear();
+    int cmp = compare(rem, div);
+    if (cmp == 0)
+        this->words.push_back(1);
+    else if (cmp > 0)
+    {
+        //shifting count
+        size_t i = div.size();
+        size_t j = (rem.size() - i) * WORD_BITS;
+        word carry0 = rem.back();
+        while (carry0)
+            j++, carry0 >>= 1;
+        carry0 = div.back();
+        while (carry0)
+            j--, carry0 >>= 1;
+        size_t n = j % WORD_BITS;
+        if (n)
+        {
+            const size_t l_shift = WORD_BITS - n;
+            carry0 = div.back() >> l_shift;
+            while (--i)
+                div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
+            div[i] <<= n;
+            if (carry0)
+                div.push_back(carry0);
+        }
+        n = j / WORD_BITS;
+        if (n)
+            div.insert(div.begin(), n, 0);
+        this->words.resize(n + 1, 0);
+        do
+        {
+            cmp = compare(rem, div);
+            if (cmp >= 0)
+            {
+                this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
+                if (cmp > 0)
+                    sub_word(rem, div);
+                else if (cmp == 0)
+                {
+                    rem.clear();
+                    break;
+                }
+            }
+            //reverse shift one by one
+            for (i = 0, n = div.size() - 1; i < n; i++)
+                div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
+            div[i] >>= 1;
+            if (!div.back())
+                div.pop_back();
+        } while (j--);
+        while (this->words.size() && !this->words.back())
+            this->words.pop_back();
+    }
+    // sign set
+    if (this->words.size())
+        this->neg ^= (b < 0);
+    else
+        this->neg = false;
+    // return result
+    return *this;
+}
+
 BigInteger &BigInteger::operator/=(const BigInteger &b)
 {
     if (!b.words.size())
-        throw ("Undefined number cause / 0 !");
+        throw("Undefined number cause / 0 !");
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
-    if (compare(rem, div) >= 0)
+    int cmp = compare(rem, div);
+    if (cmp == 0)
+        this->words.push_back(1);
+    else if (cmp > 0)
     {
         this->neg ^= b.neg;
         //shifting count
@@ -474,29 +636,50 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         this->words.resize(n + 1, 0);
         do
         {
-            if (compare(rem, div) >= 0)
+            cmp = compare(rem, div);
+            if (cmp >= 0)
             {
-                sub_word(rem, div);
                 this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
+                if (cmp > 0)
+                    sub_word(rem, div);
+                else if (cmp == 0)
+                {
+                    rem.clear();
+                    break;
+                }
             }
             //reverse shift one by one
-            for (i = 0, n = div.size() - 1; i < n; i++) 
-            		div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
+            for (i = 0, n = div.size() - 1; i < n; i++)
+                div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
             div[i] >>= 1;
             if (!div.back())
                 div.pop_back();
-        } while (j-- && rem.size());
+        } while (j--);
         while (this->words.size() && !this->words.back())
             this->words.pop_back();
     }
+    // sign set
+    if (this->words.size())
+        this->neg ^= b.neg;
+    else
+        this->neg = false;
+    // return result
     return *this;
 }
-BigInteger &BigInteger::operator%=(const BigInteger &b)
+
+BigInteger &BigInteger::operator%=(const s_word &b)
 {
-    if (b.words.size())
+    if (b != 0)
     {
-        std::vector<word> &rem = this->words, div = b.words;
-        if (compare(rem, div) >= 0)
+        const word B = word(abs(b));
+        std::vector<word> &rem = this->words, div{B};
+        int cmp = compare(rem, div);
+        if (cmp == 0)
+        {
+            this->neg = false;
+            rem.clear();
+        }
+        else if (cmp > 0)
         {
             //shifting count
             size_t i = div.size();
@@ -523,15 +706,81 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
                 div.insert(div.begin(), n, 0);
             do
             {
-                if (compare(rem, div) >= 0)
+                cmp = compare(rem, div);
+                if (cmp > 0)
                     sub_word(rem, div);
+                else if (cmp == 0)
+                {
+                    this->neg = false;
+                    rem.clear();
+                    break;
+                }
                 //reverse shift one by one
-                for (i = 0, n = div.size() - 1; i < n; i++) 
+                for (i = 0, n = div.size() - 1; i < n; i++)
                     div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
                 div[i] >>= 1;
                 if (!div.back())
                     div.pop_back();
-            } while (j-- && rem.size());
+            } while (j--);
+        }
+    }
+    return *this;
+}
+
+BigInteger &BigInteger::operator%=(const BigInteger &b)
+{
+    if (b.words.size())
+    {
+        std::vector<word> &rem = this->words, div = b.words;
+        int cmp = compare(rem, div);
+        if (cmp == 0)
+        {
+            this->neg = false;
+            rem.clear();
+        }
+        else if (cmp > 0)
+        {
+            //shifting count
+            size_t i = div.size();
+            size_t j = (rem.size() - i) * WORD_BITS;
+            word carry0 = rem.back();
+            while (carry0)
+                j++, carry0 >>= 1;
+            carry0 = div.back();
+            while (carry0)
+                j--, carry0 >>= 1;
+            size_t n = j % WORD_BITS;
+            if (n)
+            {
+                const size_t l_shift = WORD_BITS - n;
+                carry0 = div.back() >> l_shift;
+                while (--i)
+                    div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
+                div[i] <<= n;
+                if (carry0)
+                    div.push_back(carry0);
+            }
+            n = j / WORD_BITS;
+            if (n)
+                div.insert(div.begin(), n, 0);
+            do
+            {
+                cmp = compare(rem, div);
+                if (cmp > 0)
+                    sub_word(rem, div);
+                else if (cmp == 0)
+                {
+                    this->neg = false;
+                    rem.clear();
+                    break;
+                }
+                //reverse shift one by one
+                for (i = 0, n = div.size() - 1; i < n; i++)
+                    div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
+                div[i] >>= 1;
+                if (!div.back())
+                    div.pop_back();
+            } while (j--);
         }
     }
     return *this;
@@ -656,6 +905,38 @@ bool BigInteger::operator>(const BigInteger &b) const
     return 0 < (compare(this->words, b.words) * (this->neg ? -1 : +1));
 }
 
+BigInteger BigInteger::operator+(const s_word &b) const
+{
+    BigInteger r;
+    const word B = word(abs(b));
+    if (!this->words.size())
+		{
+				r.neg = b < 0;
+				r.words.push_back(B);
+		}
+    else if (this->neg == (b < 0))
+    {
+        r.words = this->words;
+        r.neg = this->neg;
+        add_a_word(r.words, 0, B);
+    }
+    else
+    {
+        if ((this->words.size() > 1) || (this->words[0] > B))
+        {
+            r.neg = this->neg;
+            r.words = this->words;
+            sub_word(r.words, b.words);
+        }
+        else if (this->words[0] < B)
+        {
+            r.neg = !this->neg;
+            r.words.push_back(B - this->words[0]);
+        }
+    }
+    return r;
+}
+
 BigInteger BigInteger::operator+(const BigInteger &b) const
 {
     BigInteger r;
@@ -679,6 +960,38 @@ BigInteger BigInteger::operator+(const BigInteger &b) const
             r.words = b.words;
             r.neg = b.neg;
             sub_word(r.words, this->words);
+        }
+    }
+    return r;
+}
+
+BigInteger BigInteger::operator-(const s_word &b) const
+{
+    BigInteger r;
+    const word B = word(abs(b));
+    if (!this->words.size())
+		{
+				r.neg = b >= 0;
+				r.words.push_back(B);
+		}
+    else if (this->neg != (b < 0))
+    {
+        r.words = this->words;
+        r.neg = this->neg;
+        add_a_word(r.words, 0, B);
+    }
+    else
+    {
+        if ((this->words.size() > 1) || (this->words[0] > B))
+        {
+            r.words = this->words;
+            r.neg = this->neg;
+            sub_a_word(r.words, 0, B);
+        }
+        else if (this->words[0] < B)
+        {
+            r.neg = !this->neg;
+            r.words[0] = B - this->words[0];
         }
     }
     return r;
@@ -712,14 +1025,29 @@ BigInteger BigInteger::operator-(const BigInteger &b) const
     return r;
 }
 
+BigInteger BigInteger::operator*(const s_word &b) const
+{
+    return BigInteger(*this) *= b;
+}
+
 BigInteger BigInteger::operator*(const BigInteger &b) const
 {
     return BigInteger(*this) *= b;
 }
 
+BigInteger BigInteger::operator/(const s_word &b) const
+{
+    return BigInteger(*this) /= b;
+}
+
 BigInteger BigInteger::operator/(const BigInteger &b) const
 {
     return BigInteger(*this) /= b;
+}
+
+BigInteger BigInteger::operator%(const s_word &b) const
+{
+    return BigInteger(*this) %= b;
 }
 
 BigInteger BigInteger::operator%(const BigInteger &b) const
