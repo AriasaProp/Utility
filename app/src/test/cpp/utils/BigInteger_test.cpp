@@ -183,7 +183,7 @@ bool BigInteger_test() {
     }
 
     if (passed) {
-        std::cout << "pi generator gain : ";
+        std::cout << "pi generator gain for 500 digits : ";
         std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
         BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
         int N;
@@ -210,7 +210,10 @@ bool BigInteger_test() {
             }
         }
         std::cout << std::endl;
-        std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
+        std::cout << "Need " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
         
     }
     return passed;
+}
+
+
