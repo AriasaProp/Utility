@@ -6,7 +6,7 @@ BigDecimal::BigDecimal(const BigDecimal &) {}
 BigDecimal::BigDecimal(const signed &) {}
 BigDecimal::BigDecimal(const char *) {}
 //Destructor
-~BigDecimal::BigDecimal() {}
+BigDecimal::~BigDecimal() {}
 //environment count
 size_t BigDecimal::tot() const
 {
@@ -150,7 +150,7 @@ BigDecimal BigDecimal::operator-() const
 		return 0;
 }
 // stream operator
-std::ostream &BigDecimal::operator<<(std::ostream &out, const BigDecimal &a)
+std::ostream &operator<<(std::ostream &out, const BigDecimal &a)
 {
 		return out;
 }
