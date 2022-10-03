@@ -193,14 +193,6 @@ BigInteger::~BigInteger()
     words.clear();
 }
 //environment count
-void BigInteger::set_bit(size_t i)
-{
-    const size_t i_word = i / WORD_BITS, i_bit = i % WORD_BITS;
-    if (words.size() <= i_word)
-        words.resize(i_word + 1, 0);
-    this->words[i_word] |= ((word)1) << i_bit;
-}
-
 size_t BigInteger::tot() const
 {
     return words.size() * WORD_BITS;

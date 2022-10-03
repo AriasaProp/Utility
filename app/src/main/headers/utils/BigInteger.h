@@ -17,8 +17,6 @@ class BigInteger
     // values
     bool neg = false;
     std::vector<word> words;
-    //helper
-    void set_bit(size_t);
 
   public:
     //Constructors
