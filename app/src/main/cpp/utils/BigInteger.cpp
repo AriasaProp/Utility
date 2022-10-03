@@ -13,14 +13,15 @@ const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
 //private function for repeated use
 
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(std::vector<word> a, std::vector<word> b)
+int compare(const std::vector<word> &a, const std::vector<word> &b)
 {
-    size_t na = a.size(), nb = b.size();
-    if (na != nb)
-        return na > nb ? +1 : -1;
-    std::reverse(a.begin(), a.end());
-    std::reverse(b.begin(), b.end());
-    return memcmp(a.data(), b.data(), na * sizeof(word));
+    size_t i = a.size(), nb = b.size();
+    if (i != nb)
+        return i > nb ? +1 : -1;
+    while (i--)
+    		if (a[i] != b[i])
+    				return a[i] > b[i] ? +1 : -1;
+    return 0;
 }
 
 void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
