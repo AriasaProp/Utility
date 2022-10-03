@@ -13,7 +13,7 @@ const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
 //private function for repeated use
 
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const word *a, size_t i, const word *b, const size_t &size_B)
+int compare(const word *a, size_t i, const word *b, const size_t &sizeB)
 {
     if (i != sizeB)
         return i > sizeB ? +1 : -1;
@@ -529,7 +529,7 @@ BigInteger &BigInteger::operator/=(const s_word &b)
     const word B = word(abs(b));
     std::vector<word> rem = this->words, div{B};
     this->words.clear();
-    int cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+    int cmp = compare(rem.data(), rem.size(), div.data(), div.size());
     if (cmp == 0)
         this->words.push_back(1);
     else if (cmp > 0)
@@ -560,7 +560,7 @@ BigInteger &BigInteger::operator/=(const s_word &b)
         this->words.resize(n + 1, 0);
         do
         {
-            cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+            cmp = compare(rem.data(), rem.size(), div.data(), div.size());
             if (cmp >= 0)
             {
                 this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
@@ -597,7 +597,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         throw("Undefined number cause / 0 !");
     std::vector<word> rem = this->words, div = b.words;
     this->words.clear();
-    int cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+    int cmp = compare(rem.data(), rem.size(), div.data(), div.size());
     if (cmp == 0)
         this->words.push_back(1);
     else if (cmp > 0)
@@ -628,7 +628,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &b)
         this->words.resize(n + 1, 0);
         do
         {
-            cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+            cmp = compare(rem.data(), rem.size(), div.data(), div.size());
             if (cmp >= 0)
             {
                 this->words[j / WORD_BITS] |= word(1) << (j % WORD_BITS);
@@ -665,7 +665,7 @@ BigInteger &BigInteger::operator%=(const s_word &b)
     {
         const word B = word(abs(b));
         std::vector<word> &rem = this->words, div{B};
-        int cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+        int cmp = compare(rem.data(), rem.size(), div.data(), div.size());
         if (cmp == 0)
         {
             this->neg = false;
@@ -698,7 +698,7 @@ BigInteger &BigInteger::operator%=(const s_word &b)
                 div.insert(div.begin(), n, 0);
             do
             {
-                cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+                cmp = compare(rem.data(), rem.size(), div.data(), div.size());
                 if (cmp > 0)
                     sub_word(rem, div);
                 else if (cmp == 0)
@@ -724,7 +724,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
     if (b.words.size())
     {
         std::vector<word> &rem = this->words, div = b.words;
-        int cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+        int cmp = compare(rem.data(), rem.size(), div.data(), div.size());
         if (cmp == 0)
         {
             this->neg = false;
@@ -757,7 +757,7 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
                 div.insert(div.begin(), n, 0);
             do
             {
-                cmp = compare(rem.words.data(), rem.words.size(), div.words.data(), div.words.size());
+                cmp = compare(rem.data(), rem.size(), div.data(), div.size());
                 if (cmp > 0)
                     sub_word(rem, div);
                 else if (cmp == 0)
