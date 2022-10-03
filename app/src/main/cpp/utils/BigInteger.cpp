@@ -80,6 +80,11 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
+void karatsuba00(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
+{
+		// non
+}
+
 void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
     dst.clear();
@@ -122,15 +127,16 @@ void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
         }
         else if (A[0] && B[0])
         {
-            word a_hi = A[0] >> WORD_HALF_BITS;
+            dst.push_back(A[0] * B[0]);
             word a_lo = A[0] & WORD_HALF_MASK;
-            word b_hi = B[0] >> WORD_HALF_BITS;
             word b_lo = B[0] & WORD_HALF_MASK;
-            word carry = A[0] * B[0];
-            dst.push_back(carry);
-            carry = a_lo * b_lo;
-            carry = (carry >> WORD_HALF_BITS) + a_hi * b_lo;
-            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            word a_hi = A[0] >> WORD_HALF_BITS;
+            word b_hi = B[0] >> WORD_HALF_BITS;
+            word carry = a_lo * b_lo;
+            carry >>= WORD_HALF_BITS;
+            carry += a_hi * b_lo;
+            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS);
+            carry += a_hi * b_hi;
             if (carry)
                 dst.push_back(carry);
         }

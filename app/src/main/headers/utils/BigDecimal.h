@@ -1,6 +1,7 @@
 #ifndef Included_Big_Decimal
 #define Included_Big_Decimal
 
+#include "BigInteger.h"
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
