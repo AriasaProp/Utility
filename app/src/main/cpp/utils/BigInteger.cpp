@@ -20,7 +20,7 @@ int compare(std::vector<word> a, std::vector<word> b)
         return na > nb ? +1 : -1;
     std::reverse(a.begin(), a.end());
     std::reverse(b.begin(), b.end());
-    return memcmp(a.data(), b.data(), na * sizeof(word));
+    return memcmp(a, b, sizeof a);
 }
 
 void add_a_word(std::vector<word> &a, size_t i = 0, word carry = 1)
