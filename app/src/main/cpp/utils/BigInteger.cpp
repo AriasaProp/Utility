@@ -18,10 +18,8 @@ int compare(std::vector<word> a, std::vector<word> b)
     size_t na = a.size(), nb = b.size();
     if (na != nb)
         return na > nb ? +1 : -1;
-        /*
     std::reverse(a.begin(), a.end());
     std::reverse(b.begin(), b.end());
-    */
     return memcmp(a.data(), b.data(), na * sizeof(word));
 }
 
