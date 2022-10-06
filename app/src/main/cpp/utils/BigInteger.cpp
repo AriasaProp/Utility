@@ -74,6 +74,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
         i++;
     }
     sub_a_word(a, i, carry);
+}
 
 void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
