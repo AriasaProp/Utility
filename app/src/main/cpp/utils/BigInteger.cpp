@@ -74,69 +74,71 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
         i++;
     }
     sub_a_word(a, i, carry);
-}
-
-void karatsuba00(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
-{
-		// non
-}
 
 void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
 {
-    dst.clear();
     const size_t na = A.size(), nb = B.size();
-    if (na && nb)
+    dst.clear();
+    if (!na || !nb)
+    		return;
+    const size_t rAB = na * nb;
+    if (rAB > 20)
     {
-        dst.reserve(na + nb);
-        const size_t combinedN = na | nb;
-        if (combinedN > 1)
+        const size_t
+            n = (na >= nb) ? na : nb,
+            m2 = n / 2 + (n & 1),
+            M = m2 * 2;
+        if (na < M)
+            A.resize(M, 0);
+        std::vector<word>::iterator split = std::next(A.begin(), m2);
+        std::vector<word> a1(split, A.end());
+        A.resize(m2);
+        if (nb < M)
+            B.resize(M, 0);
+        split = std::next(B.begin(), m2);
+        std::vector<word> b1(split, B.end());
+        B.resize(m2);
+        karatsuba(dst, a1, b1); // hi
+        add_word(a1, A);
+        add_word(b1, B);
+        karatsuba(a1, a1, b1); // mid
+        karatsuba(b1, A, B);   // lo
+        sub_word(a1, dst);
+        sub_word(a1, b1);
+        //should not be wrap around
+        dst.insert(dst.begin(), m2, 0);
+        add_word(dst, a1);
+        dst.insert(dst.begin(), m2, 0);
+        add_word(dst, b1);
+    }
+    else
+    {
+        dst.resize(na + nb + 1);
+        std::fill(dst.begin(), dst.end(), 0);
+        word a_hi, b_hi, a_lo, b_lo, carry;
+        size_t ia, ib, iterAB;
+        for (ia = 0, ib; ia < na; ia++)
         {
-            const size_t
-                n = (na >= nb) ? na : nb,
-                m2 = n / 2 + (n & 1),
-                M = m2 * 2;
-            if (na < M)
-                A.resize(M, 0);
-            std::vector<word>::iterator split = std::next(A.begin(), m2);
-            std::vector<word> a1(split, A.end());
-            A.resize(m2);
-            if (nb < M)
-                B.resize(M, 0);
-            split = std::next(B.begin(), m2);
-            std::vector<word> b1(split, B.end());
-            B.resize(m2);
-            karatsuba(dst, a1, b1); // hi
-            add_word(a1, A);
-            add_word(b1, B);
-            karatsuba(a1, a1, b1); // mid
-            karatsuba(b1, A, B); // lo
-            sub_word(a1, dst);
-            sub_word(a1, b1);
-            //should not be wrap around
-            dst.insert(dst.begin(), m2, 0);
-            add_word(dst, a1);
-            dst.insert(dst.begin(), m2, 0);
-            add_word(dst, b1);
-            //truncate result dst
-            while (dst.size() && !dst.back())
-                dst.pop_back();
-        }
-        else if (A[0] && B[0])
-        {
-            dst.push_back(A[0] * B[0]);
-            word a_lo = A[0] & WORD_HALF_MASK;
-            word b_lo = B[0] & WORD_HALF_MASK;
-            word a_hi = A[0] >> WORD_HALF_BITS;
-            word b_hi = B[0] >> WORD_HALF_BITS;
-            word carry = a_lo * b_lo;
-            carry >>= WORD_HALF_BITS;
-            carry += a_hi * b_lo;
-            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS);
-            carry += a_hi * b_hi;
-            if (carry)
-                dst.push_back(carry);
+            a_hi = A[ia] >> WORD_HALF_BITS;
+            a_lo = A[ia] & WORD_HALF_MASK;
+            carry = 0;
+            for (ib = 0; ib < nb; ib++)
+            {
+                iterAB = ia + ib;
+                b_hi = B[ib] >> WORD_HALF_BITS;
+                b_lo = B[ib] & WORD_HALF_MASK;
+                add_a_word(dst, iterAB, A[ia] * B[ib]);
+                carry = a_lo * b_lo;
+                carry >>= WORD_HALF_BITS;
+                carry += a_hi * b_lo;
+                carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+                add_a_word(dst, iterAB + 1, carry);
+            }
         }
     }
+    //truncate result dst
+    while (dst.size() && !dst.back())
+        dst.pop_back();
 }
 
 //initialize BigInteger functions
