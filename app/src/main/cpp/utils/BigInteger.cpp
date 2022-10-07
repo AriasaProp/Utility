@@ -76,7 +76,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void mul(std::vector<word> &dst, const std::vector<word> b)
+void mul(std::vector<word> &dst, const std::vector<word> &b)
 {
     const size_t na = dst.size(), nb = b.size();
     if (!na || !nb)
@@ -90,7 +90,7 @@ void mul(std::vector<word> &dst, const std::vector<word> b)
     dst.resize(na + nb + 1);
     std::fill(dst.begin(), dst.end(), 0);
     word a_hi, b_hi, a_lo, b_lo, carry, carry0;
-    size_t ia, ib, i, j;
+    size_t ia, ib, i;
     for (ia = 0, ib; ia < na; ia++)
     {
         const word &Ar = A[ia];
@@ -114,7 +114,7 @@ void mul(std::vector<word> &dst, const std::vector<word> b)
             carry = (dst[i] += carry) < carry;
             carry += (dst[i] += carry0) < carry0;
         }
-        add_a_word(dst, ++i, carry);
+        add_a_word(dst, i++, carry);
     }
 }
 //initialize BigInteger functions
