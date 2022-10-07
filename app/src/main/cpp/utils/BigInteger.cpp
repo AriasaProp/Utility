@@ -76,12 +76,17 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void mul(std::vector<word> &dst, const std::vector<word> A, const std::vector<word> B)
+void mul(std::vector<word> &dst, const std::vector<word> b)
 {
-    const size_t na = A.size(), nb = B.size();
-    dst.clear();
+    const size_t na = dst.size(), nb = b.size();
     if (!na || !nb)
+    {
+        dst.clear();
         return;
+    }
+    word A[na], B[nb];
+    std::copy(dst.begin(), dst.end(), A);
+    std::copy(b.begin(), b.end(), B);
     dst.resize(na + nb + 1);
     std::fill(dst.begin(), dst.end(), 0);
     word a_hi, b_hi, a_lo, b_lo, carry, carry0;
@@ -109,13 +114,8 @@ void mul(std::vector<word> &dst, const std::vector<word> A, const std::vector<wo
             carry = (dst[i] += carry) < carry;
             carry += (dst[i] += carry0) < carry0;
         }
-        for (j = dst.size(), i++; carry && (i < j); i++)
-            carry = (dst[i] += carry) < carry;
-        if (carry)
-            dst.push_back(carry);
+        add_a_word(dst, ++i, carry);
     }
-    while (dst.size() && !dst.back())
-        dst.pop_back();
 }
 //initialize BigInteger functions
 
@@ -497,7 +497,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (this->words.size())
     {
         this->neg ^= b.neg;
-        mul(this->words, this->words, b.words);
+        mul(this->words, b.words);
     }
     return *this;
 }
@@ -768,9 +768,9 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                mul(r, r, p);
+                mul(r, p);
             exponent >>= 1;
-            mul(p, p, p);
+            mul(p, p);
         }
     }
     else if (!exponent)
