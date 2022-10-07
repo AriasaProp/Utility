@@ -76,72 +76,47 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void karatsuba(std::vector<word> &dst, std::vector<word> A, std::vector<word> B)
+void mul(std::vector<word> &dst, const std::vector<word> A, const std::vector<word> B)
 {
     const size_t na = A.size(), nb = B.size();
     dst.clear();
     if (!na || !nb)
-    		return;
-    const size_t rAB = na * nb;
-    if (rAB > 20)
+        return;
+    dst.resize(na + nb + 1);
+    std::fill(dst.begin(), dst.end(), 0);
+    word a_hi, b_hi, a_lo, b_lo, carry, carry0;
+    size_t ia, ib, i, j;
+    for (ia = 0, ib; ia < na; ia++)
     {
-        const size_t
-            n = (na >= nb) ? na : nb,
-            m2 = n / 2 + (n & 1),
-            M = m2 * 2;
-        if (na < M)
-            A.resize(M, 0);
-        std::vector<word>::iterator split = std::next(A.begin(), m2);
-        std::vector<word> a1(split, A.end());
-        A.resize(m2);
-        if (nb < M)
-            B.resize(M, 0);
-        split = std::next(B.begin(), m2);
-        std::vector<word> b1(split, B.end());
-        B.resize(m2);
-        karatsuba(dst, a1, b1); // hi
-        add_word(a1, A);
-        add_word(b1, B);
-        karatsuba(a1, a1, b1); // mid
-        karatsuba(b1, A, B);   // lo
-        sub_word(a1, dst);
-        sub_word(a1, b1);
-        //should not be wrap around
-        dst.insert(dst.begin(), m2, 0);
-        add_word(dst, a1);
-        dst.insert(dst.begin(), m2, 0);
-        add_word(dst, b1);
-    }
-    else
-    {
-        dst.resize(na + nb + 1);
-        std::fill(dst.begin(), dst.end(), 0);
-        word a_hi, b_hi, a_lo, b_lo, carry;
-        size_t ia, ib, iterAB;
-        for (ia = 0, ib; ia < na; ia++)
+        const word &Ar = A[ia];
+        a_hi = Ar >> WORD_HALF_BITS;
+        a_lo = Ar & WORD_HALF_MASK;
+        carry = 0, carry0 = 0;
+        for (ib = 0; ib < nb; ib++)
         {
-            a_hi = A[ia] >> WORD_HALF_BITS;
-            a_lo = A[ia] & WORD_HALF_MASK;
-            carry = 0;
-            for (ib = 0; ib < nb; ib++)
-            {
-                iterAB = ia + ib;
-                b_hi = B[ib] >> WORD_HALF_BITS;
-                b_lo = B[ib] & WORD_HALF_MASK;
-                add_a_word(dst, iterAB, A[ia] * B[ib]);
-                carry = a_lo * b_lo;
-                carry >>= WORD_HALF_BITS;
-                carry += a_hi * b_lo;
-                carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-                add_a_word(dst, iterAB + 1, carry);
-            }
+            i = ia + ib;
+            const word &Br = B[ib];
+            b_hi = Br >> WORD_HALF_BITS;
+            b_lo = Br & WORD_HALF_MASK;
+            // part 1
+            carry0 = Ar * Br;
+            carry += (dst[i++] += carry0) < carry0;
+            //part 2
+            carry0 = a_lo * b_lo;
+            carry0 >>= WORD_HALF_BITS;
+            carry0 += a_hi * b_lo;
+            carry0 = (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            carry = (dst[i] += carry) < carry;
+            carry += (dst[i] += carry0) < carry0;
         }
+        for (j = dst.size(), i++; carry && (i < j); i++)
+            carry = (dst[i] += carry) < carry;
+        if (carry)
+            dst.push_back(carry);
     }
-    //truncate result dst
     while (dst.size() && !dst.back())
         dst.pop_back();
 }
-
 //initialize BigInteger functions
 
 //Constructors
@@ -493,17 +468,18 @@ BigInteger &BigInteger::operator*=(const s_word &b)
         std::copy(this->words.begin(), this->words.end(), A);
         const word b_hi = B >> WORD_HALF_BITS;
         const word b_lo = B & WORD_HALF_MASK;
-        word a_hi, a_lo, carry = 0;
+        word a_hi, a_lo, carry = 0, carry0 = 0;
         for (size_t i = 0; i < j; i++)
         {
-            this->words[i] = carry;
             a_hi = A[i] >> WORD_HALF_BITS;
             a_lo = A[i] & WORD_HALF_MASK;
-            this->words[i] += A[i] * B;
-            carry = a_lo * b_lo;
-            carry >>= WORD_HALF_BITS;
-            carry += a_hi * b_lo;
-            carry = (carry >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            this->words[i] = A[i] * B;
+            carry = (this->words[i] += carry) < carry;
+            carry0 = a_lo * b_lo;
+            carry0 >>= WORD_HALF_BITS;
+            carry0 += a_hi * b_lo;
+            carry0 = (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            carry += carry0;
         }
         if (carry)
             this->words.push_back(carry);
@@ -521,7 +497,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (this->words.size())
     {
         this->neg ^= b.neg;
-        karatsuba(this->words, this->words, b.words);
+        mul(this->words, this->words, b.words);
     }
     return *this;
 }
@@ -792,9 +768,9 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                karatsuba(r, r, p);
+                mul(r, r, p);
             exponent >>= 1;
-            karatsuba(p, p, p);
+            mul(p, p, p);
         }
     }
     else if (!exponent)
