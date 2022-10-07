@@ -76,7 +76,7 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     sub_a_word(a, i, carry);
 }
 
-void mul(std::vector<word> &dst, const std::vector<word> &b)
+void mul_word(std::vector<word> &dst, const std::vector<word> &b)
 {
     const size_t na = dst.size(), nb = b.size();
     if (!na || !nb)
@@ -91,7 +91,7 @@ void mul(std::vector<word> &dst, const std::vector<word> &b)
     std::fill(dst.begin(), dst.end(), 0);
     word a_hi, b_hi, a_lo, b_lo, carry, carry0;
     size_t ia, ib, i;
-    for (ia = 0, ib; ia < na; ia++)
+    for (ia = 0; ia < na; ia++)
     {
         const word &Ar = A[ia];
         a_hi = Ar >> WORD_HALF_BITS;
@@ -116,6 +116,8 @@ void mul(std::vector<word> &dst, const std::vector<word> &b)
         }
         add_a_word(dst, i++, carry);
     }
+    while (dst.size() && !dst.back())
+        dst.pop_back();
 }
 //initialize BigInteger functions
 
@@ -163,7 +165,7 @@ BigInteger::BigInteger(const char *c) : neg(false)
             words.push_back(carry);
         c++;
     }
-} 
+}
 
 BigInteger::BigInteger(const std::vector<word> &v, bool neg = false) : neg(neg), words(v) {}
 
@@ -187,7 +189,7 @@ char *BigInteger::to_chars() const
     while (A.size())
     {
         remainder = 0;
-        for (auto cur = A.rbegin(), end = A.rend(); cur != end; cur++) 
+        for (auto cur = A.rbegin(), end = A.rend(); cur != end; cur++)
         {
             current = *cur;
             remainder <<= WORD_HALF_BITS;
@@ -344,10 +346,10 @@ BigInteger &BigInteger::operator+=(const s_word &b)
 {
     const word B = word(abs(b));
     if (!this->words.size())
-		{
-				this->neg = b < 0;
-				this->words.push_back(B);
-		}
+    {
+        this->neg = b < 0;
+        this->words.push_back(B);
+    }
     else if (this->neg == (b < 0))
         add_a_word(this->words, 0, B);
     else
@@ -400,10 +402,10 @@ BigInteger &BigInteger::operator-=(const s_word &b)
 {
     const word B = word(abs(b));
     if (!this->words.size())
-		{
-				this->neg = b >= 0;
-				this->words.push_back(B);
-		}
+    {
+        this->neg = b >= 0;
+        this->words.push_back(B);
+    }
     else if (this->neg != (b < 0))
         add_a_word(this->words, 0, B);
     else
@@ -497,7 +499,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     if (this->words.size())
     {
         this->neg ^= b.neg;
-        mul(this->words, b.words);
+        mul_word(this->words, b.words);
     }
     return *this;
 }
@@ -768,13 +770,13 @@ BigInteger &BigInteger::operator^=(size_t exponent)
         while (exponent)
         {
             if (exponent & 1)
-                mul(r, p);
+                mul_word(r, p);
             exponent >>= 1;
-            mul(p, p);
+            mul_word(p, p);
         }
     }
     else if (!exponent)
-        throw ("Undefined result!");
+        throw("Undefined result!");
     return *this;
 }
 
@@ -799,7 +801,7 @@ BigInteger &BigInteger::operator>>=(size_t n_bits)
                     carried++;
                     *carried >>= n_bits;
                 }
-                if (*endCarried == 0) 
+                if (*endCarried == 0)
                     this->words.pop_back();
             }
         }
@@ -882,10 +884,10 @@ BigInteger BigInteger::operator+(const s_word &b) const
     BigInteger r;
     const word B = word(abs(b));
     if (!this->words.size())
-		{
-				r.neg = b < 0;
-				r.words.push_back(B);
-		}
+    {
+        r.neg = b < 0;
+        r.words.push_back(B);
+    }
     else if (this->neg == (b < 0))
     {
         r.words = this->words;
@@ -942,10 +944,10 @@ BigInteger BigInteger::operator-(const s_word &b) const
     BigInteger r;
     const word B = word(abs(b));
     if (!this->words.size())
-		{
-				r.neg = b >= 0;
-				r.words.push_back(B);
-		}
+    {
+        r.neg = b >= 0;
+        r.words.push_back(B);
+    }
     else if (this->neg != (b < 0))
     {
         r.words = this->words;
@@ -1069,4 +1071,3 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num)
     out << text.data();
     return out;
 }
-
