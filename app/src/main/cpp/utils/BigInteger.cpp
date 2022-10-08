@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
 
 const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
 const size_t WORD_BITS_1 = WORD_BITS - 1;
@@ -87,10 +88,11 @@ void mul_word(std::vector<word> &dst, const std::vector<word> &b)
     word A[na], B[nb];
     std::copy(dst.begin(), dst.end(), A);
     std::copy(b.begin(), b.end(), B);
-    dst.resize(na + nb + 1);
-    std::fill(dst.begin(), dst.end(), 0);
+    dst.clear();
+    dst.resize(na + nb, 0);
+    //std::fill(dst.begin(), dst.end(), 0);
     word a_hi, b_hi, a_lo, b_lo, carry, carry0;
-    size_t ia, ib, i;
+    size_t ia, ib, i, j;
     for (ia = 0; ia < na; ia++)
     {
         const word &Ar = A[ia];
@@ -100,21 +102,25 @@ void mul_word(std::vector<word> &dst, const std::vector<word> &b)
         for (ib = 0; ib < nb; ib++)
         {
             i = ia + ib;
+            carry = (dst[i] += carry) < carry;
             const word &Br = B[ib];
             b_hi = Br >> WORD_HALF_BITS;
             b_lo = Br & WORD_HALF_MASK;
             // part 1
             carry0 = Ar * Br;
-            carry += (dst[i++] += carry0) < carry0;
+            carry += (dst[i] += carry0) < carry0;
             //part 2
             carry0 = a_lo * b_lo;
             carry0 >>= WORD_HALF_BITS;
             carry0 += a_hi * b_lo;
-            carry0 = (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-            carry = (dst[i] += carry) < carry;
-            carry += (dst[i] += carry0) < carry0;
+            //TODO:  this may overflow, if you find error in multiplication check this
+            carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
         }
-        add_a_word(dst, i++, carry);
+        j = dst.size();
+        while (((++i) < j) && carry)
+            carry = (dst[i] += carry) < carry;
+        if (carry)
+            dst.push_back(carry);
     }
     while (dst.size() && !dst.back())
         dst.pop_back();
