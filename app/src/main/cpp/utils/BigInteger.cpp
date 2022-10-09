@@ -448,7 +448,7 @@ BigInteger &BigInteger::operator*=(const s_word &b)
 
 BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
-    const size_t nb = x.words.size();
+    const size_t nb = b.words.size();
     if (!nb)
     {
         this->neg = false;
@@ -458,10 +458,10 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
     const size_t na = a.size();
     if (na)
     {
-        this->neg ^= x.neg;
+        this->neg ^= b.neg;
         word A[na], B[nb];
         std::copy(a.begin(), a.end(), A);
-        std::copy(x.words.begin(), x.words.end(), B);
+        std::copy(b.words.begin(), b.words.end(), B);
         a.clear();
         a.resize(na + nb, 0);
         word a_hi, b_hi, a_lo, b_lo, carry, carry0;
