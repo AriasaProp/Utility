@@ -440,7 +440,7 @@ BigInteger &BigInteger::operator*=(const s_word &b)
             carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
             carry0 += a_hi * b_lo;
             carry += carry0 >> WORD_HALF_BITS;
-            caery += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
+            carry += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
             carry += a_hi * b_hi;
         }
         if (carry)
@@ -487,11 +487,12 @@ BigInteger &BigInteger::operator*=(const BigInteger &b)
                 carry0 = Ar * Br;
                 carry += (r += carry0) < carry0;
                 //part 2
-                carry0 = a_lo * b_lo;
-                carry0 >>= WORD_HALF_BITS;
+                carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
                 carry0 += a_hi * b_lo;
                 //TODO:  this may overflow, if you find error in multiplication check this
-                carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+                carry += carry0 >> WORD_HALF_BITS;
+                carry += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
+                carry += a_hi * b_hi;
             }
             j = a.size();
             while (((++i) < j) && carry)
