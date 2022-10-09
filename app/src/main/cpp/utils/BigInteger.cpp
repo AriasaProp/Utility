@@ -418,27 +418,30 @@ BigInteger &BigInteger::operator*=(const s_word &b)
         this->neg = false;
         this->words.clear();
     }
-    const size_t j = this->words.size();
+    std::vector<word> &r = this->words;
+    const size_t j = r.size();
     if (j)
     {
         this->neg ^= (b < 0);
         const word B = word(abs(b));
         word A[j];
-        std::copy(this->words.begin(), this->words.end(), A);
+        std::copy(r.begin(), r.end(), A);
         const word b_hi = B >> WORD_HALF_BITS;
         const word b_lo = B & WORD_HALF_MASK;
         word a_hi, a_lo, carry = 0, carry0 = 0;
         for (size_t i = 0; i < j; i++)
         {
-            a_hi = A[i] >> WORD_HALF_BITS;
-            a_lo = A[i] & WORD_HALF_MASK;
-            this->words[i] = A[i] * B;
-            carry = (this->words[i] += carry) < carry;
-            carry0 = a_lo * b_lo;
-            carry0 >>= WORD_HALF_BITS;
+        		word &wA = A[i];
+            a_hi = wA >> WORD_HALF_BITS;
+            a_lo = wA & WORD_HALF_MASK;
+            word &w = this->words[i];
+            w = wA * B;
+            carry = (w += carry) < carry;
+            carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
             carry0 += a_hi * b_lo;
-            carry0 = (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-            carry += carry0;
+            carry += carry0 >> WORD_HALF_BITS;
+            caery += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
+            carry += a_hi * b_hi;
         }
         if (carry)
             this->words.push_back(carry);
