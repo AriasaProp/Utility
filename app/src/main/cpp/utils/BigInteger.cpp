@@ -76,55 +76,6 @@ void sub_word(std::vector<word> &a, const std::vector<word> &b)
     }
     sub_a_word(a, i, carry);
 }
-
-void mul_word(std::vector<word> &dst, const std::vector<word> &b)
-{
-    const size_t na = dst.size(), nb = b.size();
-    if (!na || !nb)
-    {
-        dst.clear();
-        return;
-    }
-    word A[na], B[nb];
-    std::copy(dst.begin(), dst.end(), A);
-    std::copy(b.begin(), b.end(), B);
-    dst.clear();
-    dst.resize(na + nb, 0);
-    //std::fill(dst.begin(), dst.end(), 0);
-    word a_hi, b_hi, a_lo, b_lo, carry, carry0;
-    size_t ia, ib, i, j;
-    for (ia = 0; ia < na; ia++)
-    {
-        const word &Ar = A[ia];
-        a_hi = Ar >> WORD_HALF_BITS;
-        a_lo = Ar & WORD_HALF_MASK;
-        carry = 0, carry0 = 0;
-        for (ib = 0; ib < nb; ib++)
-        {
-            i = ia + ib;
-            carry = (dst[i] += carry) < carry;
-            const word &Br = B[ib];
-            b_hi = Br >> WORD_HALF_BITS;
-            b_lo = Br & WORD_HALF_MASK;
-            // part 1
-            carry0 = Ar * Br;
-            carry += (dst[i] += carry0) < carry0;
-            //part 2
-            carry0 = a_lo * b_lo;
-            carry0 >>= WORD_HALF_BITS;
-            carry0 += a_hi * b_lo;
-            //TODO:  this may overflow, if you find error in multiplication check this
-            carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
-        }
-        j = dst.size();
-        while (((++i) < j) && carry)
-            carry = (dst[i] += carry) < carry;
-        if (carry)
-            dst.push_back(carry);
-    }
-    while (dst.size() && !dst.back())
-        dst.pop_back();
-}
 //initialize BigInteger functions
 
 //Constructors
@@ -497,15 +448,56 @@ BigInteger &BigInteger::operator*=(const s_word &b)
 
 BigInteger &BigInteger::operator*=(const BigInteger &b)
 {
-    if (!b.words.size())
+    const size_t nb = x.words.size();
+    if (!nb)
     {
         this->neg = false;
         this->words.clear();
     }
-    if (this->words.size())
+    std::vector<word> &a = this->words;
+    const size_t na = a.size();
+    if (na)
     {
-        this->neg ^= b.neg;
-        mul_word(this->words, b.words);
+        this->neg ^= x.neg;
+        word A[na], B[nb];
+        std::copy(a.begin(), a.end(), A);
+        std::copy(x.words.begin(), x.words.end(), B);
+        a.clear();
+        a.resize(na + nb, 0);
+        word a_hi, b_hi, a_lo, b_lo, carry, carry0;
+        size_t ia, ib, i, j;
+        for (ia = 0; ia < na; ia++)
+        {
+            const word &Ar = A[ia];
+            a_hi = Ar >> WORD_HALF_BITS;
+            a_lo = Ar & WORD_HALF_MASK;
+            carry = 0;
+            for (ib = 0; ib < nb; ib++)
+            {
+                i = ia + ib;
+                word &r = a[i];
+                carry = (r += carry) < carry;
+                const word &Br = B[ib];
+                b_hi = Br >> WORD_HALF_BITS;
+                b_lo = Br & WORD_HALF_MASK;
+                // part 1
+                carry0 = Ar * Br;
+                carry += (r += carry0) < carry0;
+                //part 2
+                carry0 = a_lo * b_lo;
+                carry0 >>= WORD_HALF_BITS;
+                carry0 += a_hi * b_lo;
+                //TODO:  this may overflow, if you find error in multiplication check this
+                carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+            }
+            j = a.size();
+            while (((++i) < j) && carry)
+                carry = (a[i] += carry) < carry;
+            if (carry)
+                a.push_back(carry);
+        }
+        while (a.size() && !a.back())
+            a.pop_back();
     }
     return *this;
 }
@@ -768,17 +760,97 @@ BigInteger &BigInteger::operator%=(const BigInteger &b)
 
 BigInteger &BigInteger::operator^=(size_t exponent)
 {
-    if (this->words.size())
+    size_t na = this->words.size();
+    if (na)
     {
-        std::vector<word> p = this->words, &r = this->words;
-        r = std::vector<word>{1};
+        std::vector<word> p = this->words, &R = this->words;
+        R = std::vector<word>{1};
+        word A[na * exponent], B[na * exponent];
         this->neg = this->neg & (exponent & 1);
+        word a_hi, a_lo, b_hi, b_lo, carry, carry0;
+        size_t ia, ib, i, j;
         while (exponent)
         {
             if (exponent & 1)
-                mul_word(r, p);
+            {
+                na = R.size();
+                size_t nb = p.size();
+                std::copy(R.begin(), R.end(), A);
+                std::copy(p.begin(), p.end(), B);
+                R.clear();
+                R.resize(na + nb, 0);
+                for (ia = 0; ia < na; ia++)
+                {
+                    const word &Ar = A[ia];
+                    a_hi = Ar >> WORD_HALF_BITS;
+                    a_lo = Ar & WORD_HALF_MASK;
+                    carry = 0;
+                    for (ib = 0; ib < nb; ib++)
+                    {
+                        i = ia + ib;
+                        word &r = R[i];
+                        carry = (r += carry) < carry;
+                        const word &Br = B[ib];
+                        b_hi = Br >> WORD_HALF_BITS;
+                        b_lo = Br & WORD_HALF_MASK;
+                        // part 1
+                        carry0 = Ar * Br;
+                        carry += (r += carry0) < carry0;
+                        //part 2
+                        carry0 = a_lo * b_lo;
+                        carry0 >>= WORD_HALF_BITS;
+                        carry0 += a_hi * b_lo;
+                        //TODO:  this may overflow, if you find error in multiplication check this
+                        carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+                    }
+                    j = R.size();
+                    while (((++i) < j) && carry)
+                        carry = (R[i] += carry) < carry;
+                    if (carry)
+                        R.push_back(carry);
+                }
+                while (R.size() && !R.back())
+                    R.pop_back();
+            }
             exponent >>= 1;
-            mul_word(p, p);
+            {
+                const size_t n = p.size();
+                std::copy(p.begin(), p.end(), A);
+                p.clear();
+                p.resize(n * 2, 0);
+                for (ia = 0; ia < n; ia++)
+                {
+                    const word &Ar = A[ia];
+                    a_hi = Ar >> WORD_HALF_BITS;
+                    a_lo = Ar & WORD_HALF_MASK;
+                    carry = 0;
+                    for (ib = 0; ib < n; ib++)
+                    {
+                        i = ia + ib;
+                        word &r = p[i];
+                        carry = (r += carry) < carry;
+                        const word &Br = A[ib];
+                        b_hi = Br >> WORD_HALF_BITS;
+                        b_lo = Br & WORD_HALF_MASK;
+                        // part 1
+                        carry0 = Ar * Br;
+                        carry += (r += carry0) < carry0;
+                        //part 2
+                        carry0 = a_lo * b_lo;
+                        carry0 >>= WORD_HALF_BITS;
+                        carry0 += a_hi * b_lo;
+                        //TODO:  this may overflow, if you find error in multiplication check this
+                        carry += (carry0 >> WORD_HALF_BITS) + ((a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS) + a_hi * b_hi;
+                    }
+                    j = p.size();
+                    while (((++i) < j) && carry)
+                        carry = (p[i] += carry) < carry;
+                    if (carry)
+                        p.push_back(carry);
+                }
+                while (p.size() && !p.back())
+                    p.pop_back();
+            }
         }
     }
     else if (!exponent)
