@@ -200,8 +200,6 @@ bool BigInteger_test() {
                 q *= 10;
                 r = (r - t * n) * 10;
                 n = (q * 3 + r) / t;
-                if (t % 5 == 0)
-                    q /= 5, r /= 5, t /= 5;
             }
             else
             {
@@ -215,7 +213,7 @@ bool BigInteger_test() {
             
         }
         std::cout << std::endl;
-        std::cout << "Need " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
+        std::cout << "Need " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
         
         std::cout << " q = " << q << std::endl;
         std::cout << " r = " << r << std::endl;
