@@ -768,17 +768,18 @@ BigInteger &BigInteger::operator^=(size_t exponent)
     if (na)
     {
         std::vector<word> p = this->words, &R = this->words;
-        R = std::vector<word>{1};
+        R.clear();
+        R.push_back(1);
         word A[na * exponent], B[na * exponent];
         this->neg = this->neg & (exponent & 1);
         word a_hi, a_lo, b_hi, b_lo, carry, carry0;
-        size_t ia, ib, i, j;
+        size_t ia, ib, i, j, nb;
         while (exponent)
         {
+            nb = p.size();
             if (exponent & 1)
             {
                 na = R.size();
-                size_t nb = p.size();
                 std::copy(R.begin(), R.end(), A);
                 std::copy(p.begin(), p.end(), B);
                 R.clear();
@@ -818,17 +819,16 @@ BigInteger &BigInteger::operator^=(size_t exponent)
             }
             exponent >>= 1;
             {
-                const size_t n = p.size();
                 std::copy(p.begin(), p.end(), A);
                 p.clear();
-                p.resize(n * 2, 0);
-                for (ia = 0; ia < n; ia++)
+                p.resize(nb * 2, 0);
+                for (ia = 0; ia < nb; ia++)
                 {
                     const word &Ar = A[ia];
                     a_hi = Ar >> WORD_HALF_BITS;
                     a_lo = Ar & WORD_HALF_MASK;
                     carry = 0;
-                    for (ib = 0; ib < n; ib++)
+                    for (ib = 0; ib < nb; ib++)
                     {
                         i = ia + ib;
                         word &r = p[i];
