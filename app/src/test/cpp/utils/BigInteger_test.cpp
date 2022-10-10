@@ -183,12 +183,13 @@ bool BigInteger_test() {
     }
 
     if (passed) {
-        std::cout << "pi generator gain for 500 digits : ";
+        const size_t lim = 2000;
+        std::cout << "pi generator gain for " << lim << " digits : ";
         std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
         BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
         int N;
         unsigned long generated = 0;
-        while (generated < 500)
+        while (generated < lim)
         {
             if (!n.can_convert_to_int(&N))
                 throw " n value are broken";
@@ -196,9 +197,9 @@ bool BigInteger_test() {
             {
                 std::cout << N;
                 generated++;
-                n = ((q * 3 + r) - t * N) * 10 / t;
-                r = (r - t * N) * 10;
                 q *= 10;
+                r = (r - t * n) * 10;
+                n = (q * 3 + r) / t;
             }
             else
             {

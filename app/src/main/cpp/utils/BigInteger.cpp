@@ -428,15 +428,14 @@ BigInteger &BigInteger::operator*=(const s_word &b)
         std::copy(r.begin(), r.end(), A);
         const word b_hi = B >> WORD_HALF_BITS;
         const word b_lo = B & WORD_HALF_MASK;
-        word a_hi, a_lo, carry = 0, carry0 = 0;
+        word a_hi, a_lo, carry = 0, carry0;
         for (size_t i = 0; i < j; i++)
         {
-        		word &wA = A[i];
+            word &wA = A[i];
             a_hi = wA >> WORD_HALF_BITS;
             a_lo = wA & WORD_HALF_MASK;
-            word &w = this->words[i];
-            w = wA * B;
-            carry = (w += carry) < carry;
+            r[i] = wA * B;
+            carry = (r[i] += carry) < carry;
             carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
             carry0 += a_hi * b_lo;
             carry += carry0 >> WORD_HALF_BITS;
@@ -444,7 +443,7 @@ BigInteger &BigInteger::operator*=(const s_word &b)
             carry += a_hi * b_hi;
         }
         if (carry)
-            this->words.push_back(carry);
+            r.push_back(carry);
     }
     return *this;
 }
