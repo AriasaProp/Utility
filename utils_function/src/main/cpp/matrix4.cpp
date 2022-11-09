@@ -125,13 +125,13 @@ matrix4 matrix4::operator*(const matrix4 &v) const {
 	}
 	return result;
 }
-matrix4 &matrix4::operator/(const float &v) {
+matrix4 matrix4::operator/(const float &v) const {
 	matrix4 result;
 	for (unsigned int i = 0; i < 16; i++)
 		result.values[i] = this->values[i] / v;
 	return result;
 }
-matrix4 &matrix4::operator/(const matrix4 &v) {
+matrix4 matrix4::operator/(const matrix4 &v) const {
 	matrix4 result(this->values);
 	result *= (v.adj()/v.det());
 	return result;
