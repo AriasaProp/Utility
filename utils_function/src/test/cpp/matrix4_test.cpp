@@ -8,9 +8,9 @@ bool matrix4_test() {
 	auto restart = std::chrono::high_resolution_clock::now();
 	std::cout << "Matrix4 code test \n";
 	// arithmatics operation test
-	matrix4 a(6,9,7,2, 6,1,8,21, 6,1,12,4, 7,12,13,9),
-		b(9,9,2,1, 8,6,2,1, 8,6,5,9, 6,4,7,24, 7,9,4,9),
-		c(15,18,9,3, 14,7,13,30, 12,5,19,28, 14,21,17,18);
+	matrix4 a(float[16]{6,9,7,2, 6,1,8,21, 6,1,12,4, 7,12,13,9}),
+		b(float[16]{9,9,2,1, 8,6,2,1, 8,6,5,9, 6,4,7,24, 7,9,4,9}),
+		c(float[16]{15,18,9,3, 14,7,13,30, 12,5,19,28, 14,21,17,18});
 	matrix d;
 	// "+" operator test
 	result = true;
