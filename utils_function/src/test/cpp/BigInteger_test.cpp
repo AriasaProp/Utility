@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "utils/BigInteger.h"
+#include "BigInteger.h"
 
 bool BigInteger_test() {
     bool passed = true;

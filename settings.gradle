@@ -1,2 +1,2 @@
+include ':utils_function'
 rootProject.name = 'Function_Test'
-include('app')
