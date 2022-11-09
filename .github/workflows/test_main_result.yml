@@ -1,5 +1,5 @@
 name: test_main_result
-on:[push]
+on: push
 
 jobs:
   test:
