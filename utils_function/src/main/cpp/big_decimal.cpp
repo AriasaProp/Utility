@@ -1,4 +1,5 @@
 #include "big_decimal.h"
+#include <climits>
 #include <cmath>
 #include <cstdlib>
 
@@ -325,40 +326,15 @@ big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x |
     T[0] = x;
 }
 
-big_decimal::big_decimal(const double &x)
-{
+big_decimal::big_decimal(const double &x) {
     if (x == 0.0)
         return;
+    this->sign = signbit(x);
+    unsigned long mts = static_cast<unsigned long>(abs(frexp(x, &this->exp)));
     std::vector<uint32_t> tempv; //temp for mantisa
-    std::string xstr = std::to_string(x);
-    if (xstr[0] == '-')
-    {
-        this->sign = true;
-        xstr.erase(0, 1);
-    }
-    size_t i = xstr.find('.', 0), j, k;
-    std::string top, bot;
-    if (i == std::string::npos) {
-    	top = xstr;
-    } else {
-	    std::string top = xstr.substr(0, i);
-	    i = top.length() % 9;
-	    if (i)
-	        top.insert(0, 9 - i, '0');
-	    std::string bot = xstr.substr(++i, xstr.size());
-	    i = bot.length() % 9;
-	    if (i)
-	        bot.insert(bot.length() - 1, 9 - i, '0');
-	    while (bot.length())
-	    {
-	        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
-	        bot.resize(bot.size() - 9);
-	    }
-    	this->exp = -tempv.size();
-    }
-    while (top.length()) {
-        tempv.push_back((uint32_t)std::stoi(top.substr(top.size() - 9, top.size())));
-        top.resize(top.size() - 9);
+    while (mts) {
+    	tempv.push_back((uint32_t)mts);
+    	mts =>> sizeof(uint32_t) * CHAR_BIT;
     }
     this->L = tempv.size();
     T = std::unique_ptr<uint32_t[]>(new uint32_t[tempv.size()]);
