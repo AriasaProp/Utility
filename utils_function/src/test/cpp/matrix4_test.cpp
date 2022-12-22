@@ -8,10 +8,12 @@ bool matrix4_test() {
 	auto restart = std::chrono::high_resolution_clock::now();
 	std::cout << "Matrix4 code test \n";
 	// arithmatics operation test
-	matrix4 a{6,9,7,2, 6,1,8,21, 6,1,12,4, 7,12,13,9},
-		b{9,9,2,1, 8,6,2,1, 8,6,5,9, 6,4,7,24, 7,9,4,9},
-		c{15,18,9,3, 14,7,13,30, 12,5,19,28, 14,21,17,18};
-	matrix4 d;
+	matrix4 a, b, c, d;
+	{
+		a = [16]float{6,9,7,2, 6,1,8,21, 6,1,12,4, 7,12,13,9};
+		b = [16]float{9,9,2,1, 8,6,2,1, 8,6,5,9, 6,4,7,24, 7,9,4,9};
+		c = [16]float{15,18,9,3, 14,7,13,30, 12,5,19,28, 14,21,17,18};
+	}
 	// "+" operator test
 	result = true;
 	d = a + b;
@@ -37,8 +39,8 @@ bool matrix4_test() {
 	result &= a == d;
 	passed &= result;
 	if (!result) std::cout << "    '-=' operator error \n";
-	c = float[16]{182,154,114,273, 257,281,157,396, 162,144,117,339, 300,268,201,508};
 	// "*" operator test
+	c = [16]float{182,154,114,273, 257,281,157,396, 162,144,117,339, 300,268,201,508};
 	d = a * b;
 	result &= c == d;
 	passed &= result;
