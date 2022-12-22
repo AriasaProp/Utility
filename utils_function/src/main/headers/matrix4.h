@@ -14,12 +14,12 @@ private:
 public:
 	//constructors
 	matrix4();
-	matrix4(const float[16]);
+	matrix4(const float (&)[16]);
 	matrix4(const matrix4 &);
 	//destructors
 	~matrix4();
 	//re-initialize
-	matrix4 &operator=(const float[16]);
+	matrix4 &operator=(const float (&)[16]);
 	matrix4 &operator=(const matrix4 &);
 	//compare function
 	bool &operator==(const matrix4 &) const;

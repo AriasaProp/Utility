@@ -6,7 +6,7 @@ static const unsigned int MATRIX_SIZE = sizeof(float) * 16;
 matrix4::matrix4() {
 	memcpy(values, (float[]){1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1}, MATRIX_SIZE);
 }
-matrix4::matrix4(float v[16]) {
+matrix4::matrix4(const float (&v)[16]) {
 	memcpy(values, v, MATRIX_SIZE);
 }
 matrix4::matrix4(const matrix4 &other) {
@@ -17,7 +17,7 @@ matrix4::~matrix4() {
 	//ignored
 }
 //re-initialize
-matrix4 &matrix4::operator=(float v[16]) {
+matrix4 &matrix4::operator=(const float (&v)[16]) {
 	memcpy(values, v, MATRIX_SIZE);
 	return *this;
 }
