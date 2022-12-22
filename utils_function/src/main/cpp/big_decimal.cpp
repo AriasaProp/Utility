@@ -336,15 +336,19 @@ big_decimal::big_decimal(const double &x)
         xstr.erase(0, 1);
     }
     size_t i = xstr.find('.', 0), j, k;
-    std::string top = xstr.substr(0, i);
-    std::string bot = xstr.substr(++i, xstr.size());
-    i = top.length() % 9;
-    if (i)
-        top.insert(0, 9 - i, '0');
-    i = bot.length() % 9;
-    if (i)
-        bot.insert(bot.length() - 1, 9 - i, '0');
-    
+    std::string top, bot;
+    if (i == std::string::npos) {
+    	top = xstr;
+    } else {
+	    std::string top = xstr.substr(0, i);
+	    i = top.length() % 9;
+	    if (i)
+	        top.insert(0, 9 - i, '0');
+	    std::string bot = xstr.substr(++i, xstr.size());
+	    i = bot.length() % 9;
+	    if (i)
+	        bot.insert(bot.length() - 1, 9 - i, '0');
+    }
     std::vector<uint32_t> tempv;
     while (bot.length())
     {

@@ -4,8 +4,8 @@ bool big_decimal_test()
 {
     std::cout << "big_decimal test begin! " << std::endl;
     
-    big_decimal x = 1.333333;
-    big_decimal y = 3.145928;
+    big_decimal x = 1.333333f;
+    big_decimal y = 3.145928f;
     big_decimal z = 7.0;
     //z /= 3;
     /*
