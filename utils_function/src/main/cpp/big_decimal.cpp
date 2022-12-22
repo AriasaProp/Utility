@@ -329,12 +329,12 @@ big_decimal::big_decimal(const uint32_t &x, const bool &sign = true) : sign(!x |
 big_decimal::big_decimal(const double &x) {
     if (x == 0.0)
         return;
-    this->sign = signbit(x);
+    this->sign = std::signbit(x);
     unsigned long mts = static_cast<unsigned long>(abs(frexp(x, &this->exp)));
     std::vector<uint32_t> tempv; //temp for mantisa
     while (mts) {
     	tempv.push_back((uint32_t)mts);
-    	mts =>> sizeof(uint32_t) * CHAR_BIT;
+    	mts >>= sizeof(uint32_t) * CHAR_BIT;
     }
     this->L = tempv.size();
     T = std::unique_ptr<uint32_t[]>(new uint32_t[tempv.size()]);
