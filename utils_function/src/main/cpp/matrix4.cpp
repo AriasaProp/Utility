@@ -73,9 +73,9 @@ matrix4 &matrix4::operator*=(const float &v) {
 	return *this;
 }
 matrix4 &matrix4::operator*=(const matrix4 &v) {
-	const float a[16];
-	const float *b = v.values;
+	float a[16], b[16];
 	memcpy(a, values, MATRIX_SIZE);
+	memcpy(b, v.values, MATRIX_SIZE);
 	for (unsigned int j = 0, i, j4; j < 4; j++) {
 		for (i = 0; i < 4; i++) {
 			j4 = j * 4;
