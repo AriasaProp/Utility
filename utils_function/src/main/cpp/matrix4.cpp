@@ -26,13 +26,11 @@ matrix4 &matrix4::operator=(const matrix4 &other) {
 	return *this;
 }
 bool &matrix4::operator==(const matrix4 &v) const {
-	for (unsigned int i = 0; i < 16; i++)
-		if (values[i] != v.values) return false;
-	return true;
+	return memcmp(values, v.values, MATRIX_SIZE) == 0;
 }
 //matriks function unsafe
 float matrix4::det() const {
-	return    values[0] * values[5] * values[10] * values[15]
+	return values[0] * values[5] * values[10] * values[15]
 		- values[0] * values[7] * values[10] * values[13]
 		+ values[1] * values[6] * values[11] * values[11]
 		- values[1] * values[4] * values[11] * values[14]
@@ -42,7 +40,7 @@ float matrix4::det() const {
 		- values[3] * values[6] * values[ 9] * values[12];
 }
 matrix4 matrix4::adj() const {
-	return matrix4(float[16]{
+	return matrix4((float[16]){
 		values[0],values[4],values[8],values[12],
 		values[1],values[5],values[9],values[13],
 		values[2],values[6],values[10],values[14],
@@ -60,34 +58,34 @@ float *matrix4::getValues() const {
 //math operation safe
 matrix4 &matrix4::operator+=(const matrix4 &v) {
 	for (unsigned int i = 0; i < 16; i++)
-		this->values[i] += v.values[i];
+		values[i] += v.values[i];
 	return *this;
 }
 matrix4 &matrix4::operator-=(const matrix4 &v) {
 	for (unsigned int i = 0; i < 16; i++)
-		this->values[i] -= v.values[i];
+		values[i] -= v.values[i];
 	return *this;
 }
 matrix4 &matrix4::operator*=(const float &v) {
 	for (unsigned int i = 0; i < 16; i++)
-		this->values[i] *= v;
+		values[i] *= v;
 	return *this;
 }
 matrix4 &matrix4::operator*=(const matrix4 &v) {
 	float a[16], b[16];
-	memcpy(a, this->values, MATRIX_SIZE);
+	memcpy(a, values, MATRIX_SIZE);
 	memcpy(b, v.values, MATRIX_SIZE);
 	for (unsigned int j = 0; j < 4; j++) {
 		for (unsigned int i = 0; i < 4; i++) {
 			const unsigned int j4 = j * 4;
-			this->values[j4 + i] = a[j4] * b[i] + a[j4+1] * b[i+4] + a[j4+2] * b[i+8] + a[j4+3] * b[i+12];
+			values[j4 + i] = a[j4] * b[i] + a[j4+1] * b[i+4] + a[j4+2] * b[i+8] + a[j4+3] * b[i+12];
 		}
 	}
 	return *this;
 }
 matrix4 &matrix4::operator/=(const float &v) {
 	for (unsigned int i = 0; i < 16; i++)
-		this->values[i] /= v;
+		values[i] /= v;
 	return *this;
 }
 matrix4 &matrix4::operator/=(const matrix4 &v) {
@@ -98,24 +96,24 @@ matrix4 &matrix4::operator/=(const matrix4 &v) {
 matrix4 matrix4::operator+(const matrix4 &v) const {
 	matrix4 result;
 	for (unsigned int i = 0; i < 16; i++)
-		result.values[i] = this->values[i] + v.values[i];
+		result.values[i] = values[i] + v.values[i];
 	return result;
 }
 matrix4 matrix4::operator-(const matrix4 &v) const {
 	matrix4 result;
 	for (unsigned int i = 0; i < 16; i++)
-		result.values[i] = this->values[i] - v.values[i];
+		result.values[i] = values[i] - v.values[i];
 	return result;
 }
 matrix4 matrix4::operator*(const float &v) const {
 	matrix4 result;
 	for (unsigned int i = 0; i < 16; i++)
-		result.values[i] = this->values[i] * v;
+		result.values[i] = values[i] * v;
 	return result;
 }
 matrix4 matrix4::operator*(const matrix4 &v) const {
 	matrix4 result;
-	float *a = this->values, *b = v.values, *c = result.values;
+	float *a = values, *b = v.values, *c = result.values;
 	for (unsigned int j = 0; j < 4; j++) {
 		for (unsigned int i = 0; i < 4; i++) {
 			const unsigned int j4 = j * 4;
@@ -128,11 +126,11 @@ matrix4 matrix4::operator*(const matrix4 &v) const {
 matrix4 matrix4::operator/(const float &v) const {
 	matrix4 result;
 	for (unsigned int i = 0; i < 16; i++)
-		result.values[i] = this->values[i] / v;
+		result.values[i] = values[i] / v;
 	return result;
 }
 matrix4 matrix4::operator/(const matrix4 &v) const {
-	matrix4 result(this->values);
+	matrix4 result(values);
 	result *= (v.adj()/v.det());
 	return result;
 }
