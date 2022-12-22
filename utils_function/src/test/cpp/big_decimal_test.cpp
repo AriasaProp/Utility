@@ -8,10 +8,10 @@ bool big_decimal_test()
     big_decimal y = 3.145928;
     big_decimal z = 7.0;
     //z /= 3;
-    
+    /*
     std::cout << x << std::endl;
     std::cout << y << std::endl;
     std::cout << z << std::endl;
-    
+    */
     return true;
 }
