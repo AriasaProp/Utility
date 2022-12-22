@@ -40,7 +40,7 @@ float matrix4::det() const {
 		+ values[3] * values[4] * values[ 9] * values[14]
 		- values[3] * values[6] * values[ 9] * values[12];
 }
-matrix4 matrix4::adj() const {
+matrix4 &matrix4::adj() const {
 	return matrix4((float[16]){
 		values[0],values[4],values[8],values[12],
 		values[1],values[5],values[9],values[13],
@@ -52,7 +52,7 @@ matrix4 matrix4::invers() const {
 	return adj()/det();
 }
 float *matrix4::getValues() const {
-	float result[16];
+	float *result = new float[16];
 	memcpy(result, values, MATRIX_SIZE);
 	return result;
 }
@@ -73,12 +73,12 @@ matrix4 &matrix4::operator*=(const float &v) {
 	return *this;
 }
 matrix4 &matrix4::operator*=(const matrix4 &v) {
-	float a[16], b[16];
+	float a[16];
+	float *b = v.values;
 	memcpy(a, values, MATRIX_SIZE);
-	memcpy(b, v.values, MATRIX_SIZE);
-	for (unsigned int j = 0; j < 4; j++) {
-		for (unsigned int i = 0; i < 4; i++) {
-			const unsigned int j4 = j * 4;
+	for (unsigned int j = 0, i, j4; j < 4; j++) {
+		for (i = 0; i < 4; i++) {
+			j4 = j * 4;
 			values[j4 + i] = a[j4] * b[i] + a[j4+1] * b[i+4] + a[j4+2] * b[i+8] + a[j4+3] * b[i+12];
 		}
 	}

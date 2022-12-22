@@ -25,8 +25,8 @@ public:
 	bool operator==(const matrix4 &) const;
 	//matrix function
 	float det() const;
-	matrix4 adj() const;
-	matrix4 inverse() const;
+	matrix4 &adj() const;
+	matrix4 invers() const;
 	float *getValues() const;
 	//math operation safe
 	matrix4 &operator+=(const matrix4 &);
