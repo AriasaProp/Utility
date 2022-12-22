@@ -3,12 +3,12 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include <climits>
 
 typedef unsigned int word;
 typedef signed int s_word;
 
-// TODO : need to be more efficiently
 class BigInteger
 {
   private:
