@@ -329,6 +329,7 @@ big_decimal::big_decimal(const double &x)
 {
     if (x == 0.0)
         return;
+    std::vector<uint32_t> tempv; //temp for mantisa
     std::string xstr = std::to_string(x);
     if (xstr[0] == '-')
     {
@@ -348,17 +349,15 @@ big_decimal::big_decimal(const double &x)
 	    i = bot.length() % 9;
 	    if (i)
 	        bot.insert(bot.length() - 1, 9 - i, '0');
+	    while (bot.length())
+	    {
+	        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
+	        bot.resize(bot.size() - 9);
+	    }
+    	this->exp = -tempv.size();
     }
-    std::vector<uint32_t> tempv;
-    while (bot.length())
-    {
-        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
-        bot.resize(bot.size() - 9);
-    }
-    this->exp = -tempv.size();
-    while (top.length())
-    {
-        tempv.push_back((uint32_t)std::stoi(bot.substr(bot.size() - 9, bot.size())));
+    while (top.length()) {
+        tempv.push_back((uint32_t)std::stoi(top.substr(top.size() - 9, top.size())));
         top.resize(top.size() - 9);
     }
     this->L = tempv.size();
