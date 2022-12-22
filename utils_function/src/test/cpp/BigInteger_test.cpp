@@ -181,14 +181,13 @@ bool BigInteger_test() {
         std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
         std::cout << (passed ? "has " : " hasn\'t ") << " Passed" << std::endl;
     }
-
+    /*
     if (passed) {
         const size_t lim = 2000;
         std::cout << "pi generator gain for first " << lim << " digits : ";
         std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
         BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
         int N;
-        unsigned long rpos = 0, rneg = 0;
         unsigned long generated = 0;
         while (generated < lim)
         {
@@ -211,20 +210,11 @@ bool BigInteger_test() {
                 ++k;
                 l += 2;
             }
-            if (r > 0) rpos++;
-            else rneg++;
         }
         std::cout << std::endl;
         std::cout << "Need " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
-        
-        std::cout << " q = " << q << std::endl;
-        std::cout << " r = " << r << std::endl;
-        std::cout << " + " << rpos << " |  - " << rneg << std::endl;
-        std::cout << " t = " << t << std::endl;
-        std::cout << " k = " << k << std::endl;
-        std::cout << " l = " << l << std::endl;
-        std::cout << " n = " << n << std::endl;
     }
+    */
     return passed;
 }
 
