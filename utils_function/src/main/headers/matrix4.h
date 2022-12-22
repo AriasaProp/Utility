@@ -22,7 +22,7 @@ public:
 	matrix4 &operator=(const float (&)[16]);
 	matrix4 &operator=(const matrix4 &);
 	//compare function
-	bool &operator==(const matrix4 &) const;
+	bool operator==(const matrix4 &) const;
 	//matrix function
 	float det() const;
 	matrix4 adj() const;

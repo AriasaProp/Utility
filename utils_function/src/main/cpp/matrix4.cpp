@@ -4,7 +4,8 @@
 static const unsigned int MATRIX_SIZE = sizeof(float) * 16;
 //matrix4 constructors
 matrix4::matrix4() {
-	memcpy(values, (float[]){1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1}, MATRIX_SIZE);
+	float idt[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
+	memcpy(values, idt, MATRIX_SIZE);
 }
 matrix4::matrix4(const float (&v)[16]) {
 	memcpy(values, v, MATRIX_SIZE);
@@ -25,7 +26,7 @@ matrix4 &matrix4::operator=(const matrix4 &other) {
 	memcpy(values, other.values, MATRIX_SIZE);
 	return *this;
 }
-bool &matrix4::operator==(const matrix4 &v) const {
+bool matrix4::operator==(const matrix4 &v) const {
 	return memcmp(values, v.values, MATRIX_SIZE) == 0;
 }
 //matriks function unsafe
