@@ -14,7 +14,6 @@ class BigInteger
     // values
     bool neg = false;
     std::vector<word> words;
-
   public:
     //Constructors
     BigInteger();
