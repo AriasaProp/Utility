@@ -4,10 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
-#include <climits>
 
-typedef unsigned int word;
-typedef signed int s_word;
+typedef unsigned long word;
+typedef signed long s_word;
 
 class BigInteger
 {
