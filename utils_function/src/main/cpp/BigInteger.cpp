@@ -97,7 +97,7 @@ BigInteger::BigInteger(const char *c) : neg(false) {
         carry = *c - '0';
         if (carry > 9)
             throw("BigInteger should initialize with number from 0 to 9.");
-        while (word &cur : words) {
+        for (word &cur : words) {
             tmp = cur * 10;
             carry = (tmp += carry) < carry;
             a_hi = cur >> WORD_HALF_BITS;
