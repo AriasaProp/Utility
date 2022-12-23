@@ -281,7 +281,7 @@ BigInteger &BigInteger::operator+=(const s_word &b) {
         this->neg = b < 0;
         this->words.push_back(B);
     }
-    else if (this->neg == (b < 0))
+    else if (this->neg == std::signbit(b))
         add_a_word(this->words, 0, B);
     else
     {
@@ -330,10 +330,10 @@ BigInteger &BigInteger::operator-=(const s_word &b) {
     const word B = word(abs(b));
     if (!this->words.size())
     {
-        this->neg = b >= 0;
+        this->neg = !std::signbit(b);
         this->words.push_back(B);
     }
-    else if (this->neg != (b < 0))
+    else if (this->neg != std::signbit(b))
         add_a_word(this->words, 0, B);
     else
     {
@@ -385,7 +385,7 @@ BigInteger &BigInteger::operator*=(const s_word &b) {
     std::vector<word> &r = this->words;
     const size_t j = r.size();
     if (j) {
-        this->neg ^= signbit(b);
+        this->neg ^= std::signbit(b);
         const word B = word(abs(b));
         word A[j];
         //memmove(A, r.data(), r.size()*sizeof(word));
@@ -510,7 +510,7 @@ BigInteger &BigInteger::operator/=(const s_word &b) {
     }
     // sign set
     if (this->words.size())
-        this->neg ^= signbit(b);
+        this->neg ^= std::signbit(b);
     else
         this->neg = false;
     // return result
@@ -842,7 +842,7 @@ BigInteger BigInteger::operator+(const s_word &b) const {
     if (!this->words.size()) {
         r.neg = b < 0;
         r.words.push_back(B);
-    } else if (this->neg == (b < 0)) {
+    } else if (this->neg == std::signbit(b)) {
         r.words = this->words;
         r.neg = this->neg;
         add_a_word(r.words, 0, B);
@@ -882,9 +882,9 @@ BigInteger BigInteger::operator-(const s_word &b) const {
     BigInteger r;
     const word B = word(abs(b));
     if (!this->words.size()) {
-        r.neg = b >= 0;
+        r.neg = !std::signbit(b);
         r.words.push_back(B);
-    } else if (this->neg != (b < 0)) {
+    } else if (this->neg != std::signbit(b)) {
         r.words = this->words;
         r.neg = this->neg;
         add_a_word(r.words, 0, B);
