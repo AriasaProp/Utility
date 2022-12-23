@@ -158,8 +158,7 @@ double BigInteger::to_double() const {
     return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
-    if (words.size())
-    {
+    if (words.size()) {
         if (words.size() > 1 || words[0] >= (WORD_MASK >> 1))
             return false;
         *result = words[0];
@@ -284,21 +283,16 @@ BigInteger &BigInteger::operator+=(const BigInteger &b) {
     if (neg == b.neg) {
         std::vector<word> t = b.words;
         add_word(words, t);
-    }
-    else
-    {
+    } else {
         int cmp = compare(words, b.words);
-        if (cmp < 0)
-        {
+        if (cmp < 0) {
             std::vector<word> t = words;
             neg = b.neg;
             words = b.words;
             sub_word(words, t);
-        }
-        else if (cmp > 0)
+        } else if (cmp > 0)
             sub_word(words, b.words);
-        else
-        {
+        else {
             neg = false;
             words.clear();
         }

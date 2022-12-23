@@ -3,13 +3,11 @@
 
 #include <iostream>
 #include <vector>
-#include <unordered_set>
 
 typedef unsigned long word;
 typedef signed long s_word;
 
-class BigInteger
-{
+class BigInteger {
   private:
     // values
     bool neg = false;
