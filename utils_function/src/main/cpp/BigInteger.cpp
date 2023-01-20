@@ -124,23 +124,25 @@ char *BigInteger::to_chars() const {
   std::vector<word>A = words;
   text.reserve(LOG2BITS *A.size() + 2);
   word remainder, current;
-  while (A.size()) {
+  size_t i;
+  while (i = A.size()) {
     remainder = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin(), end = A.rend(); cur != end; cur++) {
-      current = *cur;
+    while(i--) {
+    	word &cur = A[i];
+      current = cur;
       remainder <<= WORD_HALF_BITS;
       remainder |= current >> WORD_HALF_BITS;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= remainder / 10;
+      cur <<= WORD_HALF_BITS;
+      cur |= remainder / 10;
       remainder %= 10;
       remainder <<= WORD_HALF_BITS;
       remainder |= current & WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= remainder / 10;
+      cur <<= WORD_HALF_BITS;
+      cur |= remainder / 10;
       remainder %= 10;
     }
     text.push_back('0' + char(remainder));
-    if (A.size() && !A.back())
+    while (A.size() && !A.back())
       A.pop_back();
   }
   if (neg)
@@ -916,57 +918,59 @@ BigInteger BigInteger::operator-(const BigInteger &b) const {
   return r;
 }
 BigInteger BigInteger::operator*(const s_word &b) const {
-  return BigInteger( *this) *= b;
+  return BigInteger(*this)*= b;
 }
 BigInteger BigInteger::operator*(const BigInteger &b) const {
-  return BigInteger( *this) *= b;
+  return BigInteger(*this)*= b;
 }
 BigInteger BigInteger::operator/ (const s_word &b) const {
-  return BigInteger( *this) /= b;
+  return BigInteger(*this)/= b;
 }
 BigInteger BigInteger::operator/ (const BigInteger &b) const {
-  return BigInteger( *this) /= b;
+  return BigInteger(*this)/= b;
 }
 BigInteger BigInteger::operator% (const s_word &b) const {
-  return BigInteger( *this) %= b;
+  return BigInteger(*this)%= b;
 }
 BigInteger BigInteger::operator% (const BigInteger &b) const {
-  return BigInteger( *this) %= b;
+  return BigInteger(*this)%= b;
 }
 BigInteger BigInteger::operator^ (size_t exponent) const {
-  return BigInteger( *this) ^= exponent;
+  return BigInteger(*this)^= exponent;
 }
 BigInteger BigInteger::operator- () const {
   return BigInteger(words, !neg);
 }
 BigInteger BigInteger::operator>> (size_t n_bits) const {
-  return BigInteger( *this) >>= n_bits;
+  return BigInteger(*this)>>= n_bits;
 }
 BigInteger BigInteger::operator<< (size_t n_bits) const {
-  return BigInteger( *this) <<= n_bits;
+  return BigInteger(*this)<<= n_bits;
 }
 
-std::ostream &operator << (std::ostream &out, const BigInteger &num) {
+std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   std::vector<char> text;
   std::vector<word> A = num.words;
   text.reserve(LOG2BITS * A.size() + 1);
   word remainder, current;
-  while (A.size()) {
+  size_t i;
+  while (i = A.size()) {
     remainder = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); cur++) {
-      current = *cur;
+    while(i--) {
+    	word &cur = A[i];
+      current = cur;
       remainder <<= WORD_HALF_BITS;
       remainder |= current >> WORD_HALF_BITS;
-      *cur = remainder / 10;
+      cur = remainder / 10;
       remainder %= 10;
       remainder <<= WORD_HALF_BITS;
-      remainder |= current &WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= remainder / 10;
+      remainder |= current & WORD_HALF_MASK;
+      cur <<= WORD_HALF_BITS;
+      cur |= remainder / 10;
       remainder %= 10;
     }
     text.push_back('0' + char(remainder));
-    if (A.size() &&!A.back())
+    if (A.size() && !A.back())
       A.pop_back();
   }
   if (num.neg)

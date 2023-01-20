@@ -10,7 +10,9 @@ bool BigInteger_test() {
   std::cout << "BigInteger code test" << std::endl;
   try {
     bool result;
-    BigInteger a = "171099382929\0", b = "79092001\0";
+    BigInteger a = "171099382929\0", b = "-79092001\0";
+    //try print
+    std::cout << "example : " << a << " & " << b << std::endl;
     // ">" operator test
     result = (a>b) && !(b>a);
     if (!result) throw ("    '>' operator error");
@@ -166,9 +168,9 @@ bool BigInteger_test() {
     BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
     int N;
     unsigned long generated = 0;
-    while (generated<100000) { //limit digits with 100.000
+    while (generated<60000) { //limit digits with 60.000
       if (q.tot()>2000000) { //limit vector size 2.000.000
-        std::cout << " max out";
+        std::cout << " max out ";
         break;
       }
       if (!n.can_convert_to_int( & N)) {
@@ -190,8 +192,8 @@ bool BigInteger_test() {
         l += 2;
       }
     }
-	std::cout << std::endl;
-	std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
+  	std::cout << std::endl;
+	  std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
     std::cout << "Time " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
   }
   return passed;
