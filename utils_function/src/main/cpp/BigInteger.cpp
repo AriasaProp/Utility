@@ -637,7 +637,7 @@ BigInteger &BigInteger::operator^=(size_t exponent) {
         word A[na * exponent], B[na * exponent];
         neg = neg & (exponent & 1);
         word a_hi, a_lo, b_hi, b_lo, carry, carry0;
-        size_t ia, ib, i, j, nb;
+        size_t ia, ib, i = 0, j, nb;
         while (exponent) {
             nb = p.size();
             if (exponent & 1) {
