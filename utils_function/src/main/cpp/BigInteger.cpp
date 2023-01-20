@@ -11,7 +11,7 @@ const size_t WORD_BITS_1 = WORD_BITS - 1;
 const word WORD_MASK =(word) - 1;
 const size_t WORD_HALF_BITS = sizeof(word) *CHAR_BIT / 2;
 const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-const long double LOG2BITS = std::log10(2.99999) *WORD_BITS;
+const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -64,6 +64,7 @@ void sub_word(std::vector<word>&a, const std::vector<word>&b) {
     carry += a[i]<(a[i] -= b[i]);
     i++;
   }
+  j = a.size();
   while ((i<j) &&carry)
     carry = a[i]<(a[i] -= carry), i++;
   while (a.size() &&!a.back())
@@ -428,8 +429,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &b) {
 BigInteger &BigInteger::operator/=(const s_word &b) {
   if (b == 0)
     throw ("Undefined number cause / 0 !");
-  const word B = word(abs(b));
-  std::vector<word>rem = words, div {B};
+  std::vector<word>rem = words, div{word(abs(b))};
   words.clear();
   if (compare(rem, div) >= 0) {
     //shifting count
