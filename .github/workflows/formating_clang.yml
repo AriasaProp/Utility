@@ -6,7 +6,11 @@ jobs:
   clang-format:
       runs-on: ubuntu-latest
       steps:
-      - uses: actions/checkout@v3
-      - uses: AutoModality/action-ros-clang-format@v1.0.1
+      - name: Action
+        uses: actions/checkout@v3
+      - name: Safe
+        run: git config --global --add safe.directory /github/workspace
+      - name: Formating
+        uses: AutoModality/action-ros-clang-format@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
