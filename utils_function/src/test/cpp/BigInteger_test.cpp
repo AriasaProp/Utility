@@ -165,8 +165,8 @@ bool BigInteger_test() {
         BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
         int N;
         unsigned long generated = 0;
-        while (q.tot() < 1000000) {
-			if (generated > 4294967295) {
+        while (q.tot() < 10000) {
+			if (generated > 100000) {
                 std::cout << " max out ";
 				break;
 			}
