@@ -181,28 +181,27 @@ bool BigInteger_test() {
         std::cout << "In : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - restart).count() << " us" << std::endl;
         std::cout << (passed ? "has " : " hasn\'t ") << " Passed" << std::endl;
     }
-    /*
+    
     if (passed) {
         const size_t lim = 2000;
-        std::cout << "pi generator gain for first " << lim << " digits : ";
+        std::cout << "pi generator gain : ";
         std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
         BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
         int N;
         unsigned long generated = 0;
-        while (generated < lim)
-        {
-            if (!n.can_convert_to_int(&N))
-                throw " n value are broken";
-            if ((q * 4 + r - t) < (t * n))
-            {
-                std::cout << N;
+        while (q.tot() < 1000000000) {
+            if (!n.can_convert_to_int(&N)) {
+                std::cout << " n value are broken and generate ";
+            		passed = false;
+            		break;
+            }
+            if ((q * 4 + r - t) < (t * n)) {
+                //std::cout << N;
                 generated++;
                 q *= 10;
                 r = (r - t * n) * 10;
                 n = (q * 3 + r) / t;
-            }
-            else
-            {
+            } else {
                 t *= l;
                 n = (q * (k * 7 + 2) + r * l) / t;
                 r = (q * 2 + r) * l;
@@ -211,10 +210,9 @@ bool BigInteger_test() {
                 l += 2;
             }
         }
-        std::cout << std::endl;
-        std::cout << "Need " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
+        std::cout << generated << " digits" << std::endl;
+        std::cout << "Time " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
     }
-    */
     return passed;
 }
 

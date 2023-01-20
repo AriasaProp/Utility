@@ -117,6 +117,9 @@ BigInteger::~BigInteger() {
     words.clear();
 }
 //environment count
+size_t BigInteger::tot() const {
+	return words.size();
+}
 char *BigInteger::to_chars() const {
     std::vector<char> text;
     std::vector<word> A = words;
