@@ -1,8 +1,7 @@
-#include <chrono>
-
-#include <iostream>
-
 #include "BigInteger.h"
+
+#include <chrono>
+#include <iostream>
 
 bool BigInteger_test() {
   bool passed = true;
@@ -10,7 +9,7 @@ bool BigInteger_test() {
   std::cout << "BigInteger code test" << std::endl;
   try {
     bool result;
-    BigInteger a = 9, b = 7;
+    BigInteger a = "171099382929\0", b = "79092001\0";
     // ">" operator test
     result = (a > b) && !(b > a);
     if (!result) throw ("    '>' operator error");
@@ -166,9 +165,9 @@ bool BigInteger_test() {
     BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
     int N;
     unsigned long generated = 0;
-    while (q.tot() < 10000) {
-      if (generated > 100000) {
-        std::cout << " max out ";
+    while (generated < 200000) { //limit digits with 200.000 
+      if (q.tot() > 10000000) { //limit vector size 10.000.000
+        std::cout << " max out with";
         break;
       }
       if (!n.can_convert_to_int( & N)) {
