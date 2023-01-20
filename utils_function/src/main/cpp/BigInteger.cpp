@@ -767,20 +767,22 @@ BigInteger &BigInteger::operator<<=(size_t bits) {
 bool BigInteger::operator==(const BigInteger &b) const {
   if (neg != b.neg)
     return false;
+  size_t i = words.size(), j = b.words.size();
   if (i != j)
     return false;
   while (i--)
-    if (a[i] != b[i])
+    if (words[i] != b.words[i])
       return false;
   return true;
 }
 bool BigInteger::operator!=(const BigInteger &b) const {
   if (neg != b.neg)
     return true;
+  size_t i = words.size(), j = b.words.size();
   if (i != j)
     return true;
   while (i--)
-    if (a[i] != b[i])
+    if (words[i] != b.words[i])
       return true;
   return false;
 }
@@ -791,8 +793,8 @@ bool BigInteger::operator<=(const BigInteger &b) const {
   if (i != j)
     return (i<j) ^ neg;
   while (i--)
-    if (a[i] != b[i])
-      return (a[i]<b[i]) ^ neg;
+    if (words[i] != b.words[i])
+      return (words[i]<b.words[i]) ^ neg;
   return true;
 }
 bool BigInteger::operator>=(const BigInteger &b) const {
@@ -802,8 +804,8 @@ bool BigInteger::operator>=(const BigInteger &b) const {
   if (i != j)
     return (i>j) ^ neg;
   while (i--)
-    if (a[i] != b[i])
-      return (a[i]>b[i]) ^ neg;
+    if (words[i] != b.words[i])
+      return (words[i]>b.words[i]) ^ neg;
   return true;
 }
 bool BigInteger::operator<(const BigInteger &b) const {
@@ -813,8 +815,8 @@ bool BigInteger::operator<(const BigInteger &b) const {
   if (i != j)
     return (i<j) ^ neg;
   while (i--)
-    if (a[i] != b[i])
-      return (a[i]<b[i]) ^ neg;
+    if (words[i] != b.words[i])
+      return (words[i]<b.words[i]) ^ neg;
   return false;
 }
 bool BigInteger::operator>(const BigInteger &b) const {
@@ -824,8 +826,8 @@ bool BigInteger::operator>(const BigInteger &b) const {
   if (i != j)
     return (i>j) ^ neg;
   while (i--)
-    if (a[i] != b[i])
-      return (a[i]>b[i]) ^ neg;
+    if (words[i] != b.words[i])
+      return (words[i]>b.words[i]) ^ neg;
   return false;
 }
 //unsafe operator
