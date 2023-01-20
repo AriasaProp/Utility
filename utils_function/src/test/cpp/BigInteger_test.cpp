@@ -169,7 +169,7 @@ bool BigInteger_test() {
     int N;
     unsigned long generated = 0;
     while (generated<60000) { //limit digits with 60.000
-      if (q.tot()>2000000) { //limit vector size 2.000.000
+      if (q.tot()>2000000) { //limit bits size 2.000.000
         std::cout << " max out ";
         break;
       }

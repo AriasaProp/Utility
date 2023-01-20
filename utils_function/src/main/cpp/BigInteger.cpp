@@ -117,7 +117,7 @@ BigInteger::~BigInteger() {
 }
 //environment count
 size_t BigInteger::tot() const {
-  return words.size();
+  return words.size() * WORD_BITS;
 }
 char *BigInteger::to_chars() const {
   std::vector<char>text;
@@ -125,7 +125,7 @@ char *BigInteger::to_chars() const {
   text.reserve(LOG2BITS *A.size() + 2);
   word remainder, current;
   size_t i;
-  while (i = A.size()) {
+  while ((i = A.size())) {
     remainder = 0;
     while(i--) {
     	word &cur = A[i];
@@ -717,7 +717,7 @@ BigInteger &BigInteger::operator^=(size_t exponent) {
   return *this;
 }
 BigInteger &BigInteger::operator>>=(size_t n_bits) {
-  if (n_bits &&words.size()) {
+  if (n_bits && words.size()) {
     size_t j = n_bits / WORD_BITS;
     if (j<words.size()) {
       std::vector<word>::iterator carried = words.begin();
@@ -954,7 +954,7 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   text.reserve(LOG2BITS * A.size() + 1);
   word remainder, current;
   size_t i;
-  while (i = A.size()) {
+  while ((i = A.size())) {
     remainder = 0;
     while(i--) {
     	word &cur = A[i];
