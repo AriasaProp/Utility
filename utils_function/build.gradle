@@ -5,7 +5,7 @@ plugins {
 
 application {
     binaries.configureEach {
-        compileTask.get().compilerArgs.addAll(['-Wall', '-O3']) 
+        compileTask.get().compilerArgs.addAll(['-Wall', '-O3', '-Wextra', '-Werror']) 
     }
     targetMachines = [
         machines.windows.x86_64, machines.windows.x86, 
