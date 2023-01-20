@@ -166,8 +166,8 @@ bool BigInteger_test() {
     int N;
     unsigned long generated = 0;
     while (generated < 200000000) { //limit digits with 200.000.000 
-      if (q.tot() > 2000) { //limit vector size 2000
-        std::cout << " max out with";
+      if (q.tot() > 200000) { //limit vector size 200.000
+        std::cout << " max out with ";
         break;
       }
       if (!n.can_convert_to_int( & N)) {
