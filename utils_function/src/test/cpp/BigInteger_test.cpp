@@ -161,24 +161,23 @@ bool BigInteger_test() {
   std::cout << (passed ? "has " : " hasn\'t ") << " Passed" << std::endl;
 
   if (passed) {
-    std::cout << "pi generator gain : ";
+    std::cout << "pi generator";
     std::chrono::time_point<std::chrono::high_resolution_clock>start = std::chrono::high_resolution_clock::now();
     BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
     int N;
     unsigned long generated = 0;
-    while (generated<2000000000) { //limit digits with 2.000.000.000
-      if (q.tot()>2000000) { //limit vector size 2.000.000
-        std::cout << "\n max out";
+    while (generated<60000) { //limit digits with 60.000
+      if (q.tot()>20000) { //limit vector size 20.000
+        std::cout << " max out";
         break;
       }
       if (!n.can_convert_to_int( & N)) {
-        std::cout << "\n n value are broken and generate ";
+        std::cout << " n value are broken and generate ";
         passed = false;
         break;
       }
       if ((q * 4 + r - t)<(t * n)) {
         generated++;
-		std::cout << "\r	pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits";
         q *= 10;
         r = (r - t * n) * 10;
         n = (q * 3 + r) / t;
@@ -191,7 +190,8 @@ bool BigInteger_test() {
         l += 2;
       }
     }
-    std::cout << generated << " digits" << std::endl;
+	std::cout << std::endl;
+	std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
     std::cout << "Time " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
   }
   return passed;
