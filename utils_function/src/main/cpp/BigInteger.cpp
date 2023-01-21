@@ -59,11 +59,12 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
 // a should clone from the base, b not
 void sub_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
-  word carry = 0, carryb;
+  word carry = 0, carrya;
   while (i<j) {
-    carry = a[i]<(a[i] -= carry);
-	carryb = b[i];
-    carry += a[i]<(a[i] -= carryb);
+	carrya = a[i];
+    carry = carrya<(a[i] -= carry);
+	carrya = a[i];
+    carry += carrya<(a[i] -= b[i]);
     i++;
   }
   j = a.size();
