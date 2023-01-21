@@ -228,7 +228,7 @@ bool BigInteger_test() {
 				t *= l;
 				r *= l;
 				n = q;
-				n *= k
+				n *= k;
 				n *= 7;
 				n += q * 2;
 				n += r;
