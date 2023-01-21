@@ -15,7 +15,7 @@ const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const std::vector<word>a, const std::vector<word>b) {
+int compare(const std::vector<word>&a, const std::vector<word>&b) {
   size_t as = a.size(), bs = b.size();
   if (as != bs)
     return as>bs ? +1 : -1;
@@ -38,7 +38,7 @@ void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
     a.pop_back();
 }
 // a should clone from the base, b not
-void add_word(std::vector<word>&a, const std::vector<word>&b) {
+void add_word(std::vector<word>&a, const std::vector<word>b) {
   size_t i = 0, j = b.size();
   if (a.size()<j)
     a.resize(j, 0);
@@ -56,7 +56,7 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
 }
 // a should be greater or equal than b
 // a should clone from the base, b not
-void sub_word(std::vector<word>&a, const std::vector<word>&b) {
+void sub_word(std::vector<word>&a, const std::vector<word>b) {
   size_t i = 0, j = b.size();
   word carry = 0;
   while (i<j) {
