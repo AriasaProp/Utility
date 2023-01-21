@@ -26,15 +26,17 @@ int compare(const std::vector<word>&a, const std::vector<word>&b) {
   return 0;
 }
 void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
-  for (size_t j = a.size(); (i<j) && carry; i++)
-    carry =(a[i] += carry)<carry;
+  const size_t j = a.size();
+  while ((i<j) && carry)
+    carry = carry>(a[i++] += carry);
   if (carry)
     a.push_back(carry);
 }
 // a should be greater or equal than carry
 void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
-  for (size_t j = a.size(); (i<j) && carry; i++)
-    carry = a[i]<(a[i] -= carry);
+  const size_t j = a.size(); 
+  while ((i<j) && carry)
+    carry = a[i]<(a[i] -= carry), i++;
   while (a.size() &&!a.back())
     a.pop_back();
 }
@@ -471,11 +473,8 @@ BigInteger &BigInteger::operator/=(const s_word &b) {
     } while (j--);
     while (words.size() &&!words.back())
       words.pop_back();
-  }
-  // sign set
-  if (words.size())
     neg ^= std::signbit(b);
-  else
+  } else
     neg = false;
   // return result
   return *this;
@@ -525,12 +524,10 @@ BigInteger &BigInteger::operator/=(const BigInteger &b) {
     } while (j--);
     while (words.size() &&!words.back())
       words.pop_back();
-  }
-  // sign set
-  if (words.size())
     neg ^= b.neg;
-  else
+  } else {
     neg = false;
+  }
   return *this;
 }
 BigInteger &BigInteger::operator%=(const s_word &b) {
