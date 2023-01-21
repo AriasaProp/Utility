@@ -38,14 +38,14 @@ void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   while (a.size() &&!a.back())
     a.pop_back();
 }
-// params b shall be a
+// params b shall be same memory as a
 void add_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   if (a.size()<j)
     a.resize(j, 0);
   word carry = 0, c;
   while (i<j) {
-	c = b[i];
+	c = b[i]; //because b can be same memory as a
     carry = carry>(a[i] += carry);
     carry += c>(a[i] += c);
     i++;
@@ -56,8 +56,7 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
   if (carry)
     a.push_back(carry);
 }
-// a should be greater or equal than b
-// a should clone from the base, b not
+// params b shall be same memory as a but it always compare before operation
 void sub_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   word carry = 0;
