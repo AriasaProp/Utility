@@ -1,8 +1,15 @@
 #include "BigInteger.h"
 
+#include <memory>
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+
+static unsigned long long totalBytes = 0;
+static void *malloc(size_t size) {
+	totalBytes += size;
+	return malloc(size);
+}
 
 bool BigInteger_test() {
   bool passed = true;
@@ -12,7 +19,7 @@ bool BigInteger_test() {
     bool result;
     BigInteger a = "171099382929\0", b = "-79092001\0";
     //try print
-    std::cout << "example : " << a << " & " << b << std::endl;
+    std::cout << "example : " << a << "&" << b << std::endl;
     // ">" operator test
     result = (a>b) && !(b>a);
     if (!result) throw ("    '>' operator error");
@@ -163,17 +170,18 @@ bool BigInteger_test() {
   std::cout << (passed ? "has " : " hasn\'t ") << " Passed" << std::endl;
 
   if (passed) {
+	totalBytes = 0;
     std::cout << "pi generator";
     std::chrono::time_point<std::chrono::high_resolution_clock>start = std::chrono::high_resolution_clock::now();
     BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
     int N;
     unsigned long generated = 0;
-    while (generated<60000) { //limit digits with 60.000
+    while (generated<70000) { //limit digits with 60.000
       if (q.tot()>2000000) { //limit bits size 2.000.000
         std::cout << " max out ";
         break;
       }
-      if (!n.can_convert_to_int( & N)) {
+      if (!n.can_convert_to_int(&N)) {
         std::cout << " n value are broken and generate ";
         passed = false;
         break;
@@ -181,20 +189,29 @@ bool BigInteger_test() {
       if ((q * 4 + r - t)<(t * n)) {
         generated++;
         q *= 10;
-        r = (r - t * n) * 10;
-        n = (q * 3 + r) / t;
+        r -= t * n;
+		r *= 10;
+        n = q * 3;
+		n += r;
+		n /= t;
       } else {
         t *= l;
-        n = (q * (k * 7 + 2) + r * l) / t;
-        r = (q * 2 + r) * l;
+        n = q * k * 7;
+		n += q * 2;
+		n += r * l;
+		n /= t;
+        r += q * 2;
+		r *= l;
         q *= k;
         ++k;
         l += 2;
       }
     }
+	
   	std::cout << std::endl;
-	  std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
+	std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
     std::cout << "Time " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
   }
+  std::cout << "Memory used : " << std::setfill('0') << std::setw(20) << totalBytes << " bytes" << std::endl;
   return passed;
 }
