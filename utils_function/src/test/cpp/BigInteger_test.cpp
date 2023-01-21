@@ -4,13 +4,13 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
-
+/*
 static unsigned long long totalBytes = 0;
 static void *malloc(size_t size) {
 	totalBytes += size;
 	return malloc(size);
 }
-
+*/
 bool BigInteger_test() {
   bool passed = true;
   std::chrono::time_point<std::chrono::high_resolution_clock>restart = std::chrono::high_resolution_clock::now();
@@ -170,7 +170,7 @@ bool BigInteger_test() {
   std::cout << (passed ? "has " : " hasn\'t ") << " Passed" << std::endl;
 
   if (passed) {
-	totalBytes = 0;
+	//totalBytes = 0;
     std::cout << "pi generator";
     std::chrono::time_point<std::chrono::high_resolution_clock>start = std::chrono::high_resolution_clock::now();
     BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
@@ -212,6 +212,6 @@ bool BigInteger_test() {
 	std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
     std::cout << "Time " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count() << " us" << std::endl;
   }
-  std::cout << "Memory used : " << std::setfill('0') << std::setw(20) << totalBytes << " bytes" << std::endl;
+  //std::cout << "Memory used : " << std::setfill('0') << std::setw(20) << totalBytes << " bytes" << std::endl;
   return passed;
 }
