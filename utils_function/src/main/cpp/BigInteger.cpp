@@ -38,15 +38,16 @@ void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   while (a.size() &&!a.back())
     a.pop_back();
 }
-// a should clone from the base, b not
+// params b shall be a
 void add_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   if (a.size()<j)
     a.resize(j, 0);
-  word carry = 0;
+  word carry = 0, c;
   while (i<j) {
+	c = b[i];
     carry = carry>(a[i] += carry);
-    carry += b[i]>(a[i] += b[i]);
+    carry += c>(a[i] += c);
     i++;
   }
   j = a.size();
@@ -287,10 +288,7 @@ BigInteger &BigInteger::operator+=(const s_word &b) {
 }
 BigInteger &BigInteger::operator+=(const BigInteger &b) {
   if (neg == b.neg) {
-	if (this == &b)
-		add_word(words, std::vector<word>(b.words));
-	else
-		add_word(words, b.words);
+	add_word(words, b.words);
   } else {
     int cmp = compare(words, b.words);
     if (cmp<0) {
