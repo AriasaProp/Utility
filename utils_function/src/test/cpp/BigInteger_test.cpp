@@ -226,14 +226,14 @@ bool BigInteger_test() {
 				n /= t;
 			} else {
 				t *= l;
-				r *= l;
 				n = q;
 				n *= k;
 				n *= 7;
 				n += q * 2;
-				n += r;
+				n += r * l;
 				n /= t;
 				r += q * 2;
+				r *= l;
 				q *= k;
 				++k;
 				l += 2;
