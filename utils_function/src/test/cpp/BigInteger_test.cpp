@@ -19,7 +19,7 @@ bool BigInteger_test() {
     bool result;
     BigInteger a = "171099382929\0", b = "-79092001\0";
     //try print
-    std::cout << "example : " << a << "&" << b << std::endl;
+    std::cout << "example : " << a << " & " << b << std::endl;
     // ">" operator test
     result = (a>b) && !(b>a);
     if (!result) throw ("    '>' operator error");

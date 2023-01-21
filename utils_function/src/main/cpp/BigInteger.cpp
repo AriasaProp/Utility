@@ -6,10 +6,10 @@
 #include <cstring>
 #include <cstdlib>
 
-const size_t WORD_BITS = sizeof(word) *CHAR_BIT;
+const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
 const size_t WORD_BITS_1 = WORD_BITS - 1;
 const word WORD_MASK =(word) - 1;
-const size_t WORD_HALF_BITS = sizeof(word) *CHAR_BIT / 2;
+const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
 const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
 const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
 
@@ -25,14 +25,14 @@ int compare(const std::vector<word>a, const std::vector<word>b) {
   return 0;
 }
 void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
-  for (size_t j = a.size(); i<j &&carry; i++)
+  for (size_t j = a.size(); (i<j) && carry; i++)
     carry =(a[i] += carry)<carry;
   if (carry)
     a.push_back(carry);
 }
 // a should be greater or equal than carry
 void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
-  for (size_t j = a.size(); i<j &&carry; i++)
+  for (size_t j = a.size(); (i<j) && carry; i++)
     carry = a[i]<(a[i] -= carry);
   while (a.size() &&!a.back())
     a.pop_back();
@@ -44,13 +44,13 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
     a.resize(j, 0);
   word carry = 0;
   while (i<j) {
-    carry =(a[i] += carry)<carry;
-    carry +=(a[i] += b[i])<b[i];
+    carry = carry>(a[i] += carry);
+    carry += b[i]>(a[i] += b[i]);
     i++;
   }
   j = a.size();
-  while ((i<j) &&carry)
-    carry =(a[i++] += carry)<carry;
+  while ((i<j) && carry)
+    carry =carry>(a[i++] += carry);
   if (carry)
     a.push_back(carry);
 }
@@ -65,7 +65,7 @@ void sub_word(std::vector<word>&a, const std::vector<word>&b) {
     i++;
   }
   j = a.size();
-  while ((i<j) &&carry)
+  while ((i<j) && carry)
     carry = a[i]<(a[i] -= carry), i++;
   while (a.size() &&!a.back())
     a.pop_back();
@@ -214,7 +214,7 @@ BigInteger BigInteger::sqrt() const {
           carry = remaining[i]<(remaining[i] -= carry);
           carry += remaining[i]<(remaining[i] -= res[i]);
         }
-        for (j = remaining.size(); i<j &&carry; i++)
+        for (j = remaining.size(); (i<j) && carry; i++)
           carry = remaining[i]<(remaining[i] -= carry);
         res[0] |= 2;
       }
@@ -286,8 +286,7 @@ BigInteger &BigInteger::operator+=(const s_word &b) {
 }
 BigInteger &BigInteger::operator+=(const BigInteger &b) {
   if (neg == b.neg) {
-    std::vector<word>t = b.words;
-    add_word(words, t);
+    add_word(words, b.words);
   } else {
     int cmp = compare(words, b.words);
     if (cmp<0) {
@@ -335,8 +334,7 @@ BigInteger &BigInteger::operator-=(const BigInteger &b) {
       words = b.words;
       sub_word(words, t);
     } else if (cmp>0) {
-      std::vector<word>t = b.words;
-      sub_word(words, t);
+      sub_word(words, b.words);
     } else {
       neg = false;
       words.clear();
@@ -834,88 +832,16 @@ bool BigInteger::operator>(const BigInteger &b) const {
 }
 //unsafe operator
 BigInteger BigInteger::operator+(const s_word &b) const {
-  BigInteger r;
-  const word B = word(abs(b));
-  if (!words.size()) {
-    r.neg = b<0;
-    r.words.push_back(B);
-  } else if (neg == std::signbit(b)) {
-    r.words = words;
-    r.neg = neg;
-    add_a_word(r.words, 0, B);
-  } else {
-    if ((words.size()>1) || (words[0]>B)) {
-      r.neg = neg;
-      r.words = words;
-      sub_a_word(r.words, 0, B);
-    } else if (words[0]<B) {
-      r.neg = !neg;
-      r.words.push_back(B - words[0]);
-    }
-  }
-  return r;
+  return BigInteger(*this)+= b;
 }
-BigInteger BigInteger::operator+ (const BigInteger &b) const {
-  BigInteger r;
-  if (neg == b.neg) {
-    r.words = words;
-    r.neg = neg;
-    add_word(r.words, b.words);
-  } else {
-    int cmp = compare(words, b.words);
-    if (cmp>0) {
-      r.words = words;
-      r.neg = neg;
-      sub_word(r.words, b.words);
-    } else if (cmp<0) {
-      r.words = b.words;
-      r.neg = b.neg;
-      sub_word(r.words, words);
-    }
-  }
-  return r;
+BigInteger BigInteger::operator+(const BigInteger &b) const {
+  return BigInteger(*this)+= b;
 }
 BigInteger BigInteger::operator-(const s_word &b) const {
-  BigInteger r;
-  const word B = word(abs(b));
-  if (!words.size()) {
-    r.neg = !std::signbit(b);
-    r.words.push_back(B);
-  } else if (neg != std::signbit(b)) {
-    r.words = words;
-    r.neg = neg;
-    add_a_word(r.words, 0, B);
-  } else {
-    if ((words.size()>1) || (words[0]>B)) {
-      r.words = words;
-      r.neg = neg;
-      sub_a_word(r.words, 0, B);
-    } else if (words[0]<B) {
-      r.neg = !neg;
-      r.words[0] = B - words[0];
-    }
-  }
-  return r;
+  return BigInteger(*this)-= b;
 }
 BigInteger BigInteger::operator-(const BigInteger &b) const {
-  BigInteger r;
-  if (neg != b.neg) {
-    r.words = words;
-    r.neg = neg;
-    add_word(r.words, b.words);
-  } else {
-    int cmp = compare(words, b.words);
-    if (cmp>0) {
-      r.words = words;
-      r.neg = neg;
-      sub_word(r.words, b.words);
-    } else if (cmp<0) {
-      r.words = b.words;
-      r.neg = !neg;
-      sub_word(r.words, words);
-    }
-  }
-  return r;
+  return BigInteger(*this)-= b;
 }
 BigInteger BigInteger::operator*(const s_word &b) const {
   return BigInteger(*this)*= b;
@@ -923,22 +849,22 @@ BigInteger BigInteger::operator*(const s_word &b) const {
 BigInteger BigInteger::operator*(const BigInteger &b) const {
   return BigInteger(*this)*= b;
 }
-BigInteger BigInteger::operator/ (const s_word &b) const {
+BigInteger BigInteger::operator/(const s_word &b) const {
   return BigInteger(*this)/= b;
 }
-BigInteger BigInteger::operator/ (const BigInteger &b) const {
+BigInteger BigInteger::operator/(const BigInteger &b) const {
   return BigInteger(*this)/= b;
 }
-BigInteger BigInteger::operator% (const s_word &b) const {
+BigInteger BigInteger::operator%(const s_word &b) const {
   return BigInteger(*this)%= b;
 }
-BigInteger BigInteger::operator% (const BigInteger &b) const {
+BigInteger BigInteger::operator%(const BigInteger &b) const {
   return BigInteger(*this)%= b;
 }
-BigInteger BigInteger::operator^ (size_t exponent) const {
+BigInteger BigInteger::operator^(size_t exponent) const {
   return BigInteger(*this)^= exponent;
 }
-BigInteger BigInteger::operator- () const {
+BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
 BigInteger BigInteger::operator>> (size_t n_bits) const {
