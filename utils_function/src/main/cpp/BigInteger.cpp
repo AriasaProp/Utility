@@ -270,9 +270,9 @@ BigInteger &BigInteger::operator++() {
 BigInteger &BigInteger::operator+=(const s_word &b) {
   const word B = word(abs(b));
   if (!words.size()) {
-    neg = std::signbit(b);
+    neg = (b < 0);
     words.push_back(B);
-  } else if (neg == std::signbit(b))
+  } else if (neg == (b < 0))
     add_a_word(words, 0, B);
   else {
     if ((words.size()>1) || (words[0]>B))
@@ -309,9 +309,9 @@ BigInteger &BigInteger::operator+=(const BigInteger &b) {
 BigInteger &BigInteger::operator-=(const s_word &b) {
   const word B = word(abs(b));
   if (!words.size()) {
-    neg = !std::signbit(b);
+    neg = (b >= 0);
     words.push_back(B);
-  } else if (neg != std::signbit(b))
+  } else if (neg != (b < 0))
     add_a_word(words, 0, B);
   else {
     if ((words.size()>1) || (words[0]>B))
@@ -350,7 +350,7 @@ BigInteger &BigInteger::operator*=(const s_word &b) {
     std::vector<word>&r = words;
     const size_t j = r.size();
     if (j) {
-      neg ^= std::signbit(b);
+      neg ^= (b < 0);
       const word B = word(abs(b));
       word A[j];
       std::copy(r.begin(), r.end(), A);
@@ -473,7 +473,7 @@ BigInteger &BigInteger::operator/=(const s_word &b) {
     } while (j--);
     while (words.size() &&!words.back())
       words.pop_back();
-    neg ^= std::signbit(b);
+    neg ^= (b < 0);
   } else
     neg = false;
   // return result
