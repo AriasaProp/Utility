@@ -170,11 +170,9 @@ bool BigInteger::can_convert_to_int(int *result) const {
       return false;
     *result = words[0];
     if (neg)
-      *
-      result = -( *result);
+      *result = -( *result);
   } else
-    *
-    result = 0;
+    *result = 0;
   return true;
 }
 //math operational

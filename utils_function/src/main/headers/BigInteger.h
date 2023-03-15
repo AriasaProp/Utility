@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#if define(_MSC_VER) && (_MSC_VER <= 1200) //Microsoft Visual C++ 6.0 or older
+//Microsoft Visual C++ 6.0 or older
+#if defined(_MSC_VER) && (_MSC_VER <= 1200)
 typedef unsigned long word;
 typedef signed long s_word;
 #else
