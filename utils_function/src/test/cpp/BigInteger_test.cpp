@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
-#include <gtest/gtest.h>
+
 bool BigInteger_test() {
   bool passed = true;
   std::chrono::time_point<std::chrono::high_resolution_clock>restart = std::chrono::high_resolution_clock::now();
