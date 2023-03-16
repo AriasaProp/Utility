@@ -9,9 +9,9 @@
 const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
 const size_t WORD_BITS_1 = WORD_BITS - 1;
 const word WORD_MASK =(word) - 1;
-const size_t WORD_HALF_BITS = sizeof(word) * CHAR_BIT / 2;
+const size_t WORD_HALF_BITS = WORD_BITS / 2;
 const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-const long double LOG2BITS = std::log10(2.99999) * WORD_BITS;
+const long double LOGBITS = std::log10(WORD_BITS*2);
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -125,7 +125,7 @@ size_t BigInteger::tot() const {
 char *BigInteger::to_chars() const {
   std::vector<char>text;
   std::vector<word>A = words;
-  text.reserve(LOG2BITS *A.size() + 2);
+  text.reserve(LOGBITS * A.size() + 2);
   word remainder, current;
   size_t i;
   while ((i = A.size())) {
@@ -873,7 +873,7 @@ BigInteger BigInteger::operator<< (size_t n_bits) const {
 std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   std::vector<char> text;
   std::vector<word> A = num.words;
-  text.reserve(LOG2BITS * A.size() + 1);
+  text.reserve(LOGBITS * A.size() + 1);
   word remainder, current;
   size_t i;
   while ((i = A.size())) {
