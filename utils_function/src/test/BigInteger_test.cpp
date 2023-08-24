@@ -9,7 +9,7 @@ bool BigInteger_test() {
   std::cout << "BigInteger code test" << std::endl;
   try {
     bool result;
-    clock_adjustment operator_clock("Big Integer Operator Test");
+    clock_adjustment _clock("Big Integer Operator Test");
     BigInteger a = "171099382929\0", b = "-79092001\0";
     //try print
     std::cout << "Samples : " << a << " & " << b << std::endl;
