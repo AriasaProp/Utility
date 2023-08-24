@@ -58,9 +58,9 @@ bool BigInteger_test() {
     std::cout << "+= Operator : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
     A = a;
     result &= ((A -= b) == b);
-    A = -a;
-    result &= ((A -= b) == b);
-    B = -b;
+    A = -a, B = -b;
+    result &= ((A -= b) == B);
+    //B = -b;
     result &= ((B -= b) == -a);
     B = b;
     result &= ((B -= (-b)) == a);
