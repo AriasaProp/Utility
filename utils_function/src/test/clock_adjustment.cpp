@@ -12,6 +12,7 @@ struct clock_adjustment::private_data {
 
 
 clock_adjustment::clock_adjustment(const char *l) {
+  data = new private_data;
   data.label = new char[strlen(l)];
   strcpy(data.label, l);
   data.safe_time_part = data.safe_time = std::chrono::steady_clock::now();
@@ -58,4 +59,5 @@ clock_adjustment::~clock_adjustment() {
       std::cout << duration.count() << " microseconds" << std::endl;
   }
   delete[] data.label;
+  delete data;
 }

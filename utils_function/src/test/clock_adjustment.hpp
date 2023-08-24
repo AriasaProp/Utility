@@ -14,7 +14,8 @@ public:
   unsigned long get_clock(const period);
   ~clock_adjustment();
 private:
-  struct private_data data;
+  struct private_data;
+  private_data *data;
 };
 
 #endif //CLOCK_ADJUSTMENT_
