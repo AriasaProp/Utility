@@ -14,9 +14,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: 'gradle'
-      - name: Setup Gradle
+      - name: Gradle Test
         uses: gradle/gradle-build-action@v2.4.2
         with:
           gradle-version: 8.0.2
-      - name: Gradle Test
-        run: gradle test
+          arguments: test

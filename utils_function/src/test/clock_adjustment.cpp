@@ -4,7 +4,7 @@
 #include <iostream>
 
 struct clock_adjustment::private_data {
-  const char *label;
+  char *label;
   std::chrono::time_point<std::chrono::steady_clock> safe_time;
   std::chrono::time_point<std::chrono::steady_clock> safe_time_part;
   std::chrono::time_point<std::chrono::steady_clock> temp_time;
