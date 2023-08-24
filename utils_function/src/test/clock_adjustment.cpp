@@ -30,8 +30,8 @@ unsigned long clock_adjustment::get_clock(const period p) {
     case seconds:
       res = std::chrono::duration_cast<std::chrono::seconds>(data.temp_time - data.safe_time_part).count();
       break;
-    case miliseconds:
-      res = std::chrono::duration_cast<std::chrono::miliseconds>(data.temp_time - data.safe_time_part).count();
+    case milliseconds:
+      res = std::chrono::duration_cast<std::chrono::milliseconds>(data.temp_time - data.safe_time_part).count();
       break;
     default:
     case microseconds:
@@ -53,7 +53,7 @@ clock_adjustment::~clock_adjustment() {
   } else if (duration.count() > 1000000) {  // Jika lebih dari 1 detik
       std::cout << duration.count() / 1000000 << " seconds" << std::endl;
   } else if (duration.count() > 1000) {  // Jika lebih dari 1 milidetik
-      std::cout << duration.count() / 1000 << " miliseconds" << std::endl;
+      std::cout << duration.count() / 1000 << " milliseconds" << std::endl;
   } else {  // Mikrodetik
       std::cout << duration.count() << " microseconds" << std::endl;
   }

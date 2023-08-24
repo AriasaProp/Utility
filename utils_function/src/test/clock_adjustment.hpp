@@ -7,7 +7,7 @@ public:
     hours,
     minutes,
     seconds,
-    miliseconds,
+    milliseconds,
     microseconds
   };
   clock_adjustment(const char*);
