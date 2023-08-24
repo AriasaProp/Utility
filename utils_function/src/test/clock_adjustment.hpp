@@ -1,6 +1,5 @@
-#ifdef CLOCK_ADJUSTMENT_
+#ifndef CLOCK_ADJUSTMENT_
 #define CLOCK_ADJUSTMENT_
-
 
 struct clock_adjustment {
 public:
