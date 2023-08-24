@@ -1,4 +1,4 @@
-#include "matrix4.h"
+#include "matrix4.hpp"
 #include <cstring>
 
 static const unsigned int MATRIX_SIZE = sizeof(float) * 16;

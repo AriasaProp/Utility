@@ -1,6 +1,6 @@
 #include <chrono>
 #include <iostream>
-#include "matrix4.h"
+#include "matrix4.hpp"
 
 bool matrix4_test() {
 	bool passed = true;

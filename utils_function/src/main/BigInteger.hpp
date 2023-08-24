@@ -4,14 +4,8 @@
 #include <iostream>
 #include <vector>
 
-//Microsoft Visual C++ 6.0 or older
-#if defined(_MSC_VER) && (_MSC_VER <= 1200)
-typedef unsigned long word;
-typedef signed long s_word;
-#else
-typedef unsigned long long word;
-typedef signed long long s_word;
-#endif
+typedef unsigned int word;
+typedef signed int s_word;
 
 class BigInteger {
   private:
