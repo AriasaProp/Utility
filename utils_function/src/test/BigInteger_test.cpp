@@ -59,7 +59,7 @@ bool BigInteger_test() {
     A = a;
     result &= ((A -= b) == b);
     A = -a, B = -b;
-    result &= ((A -= b) == B);
+    result &= ((A -= B) == B);
     //B = -b;
     result &= ((B -= b) == -a);
     B = b;
