@@ -18,7 +18,7 @@ matrix<H,V>::matrix(std::initializer_list<std::initializer_list<const float>> va
     }
     */
     for (unsigned v = 0; v < V; ++v) {
-        if (values[v] != H) throw std::invalid_argument("Jumlah horizontal tidak sesuai.");
+        if (values[v].size() != H) throw std::invalid_argument("Jumlah horizontal tidak sesuai.");
         for (unsigned h = 0; h < H; ++h) {
             data[v][h] = values[v][h];
         }
@@ -60,11 +60,11 @@ template <unsigned H, unsigned V>
 void matrix<H,V>::printInfo() {
     std::cout << std::endl;
     for (unsigned i = 0, j = 0; i < V; i++) {
-        std::cout << "\n\[";
+        std::cout << "\n[";
         for (j = 0; j < H; j++) {
             std::cout << "| " << data[i][j] << " |";
         }
-        std::cout << '\]';
+        std::cout << ']';
     }
     std::cout << std::endl;
 }

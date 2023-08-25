@@ -19,7 +19,7 @@ private:
     float data[V][H] {};
 public:
     matrix();
-    matrix(std::initializer_list<std::initializer_list<const float>>)
+    matrix(std::initializer_list<std::initializer_list<const float>>);
     ~matrix();
 
     float& operator[](unsigned);
@@ -29,7 +29,7 @@ public:
     
     void printInfo();
 
-    size_t number_of_digits(float&);
+    unsigned number_of_digits(float&);
     void print_matrix();
 };
 
