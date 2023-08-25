@@ -2,7 +2,7 @@
 
 #define MATF(R,F) \
 template <unsigned H, unsigned V>\
-R matrix<H,V>::##F
+R matrix<H,V>::F
 
 MATF(, matrix)() {}
 MATF(, ~matrix)() {}
