@@ -8,7 +8,7 @@
 template <size_t H, size_t V>
 matrix<H, V>::matrix() {}
 template <size_t H, size_t V>
-matrix<H, V> matrix<H, V>::operator=(const float[V][H]) {
+matrix<H, V> matrix<H, V>::operator=(const float d[V][H]) {
     for (size_t i = 0; i < V; ++i) {
         for (size_t j = 0; j < H; ++j) {
             this->data[i][j] = d[i][j];
