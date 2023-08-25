@@ -1,6 +1,6 @@
 #include "matrix.hpp"
 
-#define MAT_(R,F) template <unsigned H, unsigned V>\
+#define MAT_(R) template <unsigned H, unsigned V>\
 R matrix<H,V>::
 
 MAT_() matrix() {}
