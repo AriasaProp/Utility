@@ -1,4 +1,5 @@
 #include "matrix.hpp"
+#include <cstdint>
 
 template <unsigned H, unsigned V>
 matrix<H,V>::matrix() {}
@@ -39,9 +40,9 @@ void matrix<H,V>::printInfo() {
     for (unsigned i = 0, j = 0; i < V; i++) {
         std::cout << "\n\[";
         for (j = 0; j < H; j++) {
-            std::cout << "| " << data[v * H + h] << " |";
+            std::cout << "| " << data[i][j] << " |";
         }
-        std::cout << "\]";
+        std::cout << '\]';
     }
     std::cout << std::endl;
 }
@@ -55,7 +56,7 @@ size_t matrix<H,V>::number_of_digits (float &n) {
 
 template <unsigned H, unsigned V>
 void matrix<H,V>::print_matrix () {
-	size_t max_len_each_vert[nmax];
+	size_t max_len_each_vert[H] {};
 	//find length each vertical
 	for (size_t j = 0; j < H; ++j) { //horizontal
 		size_t max_len {};
@@ -64,7 +65,6 @@ void matrix<H,V>::print_matrix () {
 			if (const auto num_length {number_of_digits(this->data[i][j])}; num_length > max_len)
 				max_len = num_length;
 		}
-
 		max_len_each_vert[j] = max_len;
 	}
 
