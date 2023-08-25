@@ -1,7 +1,9 @@
 #include "matrix.hpp"
 #include <cstdint>
-#include <initializer_list>
 #include <stdexcept>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 
 template <unsigned H, unsigned V>
 matrix<H,V>::matrix() {}

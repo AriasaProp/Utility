@@ -1,9 +1,7 @@
 #ifndef _MATRIX_INCLUDED_
 #define _MATRIX_INCLUDED_
 
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include <initializer_list>
 
 /*
    Horizontal ->
@@ -21,7 +19,7 @@ private:
     float data[V][H] {};
 public:
     matrix();
-    matrix(const float[V][H]);
+    matrix(std::initializer_list<std::initializer_list<const float>>)
     ~matrix();
 
     float& operator[](unsigned);
