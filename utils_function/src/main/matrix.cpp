@@ -1,16 +1,32 @@
 #include "matrix.hpp"
 #include <cstdint>
+#include <initializer_list>
+#include <stdexcept>
 
 template <unsigned H, unsigned V>
 matrix<H,V>::matrix() {}
 template <unsigned H, unsigned V>
-matrix<H,V>::matrix(float in[V][H]) {
+matrix<H,V>::matrix(std::initializer_list<std::initializer_list<const float>> values) {
+    if (values.size() != V) {
+        throw std::invalid_argument("Jumlah vertical tidak sesuai.");
+    }
+    /*
     for(unsigned v = 0, h = 0; v < V; v++) {
         for (h = 0; h < H; h++) {
             this->data[v][h] = in[v][h];
         }
     }
+    */
+    for (unsigned v = 0; v < V; ++v) {
+        if (hValues.size() != H) {
+            throw std::invalid_argument("Jumlah horizontal tidak sesuai.");
+        }
+        for (unsigned h = 0; h < H; ++h) {
+            data[v][h] = val;
+        }
+    }
 }
+
 template <unsigned H, unsigned V>
 matrix<H,V>::~matrix() {}
 
