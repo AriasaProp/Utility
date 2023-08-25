@@ -7,16 +7,17 @@ R matrix<H,V>::F
 MAT_(, matrix)() {}
 MAT_(, ~matrix)() {}
 
-MAT_(float, &operator[])(unsigned v, unsigned h) { return data[v][h]; }
+MAT_(float, &operator[])(unsigned l) { return data[l/V][l%V]; }
+MAT_(float, &operator())(unsigned v, unsigned h) { return data[v][h]; }
 
-MAT_(matrix<H,V>, operator+) (const matrix& other) {
+MAT_(matrix<H,V>, (operator+)) (const matrix<H,V>& other) {
     matrix result;
     for (unsigned i = 0; i < H * V; ++i) {
         result.data[i] = this->data[i] + other.data[i];
     }
     return result;
 }
-MAT_(matrix<H,V>, operator*)(const matrix& other) {
+MAT_(matrix<H,V>, (operator*))(const matrix<H,V>& other) {
     matrix result;
     for (unsigned i = 0, j = 0, k = 0; i < H; ++i) {
         for (j = 0; j < V; ++j) {
@@ -40,9 +41,8 @@ MAT_(void, printInfo) () {
     std::cout << std::endl;
 }
 
-MAT_(size_t, number_of_digits) (double n) {
+MAT_(size_t, number_of_digits) (float &n) {
 	std::ostringstream strs;
-
 	strs << n;
 	return strs.str().size();
 }
@@ -62,7 +62,7 @@ MAT_(void, print_matrix) () {
 	}
 
 	for (size_t i = 0, j = 0; i < V; ++i) {
-		for (size_t j = 0; j < H; ++j) {
+		for (j = 0; j < H; ++j) {
 			std::cout << (j == 0 ? "\n| " : "") << std::setw(max_len_each_vert[j]) << this->data[i][j] << (j == H - 1 ? " |" : " ");
     }
 	}
