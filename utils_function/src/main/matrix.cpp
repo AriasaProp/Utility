@@ -1,23 +1,22 @@
 #include "matrix.hpp"
 
-#define MAT_(R,F) \
-template <unsigned H, unsigned V>\
-R matrix<H,V>::F
+#define MAT_(R,F) template <unsigned H, unsigned V>\
+R matrix<H,V>::
 
-MAT_(, matrix)() {}
-MAT_(, ~matrix)() {}
+MAT_() matrix() {}
+MAT_() ~matrix() {}
 
-MAT_(float, &operator[])(unsigned l) { return data[l/V][l%V]; }
-MAT_(float, &operator())(unsigned v, unsigned h) { return data[v][h]; }
+MAT_(float)&operator[](unsigned l) { return data[l/V][l%V]; }
+MAT_(float)&operator()(unsigned v, unsigned h) { return data[v][h]; }
 
-MAT_(matrix<H,V>, (operator+)) (const matrix<H,V>& other) {
+MAT_(matrix<H,V>) operator+(const matrix<H,V>& other) {
     matrix result;
     for (unsigned i = 0; i < H * V; ++i) {
         result.data[i] = this->data[i] + other.data[i];
     }
     return result;
 }
-MAT_(matrix<H,V>, (operator*))(const matrix<H,V>& other) {
+MAT_(matrix<H,V>) operator*(const matrix<H,V>& other) {
     matrix result;
     for (unsigned i = 0, j = 0, k = 0; i < H; ++i) {
         for (j = 0; j < V; ++j) {
@@ -29,7 +28,7 @@ MAT_(matrix<H,V>, (operator*))(const matrix<H,V>& other) {
     return result;
 }
 
-MAT_(void, printInfo) () {
+MAT_(void) printInfo() {
     std::cout << std::endl;
     for (unsigned i = 0, j = 0; i < V; i++) {
         std::cout << "\n\[";
@@ -41,13 +40,13 @@ MAT_(void, printInfo) () {
     std::cout << std::endl;
 }
 
-MAT_(size_t, number_of_digits) (float &n) {
+MAT_(size_t) number_of_digits (float &n) {
 	std::ostringstream strs;
 	strs << n;
 	return strs.str().size();
 }
 
-MAT_(void, print_matrix) () {
+MAT_(void) print_matrix () {
 	size_t max_len_each_vert[nmax];
 	//find length each vertical
 	for (size_t j = 0; j < H; ++j) { //horizontal

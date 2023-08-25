@@ -23,13 +23,14 @@ public:
     matrix();
     ~matrix();
 
-    float& operator[](unsigned, unsigned);
+    float& operator[](unsigned);
+    float& operator()(unsigned, unsigned);
     matrix operator+(const matrix&);
     matrix operator*(const matrix&);
     
     void printInfo();
 
-    size_t number_of_digits(float);
+    size_t number_of_digits(float&);
     void print_matrix();
 };
 
