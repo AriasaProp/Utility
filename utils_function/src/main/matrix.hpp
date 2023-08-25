@@ -7,8 +7,8 @@
 #include <array>
 
 /*
-   Horizontal ->
-Vertical  
+   Rows ->
+Cols  
  |       a    b    c    d ....
  v       aa   ab   ac   ad .....
          ba   bb   bc   bd .....
@@ -16,13 +16,15 @@ Vertical
        ...a  ..b  ..c  ..d .....
 */
 
-template <size_t H, size_t V>
-class matrix {
+
+class matrix2D {
 private:
-    float data[V][H];
+    unsigned cols, row;
+    float *data;
 public:
-    matrix();
-    matrix<H, V> operator=(const float[V][H]);
+    matrix2D(unsigned, unsigned, const float*);
+    ~matrix2D ();
+    matrix2D operator=(const float *);
     void print() const;
 };
 
