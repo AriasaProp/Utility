@@ -1,6 +1,6 @@
 #include "matrix.hpp"
 #include <cstdint>
-#include <stdexcept>
+#include <cstring>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -15,26 +15,27 @@ matrix2D::~matrix2D() {
 }
 matrix2D matrix2D::operator=(const float *d) {
     memcpy(this->data, d, cols*rows*sizeof(float));
+    return this;
 }
 
 void matrix2D::print () const {
 	unsigned len_each_row[rows] {};
 	//find length each vertical
 	for (unsigned i = 0, j = 0; i < rows; ++i) { //rows
-		unsigned max_len {};
-		for (j = 0; j < cols; ++j) { //vertical
-	    std::ostringstream strs;
-	    strs << this->data[j*rows+i];
-			unsigned num_length = strs.str().size();
-			if (num_length > max_len) max_len = num_length;
-		}
-		len_each_row[i] = max_len;
+  		unsigned max_len {};
+  		for (j = 0; j < cols; ++j) { //vertical
+    	    std::ostringstream strs;
+    	    strs << this->data[j*rows+i];
+    			unsigned num_length = strs.str().size();
+    			if (num_length > max_len) max_len = num_length;
+  		}
+  		len_each_row[i] = max_len;
 	}
 
 	for (unsigned i = 0, j = 0; i < cols; ++i) {
-		for (j = 0; j < rows; ++j) {
-			std::cout << (j == 0 ? "\n| " : "") << std::setw(len_each_row[j]) << this->data[i*rows+j] << (j == rows - 1 ? " |" : " ");
-    }
+  		for (j = 0; j < rows; ++j) {
+  			  std::cout << (j == 0 ? "\n| " : "") << std::setw(len_each_row[j]) << this->data[i*rows+j] << (j == rows - 1 ? " |" : " ");
+      }
 	}
 	std::cout << '\n';
 }

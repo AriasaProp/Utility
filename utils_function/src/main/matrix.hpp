@@ -18,7 +18,7 @@ Cols
 
 struct matrix2D {
 private:
-    unsigned cols, row;
+    unsigned cols, rows;
     float *data;
 public:
     matrix2D(unsigned, unsigned, const float*);
