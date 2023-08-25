@@ -21,6 +21,7 @@ private:
     float data[V][H] {};
 public:
     matrix();
+    matrix(const float[V][H]);
     ~matrix();
 
     float& operator[](unsigned);

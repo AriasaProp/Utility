@@ -4,6 +4,14 @@
 template <unsigned H, unsigned V>
 matrix<H,V>::matrix() {}
 template <unsigned H, unsigned V>
+matrix<H,V>::matrix(const float in[V][H]) {
+    for(unsigned v = 0, h = 0; v < V; v++) {
+        for (h = 0; h < H; h++) {
+            this->data[v][h] = in[v][h];
+        }
+    }
+}
+template <unsigned H, unsigned V>
 matrix<H,V>::~matrix() {}
 
 template <unsigned H, unsigned V>

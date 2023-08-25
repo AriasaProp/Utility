@@ -1,6 +1,7 @@
-bool BigInteger_test();
-bool big_decimal_test();
-bool matrix4_test();
+extern bool BigInteger_test();
+extern bool big_decimal_test();
+extern bool matrix4_test();
+extern bool matrix_test();
 
 
 int main(int argv, char *args[])
@@ -9,6 +10,7 @@ int main(int argv, char *args[])
     
     passed &= BigInteger_test();
     //passed &= matrix4_test();
+    passed &= matrix_test();
     
     return !passed;
 }
