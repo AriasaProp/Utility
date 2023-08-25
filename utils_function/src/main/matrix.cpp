@@ -17,11 +17,15 @@ matrix<H,V>::matrix(std::initializer_list<std::initializer_list<const float>> va
         }
     }
     */
-    for (unsigned v = 0; v < V; ++v) {
-        if (values[v].size() != H) throw std::invalid_argument("Jumlah horizontal tidak sesuai.");
-        for (unsigned h = 0; h < H; ++h) {
-            data[v][h] = values[v][h];
+    unsigned v = 0;
+    for (const auto &vert : values) {
+        if (vert.size() != H) throw std::invalid_argument("Jumlah horizontal tidak sesuai.");
+        unsigned h = 0;
+        for (const auto &hor : values) {
+            data[v][h] = hor;
+            ++h;
         }
+        ++v;
     }
 }
 
