@@ -1,8 +1,10 @@
-#ifndef _MATRIX_INCLUDED_
-#define _MATRIX_INCLUDED_
+#ifndef _matrix_INCLUDED_
+#define _matrix_INCLUDED_
 
 #include <initializer_list>
 #include <cstddef>
+#include <iostream>
+#include <array>
 
 /*
    Horizontal ->
@@ -15,24 +17,16 @@ Vertical
 */
 
 template <size_t H, size_t V>
-struct matrix {
-private:
-    float data[V][H] {};
+class matrix {
 public:
-    matrix();
-    matrix(std::initializer_list<std::initializer_list<const float>>);
-    ~matrix();
+    matrix(const std::array<std::array<float, V>, H>& data);
 
-    float& operator[](size_t);
-    float& operator()(size_t, size_t);
-    matrix operator+(const matrix&);
-    matrix operator*(const matrix&);
-    
-    void printInfo();
+    void print() const;
 
-    size_t number_of_digits(float&);
-    void print_matrix();
+private:
+    std::array<std::array<float, V>, H> matrixData;
 };
 
 
-#endif //_MATRIX_INCLUDED_
+
+#endif //_matrix_INCLUDED_

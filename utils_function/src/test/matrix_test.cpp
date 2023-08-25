@@ -1,13 +1,12 @@
 #include "matrix.hpp"
 
 bool matrix_test() {
-  matrix<2,2> mx2a {{12.f,17.f},{13.f,11.f}};
-  matrix<2,2> mx2b {{7.f,4.f},{18.f,0.f}};
-  
-  mx2a.print_matrix();
-  mx2b.print_matrix();
-  (mx2a+mx2b).print_matrix();
-  (mx2a*mx2b).print_matrix();
-  
+  std::array<std::array<float, 2>, 2> data2x2 = {{1.0, 2.0}, {3.0, 4.0}};
+  Matrix<2, 2> matrix2x2(data2x2);
+  matrix2x2.print();
+
+  std::array<std::array<float, 3>, 3> data3x3 = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}};
+  Matrix<3, 3> matrix3x3(data3x3);
+  matrix3x3.print();
   return true;
 }
