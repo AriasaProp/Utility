@@ -23,7 +23,6 @@ public:
     matrix();
     ~matrix();
 
-    float& operator[](unsigned);
     float& operator[](unsigned, unsigned);
     matrix operator+(const matrix&);
     matrix operator*(const matrix&);
@@ -31,7 +30,7 @@ public:
     void printInfo();
 
     size_t number_of_digits(float);
-    void print_matrix(const float M[nmax][nmax], size_t n, size_t m);
+    void print_matrix();
 };
 
 
