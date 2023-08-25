@@ -13,11 +13,11 @@ matrix2D::matrix2D(unsigned c = 1, unsigned r = 1, const float *d = nullptr) : c
 matrix2D::~matrix2D() {
     delete[] this->data;
 }
-matrix2D operator=(const float *d) {
+matrix2D matrix2D::operator=(const float *d) {
     memcpy(this->data, d, cols*rows*sizeof(float));
 }
 
-void matrix2D::print () {
+void matrix2D::print () const {
 	unsigned len_each_row[rows] {};
 	//find length each vertical
 	for (unsigned i = 0, j = 0; i < rows; ++i) { //rows

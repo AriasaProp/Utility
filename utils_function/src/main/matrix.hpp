@@ -16,8 +16,7 @@ Cols
        ...a  ..b  ..c  ..d .....
 */
 
-
-class matrix2D {
+struct matrix2D {
 private:
     unsigned cols, row;
     float *data;
