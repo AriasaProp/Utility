@@ -2,6 +2,7 @@
 #define _MATRIX_INCLUDED_
 
 #include <initializer_list>
+#include <cstddef>
 
 /*
    Horizontal ->
@@ -13,7 +14,7 @@ Vertical
        ...a  ..b  ..c  ..d .....
 */
 
-template <unsigned H, unsigned V>
+template <size_t H, size_t V>
 struct matrix {
 private:
     float data[V][H] {};
@@ -22,14 +23,14 @@ public:
     matrix(std::initializer_list<std::initializer_list<const float>>);
     ~matrix();
 
-    float& operator[](unsigned);
-    float& operator()(unsigned, unsigned);
+    float& operator[](size_t);
+    float& operator()(size_t, size_t);
     matrix operator+(const matrix&);
     matrix operator*(const matrix&);
     
     void printInfo();
 
-    unsigned number_of_digits(float&);
+    size_t number_of_digits(float&);
     void print_matrix();
 };
 
