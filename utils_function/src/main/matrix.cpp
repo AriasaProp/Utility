@@ -5,7 +5,10 @@
 #include <iomanip>
 #include <sstream>
 
-matrix2D::matrix2D(unsigned c = 1, unsigned r = 1, const float *d = nullptr) : cols(c), rows(r) {
+matrix2D::matrix2D() : cols(1), rows(1), data(new float) {
+    
+}
+matrix2D::matrix2D(unsigned c, unsigned r, const float *d = nullptr) : cols(c), rows(r) {
     if (!cols || !rows) throw("matrix size cannot be 0");
     this->data = new float[cols*rows];
     memcpy(this->data, d, cols*rows*sizeof(float));
@@ -13,9 +16,9 @@ matrix2D::matrix2D(unsigned c = 1, unsigned r = 1, const float *d = nullptr) : c
 matrix2D::~matrix2D() {
     delete[] this->data;
 }
-matrix2D matrix2D::operator=(const float *d) {
+matrix2D &matrix2D::operator=(const float *d) {
     memcpy(this->data, d, cols*rows*sizeof(float));
-    return this;
+    return *this;
 }
 
 void matrix2D::print () const {

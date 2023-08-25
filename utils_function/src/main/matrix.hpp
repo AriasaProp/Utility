@@ -21,9 +21,10 @@ private:
     unsigned cols, rows;
     float *data;
 public:
+    matrix2D();
     matrix2D(unsigned, unsigned, const float*);
     ~matrix2D ();
-    matrix2D operator=(const float *);
+    matrix2D &operator=(const float *);
     void print() const;
 };
 
