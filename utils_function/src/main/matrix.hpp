@@ -18,12 +18,12 @@ Vertical
 
 template <size_t H, size_t V>
 class matrix {
-public:
-    matrix(const float[V][H]);
-
-    void print() const;
 private:
     float data[V][H];
+public:
+    matrix();
+    matrix<H, V> operator=(const float[V][H]);
+    void print() const;
 };
 
 
