@@ -1,5 +1,5 @@
-#ifndef _matrix_INCLUDED_
-#define _matrix_INCLUDED_
+#ifndef _MATRIX_INCLUDED_
+#define _MATRIX_INCLUDED_
 
 #include <initializer_list>
 #include <cstddef>
@@ -28,4 +28,4 @@ private:
 
 
 
-#endif //_matrix_INCLUDED_
+#endif //_MATRIX_INCLUDED_
