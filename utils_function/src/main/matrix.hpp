@@ -19,12 +19,11 @@ Vertical
 template <size_t H, size_t V>
 class matrix {
 public:
-    matrix(const std::array<std::array<float, V>, H>& data);
+    matrix(const float[V][H]);
 
     void print() const;
-
 private:
-    std::array<std::array<float, V>, H> matrixData;
+    float data[V][H];
 };
 
 
