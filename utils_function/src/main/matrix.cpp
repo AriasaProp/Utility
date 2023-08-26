@@ -15,7 +15,7 @@ matrix2D::matrix2D(unsigned c, unsigned r, const std::initializer_list<float> d)
     if (!cols || !rows) throw("matrix size cannot be 0");
     if (d.size() != cols*rows) throw("array size is wrong");
     this->data = new float[cols*rows]{};
-    memcpy(this->data, d.data(), cols*rows*sizeof(float));
+    memcpy(this->data, d.begin(), cols*rows*sizeof(float));
 }
 matrix2D::matrix2D(unsigned c, unsigned r, const float *d = nullptr) : cols(c), rows(r) {
     if (!cols || !rows) throw("matrix size cannot be 0");
