@@ -22,13 +22,15 @@ matrix2D::~matrix2D() {
 }
 //unique function
 void matrix2D::invert() {
-    
 }
 float matrix2D::determinant() {
-    
+    return 0;
 }
-float matrix2D::adj() {
-    
+void matrix2D::adj() {
+}
+//operator function
+float &matrix2D::operator()(unsigned c, unsigned r) {
+    return this->data[c*this->rows+r];
 }
 
 matrix2D &matrix2D::operator=(const float *d) {
