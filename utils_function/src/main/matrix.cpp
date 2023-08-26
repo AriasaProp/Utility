@@ -142,7 +142,7 @@ void matrix2D::print () const {
 	for (unsigned i = 0, j = 0; i < cols; ++i) {
 	    std::cout << "|";
   		for (j = 0; j < rows; ++j) {
-  			  std::cout << " " << std::setw(len_each_row[j]) << this->data[i*rows+j];
+  			  std::cout << " " << std::setw(len_each_row[j]) << this->data[i*rows+j] << " ";
       }
 	    std::cout << "|" << std::endl;
 	}
