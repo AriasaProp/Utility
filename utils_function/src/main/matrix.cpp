@@ -12,7 +12,7 @@ matrix2D::matrix2D(const matrix2D &other) : cols(other.cols), rows(other.rows) {
     this->data = new float[cols*rows];
     memcpy(this->data, other.data, cols*rows*sizeof(float));
 }
-matrix2D::matrix2D(unsigned c, unsigned r, const float d[] = {0.0f}) : cols(c), rows(r) {
+matrix2D::matrix2D(unsigned c, unsigned r, const float d[]) : cols(c), rows(r) {
     if (!cols || !rows) throw("matrix size cannot be 0");
     this->data = new float[cols*rows]{};
     if (d) memcpy(this->data, d, cols*rows*sizeof(float));
@@ -33,12 +33,12 @@ float &matrix2D::operator()(unsigned c, unsigned r) {
     return this->data[c*this->rows+r];
 }
 
-matrix2D &matrix2D::operator=(const float *d) {
-    memcpy(this->data, d, cols*rows*sizeof(float));
-    return *this;
-}
+//operator math
 matrix2D &operator=(const matrix2D &o) {
-    if ((this->rows != o.rows) || (this->cols != o.cols)) throw("cannot doing set on different matrix dimension");
+    this->cols = o.cols;
+    this->rows = o.rows;
+    delete[] this->data;
+    this->data = new float[cols*rows];
     memcpy(this->data, o.data, cols*rows*sizeof(float));
     return *this;
 }

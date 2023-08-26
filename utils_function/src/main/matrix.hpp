@@ -29,7 +29,6 @@ public:
     //operators function
     float &operator()(unsigned, unsigned);
     //operators math
-    matrix2D &operator=(const float *);
     matrix2D &operator=(const matrix2D&);
     matrix2D operator+(const matrix2D&) const;
     matrix2D &operator+=(const matrix2D&);
