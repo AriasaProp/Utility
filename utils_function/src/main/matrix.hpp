@@ -19,7 +19,7 @@ public:
     //constructors
     matrix2D();
     matrix2D(const matrix2D&);
-    matrix2D(unsigned, unsigned, const float[]);
+    matrix2D(unsigned, unsigned, const float*);
     //destructors
     ~matrix2D ();
     //unique function
