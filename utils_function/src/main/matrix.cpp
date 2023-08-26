@@ -4,13 +4,18 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <initializer_list>
 
 
 matrix2D::matrix2D() : cols(1), rows(1), data(new float) {}
 matrix2D::matrix2D(const matrix2D &other) : cols(other.cols), rows(other.rows) {
     this->data = new float[cols*rows];
     memcpy(this->data, other.data, cols*rows*sizeof(float));
+}
+matrix2D::matrix2D(unsigned c, unsigned r, const std::initializer_list<float> d) : cols(c), rows(r) {
+    if (!cols || !rows) throw("matrix size cannot be 0");
+    if (d.size() != cols*rows) throw("array size is wrong");
+    this->data = new float[cols*rows]{};
+    memcpy(this->data, d.data(), cols*rows*sizeof(float));
 }
 matrix2D::matrix2D(unsigned c, unsigned r, const float *d = nullptr) : cols(c), rows(r) {
     if (!cols || !rows) throw("matrix size cannot be 0");

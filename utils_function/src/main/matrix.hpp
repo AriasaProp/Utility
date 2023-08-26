@@ -1,6 +1,10 @@
 #ifndef _MATRIX_INCLUDED_
 #define _MATRIX_INCLUDED_
 
+#include <initializer_list>
+
+// Fungsi yang menerima initializer_list
+void terimaArray(std::initializer_list<float> arr) {
 /*
    Rows ->
 Cols  
@@ -19,6 +23,7 @@ public:
     //constructors
     matrix2D();
     matrix2D(const matrix2D&);
+    matrix2D(unsigned, unsigned, const std::initializer_list<float>);
     matrix2D(unsigned, unsigned, const float*);
     //destructors
     ~matrix2D ();
