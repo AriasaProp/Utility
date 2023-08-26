@@ -87,7 +87,7 @@ matrix2D matrix2D::operator*(const matrix2D &o) const {
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, I = this->cols*o.rows; i < I; ++i) {
         for (unsigned j = 0, J = this->rows; j < J; ++j) {
-            temp[i] += this->data[(i%this->rows)*this->rows+j]*o.data[(i/this->rows)+j*o.rows];
+            temp[i] += this->data[(i/this->rows)*this->rows+j]*o.data[(i%this->rows)+j*o.rows];
         }
     }
     return matrix2D(this->cols, o.rows, temp);
@@ -97,7 +97,7 @@ matrix2D &matrix2D::operator*=(const matrix2D &o) {
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, I = this->cols*o.rows; i < I; ++i) {
         for (unsigned j = 0, J = this->rows; j < J; ++j) {
-            temp[i] += this->data[(i%this->rows)*this->rows+j]*o.data[(i/this->rows)+j*o.rows];
+            temp[i] += this->data[(i/this->rows)*this->rows+j]*o.data[(i%this->rows)+j*o.rows];
         }
     }
     delete[] this->data;
