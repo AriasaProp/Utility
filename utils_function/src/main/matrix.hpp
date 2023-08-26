@@ -3,8 +3,6 @@
 
 #include <initializer_list>
 
-// Fungsi yang menerima initializer_list
-void terimaArray(std::initializer_list<float> arr) {
 /*
    Rows ->
 Cols  
