@@ -27,9 +27,7 @@ public:
     float determinant();
     float adj();
     //operators function
-    float &operator()(unsigned c, unsigned r) {
-        return this->data[c*this->rows+r];
-    }
+    float &operator()(unsigned, unsigned);
     //operators math
     matrix2D &operator=(const float *);
     matrix2D &operator=(const matrix2D&);
