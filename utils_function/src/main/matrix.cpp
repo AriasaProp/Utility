@@ -86,20 +86,18 @@ matrix2D matrix2D::operator*(const matrix2D &o) const {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, j = this->cols*o.rows, k = 0; i < j; ++i) {
-        temp[i] = 0;
         for (k = 0; k < this->rows; ++k) {
-            temp[i] += this->data[i*this->rows+k]*o.data[i+k*o.rows];
+            temp[i] += this->data[(i%this->cols)*this->rows+k]*o.data[(i%o.rows)+k*o.rows];
         }
     }
     return matrix2D(this->cols, o.rows, temp);
 }
 matrix2D &matrix2D::operator*=(const matrix2D &o) {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
-    float *temp = new float[this->cols*o.rows];
+    float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, j = this->cols*o.rows, k = 0; i < j; ++i) {
-        temp[i] = 0;
         for (k = 0; k < this->rows; ++k) {
-            temp[i] += this->data[i*this->rows+k]*o.data[i+k*o.rows];
+            temp[i] += this->data[(i%this->cols)*this->rows+k]*o.data[(i%o.rows)+k*o.rows];
         }
     }
     delete[] this->data;
