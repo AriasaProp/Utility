@@ -8,7 +8,7 @@
 
 matrix2D::matrix2D() : cols(1), rows(1), data(new float) {}
 matrix2D::matrix2D(const matrix2D &other) : cols(other.cols), rows(other.rows) {
-    this->data = new float[cols*rows];
+    this->data = new float[cols*rows] {};
     memcpy(this->data, other.data, cols*rows*sizeof(float));
 }
 matrix2D::matrix2D(unsigned c, unsigned r, const std::initializer_list<float> d) : cols(c), rows(r) {

@@ -4,16 +4,16 @@
 
 bool matrix_test() {
   
-  matrix2D ma(2,2, (float[]){1.0f, 2.0f, 3.0f, 4.0f});
+  matrix2D ma(2,2, {1.0f, 2.0f, 3.0f, 4.0f});
   ma.print();
   
-  matrix2D mb(2,3, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+  matrix2D mb(2,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
   mb.print();
 
-  matrix2D mc(3,2, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+  matrix2D mc(3,2, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
   mc.print();
 
-  matrix2D md(3,3, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f});
+  matrix2D md(3,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f});
   md.print();
   
   matrix2D mA = ma;
