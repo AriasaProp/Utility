@@ -85,8 +85,9 @@ matrix2D &matrix2D::operator*=(const float &o) {
 matrix2D matrix2D::operator*(const matrix2D &o) const {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
     float *temp = new float[this->cols*o.rows] {};
-    for (unsigned i = 0, j = this->cols*o.rows; i < j; ++i) {
-        for (unsigned k = 0; k < this->rows; ++k) {
+    for (unsigned i = 0, j = this->cols*o.rows, k = 0; i < j; ++i) {
+        temp[i] = 0;
+        for (k = 0; k < this->rows; ++k) {
             temp[i] += this->data[i*this->rows+k]*o.data[i+k*o.rows];
         }
     }
@@ -94,9 +95,10 @@ matrix2D matrix2D::operator*(const matrix2D &o) const {
 }
 matrix2D &matrix2D::operator*=(const matrix2D &o) {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
-    float *temp = new float[this->cols*o.rows] {};
-    for (unsigned i = 0, j = this->cols*o.rows; i < j; ++i) {
-        for (unsigned k = 0; k < this->rows; ++k) {
+    float *temp = new float[this->cols*o.rows];
+    for (unsigned i = 0, j = this->cols*o.rows, k = 0; i < j; ++i) {
+        temp[i] = 0;
+        for (k = 0; k < this->rows; ++k) {
             temp[i] += this->data[i*this->rows+k]*o.data[i+k*o.rows];
         }
     }
@@ -138,13 +140,14 @@ void matrix2D::print () const {
   		}
   		len_each_row[i] = max_len;
 	}
-	std::cout << "matrix (row_length:" << this->rows << ", col_length" << this->cols << ")" << std::endl;
+	std::cout << "matrix (row_length:" << this->rows << ", col_length: " << this->cols << ")" << std::endl;
 	for (unsigned i = 0, j = 0; i < cols; ++i) {
+	    std::cout << "|";
   		for (j = 0; j < rows; ++j) {
-  			  std::cout << (j == 0 ? "\n| " : "") << std::setw(len_each_row[j]) << this->data[i*rows+j] << (j == rows - 1 ? " |" : " ");
+  			  std::cout << " " << std::setw(len_each_row[j]) << this->data[i*rows+j];
       }
+	    std::cout << "|" << std::endl;
 	}
-	std::cout << '\n';
 }
 
 unsigned matrix2D::size() const {
