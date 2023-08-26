@@ -12,7 +12,7 @@ matrix2D::matrix2D(const matrix2D &other) : cols(other.cols), rows(other.rows) {
     this->data = new float[cols*rows];
     memcpy(this->data, other.data, cols*rows*sizeof(float));
 }
-matrix2D::matrix2D(unsigned c, unsigned r, const float *d = nullptr) : cols(c), rows(r) {
+matrix2D::matrix2D(unsigned c, unsigned r, const float d[] = {0.0f}) : cols(c), rows(r) {
     if (!cols || !rows) throw("matrix size cannot be 0");
     this->data = new float[cols*rows]{};
     if (d) memcpy(this->data, d, cols*rows*sizeof(float));

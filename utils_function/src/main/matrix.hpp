@@ -25,7 +25,7 @@ public:
     //unique function
     void invert();
     float determinant();
-    float adj();
+    void adj();
     //operators function
     float &operator()(unsigned, unsigned);
     //operators math
