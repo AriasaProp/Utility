@@ -34,7 +34,7 @@ float &matrix2D::operator()(unsigned c, unsigned r) {
 }
 
 //operator math
-matrix2D &operator=(const matrix2D &o) {
+matrix2D &matrix2D::operator=(const matrix2D &o) {
     this->cols = o.cols;
     this->rows = o.rows;
     delete[] this->data;
@@ -42,42 +42,42 @@ matrix2D &operator=(const matrix2D &o) {
     memcpy(this->data, o.data, cols*rows*sizeof(float));
     return *this;
 }
-matrix2D operator+(const matrix2D &o) const {
+matrix2D matrix2D::operator+(const matrix2D &o) const {
     matrix2D res(*this);
     return res += o;
 }
-matrix2D &operator+=(const matrix2D &o) {
+matrix2D &matrix2D::operator+=(const matrix2D &o) {
     if ((this->rows != o.rows) || (this->cols != o.cols)) throw("cannot doing addition on different matrix dimension");
     for (unsigned i = 0, j = cols*rows; i < j; ++i) {
         this->data[i] += o.data[i];
     }
     return *this;
 }
-matrix2D operator-(const matrix2D &o) const {
+matrix2D matrix2D::operator-(const matrix2D &o) const {
     matrix2D res(*this);
     return res -= o;
 }
-matrix2D &operator-=(const matrix2D &o) {
+matrix2D &matrix2D::operator-=(const matrix2D &o) {
     if ((this->rows != o.rows) || (this->cols != o.cols)) throw("cannot doing addition on different matrix dimension");
     for (unsigned i = 0, j = cols*rows; i < j; ++i) {
         this->data[i] -= o.data[i];
     }
     return *this;
 }
-matrix2D operator*(const float &o) const {
+matrix2D matrix2D::operator*(const float &o) const {
     float *temp = new float[this->cols*this->rows] {};
     for (unsigned i = 0, j = this->cols*this->rows; i < j; ++i) {
         temp[i] = this->data[i]*o;
     }
     return matrix2D(this->cols, this->rows, temp);
 }
-matrix2D &operator*=(const float &o) {
+matrix2D &matrix2D::operator*=(const float &o) {
     for (unsigned i = 0, j = this->cols*this->rows; i < j; ++i) {
         this->data[i] *= o;
     }
     return *this;
 }
-matrix2D operator*(const matrix2D &o) const {
+matrix2D matrix2D::operator*(const matrix2D &o) const {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, j = this->cols*o.rows; i < j; ++i) {
@@ -87,7 +87,7 @@ matrix2D operator*(const matrix2D &o) const {
     }
     return matrix2D(this->cols, o.rows, temp);
 }
-matrix2D &operator*=(const matrix2D &o) {
+matrix2D &matrix2D::operator*=(const matrix2D &o) {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, j = this->cols*o.rows; i < j; ++i) {
@@ -100,23 +100,23 @@ matrix2D &operator*=(const matrix2D &o) {
     this->rows = o.rows;
     return *this;
 }
-matrix2D operator/(const float &o) const {
+matrix2D matrix2D::operator/(const float &o) const {
     float *temp = new float[this->cols*this->rows] {};
     for (unsigned i = 0, j = this->cols*this->rows; i < j; ++i) {
         temp[i] = this->data[i]/o;
     }
     return matrix2D(this->cols, this->rows, temp);
 }
-matrix2D &operator/=(const float &o) {
+matrix2D &matrix2D::operator/=(const float &o) {
     for (unsigned i = 0, j = this->cols*this->rows; i < j; ++i) {
         this->data[i] /= o;
     }
     return *this;
 }
-matrix2D operator/(matrix2D) const {
+matrix2D matrix2D::operator/(matrix2D) const {
     return NULL;
 }
-matrix2D &operator/=(matrix2D) {
+matrix2D &matrix2D::operator/=(matrix2D) {
     return *this;
 }
 
