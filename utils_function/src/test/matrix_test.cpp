@@ -1,12 +1,37 @@
 #include "matrix.hpp"
 
-bool matrix_test() {
-  const float data2x2[4] = {1.0f, 2.0f, 3.0f, 4.0f};
-  matrix2D matrix2x2(2,2, data2x2);
-  matrix2x2.print();
+#include <iostream>
 
-  const float data3x3[9] = {1.0f, 2.0f, 3.0f,4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f};
-  matrix2D matrix3x3(3,3,data3x3);
-  matrix3x3.print();
+bool matrix_test() {
+  
+  matrix2D ma(2,2, (float[]){1.0f, 2.0f, 3.0f, 4.0f});
+  ma.print();
+  
+  matrix2D mb(2,3, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+  mb.print();
+
+  matrix2D mc(3,2, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+  mc.print();
+
+  matrix2D md(3,3, (float[]){1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f});
+  md.print();
+  
+  matrix2D mA = ma;
+  
+  std::cout << "a + a" << std::endl;
+  (ma + ma).print();
+  std::cout << "A += m2" << std::endl;
+  (mA += ma).print();
+  
+  std::cout << "2x2 - 2x2" << std::endl;
+  (mA - ma).print();
+  std::cout << "A -= 2x2" << std::endl;
+  (mA -= ma).print();
+  
+  std::cout << "2x2 * 2x2 = " << std::endl;
+  (ma * ma).print();
+  std::cout << "A *= 2x2 = " << std::endl;
+  (mA *= ma).print();
+  
   return true;
 }

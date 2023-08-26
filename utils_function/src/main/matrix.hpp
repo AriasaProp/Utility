@@ -1,11 +1,6 @@
 #ifndef _MATRIX_INCLUDED_
 #define _MATRIX_INCLUDED_
 
-#include <initializer_list>
-#include <cstddef>
-#include <iostream>
-#include <array>
-
 /*
    Rows ->
 Cols  
@@ -21,11 +16,38 @@ private:
     unsigned cols, rows;
     float *data;
 public:
+    //constructors
     matrix2D();
+    matrix2D(const matrix2D&);
     matrix2D(unsigned, unsigned, const float*);
+    //destructors
     ~matrix2D ();
+    //unique function
+    void invert();
+    float determinant();
+    float adj();
+    //operators function
+    float &operator()(unsigned c, unsigned r) {
+        return this->data[c*this->rows+r];
+    }
+    //operators math
     matrix2D &operator=(const float *);
+    matrix2D &operator=(const matrix2D&);
+    matrix2D operator+(const matrix2D&) const;
+    matrix2D &operator+=(const matrix2D&);
+    matrix2D operator-(const matrix2D&) const;
+    matrix2D &operator-=(const matrix2D&);
+    matrix2D operator*(const float&) const;
+    matrix2D &operator*=(const float&);
+    matrix2D operator*(const matrix2D&) const;
+    matrix2D &operator*=(const matrix2D&);
+    matrix2D operator/(const float&) const;
+    matrix2D &operator/=(const float&);
+    matrix2D operator/(matrix2D) const;
+    matrix2D &operator/=(matrix2D);
+    //helper
     void print() const;
+    unsigned size() const;
 };
 
 
