@@ -2,24 +2,11 @@ name: Formating Code
 
 on: [workflow_dispatch]
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
-permissions:
-  actions: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.1.0
-      - name: Format code
-        run: |
-          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
-          git config --global user.name "AriasaProp"
-          sudo apt-get install -y clang-format
-          find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format -i
-          git add .
-          git commit -m "reformating cpp"
-          git push
-          
+      - uses: AutoModality/action-ros-clang-format@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
