@@ -10,7 +10,7 @@ int main(int argv, char *args[])
     
     passed &= BigInteger_test();
     //passed &= matrix4_test();
-    //passed &= matrix_test();
+    passed &= matrix_test();
     
     return !passed;
 }
