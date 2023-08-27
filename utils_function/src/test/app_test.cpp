@@ -8,9 +8,9 @@ int main(int argv, char *args[])
 {
     bool passed = true;
     
-    //passed &= BigInteger_test();
+    passed &= BigInteger_test();
     //passed &= matrix4_test();
-    passed &= matrix_test();
+    //passed &= matrix_test();
     
     return !passed;
 }

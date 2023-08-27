@@ -15,7 +15,7 @@ const long double LOGBITS = std::log10(WORD_BITS*2);
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const std::vector<word>&a, const std::vector<word>&b) {
+static int compare(const std::vector<word>&a, const std::vector<word>&b) {
   if (&a == &b) return 0;
   size_t as = a.size(), bs = b.size();
   if (as != bs)
@@ -25,7 +25,7 @@ int compare(const std::vector<word>&a, const std::vector<word>&b) {
       return a[as]>b[as] ? +1 : -1;
   return 0;
 }
-void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
+static void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   const size_t j = a.size();
   while ((i<j) && carry)
     carry = carry>(a[i++] += carry);
@@ -33,7 +33,7 @@ void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
     a.push_back(carry);
 }
 // a should be greater or equal than carry
-void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
+static void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   const size_t j = a.size(); 
   while ((i<j) && carry)
     carry = a[i]<(a[i] -= carry), i++;
@@ -41,7 +41,7 @@ void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
     a.pop_back();
 }
 // params b shall be same memory as a
-void add_word(std::vector<word>&a, const std::vector<word>&b) {
+static void add_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   if (a.size()<j)
     a.resize(j, 0);
@@ -59,7 +59,7 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
     a.push_back(carry);
 }
 // params b shall be same memory as a but it always compare before operation
-void sub_word(std::vector<word>&a, const std::vector<word>&b) {
+static void sub_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   word carry = 0;
   while (i<j) {
@@ -157,23 +157,20 @@ char *BigInteger::to_chars() const {
   return result;
 }
 double BigInteger::to_double() const {
-  if (!words.size())
-    return 0.0;
-  double d = 0.0, base = std::pow(2.0, WORD_BITS);
+  double d = 0.0;
+  const double base = std::pow(2.0, WORD_BITS);
   for (size_t i = words.size(); i--;)
     d = d *base + words[i];
   return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
-  if (words.size()) {
-    if (words.size()>1 || words[0] >=(WORD_MASK >> 1))
-      return false;
+  if ((words.size() == 1) && (words[0] <= (WORD_MASK >> 1))) {
     *result = words[0];
     if (neg)
       *result = -( *result);
-  } else
-    *result = 0;
-  return true;
+    return true;
+  }
+  return false;
 }
 //math operational
 BigInteger BigInteger::sqrt() const {
@@ -902,3 +899,56 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   out << text.data();
   return out;
 }
+
+
+
+// private array
+struct MyArray {
+    word* data;          // Pointer ke data
+    size_t capacity;  // Kapasitas maksimum
+    size_t size;      // Jumlah elemen saat ini
+    MyArray() : data(nullptr), capacity(0), size(0) {}
+
+    ~MyArray() {
+        delete[] data;
+    }
+
+    // Fungsi untuk menambahkan elemen di belakang
+    void push_back(const word& value) {
+        if (size == capacity) {
+            // Jika kapasitas penuh, alokasikan lebih banyak ruang
+            if (capacity == 0) capacity = 1;
+            else capacity *= 2;
+
+            word* newData = new word[capacity];
+
+            for (size_t i = 0; i < size; ++i) {
+                newData[i] = data[i];
+            }
+
+            delete[] data;
+            data = newData;
+        }
+
+        data[size++] = value;
+    }
+
+    // Fungsi untuk menghapus elemen di belakang
+    void pop_back() {
+        if (size > 0) {
+            --size;
+        }
+    }
+
+    size_t getSize() const {
+        return size;
+    }
+
+    word& operator[](size_t index) {
+        if (index < size) {
+            return data[index];
+        } else {
+            throw std::out_of_range("Index out of range");
+        }
+    }
+};

@@ -27,7 +27,7 @@ public:
     ~matrix2D ();
     //unique function
     void invert();
-    float determinant();
+    float det();
     void adj();
     //operators function
     float &operator()(unsigned, unsigned);

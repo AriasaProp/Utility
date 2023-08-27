@@ -37,7 +37,7 @@ float matrix2D::det() {
     case 2:
         return this->data[0] * this->data[3] - this->data[1] * this->data[2];
     default:
-        float det = 0;
+        float d = 0;
         unsigned minorSize = n - 1;
         float minorMatrix[minorSize * minorSize];
         for (unsigned i = 0; i < n; ++i) {
@@ -54,12 +54,12 @@ float matrix2D::det() {
             }
             float minorDet = determinant(minorMatrix, minorSize);
             if (i % 2 == 0) {
-                det += this->data[i] * minorDet;
+                d += this->data[i] * minorDet;
             } else {
-                det -= this->data[i] * minorDet;
+                d -= this->data[i] * minorDet;
             }
         }
-        return det;
+        return d;
     }
 }
 
