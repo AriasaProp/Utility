@@ -164,7 +164,7 @@ double BigInteger::to_double() const {
   return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
-  if ((words.size() > 1) || (words[0] > (WORD_MASK >> 1)))
+  if ((words.size() > 1) || (words[0] >= (WORD_MASK >> 1)))
     return false;
   *result = words[0];
   if (neg)
