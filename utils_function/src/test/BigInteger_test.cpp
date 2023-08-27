@@ -162,7 +162,7 @@ bool BigInteger_test() {
       break;
     }
     if (!n.can_convert_to_int(&N)) {
-      std::cout << " n value are broken and generate ";
+      std::cout << " n value are broken in " << generated;
       return false;
     }
 		if ((q * 4 + r - t)<(t * n)) {

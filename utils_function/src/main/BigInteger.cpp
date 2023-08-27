@@ -164,13 +164,12 @@ double BigInteger::to_double() const {
   return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
-  if ((words.size() == 1) && (words[0] <= (WORD_MASK >> 1))) {
-    *result = words[0];
-    if (neg)
-      *result = -( *result);
-    return true;
-  }
-  return false;
+  if ((words.size() > 1) || (words[0] > (WORD_MASK >> 1)))
+    return false;
+  *result = words[0];
+  if (neg)
+    *result = -( *result);
+  return true;
 }
 //math operational
 BigInteger BigInteger::sqrt() const {
