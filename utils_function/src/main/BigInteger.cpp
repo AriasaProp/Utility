@@ -15,7 +15,7 @@ const long double LOGBITS = std::log10(WORD_BITS*2);
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
-int compare(const std::vector<word>&a, const std::vector<word>&b) {
+static int compare(const std::vector<word>&a, const std::vector<word>&b) {
   if (&a == &b) return 0;
   size_t as = a.size(), bs = b.size();
   if (as != bs)
@@ -25,7 +25,7 @@ int compare(const std::vector<word>&a, const std::vector<word>&b) {
       return a[as]>b[as] ? +1 : -1;
   return 0;
 }
-void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
+static void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   const size_t j = a.size();
   while ((i<j) && carry)
     carry = carry>(a[i++] += carry);
@@ -33,7 +33,7 @@ void add_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
     a.push_back(carry);
 }
 // a should be greater or equal than carry
-void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
+static void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
   const size_t j = a.size(); 
   while ((i<j) && carry)
     carry = a[i]<(a[i] -= carry), i++;
@@ -41,7 +41,7 @@ void sub_a_word(std::vector<word>&a, size_t i = 0, word carry = 1) {
     a.pop_back();
 }
 // params b shall be same memory as a
-void add_word(std::vector<word>&a, const std::vector<word>&b) {
+static void add_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   if (a.size()<j)
     a.resize(j, 0);
@@ -59,7 +59,7 @@ void add_word(std::vector<word>&a, const std::vector<word>&b) {
     a.push_back(carry);
 }
 // params b shall be same memory as a but it always compare before operation
-void sub_word(std::vector<word>&a, const std::vector<word>&b) {
+static void sub_word(std::vector<word>&a, const std::vector<word>&b) {
   size_t i = 0, j = b.size();
   word carry = 0;
   while (i<j) {
