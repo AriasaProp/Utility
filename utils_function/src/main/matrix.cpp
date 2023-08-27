@@ -28,9 +28,41 @@ matrix2D::~matrix2D() {
 //unique function
 void matrix2D::invert() {
 }
-float matrix2D::determinant() {
-    return 0;
+float matrix2D::det() {
+    if (this->cols != this->rows) throw("cannot find determinant for non-square matrix");
+    unsigned &n = this->cols;
+    switch (n) {
+    case 1:
+        return 0;
+    case 2:
+        return this->data[0] * this->data[3] - this->data[1] * this->data[2];
+    default:
+        float det = 0;
+        unsigned minorSize = n - 1;
+        float minorMatrix[minorSize * minorSize];
+        for (unsigned i = 0; i < n; ++i) {
+            unsigned minorRow = 0;
+            for (unsigned row = 1; row < n; ++row) {
+                unsigned minorCol = 0;
+                for (unsigned col = 0; col < n; ++col) {
+                    if (col != i) {
+                        minorMatrix[minorRow * minorSize + minorCol] = this->data[row * n + col];
+                        minorCol++;
+                    }
+                }
+                minorRow++;
+            }
+            float minorDet = determinant(minorMatrix, minorSize);
+            if (i % 2 == 0) {
+                det += this->data[i] * minorDet;
+            } else {
+                det -= this->data[i] * minorDet;
+            }
+        }
+        return det;
+    }
 }
+
 void matrix2D::adj() {
 }
 //operator function
