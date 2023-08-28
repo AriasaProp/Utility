@@ -792,7 +792,7 @@ bool BigInteger::operator<=(const signed &b) const {
     return (words.size() < 1) ^ neg;
   const signed B = std::abs(b);
   if (words[0] != B)
-    return (words[i]<B) ^ neg;
+    return (words[0]<B) ^ neg;
   return true;
 }
 bool BigInteger::operator>=(const signed &b) const {
@@ -802,7 +802,7 @@ bool BigInteger::operator>=(const signed &b) const {
     return (words.size() > 1) ^ neg;
   const signed B = std::abs(b);
   if (words[0] != B)
-    return (words[i]>B) ^ neg;
+    return (words[0]>B) ^ neg;
   return true;
 }
 bool BigInteger::operator<(const signed &b) const {
@@ -812,7 +812,7 @@ bool BigInteger::operator<(const signed &b) const {
     return (words.size() < 1) ^ neg;
   const signed B = std::abs(b);
   if (words[0] != B)
-    return (words[i]<B) ^ neg;
+    return (words[0]<B) ^ neg;
   return false;
 }
 bool BigInteger::operator>(const signed &b) const {
@@ -822,7 +822,7 @@ bool BigInteger::operator>(const signed &b) const {
     return (words.size() > 1) ^ neg;
   const signed B = std::abs(b);
   if (words[0] != B)
-    return (words[i]>B) ^ neg;
+    return (words[0]>B) ^ neg;
   return false;
 }
 bool BigInteger::operator==(const BigInteger &b) const {
