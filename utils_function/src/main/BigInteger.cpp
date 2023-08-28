@@ -122,17 +122,6 @@ BigInteger::~BigInteger() {
 size_t BigInteger::tot() const {
   return words.size() * WORD_BITS;
 }
-//operator casting
-operator bool() const {
-  return words.size() > 0;
-}
-operator double() const {
-  double d = 0.0;
-  const double base = std::pow(2.0, WORD_BITS);
-  for (size_t i = words.size(); i--;)
-    d = d *base + words[i];
-  return neg ? -d : d;
-}
 char *BigInteger::to_chars() const {
   std::vector<char>text;
   std::vector<word>A = words;
@@ -166,6 +155,14 @@ char *BigInteger::to_chars() const {
   char *result = new char[text.size()];
   std::copy(text.begin(), text.end(), result);
   return result;
+}
+double BigInteger::to_double() const {
+  if (!words.size())
+    return 0.0;
+  double d = 0.0, base = std::pow(2.0, WORD_BITS);
+  for (size_t i = words.size(); i--;)
+    d = d *base + words[i];
+  return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
   if (words.size()) {
@@ -253,73 +250,6 @@ BigInteger &BigInteger::operator=(const BigInteger &a) {
   neg = a.neg;
   return *this;
 }
-//compare operator
-bool BigInteger::operator==(const BigInteger &b) const {
-  if (neg != b.neg)
-    return false;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return false;
-  while (i--)
-    if (words[i] != b.words[i])
-      return false;
-  return true;
-}
-bool BigInteger::operator!=(const BigInteger &b) const {
-  if (neg != b.neg)
-    return true;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return true;
-  while (i--)
-    if (words[i] != b.words[i])
-      return true;
-  return false;
-}
-bool BigInteger::operator<=(const BigInteger &b) const {
-  if (neg != b.neg)
-    return neg;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return (i<j) ^ neg;
-  while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]<b.words[i]) ^ neg;
-  return true;
-}
-bool BigInteger::operator>=(const BigInteger &b) const {
-  if (neg != b.neg)
-    return b.neg;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return (i>j) ^ neg;
-  while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]>b.words[i]) ^ neg;
-  return true;
-}
-bool BigInteger::operator<(const BigInteger &b) const {
-  if (neg != b.neg)
-    return neg;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return (i<j) ^ neg;
-  while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]<b.words[i]) ^ neg;
-  return false;
-}
-bool BigInteger::operator>(const BigInteger &b) const {
-  if (neg != b.neg)
-    return b.neg;
-  size_t i = words.size(), j = b.words.size();
-  if (i != j)
-    return (i>j) ^ neg;
-  while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]>b.words[i]) ^ neg;
-  return false;
-}
 //safe operator
 BigInteger &BigInteger::operator--() {
   if (neg)
@@ -336,9 +266,11 @@ BigInteger &BigInteger::operator++() {
   return *this;
 }
 BigInteger &BigInteger::operator+=(const s_word &b) {
-  const bool o_neg = b < 0;
   const word B = word(abs(b));
-  if (neg == o_neg)
+  if (!words.size()) {
+    neg = (b < 0);
+    words.push_back(B);
+  } else if (neg == (b < 0))
     add_a_word(words, 0, B);
   else {
     if ((words.size()>1) || (words[0]>B))
@@ -355,7 +287,7 @@ BigInteger &BigInteger::operator+=(const s_word &b) {
 }
 BigInteger &BigInteger::operator+=(const BigInteger &b) {
   if (neg == b.neg) {
-	  add_word(words, b.words);
+	add_word(words, b.words);
   } else {
     int cmp = compare(words, b.words);
     if (cmp<0) {
@@ -373,9 +305,11 @@ BigInteger &BigInteger::operator+=(const BigInteger &b) {
   return *this;
 }
 BigInteger &BigInteger::operator-=(const s_word &b) {
-  const bool o_neg = b < 0;
   const word B = word(abs(b));
-  if (neg != o_neg)
+  if (!words.size()) {
+    neg = (b >= 0);
+    words.push_back(B);
+  } else if (neg != (b < 0))
     add_a_word(words, 0, B);
   else {
     if ((words.size()>1) || (words[0]>B))
@@ -824,6 +758,73 @@ BigInteger &BigInteger::operator<<=(size_t bits) {
       words.insert(words.begin(), n, 0);
   }
   return *this;
+}
+//compare operator
+bool BigInteger::operator==(const BigInteger &b) const {
+  if (neg != b.neg)
+    return false;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return false;
+  while (i--)
+    if (words[i] != b.words[i])
+      return false;
+  return true;
+}
+bool BigInteger::operator!=(const BigInteger &b) const {
+  if (neg != b.neg)
+    return true;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return true;
+  while (i--)
+    if (words[i] != b.words[i])
+      return true;
+  return false;
+}
+bool BigInteger::operator<=(const BigInteger &b) const {
+  if (neg != b.neg)
+    return neg;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return (i<j) ^ neg;
+  while (i--)
+    if (words[i] != b.words[i])
+      return (words[i]<b.words[i]) ^ neg;
+  return true;
+}
+bool BigInteger::operator>=(const BigInteger &b) const {
+  if (neg != b.neg)
+    return b.neg;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return (i>j) ^ neg;
+  while (i--)
+    if (words[i] != b.words[i])
+      return (words[i]>b.words[i]) ^ neg;
+  return true;
+}
+bool BigInteger::operator<(const BigInteger &b) const {
+  if (neg != b.neg)
+    return neg;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return (i<j) ^ neg;
+  while (i--)
+    if (words[i] != b.words[i])
+      return (words[i]<b.words[i]) ^ neg;
+  return false;
+}
+bool BigInteger::operator>(const BigInteger &b) const {
+  if (neg != b.neg)
+    return b.neg;
+  size_t i = words.size(), j = b.words.size();
+  if (i != j)
+    return (i>j) ^ neg;
+  while (i--)
+    if (words[i] != b.words[i])
+      return (words[i]>b.words[i]) ^ neg;
+  return false;
 }
 //unsafe operator
 BigInteger BigInteger::operator+(const s_word &b) const {
