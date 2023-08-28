@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.1.0
+      - name: Safe
+        run: 	git config --global --add safe.directory ${{ github.workspace }}
       - uses: AutoModality/action-ros-clang-format@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
