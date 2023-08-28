@@ -123,10 +123,10 @@ size_t BigInteger::tot() const {
   return words.size() * WORD_BITS;
 }
 // operator casting 
-/*
 BigInteger::operator bool() const {
   return words.size() > 0;
 }
+/*
 BigInteger::operator double() const {
   const double base = std::pow(2.0, WORD_BITS);
   double d = 0.0;
@@ -765,6 +765,66 @@ BigInteger &BigInteger::operator<<=(size_t bits) {
   return *this;
 }
 //compare operator
+bool BigInteger::operator==(const signed &b) const {
+  if (neg != (b < 0))
+    return false;
+  if (words.size() != 1)
+    return false;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return false;
+  return true;
+}
+bool BigInteger::operator!=(const signed &b) const {
+  if (neg != (b < 0))
+    return true;
+  if (words.size() != 1)
+    return true;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return true;
+  return false;
+}
+bool BigInteger::operator<=(const signed &b) const {
+  if (neg != (b < 0))
+    return neg;
+  if (words.size() != 1)
+    return (words.size() < 1) ^ neg;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return (words[i]<B) ^ neg;
+  return true;
+}
+bool BigInteger::operator>=(const signed &b) const {
+  if (neg != (b < 0))
+    return !neg;
+  if (words.size() != 1)
+    return (words.size() > 1) ^ neg;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return (words[i]>B) ^ neg;
+  return true;
+}
+bool BigInteger::operator<(const signed &b) const {
+  if (neg != (b < 0))
+    return neg;
+  if (words.size() != 1)
+    return (words.size() < 1) ^ neg;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return (words[i]<B) ^ neg;
+  return false;
+}
+bool BigInteger::operator>(const signed &b) const {
+  if (neg != (b < 0))
+    return !neg;
+  if (words.size() != 1)
+    return (words.size() > 1) ^ neg;
+  const signed B = std::abs(b);
+  if (words[0] != B)
+    return (words[i]>B) ^ neg;
+  return false;
+}
 bool BigInteger::operator==(const BigInteger &b) const {
   if (neg != b.neg)
     return false;

@@ -24,7 +24,7 @@ struct BigInteger {
     //environment count
     size_t tot() const;
     //operator casting
-    //operator bool() const;
+    operator bool() const;
     //operator double() const;
     char *to_chars() const;
     bool can_convert_to_int(int *) const;
@@ -34,6 +34,12 @@ struct BigInteger {
     BigInteger &operator=(const signed &);
     BigInteger &operator=(const BigInteger &);
     // compare operator function
+    bool operator==(const signed &) const;
+    bool operator!=(const signed &) const;
+    bool operator<=(const signed &) const;
+    bool operator>=(const signed &) const;
+    bool operator<(const signed &) const;
+    bool operator>(const signed &) const;
     bool operator==(const BigInteger &) const;
     bool operator!=(const BigInteger &) const;
     bool operator<=(const BigInteger &) const;
