@@ -24,7 +24,7 @@ struct BigInteger {
     //environment count
     size_t tot() const;
     //operator casting
-    operator bool() const;
+    //operator bool() const;
     operator double() const;
     char *to_chars() const;
     bool can_convert_to_int(int *) const;

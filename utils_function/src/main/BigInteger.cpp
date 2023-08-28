@@ -123,9 +123,11 @@ size_t BigInteger::tot() const {
   return words.size() * WORD_BITS;
 }
 // operator casting 
+/*
 BigInteger::operator bool() const {
   return words.size() > 0;
 }
+*/
 BigInteger::operator double() const {
   const double base = std::pow(2.0, WORD_BITS);
   double d = 0.0;
