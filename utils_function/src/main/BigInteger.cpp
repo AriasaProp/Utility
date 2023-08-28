@@ -123,11 +123,10 @@ size_t BigInteger::tot() const {
   return words.size() * WORD_BITS;
 }
 // operator casting 
-/*
 BigInteger::operator bool() const {
   return words.size() > 0;
 }
-*/
+/*
 BigInteger::operator double() const {
   const double base = std::pow(2.0, WORD_BITS);
   double d = 0.0;
@@ -135,6 +134,7 @@ BigInteger::operator double() const {
     d = d * base + words[i];
   return neg ? -d : d;
 }
+*/
 char *BigInteger::to_chars() const {
   std::vector<char>text;
   std::vector<word>A = words;
