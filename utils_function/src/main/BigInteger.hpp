@@ -7,7 +7,7 @@
 typedef unsigned int word;
 typedef signed int s_word;
 
-class BigInteger {
+struct BigInteger {
   private:
     // values
     bool neg = false;
@@ -23,14 +23,23 @@ class BigInteger {
     ~BigInteger();
     //environment count
     size_t tot() const;
+    //operator casting
+    operator bool() const;
+    operator double() const;
     char *to_chars() const;
-    double to_double() const;
     bool can_convert_to_int(int *) const;
     // math operational function
     BigInteger sqrt() const;
     // re-initialize operational function
     BigInteger &operator=(const signed &);
     BigInteger &operator=(const BigInteger &);
+    // compare operator function
+    bool operator==(const BigInteger &) const;
+    bool operator!=(const BigInteger &) const;
+    bool operator<=(const BigInteger &) const;
+    bool operator>=(const BigInteger &) const;
+    bool operator<(const BigInteger &) const;
+    bool operator>(const BigInteger &) const;
     // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
@@ -47,13 +56,6 @@ class BigInteger {
     BigInteger &operator^=(size_t);
     BigInteger &operator>>=(size_t);
     BigInteger &operator<<=(size_t);
-    // compare operator function
-    bool operator==(const BigInteger &) const;
-    bool operator!=(const BigInteger &) const;
-    bool operator<=(const BigInteger &) const;
-    bool operator>=(const BigInteger &) const;
-    bool operator<(const BigInteger &) const;
-    bool operator>(const BigInteger &) const;
     // unsafe operator function
     BigInteger operator+(const s_word &) const;
     BigInteger operator+(const BigInteger &) const;
