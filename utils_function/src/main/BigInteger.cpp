@@ -122,6 +122,17 @@ BigInteger::~BigInteger() {
 size_t BigInteger::tot() const {
   return words.size() * WORD_BITS;
 }
+// operator casting 
+BigInteger::operator bool() const {
+  return words.size() > 0;
+}
+BigInteger::operator double() const {
+  const double base = std::pow(2.0, WORD_BITS);
+  double d = 0.0;
+  for (size_t i = words.size(); i--;)
+    d = d * base + words[i];
+  return neg ? -d : d;
+}
 char *BigInteger::to_chars() const {
   std::vector<char>text;
   std::vector<word>A = words;
@@ -155,14 +166,6 @@ char *BigInteger::to_chars() const {
   char *result = new char[text.size()];
   std::copy(text.begin(), text.end(), result);
   return result;
-}
-double BigInteger::to_double() const {
-  if (!words.size())
-    return 0.0;
-  double d = 0.0, base = std::pow(2.0, WORD_BITS);
-  for (size_t i = words.size(); i--;)
-    d = d *base + words[i];
-  return neg ? -d : d;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
   if (words.size()) {
