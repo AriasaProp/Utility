@@ -1,10 +1,8 @@
-repositories {
-    google()
-    mavenCentral()
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
 plugins {
@@ -21,4 +19,9 @@ library {
 unitTest {
     source.from file('test')
     privateHeaders.from file('test')
+}
+
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
