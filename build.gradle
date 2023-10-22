@@ -21,7 +21,3 @@ unitTest {
     privateHeaders.from file('test')
 }
 
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
