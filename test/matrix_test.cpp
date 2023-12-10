@@ -36,8 +36,11 @@ bool matrix_test() {
 	  result &= (ma * ma) == (mA *= ma);
 	  if (!result) throw ("Multiply of Matrix was error!");
     std::cout << "Multiply : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
-	  
-	  result &= (ma / ma) == matrix2D(ma).identity();
+	  {
+	  	matrix2D mb = ma;
+	  	mb.identity();
+	  	result &= (ma / ma) == mb;
+	  }
 	  result &= (mA /= ma) == ma;
 	  if (!result) throw ("Division of Matrix was error!");
     std::cout << "Division : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
