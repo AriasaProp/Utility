@@ -1,45 +1,49 @@
 #include "matrix.hpp"
+#include "clock_adjustment.hpp"
 
 #include <iostream>
 
 bool matrix_test() {
-  
-  matrix2D ma(2,2, {1.0f, 2.0f, 3.0f, 4.0f});
-  ma.print();
-  
-  matrix2D mb(2,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
-  mb.print();
-
-  matrix2D mc(3,2, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
-  mc.print();
-
-  matrix2D md(3,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f});
-  md.print();
-  
-  matrix2D mA = ma;
-  
-  //compare
-  
-  //math  operator
-  std::cout << "a + a" << std::endl;
-  (ma + ma).print();
-  std::cout << "A += 2x2" << std::endl;
-  (mA += ma).print();
-  
-  std::cout << "2x2 - 2x2" << std::endl;
-  (mA - ma).print();
-  std::cout << "A -= 2x2" << std::endl;
-  (mA -= ma).print();
-  
-  std::cout << "2x2 * 2x2 = " << std::endl;
-  (ma * ma).print();
-  std::cout << "A *= 2x2 = " << std::endl;
-  (mA *= ma).print();
-  
-  std::cout << "2x2 / 2x2 = " << std::endl;
-  (ma / ma).print();
-  std::cout << "A /= 2x2 = " << std::endl;
-  (mA /= ma).print();
-  
-  return true;
+	bool result;
+  try {
+    clock_adjustment _clock("Matrix Operator Test");
+	  matrix2D ma(2,2, {1.0f, 2.0f, 3.0f, 4.0f});
+	  ma.print();
+	  
+	  matrix2D mb(2,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+	  mb.print();
+	
+	  matrix2D mc(3,2, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+	  mc.print();
+	
+	  matrix2D md(3,3, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f});
+	  md.print();
+	  
+	  matrix2D mA = ma;
+	  
+    std::cout << "Object Initialize : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+	  
+	  //math  operator
+	  result &= (ma + ma) == (mA += ma);
+	  if (!result) throw ("Addition of Matrix was error!");
+    std::cout << "Addition : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+	  
+	  result &= (mA - ma) == ma;
+	  result &= (mA -= ma) == ma;
+	  if (!result) throw ("Subtract of Matrix was error!");
+    std::cout << "Subtract : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+	  
+	  result &= (ma * ma) == (mA *= ma);
+	  if (!result) throw ("Multiply of Matrix was error!");
+    std::cout << "Multiply : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+	  
+	  result &= (ma / ma) == matrix2D(ma).identity();
+	  result &= (mA /= ma) == ma;
+	  if (!result) throw ("Division of Matrix was error!");
+    std::cout << "Division : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+  } catch (const char *e) {
+  	std::cout << "error: " << e << std::endl;
+  	return false;
+  }
+  return result;
 }

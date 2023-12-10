@@ -45,10 +45,9 @@ matrix2D matrix2D::inverse() const {
     float selector;
     for (i = 0; i < this->cols; ++i) {
         selector = m1[this->cols*i+i];
-        for (j = 0; j < this->cols; ++j) {
-        		k = this->cols*i+j;
-            m1[k] /= selector;
-            res.data[k] /= selector;
+        for (j = this->cols*i, k = j + this->cols; j < k; ++j) {
+            m1[j] /= selector;
+            res.data[j] /= selector;
         }
         for (j = 0; j < this->cols; ++j) {
             if (j == i || m1[this->cols*j+i] == 0)
@@ -126,7 +125,7 @@ matrix2D matrix2D::operator+(const matrix2D &o) const {
     matrix2D res(*this);
     return res += o;
 }
-matrix2D &matrix2D::operator+=(const matrix2D &o) {
+matrix2D &matrix2D::operator+=(const matrix2D o) {
     if ((this->rows != o.rows) || (this->cols != o.cols)) throw("cannot doing addition on different matrix dimension");
     for (unsigned i = 0, j = cols*rows; i < j; ++i) {
         this->data[i] += o.data[i];
@@ -137,7 +136,7 @@ matrix2D matrix2D::operator-(const matrix2D &o) const {
     matrix2D res(*this);
     return res -= o;
 }
-matrix2D &matrix2D::operator-=(const matrix2D &o) {
+matrix2D &matrix2D::operator-=(const matrix2D o) {
     if ((this->rows != o.rows) || (this->cols != o.cols)) throw("cannot doing addition on different matrix dimension");
     for (unsigned i = 0, j = cols*rows; i < j; ++i) {
         this->data[i] -= o.data[i];
@@ -167,7 +166,7 @@ matrix2D matrix2D::operator*(const matrix2D &o) const {
     }
     return matrix2D(this->cols, o.rows, temp);
 }
-matrix2D &matrix2D::operator*=(const matrix2D &o) {
+matrix2D &matrix2D::operator*=(const matrix2D o) {
     if (this->rows != o.cols) throw("cannot doing multiplication matrix cause dimension is not fit");
     float *temp = new float[this->cols*o.rows] {};
     for (unsigned i = 0, I = this->cols*o.rows; i < I; ++i) {
@@ -196,7 +195,7 @@ matrix2D &matrix2D::operator/=(const float &o) {
 matrix2D matrix2D::operator/(const matrix2D &o) const {
     return matrix2D(*this) * o.inverse();
 }
-matrix2D &matrix2D::operator/=(const matrix2D &o) {
+matrix2D &matrix2D::operator/=(const matrix2D o) {
 		float det = o.det();
 		if (det == 0.0f) throw ("it's singular matrix, i can't do devision!");
     return *this *= o.inverse();

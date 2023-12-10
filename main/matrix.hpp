@@ -37,17 +37,17 @@ public:
     //operators math
     matrix2D &operator=(const matrix2D&);
     matrix2D operator+(const matrix2D&) const;
-    matrix2D &operator+=(const matrix2D&);
+    matrix2D &operator+=(const matrix2D);
     matrix2D operator-(const matrix2D&) const;
-    matrix2D &operator-=(const matrix2D&);
+    matrix2D &operator-=(const matrix2D);
     matrix2D operator*(const float&) const;
     matrix2D &operator*=(const float&);
     matrix2D operator*(const matrix2D&) const;
-    matrix2D &operator*=(const matrix2D&);
+    matrix2D &operator*=(const matrix2D);
     matrix2D operator/(const float&) const;
     matrix2D &operator/=(const float&);
     matrix2D operator/(const matrix2D&) const;
-    matrix2D &operator/=(const matrix2D&);
+    matrix2D &operator/=(const matrix2D);
     //helper
     void print() const;
     unsigned size() const;
