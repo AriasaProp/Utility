@@ -48,7 +48,7 @@ matrix2D matrix2D::inverse() const {
         for (j = 0; j < this->cols; ++j) {
         		k = this->cols*i+j;
             m1[k] /= selector;
-            rs.data[k] /= selector;
+            res.data[k] /= selector;
         }
         for (j = 0; j < this->cols; ++j) {
             if (j == i || m1[this->cols*j+i] == 0)
@@ -105,10 +105,10 @@ float &matrix2D::operator()(unsigned c, unsigned r) {
 }
 
 //operator compare
-bool &matrix2D::operator==(const matrix2D &o) const {
+bool matrix2D::operator==(const matrix2D &o) const {
 		return (this->cols == o.cols) && (this->rows == o.rows) && (memcmp(this->data, o.data, sizeof(float)*this->cols*this->rows) == 0);
 }
-bool &matrix2D::operator!=(const matrix2D &o) const {
+bool matrix2D::operator!=(const matrix2D &o) const {
 		return (this->cols != o.cols) || (this->rows != o.rows) || (memcmp(this->data, o.data, sizeof(float)*this->cols*this->rows) != 0);
 }
 //operator math
@@ -120,7 +120,7 @@ matrix2D &matrix2D::operator=(const matrix2D &o) {
 		    this->data = new float[cols*rows];
     }
     memcpy(this->data, o.data, cols*rows*sizeof(float));
-    return *this;
+    return *this; 
 }
 matrix2D matrix2D::operator+(const matrix2D &o) const {
     matrix2D res(*this);
@@ -194,7 +194,7 @@ matrix2D &matrix2D::operator/=(const float &o) {
     return *this;
 }
 matrix2D matrix2D::operator/(const matrix2D &o) const {
-    return matrix2D(this) * o.inverse();
+    return matrix2D(*this) * o.inverse();
 }
 matrix2D &matrix2D::operator/=(const matrix2D &o) {
 		float det = o.det();

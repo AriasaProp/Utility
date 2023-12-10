@@ -32,8 +32,8 @@ public:
     //operators function
     float &operator()(unsigned, unsigned);
     //operator compare
-    bool &operator==(const matrix2D&) const;
-    bool &operator!=(const matrix2D&) const;
+    bool operator==(const matrix2D&) const;
+    bool operator!=(const matrix2D&) const;
     //operators math
     matrix2D &operator=(const matrix2D&);
     matrix2D operator+(const matrix2D&) const;
