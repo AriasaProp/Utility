@@ -4,7 +4,7 @@
 #include <iostream>
 
 bool matrix_test() {
-	bool result;
+	bool result = true;
   try {
     clock_adjustment _clock("Matrix Operator Test");
 	  matrix2D ma(2,2, {1.0f, 2.0f, 3.0f, 4.0f});
