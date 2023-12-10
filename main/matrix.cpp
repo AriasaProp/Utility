@@ -5,8 +5,9 @@
 #include <iomanip>
 #include <sstream>
 
+#define MIN(x,y) (x<y?x:y)
 
-matrix2D::matrix2D() : cols(1), rows(1), data(new float) {}
+matrix2D::matrix2D() : cols(2), rows(2), data(new float) {}
 matrix2D::matrix2D(const matrix2D &other) : cols(other.cols), rows(other.rows) {
     this->data = new float[cols*rows] {};
     memcpy(this->data, other.data, cols*rows*sizeof(float));
@@ -26,7 +27,41 @@ matrix2D::~matrix2D() {
     delete[] this->data;
 }
 //unique function
-void matrix2D::invert() {
+matrix2D &matrix2D::identity() {
+		if (this->cols != this->rows) throw("cannot find identity for non-square matrix");
+		memset(this->data, 0, sizeof(float)*this->cols*this->cols);
+		for (unsigned i = 0; i < this->cols; ++i)
+        this->data[this->cols*i+i] = 1;
+}
+void matrix2D::inverse() const {
+		if (this->cols != this->rows) throw("cannot find inverse for non-square matrix");
+		matrix2D res(this->cols, this->cols);
+		res.identity();
+		
+		float *m1 = new float[this->cols * this->cols];
+		memcpy(m1, this->data, sizeof(float)*this->cols*this->cols);
+		
+    unsigned i, j, k;
+    float selector;
+    for (i = 0; i < this->cols; ++i) {
+        selector = m1[this->cols*i+i]];
+        for (j = 0; j < this->cols; ++j) {
+        		k = this->cols*i+j;
+            m1[k] /= selector;
+            rs.data[k] /= selector;
+        }
+        for (j = 0; j < this->cols; ++j) {
+            if (j == i || m1[this->cols*j+i] == 0)
+                continue;
+            selector = m1[this->cols*j+i];
+            for (k = 0; k < this->cols; k++) {
+                m1[this->cols*j+k] -= selector * m1[this->cols*i+k];
+                res.data[this->cols*j+k] -= selector * res.data[this->cols*i+k];
+            }
+        }
+    }
+    delete[] m1;
+		return res;
 }
 static float detPart(float *matrix, unsigned n) {
     switch (n) {
@@ -61,16 +96,21 @@ static float detPart(float *matrix, unsigned n) {
 }
 float matrix2D::det() {
     if (this->cols != this->rows) throw("cannot find determinant for non-square matrix");
-    detPart(this->data, this->cols);
+    return detPart(this->data, this->cols);
 }
 
-void matrix2D::adj() {
-}
 //operator function
 float &matrix2D::operator()(unsigned c, unsigned r) {
-    return this->data[c*this->rows+r];
+    return this->data[MIN(c, cols)*this->rows+MIN(r, rows)];
 }
 
+//operator compare
+bool &matrix2D::operator==(const matrix2D &o) const {
+		return (this->cols == o.cols) && (this->rows == o.rows) && (memcmp(this->data, o.data) == 0);
+}
+bool &matrix2D::operator!=(const matrix2D &o) const {
+		return (this->cols != o.cols) || (this->rows != o.rows) || (memcmp(this->data, o.data) != 0);
+}
 //operator math
 matrix2D &matrix2D::operator=(const matrix2D &o) {
     this->cols = o.cols;
@@ -151,11 +191,13 @@ matrix2D &matrix2D::operator/=(const float &o) {
     }
     return *this;
 }
-matrix2D matrix2D::operator/(matrix2D) const {
-    return matrix2D();
+matrix2D matrix2D::operator/(const matrix2D &o) const {
+    return matrix2D(this) * o.inverse();
 }
-matrix2D &matrix2D::operator/=(matrix2D) {
-    return *this;
+matrix2D &matrix2D::operator/=(const matrix2D &o) {
+		float det = o.det();
+		if (det == 0.0f) throw ("it's singular matrix, i can't do devision!");
+    return *this *= o.inverse();
 }
 
 void matrix2D::print () const {

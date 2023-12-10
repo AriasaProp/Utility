@@ -18,9 +18,12 @@ bool matrix_test() {
   
   matrix2D mA = ma;
   
+  //compare
+  
+  //math  operator
   std::cout << "a + a" << std::endl;
   (ma + ma).print();
-  std::cout << "A += m2" << std::endl;
+  std::cout << "A += 2x2" << std::endl;
   (mA += ma).print();
   
   std::cout << "2x2 - 2x2" << std::endl;
@@ -32,6 +35,11 @@ bool matrix_test() {
   (ma * ma).print();
   std::cout << "A *= 2x2 = " << std::endl;
   (mA *= ma).print();
+  
+  std::cout << "2x2 / 2x2 = " << std::endl;
+  (ma / ma).print();
+  std::cout << "A /= 2x2 = " << std::endl;
+  (mA /= ma).print();
   
   return true;
 }

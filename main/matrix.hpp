@@ -26,11 +26,14 @@ public:
     //destructors
     ~matrix2D ();
     //unique function
-    void invert();
+    matrix2D &identity();
+    matrix2D inverse() const;
     float det();
-    void adj();
     //operators function
     float &operator()(unsigned, unsigned);
+    //operator compare
+    bool &operator==(const matrix2D&) const;
+    bool &operator!=(const matrix2D&) const;
     //operators math
     matrix2D &operator=(const matrix2D&);
     matrix2D operator+(const matrix2D&) const;
@@ -44,7 +47,7 @@ public:
     matrix2D operator/(const float&) const;
     matrix2D &operator/=(const float&);
     matrix2D operator/(matrix2D) const;
-    matrix2D &operator/=(matrix2D);
+    matrix2D &operator/=(const matrix2D&);
     //helper
     void print() const;
     unsigned size() const;
