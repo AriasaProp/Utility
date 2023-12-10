@@ -44,7 +44,7 @@ matrix2D matrix2D::inverse() const {
     unsigned i, j, k;
     float selector;
     for (i = 0; i < this->cols; ++i) {
-        selector = m1[this->cols*i+i]];
+        selector = m1[this->cols*i+i];
         for (j = 0; j < this->cols; ++j) {
         		k = this->cols*i+j;
             m1[k] /= selector;
@@ -94,7 +94,7 @@ static float detPart(float *matrix, unsigned n) {
         return d;
     }
 }
-float matrix2D::det() {
+float matrix2D::det() const {
     if (this->cols != this->rows) throw("cannot find determinant for non-square matrix");
     return detPart(this->data, this->cols);
 }
@@ -113,10 +113,12 @@ bool &matrix2D::operator!=(const matrix2D &o) const {
 }
 //operator math
 matrix2D &matrix2D::operator=(const matrix2D &o) {
-    this->cols = o.cols;
-    this->rows = o.rows;
-    delete[] this->data;
-    this->data = new float[cols*rows];
+    if ((this->cols != o.cols) || (this->rows != o.rows) ) {
+		    this->cols = o.cols;
+		    this->rows = o.rows;
+		    delete[] this->data;
+		    this->data = new float[cols*rows];
+    }
     memcpy(this->data, o.data, cols*rows*sizeof(float));
     return *this;
 }

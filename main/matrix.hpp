@@ -28,7 +28,7 @@ public:
     //unique function
     matrix2D &identity();
     matrix2D inverse() const;
-    float det();
+    float det() const;
     //operators function
     float &operator()(unsigned, unsigned);
     //operator compare
