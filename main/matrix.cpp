@@ -33,7 +33,7 @@ matrix2D &matrix2D::identity() {
 		for (unsigned i = 0; i < this->cols; ++i)
         this->data[this->cols*i+i] = 1;
 }
-void matrix2D::inverse() const {
+matrix2D matrix2D::inverse() const {
 		if (this->cols != this->rows) throw("cannot find inverse for non-square matrix");
 		matrix2D res(this->cols, this->cols);
 		res.identity();
@@ -106,10 +106,10 @@ float &matrix2D::operator()(unsigned c, unsigned r) {
 
 //operator compare
 bool &matrix2D::operator==(const matrix2D &o) const {
-		return (this->cols == o.cols) && (this->rows == o.rows) && (memcmp(this->data, o.data) == 0);
+		return (this->cols == o.cols) && (this->rows == o.rows) && (memcmp(this->data, o.data, sizeof(float)*this->cols*this->rows) == 0);
 }
 bool &matrix2D::operator!=(const matrix2D &o) const {
-		return (this->cols != o.cols) || (this->rows != o.rows) || (memcmp(this->data, o.data) != 0);
+		return (this->cols != o.cols) || (this->rows != o.rows) || (memcmp(this->data, o.data, sizeof(float)*this->cols*this->rows) != 0);
 }
 //operator math
 matrix2D &matrix2D::operator=(const matrix2D &o) {
