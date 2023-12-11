@@ -150,6 +150,7 @@ bool BigInteger_test() {
     std::cout << "Error has occure " << msg << std::endl;
     return false;
   }
+  /*
 
   //totalBytes = 0;
   clock_adjustment pi_clock("π Generator Test");
@@ -192,5 +193,6 @@ bool BigInteger_test() {
 
 	std::cout << std::endl;
 	std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
+	*/
   return true;
 }

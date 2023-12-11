@@ -4,6 +4,7 @@
 #include <iostream>
 
 bool matrix_test() {
+  std::cout << "Matrix code test" << std::endl;
 	bool result = true;
   try {
     clock_adjustment _clock("Matrix Operator Test");
