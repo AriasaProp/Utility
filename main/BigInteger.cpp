@@ -11,7 +11,6 @@ const size_t WORD_BITS_1 = WORD_BITS - 1;
 const word WORD_MASK =(word) - 1;
 const size_t WORD_HALF_BITS = WORD_BITS / 2;
 const word WORD_HALF_MASK = WORD_MASK >> WORD_HALF_BITS;
-const long double LOGBITS = std::log10(WORD_BITS*2);
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -136,38 +135,30 @@ BigInteger::operator double() const {
 }
 */
 char *BigInteger::to_chars() const {
-  std::vector<char>text;
-  std::vector<word>A = words;
-  text.reserve(LOGBITS * A.size() + 2);
-  word remainder, current;
-  size_t i;
-  while ((i = A.size())) {
-    remainder = 0;
-    while(i--) {
-    	word &cur = A[i];
-      current = cur;
-      remainder <<= WORD_HALF_BITS;
-      remainder |= current >> WORD_HALF_BITS;
-      cur <<= WORD_HALF_BITS;
-      cur |= remainder / 10;
-      remainder %= 10;
-      remainder <<= WORD_HALF_BITS;
-      remainder |= current & WORD_HALF_MASK;
-      cur <<= WORD_HALF_BITS;
-      cur |= remainder / 10;
-      remainder %= 10;
+  std::vector<word> A = words;
+  const size_t texN = static_cast<size_t>(std::ceil(double(std::log10(WORD_BITS*2) * (double)A.size()))) + 2;
+  char *text = new char[texN+1]{0};
+  char *tcr = text + texN;
+  while (A.size()) {
+    word rmr = 0;
+    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
+      word current = *cur;
+      rmr <<= WORD_HALF_BITS;
+      rmr |= current >> WORD_HALF_BITS;
+      *cur = rmr / 10;
+      rmr %= 10;
+      rmr <<= WORD_HALF_BITS;
+      rmr |= current & WORD_HALF_MASK;
+      *cur <<= WORD_HALF_BITS;
+      *cur |= rmr / 10;
+      rmr %= 10;
     }
-    text.push_back('0' + char(remainder));
-    while (A.size() && !A.back())
+    *(tcr--) = '0' + char(rmr);
+    if (!A.back())
       A.pop_back();
   }
-  if (neg)
-    text.push_back('-');
-  std::reverse(text.begin(), text.end());
-  text.push_back('\0');
-  char *result = new char[text.size()];
-  std::copy(text.begin(), text.end(), result);
-  return result;
+  *(tcr--) = '-';
+  return text;
 }
 bool BigInteger::can_convert_to_int(int *result) const {
   if (words.size()) {
@@ -936,34 +927,31 @@ BigInteger BigInteger::operator<< (size_t n_bits) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
-  std::vector<char> text;
   std::vector<word> A = num.words;
-  text.reserve(LOGBITS * A.size() + 1);
-  word remainder, current;
-  size_t i;
-  while ((i = A.size())) {
-    remainder = 0;
-    while(i--) {
-    	word &cur = A[i];
-      current = cur;
-      remainder <<= WORD_HALF_BITS;
-      remainder |= current >> WORD_HALF_BITS;
-      cur = remainder / 10;
-      remainder %= 10;
-      remainder <<= WORD_HALF_BITS;
-      remainder |= current & WORD_HALF_MASK;
-      cur <<= WORD_HALF_BITS;
-      cur |= remainder / 10;
-      remainder %= 10;
+  const size_t texN = static_cast<size_t>(std::ceil(double(std::log10(WORD_BITS*2) * (double)A.size())));
+  char *text = new char[texN+1]{0};
+  char *tcr = text + texN;
+  while (A.size()) {
+    word rmr = 0;
+    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
+      word current = *cur;
+      rmr <<= WORD_HALF_BITS;
+      rmr |= current >> WORD_HALF_BITS;
+      *cur = rmr / 10;
+      rmr %= 10;
+      rmr <<= WORD_HALF_BITS;
+      rmr |= current & WORD_HALF_MASK;
+      *cur <<= WORD_HALF_BITS;
+      *cur |= rmr / 10;
+      rmr %= 10;
     }
-    text.push_back('0' + char(remainder));
-    if (A.size() && !A.back())
+    *(tcr--) = '0' + char(rmr);
+    if (!A.back())
       A.pop_back();
   }
   if (num.neg)
     out << "-";
-  std::reverse(text.begin(), text.end());
-  text.push_back('\0');
-  out << text.data();
+  out << text;
+  delete[] text;
   return out;
 }
