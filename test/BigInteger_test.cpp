@@ -16,6 +16,7 @@ bool BigInteger_test() {
     //try print
     std::cout << "Samples : ";
     std::cout << a << " & " << b << std::endl;
+    /*
     {
     	char *As = a.to_chars();
     	char *Bs = b.to_chars();
@@ -23,6 +24,7 @@ bool BigInteger_test() {
     	delete[] As;
     	delete[] Bs;
     }
+    */
     std::cout << "Object Generate : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
 		//compare
     result = (a>b) && !(b>a);
