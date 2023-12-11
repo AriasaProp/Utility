@@ -136,7 +136,7 @@ BigInteger::operator double() const {
 */
 char *BigInteger::to_chars() const {
   std::vector<word> A = words;
-  const size_t texN = static_cast<size_t>(std::ceil(double(std::log10(WORD_BITS*2) * (double)A.size()))) + 2;
+  const size_t texN = static_cast<size_t>(std::ceil(std::log10(WORD_BITS*2) * (double)A.size())) + 1;
   char *text = new char[texN+1]{0};
   char *tcr = text + texN;
   while (A.size()) {
@@ -157,7 +157,8 @@ char *BigInteger::to_chars() const {
     if (!A.back())
       A.pop_back();
   }
-  *(tcr--) = '-';
+  if (neg)
+  	*(tcr--) = '-';
   return text;
 }
 bool BigInteger::can_convert_to_int(int *result) const {

@@ -10,9 +10,12 @@ bool BigInteger_test() {
   try {
     bool result;
     clock_adjustment _clock("Big Integer Operator Test");
-    BigInteger a = "17109938276655544333234567880088776588224401929\0", b = "-790920875098776655544333234567880088776588224401\0";
+    BigInteger
+    a =   "17109938276655544333234567880088776588224401929\0",
+    b = "-790920875098776655544333234567880088776588224401\0";
     //try print
-    std::cout << "Samples : " << a << " & " << b << std::endl;
+    std::cout << "Samples : ";
+    std::cout << a << " & " << b << std::endl;
     {
     	char *As = a.to_chars();
     	char *Bs = b.to_chars();
