@@ -930,7 +930,7 @@ BigInteger BigInteger::operator<< (size_t n_bits) const {
 std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   std::vector<word> A = num.words;
   const size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()))));
-  char *text = new char[texN+1]{};
+  char *text = new char[texN+1]{" "};
   char *tcr = text + texN;
   while (A.size()) {
     word rmr = 0;
