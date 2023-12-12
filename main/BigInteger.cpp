@@ -136,7 +136,7 @@ BigInteger::operator double() const {
 */
 char *BigInteger::to_chars() const {
   std::vector<word> A = words;
-  if (!A.empty())
+  if (A.empty()) {
     return new char[1]{'0'};
 	} else {
 	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01));
@@ -934,7 +934,7 @@ BigInteger BigInteger::operator<< (size_t n_bits) const {
 
 std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   std::vector<word> A = num.words;
-	if (!A.empty()) {
+	if (A.empty()) {
 		out << "0";
 	} else {
 	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01)) + 1;
