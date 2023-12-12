@@ -136,31 +136,35 @@ BigInteger::operator double() const {
 */
 char *BigInteger::to_chars() const {
   std::vector<word> A = words;
-  const size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size())))) + 1;
-  char *text = new char[texN+1];
-  memset(text, ' ', texN+1);
-  char *tcr = text + texN;
-  while (A.size()) {
-    word rmr = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
-      word current = *cur;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current >> WORD_HALF_BITS;
-      *cur = rmr / 10;
-      rmr %= 10;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current & WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= rmr / 10;
-      rmr %= 10;
-    }
-    *(tcr--) = '0' + char(rmr);
-    if (!A.back())
-      A.pop_back();
-  }
-  if (neg)
-  	*tcr = '-';
-  return text;
+  if (!A.empty())
+    return new char[1]{'0'};
+	} else {
+	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01));
+	  if (neg) ++texN;
+	  char *text = new char[texN+1];
+	  memset(text, ' ', texN+1);
+	  if (neg) *text = '-';
+	  char *tcr = text + texN;
+	  while (A.size()) {
+	    word rmr = 0;
+	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
+	      word current = *cur;
+	      rmr <<= WORD_HALF_BITS;
+	      rmr |= current >> WORD_HALF_BITS;
+	      *cur = rmr / 10;
+	      rmr %= 10;
+	      rmr <<= WORD_HALF_BITS;
+	      rmr |= current & WORD_HALF_MASK;
+	      *cur <<= WORD_HALF_BITS;
+	      *cur |= rmr / 10;
+	      rmr %= 10;
+	    }
+	    *(tcr--) = '0' + char(rmr);
+	    if (!A.back())
+	      A.pop_back();
+	  }
+  	return text;
+	}
 }
 bool BigInteger::can_convert_to_int(int *result) const {
   if (words.size()) {
@@ -930,31 +934,36 @@ BigInteger BigInteger::operator<< (size_t n_bits) const {
 
 std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
   std::vector<word> A = num.words;
-  const size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()))));
-  char *text = new char[texN+1];
-  memset(text, ' ', texN+1);
-  char *tcr = text + texN;
-  while (A.size()) {
-    word rmr = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
-      word current = *cur;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current >> WORD_HALF_BITS;
-      *cur = rmr / 10;
-      rmr %= 10;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current & WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= rmr / 10;
-      rmr %= 10;
-    }
-    *(tcr--) = '0' + char(rmr);
-    if (!A.back())
-      A.pop_back();
-  }
-  if (num.neg)
-    out << "-";
-  out << text;
-  delete[] text;
+	if (!A.empty()) {
+		out << "0";
+	} else {
+	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01)) + 1;
+	  if (num.neg)
+	    out << "-";
+	  char *text = new char[texN+1];
+	  memset(text, ' ', texN+1);
+	  char *tcr = text + texN;
+	  *(tcr--) = '\0';
+	  while (A.size()) {
+	    word rmr = 0;
+	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
+	      word current = *cur;
+	      rmr <<= WORD_HALF_BITS;
+	      rmr |= current >> WORD_HALF_BITS;
+	      *cur = rmr / 10;
+	      rmr %= 10;
+	      rmr <<= WORD_HALF_BITS;
+	      rmr |= current & WORD_HALF_MASK;
+	      *cur <<= WORD_HALF_BITS;
+	      *cur |= rmr / 10;
+	      rmr %= 10;
+	    }
+	    *(tcr--) = '0' + char(rmr);
+	    if (!A.back())
+	      A.pop_back();
+	  }
+	  out << text;
+	  delete[] text;
+	}
   return out;
 }
