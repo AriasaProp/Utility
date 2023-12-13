@@ -139,13 +139,12 @@ char *BigInteger::to_chars() const {
   if (A.empty()) {
     return new char[1]{'0'};
 	} else {
-	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01)) + 1;
+	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01));
 	  if (neg) ++texN;
 	  char *text = new char[texN+1];
 	  memset(text, ' ', texN+1);
 	  if (neg) *text = '-';
 	  char *tcr = text + texN;
-	  *(tcr--) = '\0';
 	  while (A.empty()) {
 	    word rmr = 0;
 	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
@@ -938,13 +937,12 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
 	if (A.empty()) {
 		out << "0";
 	} else {
-	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01)) + 1;
+	  size_t texN = static_cast<size_t>(std::ceil(std::log10(std::pow(WORD_MASK,A.size()-1) * A.back()) + 0.01));
 	  if (num.neg)
 	    out << "-";
 	  char *text = new char[texN+1];
 	  memset(text, ' ', texN+1);
 	  char *tcr = text + texN;
-	  *(tcr--) = '\0';
 	  while (A.empty()) {
 	    word rmr = 0;
 	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
