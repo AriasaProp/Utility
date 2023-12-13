@@ -145,7 +145,7 @@ char *BigInteger::to_chars() const {
 	  memset(text, ' ', texN+1);
 	  if (neg) *text = '-';
 	  char *tcr = text + texN;
-	  while (A.empty()) {
+	  while (!A.empty()) {
 	    word rmr = 0;
 	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
 	      word current = *cur;
@@ -943,7 +943,7 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &num) {
 	  char *text = new char[texN+1];
 	  memset(text, ' ', texN+1);
 	  char *tcr = text + texN;
-	  while (A.empty()) {
+	  while (!A.empty()) {
 	    word rmr = 0;
 	    for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
 	      word current = *cur;
