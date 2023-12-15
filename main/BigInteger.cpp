@@ -138,7 +138,7 @@ char *BigInteger::to_chars() const {
   if (words.empty())
     return new char[1]{'0'};
 
-  size_t texN = neg ? 1 : 0;
+  size_t texN = neg ? 2 : 1;
   word rmr, current;
   //grt decimal count
 	std::vector<word> A = words;
@@ -164,7 +164,8 @@ char *BigInteger::to_chars() const {
   A = words;
   char *text = new char[texN];
   if (neg) *text = '-';
-  char *tcr = text + texN;
+  char *tcr = text + texN - 1;
+  *tcr = '\0';
   while (!A.empty()) {
     rmr = 0;
     for (std::vector<word>::reverse_iterator cur = A.rbegin(); cur != A.rend(); ++cur) {
