@@ -5,7 +5,6 @@
 #include <vector>
 
 typedef unsigned int word;
-typedef signed int signed;
 
 struct BigInteger {
   private:

@@ -9,47 +9,47 @@ BigDecimal::BigDecimal(const char *) {}
 //Destructor
 BigDecimal::~BigDecimal() {}
 //operator casting
-BigDecimal::operator bool() const {}
-BigDecimal::operator double() const {}
-char *BigDecimal::to_chars() const {}
+BigDecimal::operator bool() const {return false}
+BigDecimal::operator double() const {return 0.0;}
+char *BigDecimal::to_chars() const {return nullptr;}
 // math operational function
-BigDecimal BigDecimal::sqrt() const {}
-BigDecimal BigDecimal::pow(const double) const {}
-BigDecimal BigDecimal::pow(const BigDecimal) const {}
+BigDecimal BigDecimal::sqrt() const {return BigDecimal(*this);}
+BigDecimal BigDecimal::pow(const double) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::pow(const BigDecimal) const {return BigDecimal(*this);}
 // re-initialize operational function
-BigDecimal &BigDecimal::operator=(const double) {}
-BigDecimal &BigDecimal::operator=(const BigDecimal) {}
+BigDecimal &BigDecimal::operator=(const double) {return *this;}
+BigDecimal &BigDecimal::operator=(const BigDecimal) {return *this;}
 // compare operator function
-bool BigDecimal::operator==(const double) const {}
-bool BigDecimal::operator!=(const double) const {}
-bool BigDecimal::operator<=(const double) const {}
-bool BigDecimal::operator>=(const double) const {}
-bool BigDecimal::operator<(const double) const {}
-bool BigDecimal::operator>(const double) const {}
-bool BigDecimal::operator==(const BigDecimal) const {}
-bool BigDecimal::operator!=(const BigDecimal) const {}
-bool BigDecimal::operator<=(const BigDecimal) const {}
-bool BigDecimal::operator>=(const BigDecimal) const {}
-bool BigDecimal::operator<(const BigDecimal) const {}
-bool BigDecimal::operator>(const BigDecimal) const {}
+bool BigDecimal::operator==(const double) const {return false;}
+bool BigDecimal::operator!=(const double) const {return false;}
+bool BigDecimal::operator<=(const double) const {return false;}
+bool BigDecimal::operator>=(const double) const {return false;}
+bool BigDecimal::operator<(const double) const {return false;}
+bool BigDecimal::operator>(const double) const {return false;}
+bool BigDecimal::operator==(const BigDecimal) const {return false;}
+bool BigDecimal::operator!=(const BigDecimal) const {return false;}
+bool BigDecimal::operator<=(const BigDecimal) const {return false;}
+bool BigDecimal::operator>=(const BigDecimal) const {return false;}
+bool BigDecimal::operator<(const BigDecimal) const {return false;}
+bool BigDecimal::operator>(const BigDecimal) const {return false;}
 // safe operator math function
-BigDecimal &BigDecimal::operator+=(const double) {}
-BigDecimal &BigDecimal::operator+=(const BigDecimal) {}
-BigDecimal &BigDecimal::operator-=(const double) {}
-BigDecimal &BigDecimal::operator-=(const BigDecimal) {}
-BigDecimal &BigDecimal::operator*=(const double) {}
-BigDecimal &BigDecimal::operator*=(const BigDecimal) {}
-BigDecimal &BigDecimal::operator/=(const double) {}
-BigDecimal &BigDecimal::operator/=(const BigDecimal) {}
+BigDecimal &BigDecimal::operator+=(const double) {return *this;}
+BigDecimal &BigDecimal::operator+=(const BigDecimal) {return *this;}
+BigDecimal &BigDecimal::operator-=(const double) {return *this;}
+BigDecimal &BigDecimal::operator-=(const BigDecimal) {return *this;}
+BigDecimal &BigDecimal::operator*=(const double) {return *this;}
+BigDecimal &BigDecimal::operator*=(const BigDecimal) {return *this;}
+BigDecimal &BigDecimal::operator/=(const double) {return *this;}
+BigDecimal &BigDecimal::operator/=(const BigDecimal) {return *this;}
 // unsafe operator function
-BigDecimal BigDecimal::operator-() const {}
-BigDecimal BigDecimal::operator+(const double) const {}
-BigDecimal BigDecimal::operator+(const BigDecimal) const {}
-BigDecimal BigDecimal::operator-(const double) const {}
-BigDecimal BigDecimal::operator-(const BigDecimal) const {}
-BigDecimal BigDecimal::operator*(const double) const {}
-BigDecimal BigDecimal::operator*(const BigDecimal) const {}
-BigDecimal BigDecimal::operator/(const double) const {}
-BigDecimal BigDecimal::operator/(const BigDecimal) const {}
+BigDecimal BigDecimal::operator-() const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator+(const double) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator+(const BigDecimal) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator-(const double) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator-(const BigDecimal) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator*(const double) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator*(const BigDecimal) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator/(const double) const {return BigDecimal(*this);}
+BigDecimal BigDecimal::operator/(const BigDecimal) const {return BigDecimal(*this);}
 // stream operator
-friend std::ostream &operator<<(std::ostream &, const BigDecimal) {}
+friend std::ostream &operator<<(std::ostream &out, const BigDecimal) {return out;}
