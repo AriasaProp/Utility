@@ -2,12 +2,16 @@
 
 
 //Constructors
-BigDecimal::BigDecimal() {}
-BigDecimal::BigDecimal(const BigDecimal) {}
-BigDecimal::BigDecimal(const double) {}
-BigDecimal::BigDecimal(const char *) {}
+BigDecimal::BigDecimal():neg(false) {}
+BigDecimal::BigDecimal(const BigDecimal o):neg(false), major(o.major), numerator(o.numerator), denumerator(o.denumerator) {}
+BigDecimal::BigDecimal(const double):neg(false) {}
+BigDecimal::BigDecimal(const char *):neg(false) {}
 //Destructor
-BigDecimal::~BigDecimal() {}
+BigDecimal::~BigDecimal() {
+	major.clear();
+	numerator.clear();
+	denumerator.clear();
+}
 //operator casting
 BigDecimal::operator bool() const {return false}
 BigDecimal::operator double() const {return 0.0;}
