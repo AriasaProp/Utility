@@ -925,9 +925,6 @@ BigInteger BigInteger::operator%(const signed b) const {
 BigInteger BigInteger::operator%(const BigInteger b) const {
   return BigInteger(*this)%= b;
 }
-BigInteger BigInteger::operator^(size_t exponent) const {
-  return BigInteger(*this)^= exponent;
-}
 BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
