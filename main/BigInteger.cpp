@@ -14,7 +14,7 @@ const word WORD_HALF_MASK = ((word) - 1) >> WORD_HALF_BITS;
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
 static int compare(const std::vector<word>&a, const std::vector<word>&b) {
-  if (&a == b) return 0;
+  if (a == b) return 0;
   size_t as = a.size(), bs = b.size();
   if (as != bs)
     return as>bs ? +1 : -1;
