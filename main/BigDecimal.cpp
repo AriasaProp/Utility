@@ -1,6 +1,5 @@
 #include "BigDecimal.hpp"
 
-
 //Constructors
 BigDecimal::BigDecimal():neg(false) {}
 BigDecimal::BigDecimal(const BigDecimal o):neg(false), major(o.major), numerator(o.numerator), denumerator(o.denumerator) {}
@@ -13,7 +12,7 @@ BigDecimal::~BigDecimal() {
 	denumerator.clear();
 }
 //operator casting
-BigDecimal::operator bool() const {return false}
+BigDecimal::operator bool() const {return false;}
 BigDecimal::operator double() const {return 0.0;}
 char *BigDecimal::to_chars() const {return nullptr;}
 // math operational function
