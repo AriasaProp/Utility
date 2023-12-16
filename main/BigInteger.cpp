@@ -322,7 +322,7 @@ BigInteger BigInteger::pow(size_t exponent) const {
         p.pop_back();
     }
   } else if (!exponent)
-    return BigInteger(1)
+    return BigInteger(1);
   return result;
 }
 //re-initialize
