@@ -19,8 +19,6 @@ struct BigDecimal {
     BigDecimal(const char *);
     //Destructor
     ~BigDecimal();
-    //environment count
-    size_t tot() const;
     //operator casting
     operator bool() const;
     operator double() const;
