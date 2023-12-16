@@ -61,4 +61,7 @@ BigDecimal BigDecimal::operator*(const BigDecimal) const {return BigDecimal(*thi
 BigDecimal BigDecimal::operator/(const double) const {return BigDecimal(*this);}
 BigDecimal BigDecimal::operator/(const BigDecimal) const {return BigDecimal(*this);}
 // stream operator
-friend std::ostream &operator<<(std::ostream &out, const BigDecimal) {return out;}
+std::ostream &operator<<(std::ostream &out, const BigDecimal) {
+	out << "no output";
+	return out;
+}
