@@ -2,7 +2,7 @@
 
 //Constructors
 BigDecimal::BigDecimal():neg(false) {}
-BigDecimal::BigDecimal(const BigDecimal o):neg(false), major(o.major), numerator(o.numerator), denumerator(o.denumerator) {}
+BigDecimal::BigDecimal(const BigDecimal &o):neg(false), major(o.major), numerator(o.numerator), denumerator(o.denumerator) {}
 BigDecimal::BigDecimal(const double):neg(false) {}
 BigDecimal::BigDecimal(const char *):neg(false) {}
 //Destructor

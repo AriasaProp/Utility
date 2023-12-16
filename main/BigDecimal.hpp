@@ -14,7 +14,7 @@ struct BigDecimal {
   public:
     //Constructors
     BigDecimal();
-    BigDecimal(const BigDecimal);
+    BigDecimal(const BigDecimal&);
     BigDecimal(const double);
     BigDecimal(const char *);
     //Destructor
