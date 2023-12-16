@@ -76,7 +76,7 @@ static void sub_word(std::vector<word>&a, const std::vector<word>&b) {
 
 //Constructors
 BigInteger::BigInteger() {}
-BigInteger::BigInteger(const BigInteger a): neg(a.neg), words(a.words) {}
+BigInteger::BigInteger(const BigInteger &a): neg(a.neg), words(a.words) {}
 BigInteger::BigInteger(const signed i): neg(i<0) {
   unsigned u = abs(i);
   while (u) {

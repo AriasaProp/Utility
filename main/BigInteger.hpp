@@ -14,7 +14,7 @@ struct BigInteger {
   public:
     //Constructors
     BigInteger();
-    BigInteger(const BigInteger);
+    BigInteger(const BigInteger&);
     BigInteger(const signed);
     BigInteger(const char *);
     BigInteger(const std::vector<word>, bool);
