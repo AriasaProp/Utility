@@ -144,11 +144,8 @@ bool BigInteger_test() {
     if (!result) throw ("    '<<=' operator error");
     std::cout << "All Shift Operator : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
     a = BigInteger("1152921504606846976\0"), b = 2;
-    // "^" operator test
-    result = ((b ^ 60) == a);
-    if (!result) throw ("    '^' operator error");
-    // "^=" operator test
-    result = ((b ^= 60) == a);
+    // "pow" operator test
+    result = (b.pow(60) == a);
     if (!result) throw ("    '^=' operator error");
     std::cout << "All Power Operator : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
     // √ operator test
@@ -174,10 +171,11 @@ bool BigInteger_test() {
       std::cout << " max out ";
       break;
     }
-    if (!n.can_convert_to_int(&N)) {
+    if (n > (0x7fffffff)) {
       std::cout << " n value are broken in " << generated;
       return false;
     }
+    N = (int) n;
 		if ((q * 4 + r - t)<(t * n)) {
 			generated++;
 			q *= 10;

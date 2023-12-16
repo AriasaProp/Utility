@@ -5,7 +5,7 @@
 #include <vector>
 
 typedef unsigned int word;
-typedef signed int s_word;
+typedef signed int signed;
 
 struct BigInteger {
   private:
@@ -15,69 +15,66 @@ struct BigInteger {
   public:
     //Constructors
     BigInteger();
-    BigInteger(const BigInteger &);
-    BigInteger(const signed &);
+    BigInteger(const BigInteger);
+    BigInteger(const signed);
     BigInteger(const char *);
-    BigInteger(const std::vector<word> &, bool);
+    BigInteger(const std::vector<word>, bool);
     //Destructor
     ~BigInteger();
-    //environment count
-    size_t tot() const;
     //operator casting
     operator bool() const;
+    operator int() const;
     //operator double() const;
     char *to_chars() const;
-    bool can_convert_to_int(int *) const;
     // math operational function
     BigInteger sqrt() const;
+    BigInteger pow(size_t) const;
     // re-initialize operational function
-    BigInteger &operator=(const signed &);
-    BigInteger &operator=(const BigInteger &);
+    BigInteger &operator=(const signed);
+    BigInteger &operator=(const BigInteger);
     // compare operator function
-    bool operator==(const signed &) const;
-    bool operator!=(const signed &) const;
-    bool operator<=(const signed &) const;
-    bool operator>=(const signed &) const;
-    bool operator<(const signed &) const;
-    bool operator>(const signed &) const;
-    bool operator==(const BigInteger &) const;
-    bool operator!=(const BigInteger &) const;
-    bool operator<=(const BigInteger &) const;
-    bool operator>=(const BigInteger &) const;
-    bool operator<(const BigInteger &) const;
-    bool operator>(const BigInteger &) const;
+    bool operator==(const signed) const;
+    bool operator!=(const signed) const;
+    bool operator<=(const signed) const;
+    bool operator>=(const signed) const;
+    bool operator<(const signed) const;
+    bool operator>(const signed) const;
+    bool operator==(const BigInteger) const;
+    bool operator!=(const BigInteger) const;
+    bool operator<=(const BigInteger) const;
+    bool operator>=(const BigInteger) const;
+    bool operator<(const BigInteger) const;
+    bool operator>(const BigInteger) const;
     // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
-    BigInteger &operator+=(const s_word &);
-    BigInteger &operator+=(const BigInteger &);
-    BigInteger &operator-=(const s_word &);
-    BigInteger &operator-=(const BigInteger &);
-    BigInteger &operator*=(const s_word &);
-    BigInteger &operator*=(const BigInteger &);
-    BigInteger &operator/=(const s_word &);
-    BigInteger &operator/=(const BigInteger &);
-    BigInteger &operator%=(const s_word &);
-    BigInteger &operator%=(const BigInteger &);
-    BigInteger &operator^=(size_t);
+    BigInteger &operator+=(const signed);
+    BigInteger &operator+=(const BigInteger);
+    BigInteger &operator-=(const signed);
+    BigInteger &operator-=(const BigInteger);
+    BigInteger &operator*=(const signed);
+    BigInteger &operator*=(const BigInteger);
+    BigInteger &operator/=(const signed);
+    BigInteger &operator/=(const BigInteger);
+    BigInteger &operator%=(const signed);
+    BigInteger &operator%=(const BigInteger);
     BigInteger &operator>>=(size_t);
     BigInteger &operator<<=(size_t);
     // unsafe operator function
-    BigInteger operator+(const s_word &) const;
-    BigInteger operator+(const BigInteger &) const;
-    BigInteger operator-(const s_word &) const;
-    BigInteger operator-(const BigInteger &) const;
-    BigInteger operator*(const s_word &) const;
-    BigInteger operator*(const BigInteger &) const;
-    BigInteger operator/(const s_word &) const;
-    BigInteger operator/(const BigInteger &) const;
-    BigInteger operator%(const s_word &) const;
-    BigInteger operator%(const BigInteger &) const;
-    BigInteger operator^(size_t) const;
+    BigInteger operator+(const signed) const;
+    BigInteger operator+(const BigInteger) const;
+    BigInteger operator-(const signed) const;
+    BigInteger operator-(const BigInteger) const;
+    BigInteger operator*(const signed) const;
+    BigInteger operator*(const BigInteger) const;
+    BigInteger operator/(const signed) const;
+    BigInteger operator/(const BigInteger) const;
+    BigInteger operator%(const signed) const;
+    BigInteger operator%(const BigInteger) const;
     BigInteger operator-() const;
     BigInteger operator>>(size_t) const;
     BigInteger operator<<(size_t) const;
     // stream operator
-    friend std::ostream &operator<<(std::ostream &, const BigInteger &);
+    friend std::ostream &operator<<(std::ostream &, const BigInteger);
 };
 #endif
