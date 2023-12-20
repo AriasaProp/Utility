@@ -136,7 +136,7 @@ bool BigInteger_test() {
     result = ((b << 60) == a);
     if (!result) throw ("    '<<' operator error");
     // "&" operator test
-    a = BigInteger("8589934592"), b = Biginteger("120");
+    a = BigInteger("8589934592"), b = BigInteger("120");
     result = ((a & b) == BigInteger(0));
     if (!result) throw ("    '&' operator error");
     result = ((a | b) == (a + b));
@@ -149,7 +149,7 @@ bool BigInteger_test() {
     result = ((b <<= 60) == a);
     if (!result) throw ("    '<<=' operator error");
     // "&=" operator test
-    a = BigInteger("8589934592"), b = Biginteger("120");
+    a = BigInteger("8589934592"), b = BigInteger("120");
     A = a;
     result = ((A &= b) == BigInteger(0));
     if (!result) throw ("    '&=' operator error");

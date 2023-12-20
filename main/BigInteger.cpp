@@ -948,10 +948,10 @@ BigInteger BigInteger::operator%(const BigInteger b) const {
 BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
-BigInteger BigInteger::operator>> (size_t n_bits) const {
+BigInteger BigInteger::operator>>(size_t n_bits) const {
   return BigInteger(*this)>>= n_bits;
 }
-BigInteger BigInteger::operator<< (size_t n_bits) const {
+BigInteger BigInteger::operator<<(size_t n_bits) const {
   return BigInteger(*this)<<= n_bits;
 }
 BigInteger BigInteger::operator&(const BigInteger b) const {
