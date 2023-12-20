@@ -135,6 +135,12 @@ bool BigInteger_test() {
     // "<<" operator test
     result = ((b << 60) == a);
     if (!result) throw ("    '<<' operator error");
+    // "&" operator test
+    a = BigInteger("8589934592"), b = Biginteger("120");
+    result = ((a & b) == BigInteger(0));
+    if (!result) throw ("    '&' operator error");
+    result = ((a | b) == (a + b));
+    if (!result) throw ("    '|' operator error");
     // ">>=" operator test
     result = ((a >>= 60) == b);
     if (!result) throw ("    '>>=' operator error");
@@ -142,7 +148,16 @@ bool BigInteger_test() {
     // "<<=" operator test
     result = ((b <<= 60) == a);
     if (!result) throw ("    '<<=' operator error");
-    std::cout << "All Shift Operator : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
+    // "&=" operator test
+    a = BigInteger("8589934592"), b = Biginteger("120");
+    A = a;
+    result = ((A &= b) == BigInteger(0));
+    if (!result) throw ("    '&=' operator error");
+    // "|=" operator test
+    A = a;
+    result = ((A |= b) == (a + b));
+    if (!result) throw ("    '|=' operator error");
+    std::cout << "All Bitwise Operator : " << _clock.get_clock(clock_adjustment::period::microseconds) << " us " << std::endl;
     a = BigInteger("1152921504606846976\0"), b = 2;
     // "pow" operator test
     result = (b.pow(60) == a);

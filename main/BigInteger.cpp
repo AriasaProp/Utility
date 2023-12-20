@@ -717,7 +717,7 @@ BigInteger &BigInteger::operator%=(const BigInteger b) {
   }
   return *this;
 }
-
+//safe bitwise operand
 BigInteger &BigInteger::operator>>=(size_t n_bits) {
   if (n_bits && words.size()) {
     size_t j = n_bits / WORD_BITS;
@@ -765,6 +765,26 @@ BigInteger &BigInteger::operator<<=(size_t bits) {
     if (n)
       words.insert(words.begin(), n, 0);
   }
+  return *this;
+}
+BigInteger &BigInteger::operator&=(const BigInteger b) {
+  neg &= b.neg;
+  size_t la = words.size(), lb = b.words.size();
+  size_t lu = (la < lb) ? la : lb;
+  words.resize(lu);
+  while (lu--)
+  	words[lu] &= b.words[lu];
+  while (words.size() && !words.back())
+  	words.pop_back();
+  return *this;
+}
+BigInteger &BigInteger::operator|=(const BigInteger b) {
+  neg &= b.neg;
+  size_t la = words.size(), lb = b.words.size();
+  size_t lu = (la > lb) ? la : lb;
+  words.resize(lu);
+  while (lb--)
+  	words[lb] |= b.words[lb];
   return *this;
 }
 //compare operator
@@ -933,6 +953,24 @@ BigInteger BigInteger::operator>> (size_t n_bits) const {
 }
 BigInteger BigInteger::operator<< (size_t n_bits) const {
   return BigInteger(*this)<<= n_bits;
+}
+BigInteger BigInteger::operator&(const BigInteger b) const {
+	size_t la = words.size(), lb = b.words.size();
+	size_t lu = (la<lb)?la:lb;
+	std::vector<word> r = words;
+	r.resize(lu);
+	while(lu--) r[lu] &= b.words[lu];
+	while (r.size() && !r.back())
+  	r.pop_back();
+  return BigInteger(r, neg & b.neg);
+}
+BigInteger BigInteger::operator|(const BigInteger b) const {
+  size_t la = words.size(), lb = b.words.size();
+  size_t lu = (la > lb) ? la : lb;
+	std::vector<word> r = words;
+  r.resize(lu);
+  while (lb--) r[lb] |= b.words[lb];
+  return BigInteger(r, neg & b.neg);
 }
 
 std::ostream &operator<<(std::ostream &out, const BigInteger num) {
