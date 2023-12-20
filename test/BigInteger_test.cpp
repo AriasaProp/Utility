@@ -142,10 +142,11 @@ bool BigInteger_test() {
     result = ((a | b) == (a + b));
     if (!result) throw ("    '|' operator error");
     // ">>=" operator test
+    a = BigInteger("1152921504606846976000000000000000000\0"), b = BigInteger("1000000000000000000\0");
     result = ((a >>= 60) == b);
     if (!result) throw ("    '>>=' operator error");
-    a = BigInteger("1152921504606846976000000000000000000\0"), b = BigInteger("1000000000000000000\0");
     // "<<=" operator test
+    a = BigInteger("1152921504606846976000000000000000000\0"), b = BigInteger("1000000000000000000\0");
     result = ((b <<= 60) == a);
     if (!result) throw ("    '<<=' operator error");
     // "&=" operator test
