@@ -58,11 +58,11 @@ struct BigInteger {
     BigInteger &operator%=(const signed);
     BigInteger &operator%=(const BigInteger);
     //safe bitwise operand
-    BigInteger &operator>>=(size_t);
-    BigInteger &operator<<=(size_t);
-    BigInteger &operator&=(const BigInteger);
-    BigInteger &operator|=(const BigInteger);
-    // unsafe operator function
+    friend BigInteger &operator>>=(BigInteger&,size_t);
+    friend BigInteger &operator<<=(BigInteget&,size_t);
+    friend BigInteger &operator&=(BigInteger&, const BigInteger);
+    friend BigInteger &operator|=(BigInteger&, const BigInteger);
+    // new object generate, operator function
     BigInteger operator+(const signed) const;
     BigInteger operator+(const BigInteger) const;
     BigInteger operator-(const signed) const;
@@ -74,11 +74,11 @@ struct BigInteger {
     BigInteger operator%(const signed) const;
     BigInteger operator%(const BigInteger) const;
     BigInteger operator-() const;
-    //unsafe bitwise operand
-    BigInteger operator>>(size_t) const;
-    BigInteger operator<<(size_t) const;
-    BigInteger operator&(const BigInteger) const;
-    BigInteger operator|(const BigInteger) const;
+    //new object generate, bitwise operand
+    friend BigInteger operator>>(const BigInteger, size_t) const;
+    friend BigInteger operator<<(const BigInteger, size_t) const;
+    friend BigInteger operator&(const BigInteger, const BigInteger) const;
+    friend BigInteger operator|(const BigInteger, const BigInteger) const;
     // stream operator
     friend std::ostream &operator<<(std::ostream &, const BigInteger);
 };

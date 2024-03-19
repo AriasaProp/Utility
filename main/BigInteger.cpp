@@ -6,10 +6,10 @@
 #include <cstring>
 #include <cstdlib>
 
-const size_t WORD_BITS = sizeof(word) * CHAR_BIT;
-const size_t WORD_BITS_1 = WORD_BITS - 1;
-const size_t WORD_HALF_BITS = WORD_BITS / 2;
-const word WORD_HALF_MASK = ((word) - 1) >> WORD_HALF_BITS;
+constexpr size_t WORD_BITS = sizeof(word) * CHAR_BIT;
+constexpr size_t WORD_BITS_1 = WORD_BITS - 1;
+constexpr size_t WORD_HALF_BITS = WORD_BITS / 2;
+constexpr word WORD_HALF_MASK = ((word) - 1) >> WORD_HALF_BITS;
 
 //private function for repeated use
 // +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -718,15 +718,15 @@ BigInteger &BigInteger::operator%=(const BigInteger b) {
   return *this;
 }
 //safe bitwise operand
-BigInteger &BigInteger::operator>>=(size_t n_bits) {
-  if (n_bits && words.size()) {
+BigInteger &operator>>=(BigInteger &a, size_t n_bits) {
+  if (n_bits && a.words.size()) {
     size_t j = n_bits / WORD_BITS;
-    if (j<words.size()) {
-      std::vector<word>::iterator carried = words.begin();
-      words.erase(carried, carried + j);
+    if (j<a.words.size()) {
+      std::vector<word>::iterator carried = a.words.begin();
+      a.words.erase(carried, carried + j);
       n_bits %= WORD_BITS;
       if (n_bits) {
-        std::vector<word>::iterator endCarried = words.end() - 1;
+        std::vector<word>::iterator endCarried = a.words.end() - 1;
         const size_t r_shift = WORD_BITS - n_bits;
         *carried >>= n_bits;
         while (carried != endCarried) {
@@ -735,22 +735,22 @@ BigInteger &BigInteger::operator>>=(size_t n_bits) {
           *carried >>= n_bits;
         }
         if ( *endCarried == 0)
-          words.pop_back();
+          a.words.pop_back();
       }
     } else {
       neg = false;
-      words.clear();
+      a.words.clear();
     }
   }
-  return *this;
+  return a;
 }
-BigInteger &BigInteger::operator<<=(size_t bits) {
+BigInteger &operator<<=(BigInteger &a, size_t bits) {
   if (bits) {
     size_t n = bits % WORD_BITS;
     if (n) {
       const size_t l_shift = WORD_BITS - n;
-      std::vector<word>::reverse_iterator carried = words.rbegin();
-      std::vector<word>::reverse_iterator endCarried = words.rend() - 1;
+      std::vector<word>::reverse_iterator carried = a.words.rbegin();
+      std::vector<word>::reverse_iterator endCarried = a.words.rend() - 1;
       word lo = *carried >> l_shift;
       while (carried != endCarried) {
         *carried <<= n;
@@ -759,33 +759,33 @@ BigInteger &BigInteger::operator<<=(size_t bits) {
       }
       *carried <<= n;
       if (lo)
-        words.push_back(lo);
+        a.words.push_back(lo);
     }
     n = bits / WORD_BITS;
     if (n)
-      words.insert(words.begin(), n, 0);
+      a.words.insert(a.words.begin(), n, 0);
   }
-  return *this;
+  return a;
 }
-BigInteger &BigInteger::operator&=(const BigInteger b) {
-  neg &= b.neg;
-  size_t la = words.size(), lb = b.words.size();
+BigInteger &operator&=(BigInteger &a, const BigInteger b) {
+  a.neg &= b.neg;
+  size_t la = awords.size(), lb = b.words.size();
   size_t lu = (la < lb) ? la : lb;
-  words.resize(lu);
+  b.words.resize(lu);
   while (lu--)
-  	words[lu] &= b.words[lu];
-  while (words.size() && !words.back())
-  	words.pop_back();
-  return *this;
+  	a.words[lu] &= b.words[lu];
+  while (a.words.size() && !a.words.back())
+  	a.words.pop_back();
+  return a;
 }
-BigInteger &BigInteger::operator|=(const BigInteger b) {
-  neg &= b.neg;
-  size_t la = words.size(), lb = b.words.size();
+BigInteger &operator|=(BigInteger &a, const BigInteger b) {
+  a.neg &= b.neg;
+  size_t la = a.words.size(), lb = b.words.size();
   size_t lu = (la > lb) ? la : lb;
-  words.resize(lu);
+  a.words.resize(lu);
   while (lb--)
-  	words[lb] |= b.words[lb];
-  return *this;
+  	a.words[lb] |= b.words[lb];
+  return a;
 }
 //compare operator
 bool BigInteger::operator==(const signed b) const {
@@ -914,7 +914,7 @@ bool BigInteger::operator>(const BigInteger b) const {
       return (words[i]>b.words[i]) ^ neg;
   return false;
 }
-//unsafe operator
+//new object generate, operator
 BigInteger BigInteger::operator+(const signed b) const {
   return BigInteger(*this)+= b;
 }
@@ -948,29 +948,30 @@ BigInteger BigInteger::operator%(const BigInteger b) const {
 BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
-BigInteger BigInteger::operator>>(size_t n_bits) const {
-  return BigInteger(*this)>>= n_bits;
+// new object generate, bitwise operand
+BigInteger operator>>(const BigInteger a, size_t n_bits) const {
+  return BigInteger(a)>>= n_bits;
 }
-BigInteger BigInteger::operator<<(size_t n_bits) const {
-  return BigInteger(*this)<<= n_bits;
+BigInteger operator<<(const BigInteger a, size_t n_bits) const {
+  return BigInteger(a)<<= n_bits;
 }
-BigInteger BigInteger::operator&(const BigInteger b) const {
-	size_t la = words.size(), lb = b.words.size();
+BigInteger operator&(const BigInteger a, const BigInteger b) const {
+	size_t la = a.words.size(), lb = b.words.size();
 	size_t lu = (la<lb)?la:lb;
-	std::vector<word> r = words;
+	std::vector<word> r = a.words;
 	r.resize(lu);
 	while(lu--) r[lu] &= b.words[lu];
 	while (r.size() && !r.back())
   	r.pop_back();
-  return BigInteger(r, neg & b.neg);
+  return BigInteger(r, a.neg & b.neg);
 }
-BigInteger BigInteger::operator|(const BigInteger b) const {
-  size_t la = words.size(), lb = b.words.size();
+BigInteger operator|(const BigInteger a, const BigInteger b) const {
+  size_t la = a.words.size(), lb = b.words.size();
   size_t lu = (la > lb) ? la : lb;
-	std::vector<word> r = words;
+	std::vector<word> r = a.words;
   r.resize(lu);
   while (lb--) r[lb] |= b.words[lb];
-  return BigInteger(r, neg & b.neg);
+  return BigInteger(r, a.neg & b.neg);
 }
 
 std::ostream &operator<<(std::ostream &out, const BigInteger num) {
