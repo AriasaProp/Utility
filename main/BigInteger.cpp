@@ -948,10 +948,10 @@ BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
 // new object generate, bitwise operand
-BigInteger operator>>(const BigInteger &a, const size_t n_bits) {
+BigInteger operator>>(BigInteger &a, const size_t n_bits) {
   return BigInteger(a)>>= n_bits;
 }
-BigInteger operator<<(const BigInteger &a, const size_t n_bits) {
+BigInteger operator<<(BigInteger &a, const size_t n_bits) {
   return BigInteger(a)<<= n_bits;
 }
 BigInteger operator&(const BigInteger a, const BigInteger b) {
