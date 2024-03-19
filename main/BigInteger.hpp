@@ -75,10 +75,10 @@ struct BigInteger {
     BigInteger operator%(const BigInteger) const;
     BigInteger operator-() const;
     //new object generate, bitwise operand
-    friend BigInteger operator>>(const BigInteger, size_t) const;
-    friend BigInteger operator<<(const BigInteger, size_t) const;
-    friend BigInteger operator&(const BigInteger, const BigInteger) const;
-    friend BigInteger operator|(const BigInteger, const BigInteger) const;
+    friend BigInteger operator>>(const BigInteger, size_t);
+    friend BigInteger operator<<(const BigInteger, size_t);
+    friend BigInteger operator&(const BigInteger, const BigInteger);
+    friend BigInteger operator|(const BigInteger, const BigInteger);
     // stream operator
     friend std::ostream &operator<<(std::ostream &, const BigInteger);
 };

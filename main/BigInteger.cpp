@@ -738,7 +738,7 @@ BigInteger &operator>>=(BigInteger &a, size_t n_bits) {
           a.words.pop_back();
       }
     } else {
-      neg = false;
+      a.neg = false;
       a.words.clear();
     }
   }
@@ -949,13 +949,13 @@ BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
 // new object generate, bitwise operand
-BigInteger operator>>(const BigInteger a, size_t n_bits) const {
+BigInteger operator>>(const BigInteger a, size_t n_bits) {
   return BigInteger(a)>>= n_bits;
 }
-BigInteger operator<<(const BigInteger a, size_t n_bits) const {
+BigInteger operator<<(const BigInteger a, size_t n_bits) {
   return BigInteger(a)<<= n_bits;
 }
-BigInteger operator&(const BigInteger a, const BigInteger b) const {
+BigInteger operator&(const BigInteger a, const BigInteger b) {
 	size_t la = a.words.size(), lb = b.words.size();
 	size_t lu = (la<lb)?la:lb;
 	std::vector<word> r = a.words;
@@ -965,7 +965,7 @@ BigInteger operator&(const BigInteger a, const BigInteger b) const {
   	r.pop_back();
   return BigInteger(r, a.neg & b.neg);
 }
-BigInteger operator|(const BigInteger a, const BigInteger b) const {
+BigInteger operator|(const BigInteger a, const BigInteger b) {
   size_t la = a.words.size(), lb = b.words.size();
   size_t lu = (la > lb) ? la : lb;
 	std::vector<word> r = a.words;
