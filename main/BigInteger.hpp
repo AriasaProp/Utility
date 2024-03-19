@@ -75,8 +75,8 @@ struct BigInteger {
     BigInteger operator%(const BigInteger) const;
     BigInteger operator-() const;
     //new object generate, bitwise operand
-    friend BigInteger operator>>(const BigInteger, const size_t);
-    friend BigInteger operator<<(const BigInteger, const size_t);
+    friend BigInteger operator>>(const BigInteger&, const size_t);
+    friend BigInteger operator<<(const BigInteger&, const size_t);
     friend BigInteger operator&(const BigInteger, const BigInteger);
     friend BigInteger operator|(const BigInteger, const BigInteger);
     // stream operator
