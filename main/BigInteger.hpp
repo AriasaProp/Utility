@@ -59,7 +59,7 @@ struct BigInteger {
     BigInteger &operator%=(const BigInteger);
     //safe bitwise operand
     friend BigInteger &operator>>=(BigInteger&,size_t);
-    friend BigInteger &operator<<=(BigInteget&,size_t);
+    friend BigInteger &operator<<=(BigInteger&,size_t);
     friend BigInteger &operator&=(BigInteger&, const BigInteger);
     friend BigInteger &operator|=(BigInteger&, const BigInteger);
     // new object generate, operator function
