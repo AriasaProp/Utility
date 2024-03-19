@@ -769,9 +769,8 @@ BigInteger &operator<<=(BigInteger &a, size_t bits) {
 }
 BigInteger &operator&=(BigInteger &a, const BigInteger b) {
   a.neg &= b.neg;
-  size_t la = a.words.size(), lb = b.words.size();
-  size_t lu = (la < lb) ? la : lb;
-  b.words.resize(lu);
+  size_t lu = (a.words.size() < b.words.size()) ? a.words.size() : b.words.size();
+  a.words.resize(lu);
   while (lu--)
   	a.words[lu] &= b.words[lu];
   while (a.words.size() && !a.words.back())
