@@ -948,7 +948,7 @@ BigInteger BigInteger::operator-() const {
   return BigInteger(words, !neg);
 }
 // new object generate, bitwise operand
-BigInteger operator>>(BigInteger &a, const size_t n_bits) {
+BigInteger operator>>(const BigInteger &A, size_t n_bits) {
 	BigInteger a(A);
   if (n_bits && a.words.size()) {
     size_t j = n_bits / WORD_BITS;
@@ -975,7 +975,7 @@ BigInteger operator>>(BigInteger &a, const size_t n_bits) {
   }
   return a;
 }
-BigInteger operator<<(BigInteger &A, const size_t bits) {
+BigInteger operator<<(const BigInteger &A, size_t bits) {
 	BigInteger a(A);
   if (bits) {
     size_t n = bits % WORD_BITS;
