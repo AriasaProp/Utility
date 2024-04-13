@@ -787,130 +787,130 @@ BigInteger &operator|=(BigInteger &a, const BigInteger b) {
   return a;
 }
 //compare operator
-bool BigInteger::operator==(const signed b) const {
-  if (neg != (b < 0))
+bool operator==(const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
     return false;
-  if (words.size() != 1)
+  if (a.words.size() != 1)
     return false;
   const signed B = std::abs(b);
-  if (words[0] != B)
+  if (a.words[0] != B)
     return false;
   return true;
 }
-bool BigInteger::operator!=(const signed b) const {
-  if (neg != (b < 0))
+bool operator!=(const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
     return true;
-  if (words.size() != 1)
+  if (a.words.size() != 1)
     return true;
   const signed B = std::abs(b);
-  if (words[0] != B)
+  if (a.words[0] != B)
     return true;
   return false;
 }
-bool BigInteger::operator<=(const signed b) const {
-  if (neg != (b < 0))
-    return neg;
-  if (words.size() != 1)
-    return (words.size() < 1) ^ neg;
+bool operator<=(const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
+    return a.neg;
+  if (a.words.size() != 1)
+    return (a.words.size() < 1) ^ a.neg;
   const signed B = std::abs(b);
-  if (words[0] != B)
-    return (words[0]<B) ^ neg;
+  if (a.words[0] != B)
+    return (a.words[0]<B) ^ a.neg;
   return true;
 }
-bool BigInteger::operator>=(const signed b) const {
-  if (neg != (b < 0))
-    return !neg;
-  if (words.size() != 1)
-    return (words.size() > 1) ^ neg;
+bool operator>=(const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
+    return !a.neg;
+  if (a.words.size() != 1)
+    return (a.words.size() > 1) ^ a.neg;
   const signed B = std::abs(b);
-  if (words[0] != B)
-    return (words[0]>B) ^ neg;
+  if (a.words[0] != B)
+    return (a.words[0]>B) ^ a.neg;
   return true;
 }
-bool BigInteger::operator<(const signed b) const {
-  if (neg != (b < 0))
-    return neg;
-  if (words.size() != 1)
-    return (words.size() < 1) ^ neg;
+bool operator< (const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
+    return a.neg;
+  if (a.words.size() != 1)
+    return (a.words.size() < 1) ^ a.neg;
   const signed B = std::abs(b);
-  if (words[0] != B)
-    return (words[0]<B) ^ neg;
+  if (a.words[0] != B)
+    return (a.words[0]<B) ^ a.neg;
   return false;
 }
-bool BigInteger::operator>(const signed b) const {
-  if (neg != (b < 0))
-    return !neg;
-  if (words.size() != 1)
-    return (words.size() > 1) ^ neg;
+bool operator> (const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0))
+    return !a.neg;
+  if (a.words.size() != 1)
+    return (a.words.size() > 1) ^ a.neg;
   const signed B = std::abs(b);
-  if (words[0] != B)
-    return (words[0]>B) ^ neg;
+  if (a.words[0] != B)
+    return (a.words[0]>B) ^ a.neg;
   return false;
 }
-bool BigInteger::operator==(const BigInteger b) const {
-  if (neg != b.neg)
+bool operator==(const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
     return false;
-  size_t i = words.size(), j = b.words.size();
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
     return false;
   while (i--)
-    if (words[i] != b.words[i])
+    if (a.words[i] != b.words[i])
       return false;
   return true;
 }
-bool BigInteger::operator!=(const BigInteger b) const {
-  if (neg != b.neg)
+bool operator!=(const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
     return true;
-  size_t i = words.size(), j = b.words.size();
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
     return true;
   while (i--)
-    if (words[i] != b.words[i])
+    if (a.words[i] != b.words[i])
       return true;
   return false;
 }
-bool BigInteger::operator<=(const BigInteger b) const {
-  if (neg != b.neg)
-    return neg;
-  size_t i = words.size(), j = b.words.size();
+bool operator<=(const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
+    return a.neg;
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
-    return (i<j) ^ neg;
+    return (i<j) ^ a.neg;
   while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]<b.words[i]) ^ neg;
+    if (a.words[i] != b.words[i])
+      return (a.words[i]<b.words[i]) ^ a.neg;
   return true;
 }
-bool BigInteger::operator>=(const BigInteger b) const {
-  if (neg != b.neg)
+bool operator>=(const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
     return b.neg;
-  size_t i = words.size(), j = b.words.size();
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
-    return (i>j) ^ neg;
+    return (i>j) ^ a.neg;
   while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]>b.words[i]) ^ neg;
+    if (a.words[i] != b.words[i])
+      return (a.words[i]>b.words[i]) ^ a.neg;
   return true;
 }
-bool BigInteger::operator<(const BigInteger b) const {
-  if (neg != b.neg)
+bool operator< (const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
     return neg;
-  size_t i = words.size(), j = b.words.size();
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
-    return (i<j) ^ neg;
+    return (i<j) ^ a.neg;
   while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]<b.words[i]) ^ neg;
+    if (a.words[i] != b.words[i])
+      return (a.words[i]<b.words[i]) ^ a.neg;
   return false;
 }
-bool BigInteger::operator>(const BigInteger b) const {
-  if (neg != b.neg)
+bool operator> (const BigInteger &a, const BigInteger &b) {
+  if (a.neg != b.neg)
     return b.neg;
-  size_t i = words.size(), j = b.words.size();
+  size_t i = a.words.size(), j = b.words.size();
   if (i != j)
-    return (i>j) ^ neg;
+    return (i>j) ^ a.neg;
   while (i--)
-    if (words[i] != b.words[i])
-      return (words[i]>b.words[i]) ^ neg;
+    if (a.words[i] != b.words[i])
+      return (a.words[i]>b.words[i]) ^ a.neg;
   return false;
 }
 //new object generate, operator

@@ -32,18 +32,18 @@ struct BigInteger {
     BigInteger &operator=(const signed);
     BigInteger &operator=(const BigInteger);
     // compare operator function
-    bool operator==(const signed) const;
-    bool operator!=(const signed) const;
-    bool operator<=(const signed) const;
-    bool operator>=(const signed) const;
-    bool operator<(const signed) const;
-    bool operator>(const signed) const;
-    bool operator==(const BigInteger) const;
-    bool operator!=(const BigInteger) const;
-    bool operator<=(const BigInteger) const;
-    bool operator>=(const BigInteger) const;
-    bool operator<(const BigInteger) const;
-    bool operator>(const BigInteger) const;
+    friend bool operator==(const BigInteger &, const signed);
+    friend bool operator!=(const BigInteger &, const signed);
+    friend bool operator<=(const BigInteger &, const signed);
+    friend bool operator>=(const BigInteger &, const signed);
+    friend bool operator<(const BigInteger &, const signed);
+    friend bool operator>(const BigInteger &, const signed);
+    friend bool operator==(const BigInteger &, const BigInteger &);
+    friend bool operator!=(const BigInteger &, const BigInteger &);
+    friend bool operator<=(const BigInteger &, const BigInteger &);
+    friend bool operator>=(const BigInteger &, const BigInteger &);
+    friend bool operator<(const BigInteger &, const BigInteger &);
+    friend bool operator>(const BigInteger &, const BigInteger &);
     // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
