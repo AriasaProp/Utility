@@ -893,7 +893,7 @@ bool operator>=(const BigInteger &a, const BigInteger &b) {
 }
 bool operator< (const BigInteger &a, const BigInteger &b) {
   if (a.neg != b.neg)
-    return neg;
+    return a.neg;
   size_t i = a.words.size(), j = b.words.size();
   if (i != j)
     return (i<j) ^ a.neg;
