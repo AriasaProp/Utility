@@ -36,14 +36,14 @@ struct BigInteger {
     friend bool operator!=(const BigInteger &, const signed);
     friend bool operator<=(const BigInteger &, const signed);
     friend bool operator>=(const BigInteger &, const signed);
-    friend bool operator<(const BigInteger &, const signed);
-    friend bool operator>(const BigInteger &, const signed);
+    friend bool operator< (const BigInteger &, const signed);
+    friend bool operator> (const BigInteger &, const signed);
     friend bool operator==(const BigInteger &, const BigInteger &);
     friend bool operator!=(const BigInteger &, const BigInteger &);
     friend bool operator<=(const BigInteger &, const BigInteger &);
     friend bool operator>=(const BigInteger &, const BigInteger &);
-    friend bool operator<(const BigInteger &, const BigInteger &);
-    friend bool operator>(const BigInteger &, const BigInteger &);
+    friend bool operator< (const BigInteger &, const BigInteger &);
+    friend bool operator> (const BigInteger &, const BigInteger &);
     // safe operator math function
     BigInteger &operator--();
     BigInteger &operator++();
@@ -60,8 +60,8 @@ struct BigInteger {
     //safe bitwise operand
     friend BigInteger &operator>>=(BigInteger&,size_t);
     friend BigInteger &operator<<=(BigInteger&,size_t);
-    friend BigInteger &operator&=(BigInteger&, const BigInteger);
-    friend BigInteger &operator|=(BigInteger&, const BigInteger);
+    friend BigInteger &operator&= (BigInteger&, const BigInteger);
+    friend BigInteger &operator|= (BigInteger&, const BigInteger);
     // new object generate, operator function
     BigInteger operator+(const signed) const;
     BigInteger operator+(const BigInteger) const;
