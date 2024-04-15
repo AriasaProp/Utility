@@ -2,6 +2,7 @@
 #include <cstring>
 #include <chrono>
 #include <iostream>
+/*
 #include <map>
 
 static std::map<void*, size_t> memoryMap;
@@ -16,7 +17,7 @@ void operator delete(void* ptr) noexcept {
     free(ptr);
     memoryMap.erase(ptr);
 }
-
+*/
 struct clock_adjustment::private_data {
   char *label;
   std::chrono::time_point<std::chrono::steady_clock> safe_time;
