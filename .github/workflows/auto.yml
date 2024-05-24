@@ -1,6 +1,10 @@
 name: AUTO
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'math_util/**'
+      - 'profiling_util/**'
 
 jobs:
 
@@ -10,6 +14,15 @@ jobs:
 
       - uses: actions/checkout@v4.1.1
 
+      - uses: dorny/paths-filter@v3.0.1
+        id: changes
+        with:
+          filters: |
+            math:
+              - 'math_util/**'
+            profiling:
+              - 'profiling_util/**'
+
       - uses: actions/setup-java@v4.2.1
         with:
           java-version: '17'
@@ -18,7 +31,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.6
+          gradle-version: 8.7
 
-      - name: Run Test
-        run: gradle test
+      - name: Run Math Utility Test
+        if: steps.changes.outputs.math == 'true'
+        run: gradle :math_util:test
+
+      - name: Run Profiling Utility Test
+        if: steps.changes.outputs.profiling == 'true'
+        run: gradle :profiling_util:test
