@@ -18,21 +18,21 @@ void operator delete(void* ptr) noexcept {
     memoryMap.erase(ptr);
 }
 */
-struct clock_adjustment::private_data {
+struct profiling::clock_adjustment::private_data {
   char *label;
   std::chrono::time_point<std::chrono::steady_clock> safe_time;
   std::chrono::time_point<std::chrono::steady_clock> safe_time_part;
   std::chrono::time_point<std::chrono::steady_clock> temp_time;
 };
 
-clock_adjustment::clock_adjustment(const char *l) {
+profiling::clock_adjustment::clock_adjustment(const char *l) {
   data = new private_data;
   data->label = new char[strlen(l)];
   strcpy(data->label, l);
   data->safe_time_part = data->safe_time = std::chrono::steady_clock::now();
   std::cout << "Clocking for " << data->label << " started now!" << std::endl;
 }
-unsigned long clock_adjustment::get_clock(const period p) {
+unsigned long profiling::clock_adjustment::get_clock(const period p) {
   data->temp_time = std::chrono::steady_clock::now();
   unsigned long res = 0;
   switch (p) {
@@ -56,7 +56,7 @@ unsigned long clock_adjustment::get_clock(const period p) {
   data->safe_time_part = std::chrono::steady_clock::now();
   return res;
 }
-clock_adjustment::~clock_adjustment() {
+profiling::clock_adjustment::~clock_adjustment() {
   data->temp_time = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(data->temp_time - data->safe_time);
     

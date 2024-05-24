@@ -1,1 +1,2 @@
+include ':math_util', ':profiling_util'
 rootProject.name = 'Function_Test'

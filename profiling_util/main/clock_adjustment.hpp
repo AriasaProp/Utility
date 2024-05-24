@@ -1,6 +1,8 @@
 #ifndef CLOCK_ADJUSTMENT_
 #define CLOCK_ADJUSTMENT_
 
+namespace profiling {
+
 struct clock_adjustment {
 public:
   enum period {
@@ -17,5 +19,7 @@ private:
   struct private_data;
   private_data *data;
 };
+
+}
 
 #endif //CLOCK_ADJUSTMENT_
