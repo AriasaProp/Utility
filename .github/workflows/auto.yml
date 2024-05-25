@@ -58,8 +58,8 @@ jobs:
 
       - name: Commit and Push format
         run: |
-          git config user.email "ikomangwidiadaariasa12@gmail.com"
-          git config user.name "AriasaProp"
+          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
+          git config --global user.name "AriasaProp"
           git add .
           git commit -m "Reformatting cpp"
           git push
