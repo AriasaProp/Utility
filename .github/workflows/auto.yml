@@ -32,11 +32,11 @@ jobs:
           gradle-version: 8.7
 
       - name: Run Profiling Test
-      	if: steps.changes.output.math == 'false'
+        if: steps.changes.output.math == 'false'
         run: gradle :profiling_util:test
 
       - name: Run Test
-      	if: steps.changes.output.math == 'true'
+        if: steps.changes.output.math == 'true'
         run: gradle test
 
       - name: Filter Formating Files
