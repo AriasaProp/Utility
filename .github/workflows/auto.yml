@@ -12,7 +12,7 @@ permissions:
 jobs:
 	test:
     steps:
-      - name: Checkou
+      - name: Checkout
         uses: actions/checkout@v4.1.1
 
       - name: Check changes
@@ -20,8 +20,7 @@ jobs:
         id: changes
         with:
           filters: |
-            math:
-              - 'math_util/**'
+            math: 'math_util/**'
 
       - name: Setup Java 17
         uses: actions/setup-java@v4.2.1
