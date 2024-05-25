@@ -6,37 +6,64 @@ on:
       - 'math_util/**'
       - 'profiling_util/**'
 
+permissions:
+  actions: write
+
 jobs:
-
-  test:
-    runs-on: ubuntu-latest
+	test:
     steps:
+      - name: Checkou
+        uses: actions/checkout@v4.1.1
 
-      - uses: actions/checkout@v4.1.1
-
-      - uses: dorny/paths-filter@v3.0.1
+      - name: Check changes
+        uses: dorny/paths-filter@v3.0.1
         id: changes
         with:
           filters: |
             math:
               - 'math_util/**'
-            profiling:
-              - 'profiling_util/**'
 
-      - uses: actions/setup-java@v4.2.1
+      - name: Setup Java 17
+        uses: actions/setup-java@v4.2.1
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
 
-      - uses: gradle/actions/setup-gradle@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
 
-      - name: Run Math Utility Test
-        if: steps.changes.outputs.math == 'true'
-        run: gradle :math_util:test
-
-      - name: Run Profiling Utility Test
-        if: steps.changes.outputs.profiling == 'true'
+      - name: Run Profiling Test
+      	if: steps.changes.output.math == 'false'
         run: gradle :profiling_util:test
+
+      - name: Run Test
+      	if: steps.changes.output.math == 'true'
+        run: gradle test
+
+      - name: Filter Formating Files
+        uses: dorny/paths-filter@v3.0.1
+        id: files
+        with:
+        	list-files: shell
+          filters: |
+            src:
+              - added|modified:'math_util/**/*.cpp'
+              - added|modified:'math_util/**/*.hpp'
+              - added|modified:'profiling_util/**/*.cpp'
+              - added|modified:'profiling_util/**/*.hpp'
+
+      - name: Formating File
+        run: |
+          sudo apt-get install -y clang-format
+          clang-format -i ${{ steps.files.output.src_files }}
+
+      - name: Commit and Push format
+        run: |
+          git config user.email "ikomangwidiadaariasa12@gmail.com"
+          git config user.name "AriasaProp"
+          git add .
+          git commit -m "Reformatting cpp"
+          git push

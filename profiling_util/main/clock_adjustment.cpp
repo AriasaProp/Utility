@@ -2,22 +2,7 @@
 #include <cstring>
 #include <chrono>
 #include <iostream>
-/*
-#include <map>
 
-static std::map<void*, size_t> memoryMap;
-
-void* operator new(size_t size) {
-    void* ptr = malloc(size);
-    memoryMap[ptr] = size;
-    return ptr;
-}
-
-void operator delete(void* ptr) noexcept {
-    free(ptr);
-    memoryMap.erase(ptr);
-}
-*/
 struct profiling::clock_adjustment::private_data {
   char *label;
   std::chrono::time_point<std::chrono::steady_clock> safe_time;
@@ -59,18 +44,27 @@ unsigned long profiling::clock_adjustment::get_clock(const period p) {
 profiling::clock_adjustment::~clock_adjustment() {
   data->temp_time = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(data->temp_time - data->safe_time);
-    
+  
   std::cout << "Clocking for " << data->label << " Ended in ";
-  if (duration.count() > 3600000000) {  // Jika lebih dari 1 jam
-      std::cout << duration.count() / 3600000000 << " hours" << std::endl;
-  } else if (duration.count() > 60000000) {  // Jika lebih dari 1 menit
-      std::cout << duration.count() / 60000000 << " minutes" << std::endl;
-  } else if (duration.count() > 1000000) {  // Jika lebih dari 1 detik
-      std::cout << duration.count() / 1000000 << " seconds" << std::endl;
-  } else if (duration.count() > 1000) {  // Jika lebih dari 1 milidetik
-      std::cout << duration.count() / 1000 << " milliseconds" << std::endl;
-  } else {  // Mikrodetik
-      std::cout << duration.count() << " microseconds" << std::endl;
+  unsigned long dc = duration.count();
+  if (dc >= 3600000000) { //hours
+      std::cout << dc / 3600000000 << " hrs " << std::endl;
+      dc %= 3600000000;
+  }
+  if (dc >= 60000000) {  // minute
+      std::cout << dc / 60000000 << " min " << std::endl;
+      dc %= 60000000;
+  }
+  if (dc >= 1000000) {  // sec
+      std::cout << dc / 1000000 << " sec " << std::endl;
+      dc %= 1000000;
+  }
+  if (dc >= 1000) { // milli sec
+      std::cout << dc / 1000 << " ms " << std::endl;
+      dc %= 1000;
+  }
+  if (dc) {  // micro sec
+      std::cout << dc << " us " << std::endl;
   }
   delete[] data->label;
   delete data;
