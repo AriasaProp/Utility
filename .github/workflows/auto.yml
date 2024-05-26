@@ -4,6 +4,7 @@ on: [push]
 
 permissions:
   actions: write
+  contents: write
 
 jobs:
   test:
@@ -53,6 +54,7 @@ jobs:
 
       - name: Formating File
         run: |
+          echo ${{ steps.files.outputs.src_files }}
           sudo apt-get install -y clang-format
           find . -iname "*.cpp" -o -iname "*.hpp" | xargs clang-format -i
 
