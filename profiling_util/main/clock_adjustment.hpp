@@ -12,14 +12,15 @@ public:
     milliseconds,
     microseconds
   };
-  clock_adjustment(const char*);
-  unsigned long get_clock(const period);
-  ~clock_adjustment();
+  clock_adjustment (const char *);
+  unsigned long get_clock (const period);
+  ~clock_adjustment ();
+
 private:
   struct private_data;
   private_data *data;
 };
 
-}
+} // namespace profiling
 
-#endif //CLOCK_ADJUSTMENT_
+#endif // CLOCK_ADJUSTMENT_
