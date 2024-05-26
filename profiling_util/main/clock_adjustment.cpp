@@ -71,3 +71,4 @@ profiling::clock_adjustment::~clock_adjustment() {
   delete[] data->label;
   delete data;
 }
+
