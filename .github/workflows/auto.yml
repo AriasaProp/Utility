@@ -52,11 +52,13 @@ jobs:
               - added|modified: 'profiling_util/**/*.cpp'
               - added|modified: 'profiling_util/**/*.hpp'
 
-      - name: Formating File
+      - name: Formating and Save changes File
         run: |
           echo ${{ steps.files.outputs.src_files }}
           sudo apt-get install -y clang-format
           find . -iname "*.cpp" -o -iname "*.hpp" | xargs clang-format -i
+          git add .
+          git commit -m "changes of formating"
 
       - name: Publish in github
         uses: ad-m/github-push-action@master
