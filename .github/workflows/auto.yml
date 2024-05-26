@@ -46,15 +46,15 @@ jobs:
           list-files: shell
           filters: |
             src:
-              - 'math_util/**/*.cpp'
-              - 'math_util/**/*.hpp'
-              - 'profiling_util/**/*.cpp'
-              - 'profiling_util/**/*.hpp'
+              - added|modified: 'math_util/**/*.cpp'
+              - added|modified: 'math_util/**/*.hpp'
+              - added|modified: 'profiling_util/**/*.cpp'
+              - added|modified: 'profiling_util/**/*.hpp'
 
       - name: Formating File
         run: |
           sudo apt-get install -y clang-format
-          clang-format -i ${{ steps.files.output.src_files }}
+          clang-format -i *.cpp *.hpp
 
       - name: Commit and Push format
         run: |
