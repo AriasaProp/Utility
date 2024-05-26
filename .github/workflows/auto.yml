@@ -57,7 +57,7 @@ jobs:
           find . -iname "*.cpp" -o -iname "*.hpp" | xargs clang-format -i
 
       - name: Publish in github
-        uses: actions-go/push@master
+        uses: ad-m/github-push-action@master
         with:
-          commit-message: 'update pre-puilt dist packages'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
