@@ -67,6 +67,7 @@ profiling::clock_adjustment::~clock_adjustment() {
   if (dc) {  // micro sec
       std::cout << dc << " us ";
   }
+  
   std::cout << std::endl;
   delete[] data->label;
   delete data;

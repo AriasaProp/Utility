@@ -31,13 +31,13 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Run Profiling Test
-        if: steps.changes.output.math == 'false'
-        run: gradle :profiling_util:test
-
       - name: Run Test
-        if: steps.changes.output.math == 'true'
-        run: gradle test
+			  run: |
+            if [ ${{ steps.changes.outputs.math == 'false' }} ]; then
+              gradle :profiling_util:test
+            else
+              gradle test
+            fi
 
       - name: Filter Formating Files
         uses: dorny/paths-filter@v3.0.1
