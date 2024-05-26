@@ -47,25 +47,27 @@ profiling::clock_adjustment::~clock_adjustment() {
   
   std::cout << "Clocking for " << data->label << " Ended in ";
   unsigned long dc = duration.count();
+  
   if (dc >= 3600000000) { //hours
-      std::cout << dc / 3600000000 << " hrs " << std::endl;
+      std::cout << dc / 3600000000 << " hrs ";
       dc %= 3600000000;
   }
   if (dc >= 60000000) {  // minute
-      std::cout << dc / 60000000 << " min " << std::endl;
+      std::cout << dc / 60000000 << " min ";
       dc %= 60000000;
   }
   if (dc >= 1000000) {  // sec
-      std::cout << dc / 1000000 << " sec " << std::endl;
+      std::cout << dc / 1000000 << " sec ";
       dc %= 1000000;
   }
   if (dc >= 1000) { // milli sec
-      std::cout << dc / 1000 << " ms " << std::endl;
+      std::cout << dc / 1000 << " ms ";
       dc %= 1000;
   }
   if (dc) {  // micro sec
-      std::cout << dc << " us " << std::endl;
+      std::cout << dc << " us ";
   }
+  std::cout << std::endl;
   delete[] data->label;
   delete data;
 }
