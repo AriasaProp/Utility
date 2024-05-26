@@ -32,7 +32,7 @@ jobs:
           gradle-version: 8.7
 
       - name: Run Test
-			  run: |
+        run: |
             if [ ${{ steps.changes.outputs.math == 'false' }} ]; then
               gradle :profiling_util:test
             else
