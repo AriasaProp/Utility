@@ -12,6 +12,12 @@ struct codec_data {
 	template<typename T>
 	codec_data &operator<<(const T&);
 	
+	struct reader;
+	reader begin_read() const;
+	
+	template<typename T>
+	friend reader &operator>>(reader&, const T&);
+	
 	friend std::ostream &operator<<(std::ostream&, const codec_data&);
 	
 private:

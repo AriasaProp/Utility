@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <cstring>
 #include <cstdlib>
 
 #include "codec_util.hpp"
@@ -35,8 +36,24 @@ codec_data &codec_data::operator<<<bool>(const bool &out) {
 	
 	return *this;
 }
+
+struct codec_data::reader{
+private:
+	reader(void *d, size_t ub, size_t unb): data(d), used_byte(ub), used_bit(unb), readed_byte(0), readed_bit(0) {}
+	void *data;
+	size_t used_byte, used_bit;
+	size_t readed_byte, readed_bit;
+}
+reader codec_data::begin_read() const {
+	return codec_data::reader(data, used_byte, unused_bit);
+}
+
+template<typename T>
+codec_data::reader &operator<<(codec_data::reader &r, const T &d) {
 	
-friend std::ostream &operator<<(std::ostream &c, const codec_data &d) const {
+}
+
+std::ostream &operator<<(std::ostream &c, const codec_data &d) {
 	c << "codec: ";
 	for(unsigned char *rh = (unsigned char *)data, *end = rh + used_byte; rh < end; ++rh)
 		c << std::hex << std::setw(2) << std::setfill('0') << *rh;
