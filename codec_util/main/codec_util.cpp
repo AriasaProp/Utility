@@ -44,11 +44,11 @@ size_t codec_data::size() const {
 	return (bitBuffer.size() - 1) * UNIT + bitPosition;
 }
 std::ostream &operator<<(std::ostream &o, const codec_data &c) {
-	for (unsigned int b: c.bitBuffer)
-	o << std::hex << std::setw(8) << std::setfill('0') << value;
+	for (unsigned int b : c.bitBuffer)
+		o << std::hex << std::setw(8) << std::setfill('0') << b;
 	return o;
 }
-codec_data::read(const codec_data& _c): bitBuffer(c.bitBuffer), bitPosition(c.bitPosition) {}
+codec_data::read(const codec_data &c): bitBuffer(c.bitBuffer), bitPosition(c.bitPosition) {}
 
 template < typename T >
 codec_data::read& codec_data::read::operator>>(T& target) {
