@@ -1,13 +1,12 @@
 #include <random>
-#include <atomic>
-#include <limits>
 
 #include "random.hpp"
 
 // Thread-local random number generator
-static thread_local std::mt19937 rng(std::random_device{}());
-static const std::uniform_int_distribution<uint32_t> dist(0, std::numeric_limits<uint32_t>::max());
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<> dist(0, 0xffffffff);
 
 uint32_t random_uint32() {
-  return dist(rng);
+  return dist(gen);
 }
