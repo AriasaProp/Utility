@@ -37,6 +37,11 @@ bool codec_data::operator==(const codec_data& o) const {
     return bitBuffer == o.bitBuffer && bitPosition == o.bitPosition;
 }
 
+std::ostream &operator<<(std::ostream &o, const codec_data &c) {
+	for (unsigned int b : c.bitBuffer)
+  	o << std::hex << std::setw(8) << std::setfill('0') << value;
+	return o;
+}
 read_stream::read_stream(const codec_data& _c) : c(_c) {}
 
 template<typename T>
