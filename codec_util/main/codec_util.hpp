@@ -14,16 +14,8 @@ private:
 public:
     codec_data();
     codec_data& operator<<(bool data);
-    codec_data& operator<<(char data);
-    codec_data& operator<<(unsigned char data);
-    codec_data& operator<<(short data);
-    codec_data& operator<<(unsigned short data);
-    codec_data& operator<<(int data);
-    codec_data& operator<<(unsigned int data);
-    codec_data& operator<<(long data);
-    codec_data& operator<<(unsigned long data);
-    codec_data& operator<<(long long data);
-    codec_data& operator<<(unsigned long long data);
+    template<typename T>
+    codec_data& operator<<(const T& data);
     
     void writeBits(uint64_t data, size_t bitCount);
     read_stream getReadStream() const;
