@@ -48,7 +48,7 @@ std::ostream &operator<<(std::ostream &o, const codec_data &c) {
 		o << std::hex << std::setw(8) << std::setfill('0') << b;
 	return o;
 }
-codec_data::read(const codec_data &c): bitBuffer(c.bitBuffer), bitPosition(c.bitPosition) {}
+codec_data::read::read(const codec_data &c): bitBuffer(c.bitBuffer), bitPosition(c.bitPosition) {}
 
 template < typename T >
 codec_data::read& codec_data::read::operator>>(T& target) {
