@@ -1,8 +1,11 @@
 #include "codec_util.hpp"
 
+#include <iomanip>
+
 constexpr size_t UNIT = sizeof(unsigned int) * CHAR_BIT;
 
 codec_data::codec_data() {}
+codec_data::codec_data(const codec_data &cd) : bitBuffer(o.bitBuffer), bitPosition(o.bitPosition) {}
 
 codec_data& codec_data::operator<<(bool data) {
     if (bitPosition >= UNIT) {

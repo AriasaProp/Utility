@@ -10,11 +10,12 @@ struct read_stream;
 
 struct codec_data {
     codec_data();
-    codec_data& operator<<(bool data);
+    codec_data(const codec_data&);
+    codec_data& operator<<(bool);
     template<typename T>
-    codec_data& operator<<(const T& data);
+    codec_data& operator<<(const T&);
     
-    void writeBits(uint64_t data, size_t bitCount);
+    void writeBits(uint64_t, size_t);
     read_stream getReadStream() const;
     bool operator==(const codec_data& o) const;
     friend std::ostream &operator<<(std::ostream &, const codec_data &);
