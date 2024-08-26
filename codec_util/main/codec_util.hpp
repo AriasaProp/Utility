@@ -22,7 +22,7 @@ struct codec_data {
     codec_data();
     codec_data(const codec_data&);
     codec_data& operator<<(bool);
-    codec_data& operator<<(const unsigned int&);
+    codec_data& operator<<(unsigned int&);
     template<typename T>
     codec_data& operator<<(const T&);
     
