@@ -54,10 +54,10 @@ template < typename T >
 codec_data::read& codec_data::read::operator>>(T& target) {
 	target = 0;
 	for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
-		if (bitIndex / UNIT >= c.bitBuffer.size()) {
+		if (bitIndex / UNIT >= bitBuffer.size()) {
 			throw "Index out of range";
 		}
-		if ((c.bitBuffer[bitIndex / UNIT] & (1 << (bitIndex % UNIT))) != 0) {
+		if ((bitBuffer[bitIndex / UNIT] & (1 << (bitIndex % UNIT))) != 0) {
 			target |= (T(1) << i);
 		}
 		bitIndex++;
@@ -66,5 +66,5 @@ codec_data::read& codec_data::read::operator>>(T& target) {
 }
 
 bool codec_data::read::empty() const {
-	return bitIndex < (c.bitBuffer.size() -1) * UNIT + bitPosition;
+	return bitIndex < (bitBuffer.size() - 1) * UNIT + bitPosition;
 }
