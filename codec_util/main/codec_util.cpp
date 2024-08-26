@@ -19,6 +19,17 @@ codec_data& codec_data::operator<<(bool data) {
 	return *this;
 }
 
+codec_data& codec_data::operator<<(const unsigned int &data) {
+	if (bitPosition == 0 || bitPosition >= UNIT) {
+		bitBuffer.push_back(data);
+		bitPosition = 0;
+	} else {
+		bitBuffer.back() |= (data << bitPosition);
+		bitBuffer.push_back(data >> (UNIT - bitPosition));
+	}
+	return *this;
+}
+
 template < typename T >
 codec_data& codec_data::operator<<(const T& data) {
 	for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
