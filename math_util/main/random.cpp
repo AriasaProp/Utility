@@ -4,9 +4,13 @@
 
 #include "random.hpp"
 
+static std:atomic<uint32_t> seed(std::random_device{}());
+static const std::uniform_int_distribution<uint32_t> dist(0, std::numeric_limits<uint32_t>::max());
+
 uint32_t random_uint32() {
-  static std::atomic<std::mt19937> rng(std::random_device{}());
-  static std::uniform_int_distribution<uint32_t> dist(0, std::numeric_limits<uint32_t>::max());
-  return dist(rng);
+	std::mt19937 rng(seed.load());
+  uint32_t n = dist(rng);
+  seed.store(n);
+  return n;
 }
 
