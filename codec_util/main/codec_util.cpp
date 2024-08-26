@@ -1,11 +1,12 @@
 #include "codec_util.hpp"
 
 #include <iomanip>
+#include <climits>
 
 constexpr size_t UNIT = sizeof(unsigned int) * CHAR_BIT;
 
 codec_data::codec_data() {}
-codec_data::codec_data(const codec_data &cd): bitBuffer(o.bitBuffer), bitPosition(o.bitPosition) {}
+codec_data::codec_data(const codec_data &o): bitBuffer(o.bitBuffer), bitPosition(o.bitPosition) {}
 
 codec_data& codec_data::operator<<(bool data) {
 	if (bitPosition >= UNIT) {
@@ -21,14 +22,14 @@ codec_data& codec_data::operator<<(bool data) {
 template < typename T >
 codec_data& codec_data::operator<<(const T& data) {
 	for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
-		this << bool((data >> i) & 1);
+		*this << bool((data >> i) & 1);
 	}
 	return *this;
 }
 
 void codec_data::writeBits(uint64_t data, size_t bitCount) {
 	for (size_t i = 0; i < bitCount; ++i) {
-		this << bool((data >> i) & 1);
+		*this << bool((data >> i) & 1);
 	}
 }
 
