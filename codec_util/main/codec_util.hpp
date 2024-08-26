@@ -12,6 +12,7 @@ struct codec_data {
 	template<typename T>
 	codec_data &operator<<(const T&);
 	
+	
 	struct reader{
 		reader(void *, size_t, size_t);
 		size_t left() const;
@@ -25,11 +26,13 @@ struct codec_data {
 	template<typename T>
 	friend reader &operator>>(reader&, const T&);
 	
+	friend bool operator==(const codec_data&, const codec_data&);
+	
 	friend std::ostream &operator<<(std::ostream&, const codec_data&);
 	
 private:
 	void *data;
-	size_t reserve_byte, used_byte, unused_bit;
+	size_t reserve_byte, used_byte, used_bit;
 	void check_resize();
 };
 

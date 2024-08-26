@@ -18,9 +18,9 @@ void codec_data::check_resize() {
 }
 
 // public
-codec_data::codec_data(): data(malloc(2)), reserve_byte(2), used_byte(0), unused_bit(0) {}
-codec_data::codec_data(const codec_data &other);data(malloc(other.reserve_byte)), reserve_byte(other.reserve_byte), used_byte(other.used_byte), unused_bit(other.unused_bit) {
-	memcpy(data, other.data, used_byte);
+codec_data::codec_data(): data(malloc(4)), reserve_byte(4), used_byte(0), used_bit(0) {}
+codec_data::codec_data(const codec_data &other);data(malloc(other.reserve_byte)), reserve_byte(other.reserve_byte), used_byte(other.used_byte), used_bit(other.used_bit) {
+	memcpy(data, other.data, used_byte + (used_bit != 0));
 }
 codec_data::~codec_data() {
 	free(data);
@@ -42,12 +42,20 @@ size_t codec_data::reader::left() const {
 	return (readed_byte - used_byte) * CHAR_BIT - (readed_bit - used_bit);
 }
 reader codec_data::begin_read() const {
-	return codec_data::reader(data, used_byte, unused_bit);
+	return codec_data::reader(data, used_byte, used_bit);
 }
 
 template<typename T>
-codec_data::reader &operator<<(codec_data::reader &r, const T &d) {
+codec_data::reader &operator>>(codec_data::reader &r, const T &d) {
 	
+	return r;
+}
+
+bool operator==(const codec_data &a, const codec_data &b) {
+	return (a.used_byte == b.used_byte) &&
+	(a.used_bit == b.used_bit) &&
+	(memcmp(a.data, b.data, a.used_byte) == 0) &&
+	((((char*)a.data)[a.used_byte] & unsigned char((1 << a.used_bit) - 1)) == (((char*)b.data)[b.used_byte] & unsigned char((1 << b.used_bit) - 1)) );
 }
 
 std::ostream &operator<<(std::ostream &c, const codec_data &d) {
