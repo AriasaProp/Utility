@@ -37,12 +37,9 @@ codec_data &codec_data::operator<<<bool>(const bool &out) {
 	return *this;
 }
 
-struct codec_data::reader{
-private:
-	reader(void *d, size_t ub, size_t unb): data(d), used_byte(ub), used_bit(unb), readed_byte(0), readed_bit(0) {}
-	void *data;
-	size_t used_byte, used_bit;
-	size_t readed_byte, readed_bit;
+codec_data::reader::reader(void *d, size_t ub, size_t unb): data(d), used_byte(ub), used_bit(unb), readed_byte(0), readed_bit(0) {}
+size_t codec_data::reader::left() const {
+	return (readed_byte - used_byte) * CHAR_BIT - (readed_bit - used_bit);
 }
 reader codec_data::begin_read() const {
 	return codec_data::reader(data, used_byte, unused_bit);

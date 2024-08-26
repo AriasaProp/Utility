@@ -79,7 +79,7 @@ const codec_data huffman_encode(const codec_data &cd) {
 	std::unordered_map < uint32_t, size_t > freq;
 
 	// Count frequency of each character
-	for (codec_data::read ro = cd.getReadStream(); !ro.empty();) {
+	for (codec_data::read ro = cd.begin_read(); ro.left();) {
 		uint32_t key;
 		ro >> key;
 		freq[key]++;
@@ -111,7 +111,7 @@ const codec_data huffman_encode(const codec_data &cd) {
 	// Encode Huffman codes
 /*
 	// Encode input data using Huffman codes
-	for (codec_data::read ro = cd.getReadStream(); !ro.empty();) {
+	for (codec_data::read ro = cd.getReadStream(); ro.left();) {
 		uint32_t key;
 		ro >> key;
 		for (bool s: huffmanCode[key])

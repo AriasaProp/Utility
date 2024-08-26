@@ -12,7 +12,14 @@ struct codec_data {
 	template<typename T>
 	codec_data &operator<<(const T&);
 	
-	struct reader;
+	struct reader{
+		reader(void *, size_t, size_t);
+		size_t left() const;
+	private:
+		void *data;
+		size_t used_byte, used_bit;
+		size_t readed_byte, readed_bit;
+	};
 	reader begin_read() const;
 	
 	template<typename T>
