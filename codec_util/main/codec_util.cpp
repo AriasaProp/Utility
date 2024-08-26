@@ -33,7 +33,7 @@ void codec_data::writeBits(uint64_t data, size_t bitCount) {
 	}
 }
 
-read_stream codec_data::getReadStream() const {
+codec_data::read codec_data::getReadStream() const {
 	return codec_data::read(*this);
 }
 
