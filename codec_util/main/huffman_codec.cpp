@@ -109,7 +109,7 @@ const codec_data huffman_encode(const codec_data &cd) {
 
 	codec_data out_c;
 	// Encode Huffman codes
-
+/*
 	// Encode input data using Huffman codes
 	for (codec_data::read ro = cd.getReadStream(); !ro.empty();) {
 		uint32_t key;
@@ -117,8 +117,10 @@ const codec_data huffman_encode(const codec_data &cd) {
 		for (bool s: huffmanCode[key])
 		out_c << s;
 	}
-
+*/
 	return out_c;
 }
 
-const codec_data huffman_decode (const codec_data &cd) {}
+const codec_data huffman_decode (const codec_data &cd) {
+	return codec_data();
+}
