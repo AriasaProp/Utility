@@ -6,9 +6,19 @@
 #include <cstddef>
 #include <iostream>
 
-struct read_stream;
-
 struct codec_data {
+		struct read {
+		    read(const codec_data&);
+		
+		    read& operator>>(bool&);
+		    template<typename T>
+		    read& operator>>(T&);
+		    bool empty() const;
+		private:
+		    std::vector<unsigned int> bitBuffer;
+		    size_t bitPosition = 0;
+		    size_t bitIndex = 0;
+		};
     codec_data();
     codec_data(const codec_data&);
     codec_data& operator<<(bool);
@@ -16,22 +26,14 @@ struct codec_data {
     codec_data& operator<<(const T&);
     
     void writeBits(uint64_t, size_t);
-    read_stream getReadStream() const;
+    read getReadStream() const;
     bool operator==(const codec_data& o) const;
+    size_t size() const;
     friend std::ostream &operator<<(std::ostream &, const codec_data &);
 private:
     std::vector<unsigned int> bitBuffer;
     size_t bitPosition = 0;
 };
 
-struct read_stream {
-    read_stream(const codec_data& _c);
-
-    template<typename T>
-    read_stream& operator>>(T& target);
-private:
-    const codec_data& c;
-    size_t bitIndex = 0;
-};
 
 #endif // _CODEC_UTIL

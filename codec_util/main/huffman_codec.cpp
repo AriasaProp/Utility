@@ -57,10 +57,10 @@ void buildHuffmanTree(Node* root, std::vector<bool> code, std::unordered_map<uin
 		break;
 	case 2:
   	Branch *b = dynamic_cast<Branch*>(root);
-  	std::vector<bool> code_left;
+  	std::vector<bool> code_left = code;
   	code_left.push_back(false);
     buildHuffmanTree(b->left, code_left, huffmanCode);
-  	std::vector<bool> code_right;
+  	std::vector<bool> code_right = code;
   	code_right.push_back(true);
     buildHuffmanTree(b->right, code_right, huffmanCode);
     break;
@@ -72,11 +72,12 @@ void buildHuffmanTree(Node* root, std::vector<bool> code, std::unordered_map<uin
 const codec_data huffman_encode(const codec_data &cd) {
   	// store frequency each data
     std::unordered_map<uint32_t, int> freq;
-    uint32_t *input_data = (uint32_t *)cd.data;
 
     // Count frequency of each character
-    for (unsigned int i = 0; i < cd.size_in_bit; ++i) {
-        freq[input_data[i]]++;
+    for (codec_data::read ro = cd.getReadStream(); !ro.empty(); ) {
+    		uint32_t key;
+    		ro >> key;
+        freq[key]++;
     }
     // Create priority queue to store live nodes of Huffman tree
     std::priority_queue<Node*, std::vector<Node*>, Node::compare> pq;
@@ -100,27 +101,18 @@ const codec_data huffman_encode(const codec_data &cd) {
     
     delete pq.top();
     
+    codec_data out_c;
+    // Encode Huffman codes
+    
     // Encode input data using Huffman codes
-    std::string encodedStr = "";
-    for (unsigned int i = 0; i < cd.size_in_bit; ++i) {
-        encodedStr += huffmanCode[input_data[i]];
+    for (codec_data::read ro = cd.getReadStream(); !ro.empty(); ) {
+        uint32_t key;
+    		ro >> key;
+    		for (bool s : huffmanCode[key])
+        	out_c << s;
     }
 
-    // Allocate memory for the encoded data
-    unsigned int encoded_size = encodedStr.length() / 8 + (encodedStr.length() % 8 != 0);
-    unsigned char *encoded_data = (unsigned char *)malloc(encoded_size);
-
-    // Convert encoded string to byte array
-    for (unsigned int i = 0; i < encoded_size; ++i) {
-      encoded_data[i] = 0;
-      for (int j = 0; j < 8; ++j) {
-        if (i * 8 + j < encodedStr.length()) {
-          encoded_data[i] |= (encodedStr[i * 8 + j] - '0') << (7 - j);
-        }
-      }
-    }
-
-    return codec_data(encoded_data, encoded_size);
+    return out_c;
 }
 
 const codec_data huffman_decode (const codec_data &cd) {

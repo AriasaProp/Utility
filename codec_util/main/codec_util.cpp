@@ -5,59 +5,65 @@
 constexpr size_t UNIT = sizeof(unsigned int) * CHAR_BIT;
 
 codec_data::codec_data() {}
-codec_data::codec_data(const codec_data &cd) : bitBuffer(o.bitBuffer), bitPosition(o.bitPosition) {}
+codec_data::codec_data(const codec_data &cd): bitBuffer(o.bitBuffer), bitPosition(o.bitPosition) {}
 
 codec_data& codec_data::operator<<(bool data) {
-    if (bitPosition >= UNIT) {
-        bitBuffer.push_back(0);
-        bitPosition = 0;
-    }
-    if (data)
-    	bitBuffer.back() |= (1 << bitPosition);
-    ++bitPosition;
-    return *this;
+	if (bitPosition >= UNIT) {
+		bitBuffer.push_back(0);
+		bitPosition = 0;
+	}
+	if (data)
+	bitBuffer.back() |= (1 << bitPosition);
+	++bitPosition;
+	return *this;
 }
 
-template<typename T>
+template < typename T >
 codec_data& codec_data::operator<<(const T& data) {
-    for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
-        this << bool((data >> i) & 1);
-    }
-    return *this;
+	for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
+		this << bool((data >> i) & 1);
+	}
+	return *this;
 }
 
 void codec_data::writeBits(uint64_t data, size_t bitCount) {
-    for (size_t i = 0; i < bitCount; ++i) {
-        this << bool((data >> i) & 1);
-    }
+	for (size_t i = 0; i < bitCount; ++i) {
+		this << bool((data >> i) & 1);
+	}
 }
 
 read_stream codec_data::getReadStream() const {
-    return read_stream(*this);
+	return codec_data::read(*this);
 }
 
-bool codec_data::operator==(const codec_data& o) const {
-    return bitBuffer == o.bitBuffer && bitPosition == o.bitPosition;
+bool codec_data::operator == (const codec_data& o) const {
+	return bitBuffer == o.bitBuffer && bitPosition == o.bitPosition;
 }
-
+size_t codec_data::size() const {
+	return (bitBuffer.size() - 1) * UNIT + bitPosition;
+}
 std::ostream &operator<<(std::ostream &o, const codec_data &c) {
-	for (unsigned int b : c.bitBuffer)
-  	o << std::hex << std::setw(8) << std::setfill('0') << value;
+	for (unsigned int b: c.bitBuffer)
+	o << std::hex << std::setw(8) << std::setfill('0') << value;
 	return o;
 }
-read_stream::read_stream(const codec_data& _c) : c(_c) {}
+codec_data::read(const codec_data& _c): bitBuffer(c.bitBuffer), bitPosition(c.bitPosition) {}
 
-template<typename T>
-read_stream& read_stream::operator>>(T& target) {
-    target = 0;
-    for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
-        if (bitIndex / UNIT >= c.bitBuffer.size()) {
-            throw "Index out of range";
-        }
-        if ((c.bitBuffer[bitIndex / UNIT] & (1 << (bitIndex % UNIT))) != 0) {
-            target |= (T(1) << i);
-        }
-        bitIndex++;
-    }
-    return *this;
+template < typename T >
+codec_data::read& codec_data::read::operator>>(T& target) {
+	target = 0;
+	for (size_t i = 0; i < sizeof(T) * CHAR_BIT; ++i) {
+		if (bitIndex / UNIT >= c.bitBuffer.size()) {
+			throw "Index out of range";
+		}
+		if ((c.bitBuffer[bitIndex / UNIT] & (1 << (bitIndex % UNIT))) != 0) {
+			target |= (T(1) << i);
+		}
+		bitIndex++;
+	}
+	return *this;
+}
+
+bool codec_data::read::empty() const {
+	return bitIndex < (c.bitBuffer.size() -1) * UNIT + bitPosition;
 }
