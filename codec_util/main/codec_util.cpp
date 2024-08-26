@@ -60,7 +60,7 @@ bool operator==(const codec_data &a, const codec_data &b) {
 
 std::ostream &operator<<(std::ostream &c, const codec_data &d) {
 	c << "codec: ";
-	for(unsigned char *rh = (unsigned char *)data, *end = rh + used_byte; rh < end; ++rh)
-		c << std::hex << std::setw(2) << std::setfill('0') << *rh;
+	for(unsigned char *begin_ = (unsigned char *)d.data, *end_ = rh + d.used_byte + (d.used_bit != 0); rh < end_; ++begin_)
+		c << std::hex << std::setw(2) << std::setfill('0') << *begin_;
 	return c;
 }

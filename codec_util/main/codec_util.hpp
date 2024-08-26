@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <climits>
 
 struct codec_data {
 	codec_data();
@@ -12,6 +13,9 @@ struct codec_data {
 	template<typename T>
 	codec_data &operator<<(const T&);
 	
+	size_t size_bit() const {
+		return used_byte * CHAR_BIT + used_bit;
+	}
 	
 	struct reader{
 		reader(void *, size_t, size_t);
