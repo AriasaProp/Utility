@@ -1,4 +1,4 @@
-#include "codec_data.h"
+#include "codec_util.hpp"
 
 constexpr size_t UNIT = sizeof(unsigned int) * CHAR_BIT;
 
