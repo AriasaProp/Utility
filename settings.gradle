@@ -1,2 +1,2 @@
-include ':math_util', ':profiling_util'
+include ':math_util', ':profiling_util', 'codec_util'
 rootProject.name = 'Utility'

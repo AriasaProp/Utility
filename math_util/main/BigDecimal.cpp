@@ -1,10 +1,10 @@
 #include "BigDecimal.hpp"
 
 // Constructors
-BigDecimal::BigDecimal () : neg (false) {}
-BigDecimal::BigDecimal (const BigDecimal &o) : neg (false), major (o.major), numerator (o.numerator), denumerator (o.denumerator) {}
-BigDecimal::BigDecimal (const double) : neg (false) {}
-BigDecimal::BigDecimal (const char *) : neg (false) {}
+BigDecimal::BigDecimal () {}
+BigDecimal::BigDecimal (const BigDecimal &o) : neg (o.neg), major (o.major), numerator (o.numerator), denumerator (o.denumerator) {}
+BigDecimal::BigDecimal (const double) {}
+BigDecimal::BigDecimal (const char *) {}
 // Destructor
 BigDecimal::~BigDecimal () {
   major.clear ();
@@ -33,7 +33,7 @@ bool BigDecimal::operator== (const double) const { return false; }
 bool BigDecimal::operator!= (const double) const { return false; }
 bool BigDecimal::operator<= (const double) const { return false; }
 bool BigDecimal::operator>= (const double) const { return false; }
-bool BigDecimal::operator<(const double) const { return false; }
+bool BigDecimal::operator< (const double) const { return false; }
 bool BigDecimal::operator> (const double) const { return false; }
 bool BigDecimal::operator== (const BigDecimal) const { return false; }
 bool BigDecimal::operator!= (const BigDecimal) const { return false; }
