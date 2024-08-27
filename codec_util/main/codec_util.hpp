@@ -11,7 +11,7 @@ struct codec_data {
 	~codec_data();
 	
 	template<typename T>
-	codec_data &operator<<(const T&);
+	codec_data &operator<<(T const&);
 	
 	size_t size_bit() const {
 		return used_byte * CHAR_BIT + used_bit;
@@ -28,7 +28,7 @@ struct codec_data {
 	reader begin_read() const;
 	
 	template<typename T>
-	friend reader &operator>>(reader&, const T&);
+	friend reader &operator>>(reader&, T const&);
 	
 	friend bool operator==(const codec_data&, const codec_data&);
 	

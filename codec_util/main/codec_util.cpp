@@ -27,12 +27,12 @@ codec_data::~codec_data() {
 }
 
 template<typename T>
-codec_data &codec_data::operator<<(const T &out) {
+codec_data &codec_data::operator<<(T const &out) {
 	
 	return *this;
 }
 template<>
-codec_data &codec_data::operator<<<bool>(const bool &out) {
+codec_data &codec_data::operator<<<bool>(bool const &out) {
 	
 	return *this;
 }
@@ -46,7 +46,7 @@ codec_data::reader codec_data::begin_read() const {
 }
 
 template<typename T>
-codec_data::reader &operator>>(codec_data::reader &r, const T &d) {
+codec_data::reader &operator>>(codec_data::reader &r, T const &d) {
 	
 	return r;
 }
