@@ -3,6 +3,6 @@
 
 #include <cstdint>
 
-uint32_t random_uint32();
+uint32_t random_uint32 ();
 
-#endif //RANDOM_INCLUDED_
+#endif // RANDOM_INCLUDED_

@@ -33,7 +33,7 @@ bool BigDecimal::operator== (const double) const { return false; }
 bool BigDecimal::operator!= (const double) const { return false; }
 bool BigDecimal::operator<= (const double) const { return false; }
 bool BigDecimal::operator>= (const double) const { return false; }
-bool BigDecimal::operator< (const double) const { return false; }
+bool BigDecimal::operator<(const double) const { return false; }
 bool BigDecimal::operator> (const double) const { return false; }
 bool BigDecimal::operator== (const BigDecimal) const { return false; }
 bool BigDecimal::operator!= (const BigDecimal) const { return false; }
