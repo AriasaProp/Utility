@@ -46,11 +46,11 @@ int main (int argv, char *args[]) {
       std::cout << cd << std::endl;
       // huffman
     }
-  } catch (...) {
-    std::cout << "Error : uncaught" << std::endl;
-    return EXIT_FAILURE;
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
+    return EXIT_FAILURE;
+  } catch (...) {
+    std::cout << "Error : uncaught" << std::endl;
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
