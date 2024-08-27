@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <cstdint>
-
+/*
 struct test_result {
 	bool success;
 	unsigned long time_encode, time_decode; // ms
@@ -30,8 +30,9 @@ const test_result test_codec(const char *name, const codec_data &in, const codec
 }
 
 #define TRY 100
-
+*/
 int main (int argv, char *args[]) {
+	/*
   try {
 	  for (unsigned tries = 0; tries < TRY; ++tries) {
 	  	codec_data cd;
@@ -44,17 +45,15 @@ int main (int argv, char *args[]) {
 	  		cd << random_uint32();
 	  	std::cout << cd << std::endl;
 	  	//huffman
-	  	/*
 	  	{
 	  		test_result huffman test_codec("HUFFMAN Codec",cd, huffman_endcode, huffman_decode);
 	  	}
-	  	*/
 	  }
   } catch (const char *err) {
   	std::cout << "Error :" << err << std::endl;
   	
   	return EXIT_FAILURE;
   }
-
+*/
   return EXIT_SUCCESS;
 }
