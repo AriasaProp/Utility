@@ -55,7 +55,7 @@ bool operator==(const codec_data &a, const codec_data &b) {
 	return (a.used_byte == b.used_byte) &&
 	(a.used_bit == b.used_bit) &&
 	(memcmp(a.data, b.data, a.used_byte) == 0) &&
-	((((char*)a.data)[a.used_byte] & unsigned char((1 << a.used_bit) - 1)) == (((char*)b.data)[b.used_byte] & unsigned char((1 << b.used_bit) - 1)) );
+	((((char*)a.data)[a.used_byte] & ((unsigned char(1) << a.used_bit) - 1)) == (((char*)b.data)[b.used_byte] & ((unsigned char(1) << b.used_bit) - 1)));
 }
 
 std::ostream &operator<<(std::ostream &c, const codec_data &d) {
