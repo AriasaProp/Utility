@@ -19,7 +19,7 @@ void codec_data::check_resize() {
 
 // public
 codec_data::codec_data(): data(malloc(4)), reserve_byte(4), used_byte(0), used_bit(0) {}
-codec_data::codec_data(const codec_data &other);data(malloc(other.reserve_byte)), reserve_byte(other.reserve_byte), used_byte(other.used_byte), used_bit(other.used_bit) {
+codec_data::codec_data(const codec_data &other): data(malloc(other.reserve_byte)), reserve_byte(other.reserve_byte), used_byte(other.used_byte), used_bit(other.used_bit) {
 	memcpy(data, other.data, used_byte + (used_bit != 0));
 }
 codec_data::~codec_data() {
@@ -41,7 +41,7 @@ codec_data::reader::reader(void *d, size_t ub, size_t unb): data(d), used_byte(u
 size_t codec_data::reader::left() const {
 	return (readed_byte - used_byte) * CHAR_BIT - (readed_bit - used_bit);
 }
-reader codec_data::begin_read() const {
+codec_data::reader codec_data::begin_read() const {
 	return codec_data::reader(data, used_byte, used_bit);
 }
 
