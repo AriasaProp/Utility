@@ -12,8 +12,8 @@ struct test_result {
   bool success;
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
-  ~test_result() {
-  	//
+  ~test_result () {
+    //
   }
 };
 
