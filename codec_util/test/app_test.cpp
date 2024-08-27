@@ -45,7 +45,7 @@ int main (int argv, char *args[]) {
       std::cout << cd << std::endl;
       // huffman
       {
-        test_result huffman = test_codec ("HUFFMAN Codec", cd, huffman_endcode, huffman_decode);
+        test_result huffman = test_codec ("HUFFMAN Codec", cd, &huffman_endcode, &huffman_decode);
       }
     }
   } catch (const char *err) {
