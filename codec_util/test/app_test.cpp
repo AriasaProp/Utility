@@ -11,7 +11,7 @@ struct test_result {
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
   ~test_result() {
-  	//
+    //
   }
 };
 
