@@ -1,6 +1,11 @@
 name: AUTO
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'profiling_util/**'
+      - 'math_util/**'
+      - 'codec_util/**'
 
 permissions:
   actions: write
@@ -25,27 +30,42 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Run Test
-        run: gradle test
-
       - name: Filter Formating Files
         uses: dorny/paths-filter@v3.0.1
         id: files
         with:
           list-files: shell
           filters: |
+            profiling_util:
+              - 'profiling_util/**'
+            math_util:
+              - 'math_util/**'
+            codec_util:
+              - 'codec_util/**'
             src:
               - added|modified: '**/*.cpp'
               - added|modified: '**/*.hpp'
 
       - name: Formating and Save changes File
+        if: steps.files.outputs.src == 'true'
         run: |
-          echo ${{ steps.files.outputs.src_files }}
           sudo apt-get install -y clang-format
-          find . -iname "*.cpp" -o -iname "*.hpp" | xargs -n 1 clang-format -i
+          echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
           git config --global user.email "ikomangwidiadaariasa12@gmail.com"
           git config --global user.name "AriasaProp"
           git add .
           git commit -m "changes of formating"
           git push
+
+      - name: Run Test For profiling_util
+        if: steps.files.outputs.profiling_util == 'true'
+        run: gradle :profiling_util:test
+
+      - name: Run Test For math_util
+        if: steps.files.outputs.math_util == 'true'
+        run: gradle :math_util:test
+
+      - name: Run Test For codec_util
+        if: steps.files.outputs.codec_util == 'true'
+        run: gradle :codec_util:test
 
