@@ -52,9 +52,7 @@ codec_data::reader &operator>>(codec_data::reader &r, const T &d) {
 }
 
 bool operator==(const codec_data &a, const codec_data &b) {
-	return (a.used_byte == b.used_byte) &&
-	(a.used_bit == b.used_bit) &&
-	(memcmp(a.data, b.data, a.used_byte) == 0) &&
+	return (a.used_byte == b.used_byte) && (a.used_bit == b.used_bit) && (memcmp(a.data, b.data, a.used_byte + (a.used_bit != 0)) == 0) &&
 	( 
 		( ((char*)a.data)[a.used_byte] & ((unsigned char(1) << a.used_bit) - 1)) == 
 		( ((char*)b.data)[b.used_byte] & ((unsigned char(1) << b.used_bit) - 1)) 
