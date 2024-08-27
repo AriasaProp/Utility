@@ -9,7 +9,7 @@ permissions:
   actions: write
 
 jobs:
-  build:
+  clean:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
