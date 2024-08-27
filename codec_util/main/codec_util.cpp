@@ -55,12 +55,18 @@ bool operator==(const codec_data &a, const codec_data &b) {
 	return (a.used_byte == b.used_byte) &&
 	(a.used_bit == b.used_bit) &&
 	(memcmp(a.data, b.data, a.used_byte) == 0) &&
-	((((char*)a.data)[a.used_byte] & ((unsigned char(1) << a.used_bit) - 1)) == (((char*)b.data)[b.used_byte] & ((unsigned char(1) << b.used_bit) - 1)));
+	( 
+		( ((char*)a.data)[a.used_byte] & ((unsigned char(1) << a.used_bit) - 1)) == 
+		( ((char*)b.data)[b.used_byte] & ((unsigned char(1) << b.used_bit) - 1)) 
+	);
 }
-
+// print hex for small first
 std::ostream &operator<<(std::ostream &c, const codec_data &d) {
 	c << "codec: ";
-	for(unsigned char *begin_ = (unsigned char *)d.data, *end_ = rh + d.used_byte + (d.used_bit != 0); rh < end_; ++begin_)
-		c << std::hex << std::setw(2) << std::setfill('0') << *begin_;
+	unsigned char *begin_ = (unsigned char *)d.data;
+	unsigned char *end_ = begin_ + d.used_byte + (d.used_bit != 0);
+	while (end_ > begin_) {
+		c << std::hex << std::setw(2) << std::setfill('0') << *(--end_);
+	}
 	return c;
 }
