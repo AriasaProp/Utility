@@ -14,7 +14,7 @@ struct test_result {
   double comp_ratio;                      // %
 };
 
-const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (const codec_data &), const codec_data (*decode) (const codec_data &)) {
+const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const&), const codec_data (*decode) (codec_data const&)) {
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
   // encoding data

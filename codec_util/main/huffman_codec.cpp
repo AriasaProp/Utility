@@ -74,7 +74,7 @@ void buildHuffmanTree (Node *root, std::vector<bool> code, std::unordered_map<ui
 }
 
 // Function to encode data using Huffman coding
-const codec_data huffman_encode (const codec_data &cd) {
+const codec_data huffman_encode (codec_data const &cd) {
   // store frequency each data
   std::unordered_map<uint32_t, size_t> freq;
 
@@ -122,6 +122,6 @@ const codec_data huffman_encode (const codec_data &cd) {
   return out_c;
 }
 
-const codec_data huffman_decode (const codec_data &cd) {
-  return codec_data ();
+const codec_data huffman_decode (codec_data const &cd) {
+  return codec_data (cd);
 }
