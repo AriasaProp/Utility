@@ -58,15 +58,31 @@ jobs:
           git commit -m "changes of formating"
           git push
 
-      - name: Run Test For profiling_util
-        if: steps.files.outputs.profiling_util == 'true'
-        run: gradle :profiling_util:test
+      - name: Run Tests
+        run: |
+          report_paths=""
+          if [ "${{ steps.files.outputs.profiling_util }}" == "true" ]; then
+            if ! gradle :profiling_util:test; then
+              report_paths+="${{ github.workspace }}/codec_util/build/test-results/test "
+            fi
+          fi
+          if [ "${{ steps.files.outputs.math_util }}" == "true" ]; then
+            if ! gradle :math_util:test; then
+              report_paths+="${{ github.workspace }}/math_util/build/test-results/test "
+            fi
+          fi
+          if [ "${{ steps.files.outputs.codec_util }}" == "true" ]; then
+            if ! gradle :codec_util:test; then
+              report_paths+="${{ github.workspace }}/codec_util/build/test-results/test"
+            fi
+          fi
+          echo "report_paths=$report_paths" >> $GITHUB_ENV
 
-      - name: Run Test For math_util
-        if: steps.files.outputs.math_util == 'true'
-        run: gradle :math_util:test
+      - name: Upload Report Failure
+        if: env.report_paths != ''
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: converted
+          path: ${{ env.report_paths }}
 
-      - name: Run Test For codec_util
-        if: steps.files.outputs.codec_util == 'true'
-        run: gradle :codec_util:test
 

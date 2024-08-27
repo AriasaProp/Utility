@@ -44,7 +44,6 @@ int main (int argv, char *args[]) {
       for (unsigned dat = 0; dat < max; dat += 32)
         cd << random_uint32 ();
       std::cout << cd << std::endl;
-      // huffman
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
