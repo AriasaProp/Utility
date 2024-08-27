@@ -32,6 +32,11 @@ codec_data &codec_data::operator<<(T const &out) {
 	return *this;
 }
 template<>
+codec_data &codec_data::operator<<<unsigned int>(unsigned int const &out) {
+	
+	return *this;
+}
+template<>
 codec_data &codec_data::operator<<<bool>(bool const &out) {
 	
 	return *this;
@@ -47,6 +52,11 @@ codec_data::reader codec_data::begin_read() const {
 
 template<typename T>
 codec_data::reader &operator>>(codec_data::reader &r, T const &d) {
+	
+	return r;
+}
+template<>
+codec_data::reader &operator>>(codec_data::reader &r, unsigned int const &d) {
 	
 	return r;
 }
