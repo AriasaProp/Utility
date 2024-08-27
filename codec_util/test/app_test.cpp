@@ -1,7 +1,5 @@
 #include "codec_util.hpp"
 
-#include "huffman_codec.hpp"
-
 #include "clock_adjustment.hpp"
 #include "random.hpp"
 
@@ -12,8 +10,8 @@ struct test_result {
   bool success;
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
-  ~test_result () {
-    //
+  ~test_result() {
+  	//
   }
 };
 
@@ -49,7 +47,7 @@ int main (int argv, char *args[]) {
       // huffman
     }
   } catch (const char *err) {
-    std::cout << "Error :" << err << std::endl;
+    std::cout << "Error : " << err << std::endl;
 
     return EXIT_FAILURE;
   }
