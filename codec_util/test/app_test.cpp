@@ -12,6 +12,9 @@ struct test_result {
   bool success;
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
+  ~test_result() {
+  	//
+  }
 };
 
 const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {

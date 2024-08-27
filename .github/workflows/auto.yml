@@ -48,6 +48,7 @@ jobs:
 
       - name: Formating and Save changes File
         if: steps.files.outputs.src == 'true'
+        continue-on-error: true
         run: |
           sudo apt-get install -y clang-format
           echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
