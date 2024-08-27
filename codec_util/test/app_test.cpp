@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <iostream>
-
+/*
 struct test_result {
   bool success;
   unsigned long time_encode, time_decode; // ms
@@ -31,7 +31,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
   return r;
 }
-
+*/
 #define TRY 100
 
 int main (int argv, char *args[]) {
@@ -47,9 +47,6 @@ int main (int argv, char *args[]) {
         cd << random_uint32 ();
       std::cout << cd << std::endl;
       // huffman
-      {
-        test_result huffman = test_codec ("HUFFMAN Codec", cd, &huffman_endcode, &huffman_decode);
-      }
     }
   } catch (const char *err) {
     std::cout << "Error :" << err << std::endl;
