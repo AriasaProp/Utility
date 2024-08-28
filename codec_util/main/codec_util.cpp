@@ -114,5 +114,6 @@ std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   while (end_ > begin_) {
     c << std::hex << std::setw (2) << std::setfill ('0') << *(--end_);
   }
+  c << std::dec;
   return c;
 }
