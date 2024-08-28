@@ -1,7 +1,7 @@
 #include "codec_util.hpp"
 
 #include "clock_adjustment.hpp"
-#include "random.hpp"
+#include <random>
 
 #include <cstdint>
 #include <iostream>
@@ -34,20 +34,16 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 
 int main (int argv, char *args[]) {
   try {
-    for (unsigned tries = 0; tries < TRY; ++tries) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> len(100, 200);
+    std::uniform_int_distribution<uint32_t> clr(0x0, 0xffffffff);
+    for (size_t i = 0; i < TRY; ++i) {
       codec_data cd;
-      uint32_t max = random_uint32 ();
-      while ((max > 1800) && (max & 31)) {
-        max = (max & 0xffff) + (max >> 16);
-      }
-      std::cout << "Hello wolrd! " << max << std::endl;
-
-      /*
       // try make random data
-      for (unsigned dat = 0; dat < max; dat += 32)
-        cd << random_uint32 ();
+      for (size_t j = 0, k = len(gen); j < max; ++j)
+        cd << clr (gen);
       std::cout << cd << std::endl;
-      */
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;

@@ -16,5 +16,4 @@ unitTest {
 
 dependencies {
     testImplementation project(':profiling_util')
-    testImplementation project(':math_util')
 }
