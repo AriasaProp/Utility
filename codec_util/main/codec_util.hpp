@@ -35,7 +35,7 @@ struct codec_data {
 private:
   void *data;
   size_t reserve_byte, used_byte, used_bit;
-  void check_resize (size_t, size_t);
+  void check_resize (size_t);
 };
 
 #endif // _CODEC_UTIL
