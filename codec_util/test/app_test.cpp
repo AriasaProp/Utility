@@ -35,13 +35,13 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 int main (int argv, char *args[]) {
   try {
     std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> len(100, 200);
-    std::uniform_int_distribution<uint32_t> clr(0x0, 0xffffffff);
+    std::mt19937 gen (rd ());
+    std::uniform_int_distribution<size_t> len (100, 200);
+    std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
     for (size_t i = 0; i < TRY; ++i) {
       codec_data cd;
       // try make random data
-      for (size_t j = 0, k = len(gen); j < max; ++j)
+      for (size_t j = 0, k = len (gen); j < max; ++j)
         cd << clr (gen);
       std::cout << cd << std::endl;
     }
