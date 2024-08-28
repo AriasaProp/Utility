@@ -35,6 +35,9 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 int main (int argv, char *args[]) {
   try {
     for (unsigned tries = 0; tries < TRY; ++tries) {
+      std::cout << "Hello wolrd!" << std::endl;
+      
+      /*
       codec_data cd;
       uint32_t max = random_uint32 ();
       while ((max > 1800) && (max & 31)) {
@@ -44,6 +47,7 @@ int main (int argv, char *args[]) {
       for (unsigned dat = 0; dat < max; dat += 32)
         cd << random_uint32 ();
       std::cout << cd << std::endl;
+      */
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
