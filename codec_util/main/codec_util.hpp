@@ -1,7 +1,6 @@
 #ifndef _CODEC_UTIL
 #define _CODEC_UTIL
 
-#include <climits>
 #include <cstddef>
 #include <iostream>
 
@@ -13,9 +12,7 @@ struct codec_data {
   template <typename T>
   codec_data &operator<< (T const &);
 
-  size_t size_bit () const {
-    return used_byte * CHAR_BIT + used_bit;
-  }
+  size_t size_bit () const;
 
   struct reader {
     reader (void *, size_t, size_t);
@@ -38,7 +35,7 @@ struct codec_data {
 private:
   void *data;
   size_t reserve_byte, used_byte, used_bit;
-  void check_resize ();
+  void check_resize (size_t,size_t);
 };
 
 #endif // _CODEC_UTIL
