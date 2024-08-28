@@ -42,6 +42,7 @@ int main (int argv, char *args[]) {
       while ((max > 1800) && (max & 31)) {
         max = (max & 0xffff) + (max >> 16);
       }
+      
       // try make random data
       for (unsigned dat = 0; dat < max; dat += 32)
         cd << random_uint32 ();
