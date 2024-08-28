@@ -108,15 +108,15 @@ bool operator== (const codec_data &a, const codec_data &b) {
 }
 // print hex for small first
 std::ostream &operator<< (std::ostream &c, const codec_data &d) {
-  std::ios _c(nullptr);
-	_c.copyfmt(c);
+  std::ios _c (nullptr);
+  _c.copyfmt (c);
   c << "codec: ";
   unsigned char *begin_ = (unsigned char *)d.data;
   unsigned char *end_ = begin_ + d.used_byte + (d.used_bit != 0);
   c << std::hex << std::setw (2) << std::setfill ('0');
   while (end_ > begin_) {
-    c << int(*--end_);
+    c << int (*--end_);
   }
-  c.copyfmt(_c);
+  c.copyfmt (_c);
   return c;
 }
