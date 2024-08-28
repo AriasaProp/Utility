@@ -36,8 +36,8 @@ int main (int argv, char *args[]) {
   try {
     for (unsigned tries = 0; tries < TRY; ++tries) {
       std::cout << "Hello wolrd!" << std::endl;
-      /*
       codec_data cd;
+      /*
       uint32_t max = random_uint32 ();
       while ((max > 1800) && (max & 31)) {
         max = (max & 0xffff) + (max >> 16);
