@@ -45,65 +45,57 @@ codec_data::reader codec_data::begin_read () const {
   return codec_data::reader (data, used_byte, used_bit);
 }
 
-//reading function
+// reading function
 template <typename T>
-codec_data::reader &operator>>(codec_data::reader &r, T &d)
-{
-    char *dt = reinterpret_cast<char *>(r.data);
-    size_t ready_read = MIN(r.used_byte - r.readed_byte - (r.readed_bit > r.used_bit ? 1 : 0), sizeof(T));
-    (void)dt;
-    r.readed_byte += ready_read;
-    return r;
+codec_data::reader &operator>> (codec_data::reader &r, T &d) {
+  char *dt = reinterpret_cast<char *> (r.data);
+  size_t ready_read = MIN (r.used_byte - r.readed_byte - (r.readed_bit > r.used_bit ? 1 : 0), sizeof (T));
+  (void)dt;
+  r.readed_byte += ready_read;
+  return r;
 }
 template <>
-codec_data::reader &operator>>(codec_data::reader &r, unsigned int &d)
-{
-    return r;
+codec_data::reader &operator>> (codec_data::reader &r, unsigned int &d) {
+  return r;
 }
 template <>
-codec_data::reader &operator>>(codec_data::reader &r, bool &d)
-{
-    if (r.left())
-    {
-        char *dt = reinterpret_cast<char *>(r.data);
-        d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
-        if (r.readed_bit >= CHAR_BIT)
-        {
-            r.readed_bit = 0;
-            ++r.readed_byte;
-        }
+codec_data::reader &operator>> (codec_data::reader &r, bool &d) {
+  if (r.left ()) {
+    char *dt = reinterpret_cast<char *> (r.data);
+    d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
+    if (r.readed_bit >= CHAR_BIT) {
+      r.readed_bit = 0;
+      ++r.readed_byte;
     }
-    return r;
+  }
+  return r;
 }
 
-//writing function
+// writing function
 template <typename T>
-codec_data &operator<<(codec_data &o, T &out)
-{
-    o.check_resize(o.used_byte + sizeof(T) + (o.used_bit ? 1 : 0));
-    T *dt = reinterpret_cast<T *>(reinterpret_cast<char *>(o.data) + o.used_byte);
-    *dt |= out << o.used_bit;
-    if (o.used_bit)
-        *(dt + 1) |= out >> (CHAR_BIT - o.used_bit);
-    o.used_byte += sizeof(T);
-    return o;
+codec_data &operator<< (codec_data &o, T &out) {
+  o.check_resize (o.used_byte + sizeof (T) + (o.used_bit ? 1 : 0));
+  T *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    *(dt + 1) |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += sizeof (T);
+  return o;
 }
 
 template <>
-codec_data &operator<<<bool>(codec_data &o, bool &out)
-{
-    o.check_resize(o.used_byte + 1);
-    char *dt = reinterpret_cast<char *>(o.data) + o.used_byte;
-    if (out)
-        *dt |= 0x1 << o.used_bit;
-    else
-        *dt &= ~(0x1 << o.used_bit);
-    if (++o.used_bit == CHAR_BIT)
-    {
-        o.used_bit = 0;
-        ++o.used_byte;
-    }
-    return o;
+codec_data &operator<< <bool> (codec_data &o, bool &out) {
+  o.check_resize (o.used_byte + 1);
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+  if (out)
+    *dt |= 0x1 << o.used_bit;
+  else
+    *dt &= ~(0x1 << o.used_bit);
+  if (++o.used_bit == CHAR_BIT) {
+    o.used_bit = 0;
+    ++o.used_byte;
+  }
+  return o;
 }
 
 // compare
@@ -116,28 +108,28 @@ bool operator== (const codec_data &a, const codec_data &b) {
 
 // printing
 // print hex for small first
-static inline void tohexsafe(std::ostream &c, unsigned char a) {
-	// big
-	unsigned char a1 = a >> 4;
-	if (a1 >= 10)
-		c << ('a' + (a1-10));
-	else
-		c << ('0' + a1);
-	// small
-	unsigned char a2 = a & 0xf;
-	if (a2 >= 10)
-		c << ('a' + (a2-10));
-	else
-		c << ('0' + a2);
+static inline void tohexsafe (std::ostream &c, unsigned char a) {
+  // big
+  unsigned char a1 = a >> 4;
+  if (a1 >= 10)
+    c << ('a' + (a1 - 10));
+  else
+    c << ('0' + a1);
+  // small
+  unsigned char a2 = a & 0xf;
+  if (a2 >= 10)
+    c << ('a' + (a2 - 10));
+  else
+    c << ('0' + a2);
 }
 std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   c << "codec: ";
   unsigned char *begin_ = (unsigned char *)d.data;
   unsigned char *end_ = begin_ + d.used_byte + (d.used_bit != 0);
-  if(d.used_bit)
-  	tohexsafe(c, *(end_--) & ((0x1 << d.used_bit) - 1));
+  if (d.used_bit)
+    tohexsafe (c, *(end_--) & ((0x1 << d.used_bit) - 1));
   while (end_ > begin_) {
-    tohexsafe(c, *--end_);
+    tohexsafe (c, *--end_);
   }
   return c;
 }

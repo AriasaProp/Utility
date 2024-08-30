@@ -15,8 +15,9 @@ struct codec_data {
     reader (void *, size_t, size_t);
     size_t left () const;
 
-	  template <typename T>
-	  friend reader &operator>> (reader &, T &);
+    template <typename T>
+    friend reader &operator>> (reader &, T &);
+
   private:
     void *data;
     size_t used_byte, used_bit;
