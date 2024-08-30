@@ -313,8 +313,8 @@ int read_bit(FILE *f) {
 
 */
 const codec_data huffman_src_encode (codec_data const &) {
-  return codec_data;
+  return codec_data();
 }
 const codec_data huffman_src_decode (codec_data const &) {
-  return codec_data;
+  return codec_data();
 }
