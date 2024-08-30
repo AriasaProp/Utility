@@ -25,8 +25,7 @@ struct Node {
 struct Branch : public Node {
   Node *left,
       *right;
-  Branch (Node *l, Node *r) : left (l),
-                              right (r) {}
+  Branch (Node *l, Node *r) : left (l), right (r) {}
 
   unsigned int frequency () const override {
     return left->frequency () + right->frequency ();
