@@ -27,7 +27,7 @@ struct codec_data {
   reader begin_read () const;
 
   template <typename T>
-  friend codec_data &operator<< (codec_data &, T &);
+  friend codec_data &operator<< (codec_data &, T);
 
   friend bool operator== (const codec_data &, const codec_data &);
   friend std::ostream &operator<< (std::ostream &, const codec_data &);

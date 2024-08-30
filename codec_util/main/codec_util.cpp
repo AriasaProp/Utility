@@ -55,10 +55,6 @@ codec_data::reader &operator>> (codec_data::reader &r, T &d) {
   return r;
 }
 template <>
-codec_data::reader &operator>> (codec_data::reader &r, unsigned int &d) {
-  return r;
-}
-template <>
 codec_data::reader &operator>> (codec_data::reader &r, bool &d) {
   if (r.left ()) {
     char *dt = reinterpret_cast<char *> (r.data);
@@ -73,18 +69,18 @@ codec_data::reader &operator>> (codec_data::reader &r, bool &d) {
 
 // writing function
 template <typename T>
-codec_data &operator<< (codec_data &o, T &out) {
+codec_data &operator<< (codec_data &o, T out) {
   o.check_resize (o.used_byte + sizeof (T) + (o.used_bit ? 1 : 0));
   T *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (o.data) + o.used_byte);
   *dt |= out << o.used_bit;
   if (o.used_bit)
-    *(dt + 1) |= out >> (CHAR_BIT - o.used_bit);
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (T);
   return o;
 }
 
 template <>
-codec_data &operator<< <bool> (codec_data &o, bool &out) {
+codec_data &operator<< <bool> (codec_data &o, bool out) {
   o.check_resize (o.used_byte + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   if (out)
