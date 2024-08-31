@@ -55,15 +55,15 @@ codec_data::reader &operator>> (codec_data::reader &r, T &d) {
   return r;
 }
 template <>
-codec_data::reader &operator>> <unsigned int>(codec_data::reader &r, unsigned int &d) {
+codec_data::reader &operator>><unsigned int> (codec_data::reader &r, unsigned int &d) {
   char *dt = reinterpret_cast<char *> (r.data);
   size_t ready_read = MIN (r.used_byte - r.readed_byte - (r.readed_bit > r.used_bit ? 1 : 0), sizeof (unsigned int));
   for ()
-  r.readed_byte += ready_read;
+    r.readed_byte += ready_read;
   return r;
 }
 template <>
-codec_data::reader &operator>> <bool>(codec_data::reader &r, char &d) {
+codec_data::reader &operator>><bool> (codec_data::reader &r, char &d) {
   if (r.left ()) {
     char *dt = reinterpret_cast<char *> (r.data);
     d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
@@ -75,7 +75,7 @@ codec_data::reader &operator>> <bool>(codec_data::reader &r, char &d) {
   return r;
 }
 template <>
-codec_data::reader &operator>> <bool>(codec_data::reader &r, bool &d) {
+codec_data::reader &operator>><bool> (codec_data::reader &r, bool &d) {
   if (r.left ()) {
     char *dt = reinterpret_cast<char *> (r.data);
     d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
@@ -161,7 +161,7 @@ codec_data &operator<< <short> (codec_data &o, short out) {
 template <>
 codec_data &operator<< <unsigned char> (codec_data &o, unsigned char out) {
   o.check_resize (o.used_byte + 1 + (o.used_bit ? 1 : 0));
-  unsigned char *dt = reinterpret_cast<unsigned char *>(o.data) + o.used_byte;
+  unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   *dt |= out << o.used_bit;
   if (o.used_bit)
     dt[1] |= out >> (CHAR_BIT - o.used_bit);
@@ -171,7 +171,7 @@ codec_data &operator<< <unsigned char> (codec_data &o, unsigned char out) {
 template <>
 codec_data &operator<< <char> (codec_data &o, char out) {
   o.check_resize (o.used_byte + 1 + (o.used_bit ? 1 : 0));
-  char *dt = reinterpret_cast<char *>(o.data) + o.used_byte;
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   *dt |= out << o.used_bit;
   if (o.used_bit)
     dt[1] |= out >> (CHAR_BIT - o.used_bit);
