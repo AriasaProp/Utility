@@ -3,7 +3,7 @@
 
 #include "codec_util.hpp"
 
-const codec_data huffman_endcode (codec_data const &);
+const codec_data huffman_encode (codec_data const &);
 
 const codec_data huffman_decode (codec_data const &);
 

@@ -45,7 +45,7 @@ int main (int argv, char *args[]) {
       // try make random data
       for (size_t j = 0; j < CODEC_SIZE; ++j)
         cd << clr (rd);
-      test_result rs = test_codec ("huffman", cd, huffman_endcode, huffman_decode);
+      test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
       rss.push_back (rs);
     }
   } catch (const char *err) {
