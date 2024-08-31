@@ -130,8 +130,7 @@ const codec_data huffman_encode (codec_data const &cd) {
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
   size_t len_data, variations;
-  ro >> len_data;
-  ro >> variations;
+  ro >> len_data >> variations;
   uint32_t key;
   size_t key_len;
   // Create priority queue to store live nodes of Huffman tree

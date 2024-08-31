@@ -62,6 +62,17 @@ codec_data::reader &operator>> (codec_data::reader &r, T &d) {
   return r;
 }
 template <>
+codec_data::reader &operator>><unsigned long> (codec_data::reader &r, unsigned long &d) {
+  if (r.left () >= sizeof (unsigned long) * CHAR_BIT) {
+    unsigned long *dt = reinterpret_cast<unsigned long *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
+    d = *dt >> r.readed_bit;
+    if (r.readed_bit)
+      d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
+    r.readed_byte += sizeof (unsigned long);
+  }
+  return r;
+}
+template <>
 codec_data::reader &operator>><unsigned int> (codec_data::reader &r, unsigned int &d) {
   if (r.left () >= sizeof (unsigned int) * CHAR_BIT) {
     unsigned int *dt = reinterpret_cast<unsigned int *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
