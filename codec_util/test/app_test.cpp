@@ -1,18 +1,19 @@
 #include "codec_util.hpp"
 
 #include "clock_adjustment.hpp"
+#include "huffman_codec.hpp"
 #include <random>
 
 #include <cstdint>
 #include <iostream>
 
 struct test_result {
-  std::string name;
+	std::string name;
   bool success;
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
-  ~test_result () {
-    std::cout << name << " : " << (success ? "success" : "fail") << " encode: " << time_encode << " ms, decode: " << time_decode << " ms, compress ratio: " << comp_ratio << " %" << std::endl;
+  ~test_result() {
+    std::cout << name << " : " << (success?"success":"fail") << " encode: " << time_encode << " ms, decode: " << time_decode << " ms, compress ratio: " << comp_ratio << " %" << std::endl;
   }
 };
 
@@ -36,16 +37,16 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 
 int main (int argv, char *args[]) {
   try {
-    std::vector<test_result> rss;
+  	std::vector<test_result> rss;
     std::random_device rd;
-    std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
+    std::uniform_int_distribution<uint32_t> clr(0x0, 0xffffffff);
     for (size_t i = 0; i < TRY; ++i) {
       codec_data cd;
       // try make random data
       for (size_t j = 0; j < CODEC_SIZE; ++j)
         cd << clr (rd);
-      test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
-      rss.push_back (rs);
+      test_result rs = test_codec("huffman", cd, huffman_encode, huffman_decode);
+      rss.push_back(rs);
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
