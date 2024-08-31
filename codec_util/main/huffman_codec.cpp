@@ -108,19 +108,62 @@ const codec_data huffman_encode (codec_data const &cd) {
   delete pq.top ();
 
   codec_data out_c;
+  
   // Encode Huffman codes
-  /*
-    // Encode input data using Huffman codes
-    for (codec_data::reader ro = cd.begin_read(); ro.left();) {
-      uint32_t key;
-      ro >> key;
-      for (bool s: huffmanCode[key])
-      out_c << s;
-    }
-  */
+  //Write huffman tree
+  out_c << size_t(cd.size_byte()/4); // len
+  out_c << size_t(freq.size()); // variations
+  for (auto pair : freq) {
+    out_c << (uint32_t)pair.first;
+    out_c << (size_t)pair.second;
+  }
+  // Encode input data using Huffman codes
+  uint32_t key;
+  for (codec_data::reader ro = cd.begin_read(); ro.left();) {
+    ro >> key;
+    for (bool s: huffmanCode[key])
+    	out_c << s;
+  }
   return out_c;
 }
 
 const codec_data huffman_decode (codec_data const &cd) {
-  return codec_data (cd);
+  codec_data::reader ro = cd.begin_read();
+  size_t len_data, variations;
+  ro >> len_data;
+  ro >> variations;
+  uint32_t key;
+  size_t key_len;
+  // Create priority queue to store live nodes of Huffman tree
+  std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
+  for (unsigned i = 0; i < variations; ++i) {
+    ro >> key >> key_len;
+    pq.push (new Leaf (key, key_len));
+  }
+    // Create Huffman tree
+  while (pq.size () > 1) {
+    Node *left = pq.top ();
+    pq.pop ();
+    Node *right = pq.top ();
+    pq.pop ();
+    pq.push (new Branch (left, right));
+  }
+  Branch *tree = (Branch*)pq.top();
+  codec_data out_c;
+    // decode input data using Huffman codes
+    bool bit_read;
+    uint32_t key_write;
+  for (unsigned i = 0; i < len_data; ++i) {
+  	Branch *current_branch = tree;
+  	Node *cur_;
+  	while (ro.left()) {
+	    ro >> bit_read;
+	    cur_ = bit_read?current_branch->right:current_branch->left;
+	    if (cur_->type() == 1) break;
+	    current_branch = (Branch*)cur_;
+  	}
+    out_c << ((Leaf*)cur_)->data;
+  }
+  delete tree;
+  return out_c;
 }

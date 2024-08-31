@@ -141,17 +141,14 @@ const codec_data huffman_src_endcode(codec_data const &fin) {
 
   j = sizeof(int);
   while (j--)
-  buffer[byte++] =
-  (original_size >> (j << 3)) & 0xff;
+  buffer[byte++] = (original_size >> (j << 3)) & 0xff;
   buffer[byte++] = (char) num_active;
   for (i = 1; i <= num_active; ++i) {
     weight = nodes[i].weight;
-    buffer[byte++] =
-    (char) (-nodes[i].index - 1);
+    buffer[byte++] = (char) (-nodes[i].index - 1);
     j = sizeof(int);
     while (j--)
-    buffer[byte++] =
-    (weight >> (j << 3)) & 0xff;
+    	buffer[byte++] = (weight >> (j << 3)) & 0xff;
   }
   fwrite(buffer, 1, size, fout);
   free(buffer);

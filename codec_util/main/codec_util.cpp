@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
+#include <cstdint>
 
 #include "codec_util.hpp"
 
@@ -35,6 +36,9 @@ codec_data::~codec_data () {
 
 size_t codec_data::size_bit () const {
   return used_byte * CHAR_BIT + used_bit;
+}
+size_t codec_data::size_byte () const {
+  return used_byte + (used_bit?1:0);
 }
 
 codec_data::reader::reader (void *d, size_t ub, size_t unb) : data (d), used_byte (ub), used_bit (unb), readed_byte (0), readed_bit (0) {}

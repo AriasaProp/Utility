@@ -10,6 +10,7 @@ struct codec_data {
   ~codec_data ();
 
   size_t size_bit () const;
+  size_t size_byte () const;
 
   struct reader {
     reader (void *, size_t, size_t);
