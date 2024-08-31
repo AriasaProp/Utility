@@ -55,11 +55,31 @@ codec_data::reader &operator>> (codec_data::reader &r, T &d) {
   return r;
 }
 template <>
-codec_data::reader &operator>> (codec_data::reader &r, bool &d) {
+codec_data::reader &operator>> <unsigned int>(codec_data::reader &r, unsigned int &d) {
+  char *dt = reinterpret_cast<char *> (r.data);
+  size_t ready_read = MIN (r.used_byte - r.readed_byte - (r.readed_bit > r.used_bit ? 1 : 0), sizeof (unsigned int));
+  for ()
+  r.readed_byte += ready_read;
+  return r;
+}
+template <>
+codec_data::reader &operator>> <bool>(codec_data::reader &r, char &d) {
   if (r.left ()) {
     char *dt = reinterpret_cast<char *> (r.data);
     d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
-    if (r.readed_bit >= CHAR_BIT) {
+    if (r.readed_bit == CHAR_BIT) {
+      r.readed_bit = 0;
+      ++r.readed_byte;
+    }
+  }
+  return r;
+}
+template <>
+codec_data::reader &operator>> <bool>(codec_data::reader &r, bool &d) {
+  if (r.left ()) {
+    char *dt = reinterpret_cast<char *> (r.data);
+    d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
+    if (r.readed_bit == CHAR_BIT) {
       r.readed_bit = 0;
       ++r.readed_byte;
     }
@@ -78,7 +98,86 @@ codec_data &operator<< (codec_data &o, T out) {
   o.used_byte += sizeof (T);
   return o;
 }
-
+template <>
+codec_data &operator<< <unsigned long> (codec_data &o, unsigned long out) {
+  o.check_resize (o.used_byte + sizeof (unsigned long) + (o.used_bit ? 1 : 0));
+  unsigned long *dt = reinterpret_cast<unsigned long *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += sizeof (unsigned long);
+  return o;
+}
+template <>
+codec_data &operator<< <long> (codec_data &o, long out) {
+  o.check_resize (o.used_byte + sizeof (long) + (o.used_bit ? 1 : 0));
+  long *dt = reinterpret_cast<long *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += sizeof (long);
+  return o;
+}
+template <>
+codec_data &operator<< <unsigned int> (codec_data &o, unsigned int out) {
+  o.check_resize (o.used_byte + sizeof (unsigned int) + (o.used_bit ? 1 : 0));
+  unsigned int *dt = reinterpret_cast<unsigned int *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += sizeof (unsigned int);
+  return o;
+}
+template <>
+codec_data &operator<< <int> (codec_data &o, int out) {
+  o.check_resize (o.used_byte + sizeof (int) + (o.used_bit ? 1 : 0));
+  int *dt = reinterpret_cast<int *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += sizeof (int);
+  return o;
+}
+template <>
+codec_data &operator<< <unsigned short> (codec_data &o, unsigned short out) {
+  o.check_resize (o.used_byte + 2 + (o.used_bit ? 1 : 0));
+  unsigned short *dt = reinterpret_cast<unsigned short *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += 2;
+  return o;
+}
+template <>
+codec_data &operator<< <short> (codec_data &o, short out) {
+  o.check_resize (o.used_byte + 2 + (o.used_bit ? 1 : 0));
+  short *dt = reinterpret_cast<short *> (reinterpret_cast<char *> (o.data) + o.used_byte);
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  o.used_byte += 2;
+  return o;
+}
+template <>
+codec_data &operator<< <unsigned char> (codec_data &o, unsigned char out) {
+  o.check_resize (o.used_byte + 1 + (o.used_bit ? 1 : 0));
+  unsigned char *dt = reinterpret_cast<unsigned char *>(o.data) + o.used_byte;
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  ++o.used_byte;
+  return o;
+}
+template <>
+codec_data &operator<< <char> (codec_data &o, char out) {
+  o.check_resize (o.used_byte + 1 + (o.used_bit ? 1 : 0));
+  char *dt = reinterpret_cast<char *>(o.data) + o.used_byte;
+  *dt |= out << o.used_bit;
+  if (o.used_bit)
+    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  ++o.used_byte;
+  return o;
+}
 template <>
 codec_data &operator<< <bool> (codec_data &o, bool out) {
   o.check_resize (o.used_byte + 1);
