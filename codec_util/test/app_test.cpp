@@ -3,6 +3,7 @@
 #include "clock_adjustment.hpp"
 #include "huffman_codec.hpp"
 #include <random>
+#include <vector>
 
 #include <cstdint>
 #include <iostream>
