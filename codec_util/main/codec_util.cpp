@@ -48,33 +48,33 @@ codec_data::reader codec_data::begin_read () const {
 // reading function
 template <typename T>
 codec_data::reader &operator>> (codec_data::reader &r, T &d) {
-  if (r.left () >= sizeof (T) * CHAR_BIT) {
-    char *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
+  if (r.left () >= sizeof(T) * CHAR_BIT) {
+	  char *dt = reinterpret_cast<T *>(reinterpret_cast<char *> (r.data) + r.readed_byte);
     d = *dt >> r.readed_bit;
     if (r.readed_bit)
-      d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
-    r.readed_byte += sizeof (T);
+    	d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
+	  r.readed_byte += sizeof(T) ;
   }
   return r;
 }
 template <>
-codec_data::reader &operator>><unsigned int> (codec_data::reader &r, unsigned int &d) {
-  if (r.left () >= sizeof (unsigned int) * CHAR_BIT) {
-    char *dt = reinterpret_cast<unsigned int *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
+codec_data::reader &operator>> <unsigned int>(codec_data::reader &r, unsigned int &d) {
+  if (r.left () >= sizeof(unsigned int) * CHAR_BIT) {
+	  unsigned int *dt = reinterpret_cast<unsigned int *>(reinterpret_cast<char *> (r.data) + r.readed_byte);
     d = *dt >> r.readed_bit;
     if (r.readed_bit)
-      d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
-    r.readed_byte += sizeof (unsigned int);
+    	d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
+	  r.readed_byte += sizeof(unsigned int) ;
   }
   return r;
 }
 template <>
-codec_data::reader &operator>><char> (codec_data::reader &r, char &d) {
+codec_data::reader &operator>> <char>(codec_data::reader &r, char &d) {
   if (r.left () >= CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (r.data);
     d = dt[r.readed_byte++] >> r.readed_bit;
     if (r.readed_bit)
-      d |= dt[r.readed_byte] << (CHAR_BIT - r.readed_bit);
+    	d |= dt[r.readed_byte] << (CHAR_BIT - r.readed_bit);
   }
   return r;
 }
