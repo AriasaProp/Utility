@@ -40,6 +40,8 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew wrapper --gradle-version 8.10
+          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
+          git config --global user.name "AriasaProp"
           git add .
           git commit -m "changes of formating"
           git push
