@@ -3,6 +3,7 @@ name: AUTO
 on:
   push:
     paths:
+      - '.github/workflows/auto.yml'
       - 'profiling_util/**'
       - 'math_util/**'
       - 'codec_util/**'
