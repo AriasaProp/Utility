@@ -51,18 +51,18 @@ codec_data::reader codec_data::begin_read () const {
 
 // reading function
 template <typename T>
-codec_data::reader &operator>> (codec_data::reader &r, T &d) {
-  if (r.left () >= sizeof (T) * CHAR_BIT) {
-    char *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
-    d = 0;
-    memcpy (&d, dt, sizeof (T));
-    if (r.readed_bit) {
-      d >>= r.readed_bit;
-      d |= (*(dt + sizeof (T)) >> (CHAR_BIT - r.readed_bit)) << ((sizeof (T) - 1) << 3);
-    }
-    r.readed_byte += sizeof (T);
+codec_data::reader &codec_data::reader::operator>> (T &d) {
+  if (left () >= sizeof (T) * CHAR_BIT) {
+    char *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (data) + readed_byte);
+  	d = 0;
+  	memcpy(&d, dt, sizeof (T));
+  	if (readed_bit) {
+  		d >>= readed_bit;
+  		d |= (*(dt+sizeof (T)) >> (CHAR_BIT - readed_bit)) << ((sizeof(T) - 1) << 3);
+  	}
+    readed_byte += sizeof (T);
   }
-  return r;
+  return *this;
 }
 /*
 template <>
@@ -99,33 +99,34 @@ codec_data::reader &operator>><char> (codec_data::reader &r, char &d) {
 }
 */
 template <>
-codec_data::reader &operator>><bool> (codec_data::reader &r, bool &d) {
-  if (r.left ()) {
-    char *dt = reinterpret_cast<char *> (r.data);
-    d = (dt[r.readed_byte] >> r.readed_bit++) & 0x1;
-    if (r.readed_bit == CHAR_BIT) {
-      r.readed_bit = 0;
-      ++r.readed_byte;
+codec_data::reader &codec_data::reader::operator>><bool> (bool &d) {
+  if (left ()) {
+    char *dt = reinterpret_cast<char *> (data);
+    d = (dt[readed_byte] >> readed_bit++) & 0x1;
+    if (readed_bit == CHAR_BIT) {
+      readed_bit = 0;
+      ++readed_byte;
     }
   }
-  return r;
+  return *this;
 }
+
 
 // writing function
 template <typename T>
-codec_data &operator<< (codec_data &o, T out) {
-  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  o.used_byte += sizeof (T);
-  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
-  if (o.used_bit) {
-    T shifted = out << o.used_bit;
-    memcpy (dt, &shifted, sizeof (T));
-    dt += sizeof (T);
-    *dt = (out >> (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &out, sizeof (T));
-  }
-  return o;
+codec_data &codec_data::operator<< (T out) {
+  char *dt = reinterpret_cast<char *> (data) + used_byte;
+  used_byte += sizeof (T);
+  check_resize (used_byte + (used_bit ? 1 : 0));
+	if (used_bit) {
+		T shifted = out << used_bit;
+		memcpy(dt, &shifted, sizeof (T));
+		dt += sizeof (T);
+		*dt = (out >> (CHAR_BIT - used_bit)) & 0xff;
+	} else {
+		memcpy(dt, &out, sizeof (T));
+	}
+  return *this;
 }
 /*
 template <>
@@ -210,18 +211,18 @@ codec_data &operator<< <char> (codec_data &o, char out) {
 }
 */
 template <>
-codec_data &operator<< <bool> (codec_data &o, bool out) {
-  o.check_resize (o.used_byte + 1);
-  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+codec_data &codec_data::operator<< <bool> (bool out) {
+  check_resize (used_byte + 1);
+  char *dt = reinterpret_cast<char *> (data) + used_byte;
   if (out)
-    *dt |= 0x1 << o.used_bit;
+    *dt |= 0x1 << used_bit;
   else
-    *dt &= ~(0x1 << o.used_bit);
-  if (++o.used_bit == CHAR_BIT) {
-    o.used_bit = 0;
-    ++o.used_byte;
+    *dt &= ~(0x1 << used_bit);
+  if (++used_bit == CHAR_BIT) {
+    used_bit = 0;
+    ++used_byte;
   }
-  return o;
+  return *this;
 }
 
 // compare
