@@ -11,6 +11,12 @@ allprojects {
         mavenCentral()
     }
 }
+subprojects {
+    cppCompiler {
+        cppFlags += "-std=c++21"
+    }
+}
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

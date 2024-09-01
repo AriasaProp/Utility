@@ -54,13 +54,17 @@ template <typename T>
 codec_data::reader &operator>> (codec_data::reader &r, T &d) {
   if (r.left () >= sizeof (T) * CHAR_BIT) {
     char *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (r.data) + r.readed_byte);
-    d = *dt >> r.readed_bit;
-    if (r.readed_bit)
-      d |= *(dt + 1) << (CHAR_BIT - r.readed_bit);
+  	d = 0;
+  	memcpy(&d, dt, sizeof (T));
+  	if (r.readed_bit) {
+  		d >>= r.readed_bit;
+  		d |= (*(dt+sizeof (T)) >> (CHAR_BIT - r.readed_bit)) << ((sizeof(T) - 1) << 3);
+  	}
     r.readed_byte += sizeof (T);
   }
   return r;
 }
+/*
 template <>
 codec_data::reader &operator>><unsigned long> (codec_data::reader &r, unsigned long &d) {
   if (r.left () >= sizeof (unsigned long) * CHAR_BIT) {
@@ -93,6 +97,7 @@ codec_data::reader &operator>><char> (codec_data::reader &r, char &d) {
   }
   return r;
 }
+*/
 template <>
 codec_data::reader &operator>><bool> (codec_data::reader &r, bool &d) {
   if (r.left ()) {
@@ -106,17 +111,24 @@ codec_data::reader &operator>><bool> (codec_data::reader &r, bool &d) {
   return r;
 }
 
+
 // writing function
 template <typename T>
 codec_data &operator<< (codec_data &o, T out) {
-  o.check_resize (o.used_byte + sizeof (T) + (o.used_bit ? 1 : 0));
-  T *dt = reinterpret_cast<T *> (reinterpret_cast<char *> (o.data) + o.used_byte);
-  *dt |= out << o.used_bit;
-  if (o.used_bit)
-    dt[1] |= out >> (CHAR_BIT - o.used_bit);
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   o.used_byte += sizeof (T);
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+	if (o.used_bit) {
+		T shifted = out << o.used_bit;
+		memcpy(dt, &shifted, sizeof (T));
+		dt += sizeof (T);
+		*dt = (out >> (CHAR_BIT - o.used_bit)) & 0xff;
+	} else {
+		memcpy(dt, &out, sizeof (T));
+	}
   return o;
 }
+/*
 template <>
 codec_data &operator<< <unsigned long> (codec_data &o, unsigned long out) {
   o.check_resize (o.used_byte + sizeof (unsigned long) + (o.used_bit ? 1 : 0));
@@ -197,6 +209,7 @@ codec_data &operator<< <char> (codec_data &o, char out) {
   ++o.used_byte;
   return o;
 }
+*/
 template <>
 codec_data &operator<< <bool> (codec_data &o, bool out) {
   o.check_resize (o.used_byte + 1);
