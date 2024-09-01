@@ -40,6 +40,9 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew wrapper --gradle-version 8.10
+          git add .
+          git commit -m "changes of formating"
+          git push
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
