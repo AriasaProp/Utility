@@ -11,10 +11,9 @@ allprojects {
         mavenCentral()
     }
 }
-subprojects {
-    cppCompiler {
-        cppFlags += "-std=c++21"
-    }
+
+tasks.withType(CppCompile) {
+    options.compilerArgs += ["-std=c++21"]
 }
 
 
