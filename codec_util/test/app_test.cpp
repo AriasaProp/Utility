@@ -55,6 +55,7 @@ int main (int argv, char *args[]) {
   } catch (...) {
     std::cout << "Error : uncaught" << std::endl;
     return EXIT_FAILURE;
+    
   }
   return EXIT_SUCCESS;
 }
