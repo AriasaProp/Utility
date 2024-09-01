@@ -36,16 +36,6 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
       
-      - name: Update Gradle
-        run: |
-          chmod +x gradlew
-          ./gradlew wrapper --gradle-version 8.10
-          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
-          git config --global user.name "AriasaProp"
-          git add .
-          git commit -m "changes of formating"
-          git push
-
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
         continue-on-error: true
@@ -67,31 +57,14 @@ jobs:
 
       - name: Run Tests
         run: |
-          report_paths=""
           if [ "${{ steps.files.outputs.profiling_util }}" == "true" ]; then
-            if ! gradle :profiling_util:test; then
-              report_paths+="${{ github.workspace }}/profiling_util/build/test-results/test "
-            fi
+            gradle :profiling_util:test
           fi
           if [ "${{ steps.files.outputs.math_util }}" == "true" ]; then
-            if ! gradle :math_util:test; then
-              report_paths+="${{ github.workspace }}/math_util/build/test-results/test "
-            fi
+            gradle :math_util:test
           fi
           if [ "${{ steps.files.outputs.codec_util }}" == "true" ]; then
-            if ! gradle :codec_util:test; then
-              report_paths+="${{ github.workspace }}/codec_util/build/test-results/test"
-            fi
+            gradle :codec_util:test
           fi
-          echo "report_paths=$report_paths" >> $GITHUB_ENV
-
-      - name: Upload Report Failure
-        if: env.report_paths != ''
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          overwrite: true
-          if-no-files-found: error
-          name: report_failure
-          path: ${{ env.report_paths }}
 
 
