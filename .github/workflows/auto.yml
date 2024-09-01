@@ -39,7 +39,7 @@ jobs:
       - name: Update Gradle
         run: |
           chmod +x gradlew
-          ./gradlew wrapper --gradle-version latest
+          ./gradlew wrapper --gradle-version 8.10
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
