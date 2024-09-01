@@ -35,13 +35,16 @@ jobs:
               - added|modified: '**/*.hpp'
 
       - uses: gradle/actions/setup-gradle@v3
+      
+      - name: Update Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew wrapper --gradle-version latest
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
         continue-on-error: true
         run: |
-          chmod +x gradlew
-          ./gradlew wrapper --gradle-version latest
           sudo apt-get install -y clang-format
           echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
           git config --global user.email "ikomangwidiadaariasa12@gmail.com"
