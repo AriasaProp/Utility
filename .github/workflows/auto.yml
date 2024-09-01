@@ -33,10 +33,13 @@ jobs:
               - added|modified: '**/*.cpp'
               - added|modified: '**/*.hpp'
 
+      - uses: gradle/actions/setup-gradle@v3
+
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
         continue-on-error: true
         run: |
+          ./gradlew wrapper --gradle-version latest
           sudo apt-get install -y clang-format
           echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
           git config --global user.email "ikomangwidiadaariasa12@gmail.com"
@@ -45,16 +48,12 @@ jobs:
           git commit -m "changes of formating"
           git push
 
-      - name: Setup Java 17
+      - name: Setup Java ${{ vars.JAVA_VERSION }}
         uses: actions/setup-java@v4.2.1
         with:
-          java-version: '17'
+          java-version: ${{ vars.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'gradle'
-
-      - uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.7
 
       - name: Run Tests
         run: |
