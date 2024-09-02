@@ -79,6 +79,20 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
   }
   return o;
 }
+codec_data::reader &operator>> (codec_data::reader &o, unsigned short &d) {
+  if (o.left () >= sizeof (unsigned short) * CHAR_BIT) {
+    char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
+    d = 0;
+    memcpy (&d, dt, sizeof (unsigned short));
+    if (o.readed_bit) {
+      d >>= o.readed_bit;
+      dt += sizeof (unsigned short);
+      d |= (((unsigned short)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (unsigned short) - 1) << 3);
+    }
+    o.readed_byte += sizeof (unsigned short);
+  }
+  return o;
+}
 codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
   if (o.left () >= CHAR_BIT) {
     unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.readed_byte;
@@ -146,6 +160,20 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
   }
   return o;
 }
+codec_data &operator<< (codec_data &o, unsigned short in) {
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+  o.used_byte += sizeof (unsigned short);
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  if (o.used_bit) {
+    unsigned short shifted = (in << o.used_bit) | *dt;
+    memcpy (dt, &shifted, sizeof (unsigned short));
+    dt += sizeof (unsigned short);
+    *dt = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+  } else {
+    memcpy (dt, &in, sizeof (unsigned short));
+  }
+  return o;
+}
 codec_data &operator<< (codec_data &o, unsigned char in) {
   unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   ++o.used_byte;
@@ -198,7 +226,7 @@ std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   char *begin_ = (char *)d.data;
   char *end_ = begin_ + d.used_byte + (d.used_bit ? 1 : 0);
   while ((--end_) >= begin_)
-    c << std::hex << int (*end_);
+    c << std::setw(2) << std::setfill('0') << std::hex << int(*end_);
   c << std::dec;
   return c;
 }

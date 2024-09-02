@@ -17,13 +17,12 @@ struct codec_data {
     reader (void *, size_t, size_t);
     size_t left () const;
 
-    //    template <typename T>
     friend reader &operator>> (reader &, unsigned long &);
     friend reader &operator>> (reader &, unsigned int &);
+    friend reader &operator>> (reader &, unsigned short &);
     friend reader &operator>> (reader &, unsigned char &);
     friend reader &operator>> (reader &, char &);
     friend reader &operator>> (reader &, bool &);
-    //    friend reader &operator>> (reader &,T &);
 
   private:
     void *data;
@@ -33,9 +32,9 @@ struct codec_data {
 
   reader begin_read () const;
 
-  //  template <typename T>
   friend codec_data &operator<< (codec_data &, unsigned long);
   friend codec_data &operator<< (codec_data &, unsigned int);
+  friend codec_data &operator<< (codec_data &, unsigned short);
   friend codec_data &operator<< (codec_data &, unsigned char);
   friend codec_data &operator<< (codec_data &, char);
   friend codec_data &operator<< (codec_data &, bool);

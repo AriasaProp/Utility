@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <iostream>
-/*
+
 struct test_result {
   std::string name;
   bool success;
@@ -32,10 +32,11 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
   return r;
 }
-*/
 
-#define TRY 100
-#define CODEC_SIZE 4194304
+
+#define TRY 5
+#define CODEC_SIZE 64
+//4194304
 
 int main (int argv, char *args[]) {
   try {
@@ -48,8 +49,8 @@ int main (int argv, char *args[]) {
       for (size_t j = 0; j < CODEC_SIZE; ++j)
         cd << clr (rd);
       std::cout << cd << std::endl;
-      // test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
-      // rss.push_back (rs);
+      test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
+      rss.push_back (rs);
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
