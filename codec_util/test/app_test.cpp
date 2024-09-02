@@ -39,7 +39,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 
 int main (int argv, char *args[]) {
   try {
-    // std::vector<test_result> rss;
+    std::vector<test_result> rss;
     std::random_device rd;
     std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
     for (size_t i = 0; i < TRY; ++i) {
