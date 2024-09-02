@@ -64,7 +64,7 @@ codec_data::reader &codec_data::reader::operator>> (T &d) {
     readed_byte += sizeof (T);
   }
   return *this;
-} 
+}
 */
 codec_data::reader &codec_data::reader::operator>> (unsigned long &d) {
   if (left () >= sizeof (unsigned long) * CHAR_BIT) {
@@ -181,9 +181,9 @@ codec_data &codec_data::operator<< (unsigned char in) {
   check_resize (used_byte + (used_bit ? 1 : 0));
   if (used_bit) {
     dt |= (in << used_bit) & 0xff;
-    *(dt+1) = (in >> (CHAR_BIT - used_bit)) & 0xff;
+    *(dt + 1) = (in >> (CHAR_BIT - used_bit)) & 0xff;
   } else {
-  	dt = in;
+    dt = in;
   }
   return *this;
 }
@@ -193,9 +193,9 @@ codec_data &codec_data::operator<< (char in) {
   check_resize (used_byte + (used_bit ? 1 : 0));
   if (used_bit) {
     dt |= (in << used_bit) & 0xff;
-    *(dt+1) = (in >> (CHAR_BIT - used_bit)) & 0xff;
+    *(dt + 1) = (in >> (CHAR_BIT - used_bit)) & 0xff;
   } else {
-  	dt = in;
+    dt = in;
   }
   return *this;
 }
