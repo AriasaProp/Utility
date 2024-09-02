@@ -6,6 +6,7 @@
 
 struct codec_data {
   codec_data ();
+  codec_data (size_t);
   codec_data (const codec_data &);
   ~codec_data ();
 
