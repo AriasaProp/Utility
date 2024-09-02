@@ -192,29 +192,12 @@ bool operator== (const codec_data &a, const codec_data &b) {
 }
 
 // printing
-// print hex for small first
-static inline void tohexsafe (std::ostream &c, unsigned char a) {
-  // big
-  unsigned char a1 = a >> 4;
-  if (a1 >= 10)
-    c << ('a' + (a1 - 10));
-  else
-    c << ('0' + a1);
-  // small
-  unsigned char a2 = a & 0xf;
-  if (a2 >= 10)
-    c << ('a' + (a2 - 10));
-  else
-    c << ('0' + a2);
-}
 std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   c << "codec: ";
-  unsigned char *begin_ = (unsigned char *)d.data;
-  unsigned char *end_ = begin_ + d.used_byte + (d.used_bit != 0);
-  if (d.used_bit)
-    tohexsafe (c, *(end_--) & ((0x1 << d.used_bit) - 1));
-  while (end_ > begin_) {
-    tohexsafe (c, *--end_);
-  }
+  char *begin_ = (char *)d.data;
+  char *end_ = begin_ + d.used_byte + (d.used_bit ? 1 : 0);
+  while ((--end_) >= begin_)
+      c << std::hex << int(*end_);
+  c << std::dec;
   return c;
 }
