@@ -82,7 +82,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
   if (o.left () >= CHAR_BIT) {
     unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.readed_byte;
     d = *dt;
-    if (readed_bit) {
+    if (o.readed_bit) {
       d >>= o.readed_bit;
       ++dt;
       d |= (*dt >> (CHAR_BIT - o.readed_bit));
@@ -120,7 +120,7 @@ codec_data::reader &operator>> (codec_data::reader &o, bool &d) {
 codec_data &operator<< (codec_data &o, unsigned long in) {
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   o.used_byte += sizeof (unsigned long);
-  check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
   if (o.used_bit) {
     unsigned long shifted = (in << o.used_bit) | *dt;
     memcpy (dt, &shifted, sizeof (unsigned long));
@@ -134,7 +134,7 @@ codec_data &operator<< (codec_data &o, unsigned long in) {
 codec_data &operator<< (codec_data &o, unsigned int in) {
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   o.used_byte += sizeof (unsigned int);
-  check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
   if (o.used_bit) {
     unsigned int shifted = (in << o.used_bit) | *dt;
     memcpy (dt, &shifted, sizeof (unsigned int));
@@ -146,9 +146,9 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned char in) {
-  unsigned char *dt = reinterpret_cast<unsigned char *> (data) + o.used_byte;
+  unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   ++o.used_byte;
-  check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
   if (o.used_bit) {
     *dt |= (in << o.used_bit) & 0xff;
     *(dt + 1) = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
@@ -160,7 +160,7 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
 codec_data &operator<< (codec_data &o, char in) {
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   ++o.used_byte;
-  check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
   if (o.used_bit) {
     *dt |= (in << o.used_bit) & 0xff;
     *(dt + 1) = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
@@ -170,7 +170,7 @@ codec_data &operator<< (codec_data &o, char in) {
   return o;
 }
 codec_data &operator<< (codec_data &o, bool in) {
-  check_resize (o.used_byte + 1);
+  o.check_resize (o.used_byte + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   if (in)
     *dt |= 0x1 << o.used_bit;
