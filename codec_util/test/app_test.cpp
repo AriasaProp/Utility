@@ -39,7 +39,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 
 int main (int argv, char *args[]) {
   try {
-    //std::vector<test_result> rss;
+    // std::vector<test_result> rss;
     std::random_device rd;
     std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
     for (size_t i = 0; i < TRY; ++i) {
@@ -48,8 +48,8 @@ int main (int argv, char *args[]) {
       for (size_t j = 0; j < CODEC_SIZE; ++j)
         cd << clr (rd);
       std::cout << cd << std::endl;
-      //test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
-      //rss.push_back (rs);
+      // test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
+      // rss.push_back (rs);
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
@@ -57,7 +57,6 @@ int main (int argv, char *args[]) {
   } catch (...) {
     std::cout << "Error : uncaught" << std::endl;
     return EXIT_FAILURE;
-    
   }
   return EXIT_SUCCESS;
 }
