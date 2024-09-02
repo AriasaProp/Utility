@@ -113,17 +113,17 @@ codec_data::reader &codec_data::reader::operator>><bool> (bool &d) {
 
 // writing function
 template <typename T>
-codec_data &codec_data::operator<< (T out) {
+codec_data &codec_data::operator<< (T in) {
   char *dt = reinterpret_cast<char *> (data) + used_byte;
   used_byte += sizeof (T);
   check_resize (used_byte + (used_bit ? 1 : 0));
   if (used_bit) {
-    T shifted = out << used_bit;
+    T shifted = in << used_bit;
     memcpy (dt, &shifted, sizeof (T));
     dt += sizeof (T);
-    *dt = (out >> (CHAR_BIT - used_bit)) & 0xff;
+    *dt = (in >> (CHAR_BIT - used_bit)) & 0xff;
   } else {
-    memcpy (dt, &out, sizeof (T));
+    memcpy (dt, &in, sizeof (T));
   }
   return *this;
 }
@@ -210,10 +210,10 @@ codec_data &operator<< <char> (codec_data &o, char out) {
 }
 */
 template <>
-codec_data &codec_data::operator<< <bool> (bool out) {
+codec_data &codec_data::operator<< <bool> (bool in) {
   check_resize (used_byte + 1);
   char *dt = reinterpret_cast<char *> (data) + used_byte;
-  if (out)
+  if (in)
     *dt |= 0x1 << used_bit;
   else
     *dt &= ~(0x1 << used_bit);
