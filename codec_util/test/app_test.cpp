@@ -33,10 +33,9 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   return r;
 }
 
-
 #define TRY 5
 #define CODEC_SIZE 64
-//4194304
+// 4194304
 
 int main (int argv, char *args[]) {
   try {

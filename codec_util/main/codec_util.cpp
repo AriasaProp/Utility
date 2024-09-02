@@ -226,7 +226,7 @@ std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   char *begin_ = (char *)d.data;
   char *end_ = begin_ + d.used_byte + (d.used_bit ? 1 : 0);
   while ((--end_) >= begin_)
-    c << std::setw(2) << std::setfill('0') << std::hex << int(*end_);
+    c << std::setw (2) << std::setfill ('0') << std::hex << int (*end_);
   c << std::dec;
   return c;
 }

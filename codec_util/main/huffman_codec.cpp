@@ -82,7 +82,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     uint32_t key;
     ro >> key;
     if (freq[key] < 0xffff)
-    	freq[key]++;
+      freq[key]++;
   }
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
