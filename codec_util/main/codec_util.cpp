@@ -11,10 +11,10 @@
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
+	if (reserve < reserve_byte) return;
   // need to reserve new size
   size_t old_size_reserve = reserve_byte;
-  while (reserve_byte < reserve)
-    reserve_byte *= 1.8;
+  reserve_byte = (reserve + 3) / 4 * 4;
   if (!realloc (data, reserve_byte)) {
     void *new1 = calloc (1, reserve_byte);
     memcpy (new1, data, old_size_reserve);

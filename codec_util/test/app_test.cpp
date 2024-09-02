@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <iomanip>
 
 struct test_result {
   std::string name;
@@ -33,7 +34,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   return r;
 }
 
-#define TRY 5
+#define TRY 3
 #define CODEC_SIZE 64
 // 4194304
 
@@ -45,8 +46,12 @@ int main (int argv, char *args[]) {
     for (size_t i = 0; i < TRY; ++i) {
       codec_data cd (CODEC_SIZE << 2);
       // try make random data
-      for (size_t j = 0; j < CODEC_SIZE; ++j)
-        cd << clr (rd);
+      for (size_t j = 0; j < CODEC_SIZE; ++j) {
+      	uint32_t rndclr = clr (rd);
+        cd << rndclr;
+        std::cout << std::hex << rndclr << " ";
+      }
+      std::cout << std::endl;
       std::cout << cd << std::endl;
       test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
       rss.push_back (rs);
