@@ -21,7 +21,7 @@ void codec_data::check_resize (size_t reserve) {
     free (data);
     data = new1;
   } else {
-    memset (reinterpret_cast<char *> (o.data) + old_size_reserve, 0x0, reserve_byte - old_size_reserve);
+    memset (reinterpret_cast<char *> (data) + old_size_reserve, 0x0, reserve_byte - old_size_reserve);
   }
 }
 
@@ -70,7 +70,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
     d = 0;
     memcpy (&d, dt, sizeof (unsigned int));
     if (o.readed_bit) {
-      d >>= readed_bit;
+      d >>= o.readed_bit;
       dt += sizeof (unsigned int);
       d |= (((unsigned int)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (unsigned int) - 1) << 3);
     }
