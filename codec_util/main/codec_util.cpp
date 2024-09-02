@@ -11,7 +11,7 @@
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
-	if (reserve < reserve_byte) return;
+  if (reserve < reserve_byte) return;
   // need to reserve new size
   size_t old_size_reserve = reserve_byte;
   reserve_byte = (reserve + 3) / 4 * 4;

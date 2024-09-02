@@ -6,8 +6,8 @@
 #include <vector>
 
 #include <cstdint>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 struct test_result {
   std::string name;
@@ -47,7 +47,7 @@ int main (int argv, char *args[]) {
       codec_data cd (CODEC_SIZE << 2);
       // try make random data
       for (size_t j = 0; j < CODEC_SIZE; ++j) {
-      	uint32_t rndclr = clr (rd);
+        uint32_t rndclr = clr (rd);
         cd << rndclr;
         std::cout << std::hex << rndclr << " ";
       }
