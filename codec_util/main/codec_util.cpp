@@ -73,7 +73,8 @@ codec_data::reader &codec_data::reader::operator>> (unsigned long &d) {
     memcpy (&d, dt, sizeof (unsigned long));
     if (readed_bit) {
       d >>= readed_bit;
-      d |= (unsigned long (*(dt + sizeof (unsigned long))) >> (CHAR_BIT - readed_bit)) << ((sizeof (unsigned long) - 1) << 3);
+      dt += sizeof (unsigned long);
+      d |= (((unsigned long)*dt) >> (CHAR_BIT - readed_bit)) << ((sizeof (unsigned long) - 1) << 3);
     }
     readed_byte += sizeof (unsigned long);
   }
