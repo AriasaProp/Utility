@@ -15,7 +15,7 @@ void codec_data::check_resize (size_t reserve) {
   // need to reserve new size
   size_t old_size_reserve = reserve_byte;
   while (reserve_byte < reserve)
-  	reserve_byte *= 1.6;
+    reserve_byte *= 1.6;
   if (realloc (data, reserve_byte)) {
     memset (reinterpret_cast<char *> (data) + old_size_reserve, 0x0, reserve_byte - old_size_reserve);
   } else {
@@ -30,7 +30,7 @@ void codec_data::check_resize (size_t reserve) {
 codec_data::codec_data () : data (calloc (1, 8)), reserve_byte (8), used_byte (0), used_bit (0) {}
 codec_data::codec_data (size_t _reserve) : data (calloc (1, _reserve)), reserve_byte (_reserve), used_byte (0), used_bit (0) {}
 codec_data::codec_data (const codec_data &other) : data (calloc (1, other.reserve_byte)), reserve_byte (other.reserve_byte), used_byte (other.used_byte), used_bit (other.used_bit) {
-  memcpy (data, other.data, used_byte + (used_bit?1:0));
+  memcpy (data, other.data, used_byte + (used_bit ? 1 : 0));
 }
 codec_data::~codec_data () {
   free (data);
