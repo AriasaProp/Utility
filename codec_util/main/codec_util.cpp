@@ -154,7 +154,7 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     unsigned int shifted = (in << o.used_bit) | *dt;
     memcpy (dt, &shifted, sizeof (unsigned int));
     dt += sizeof (unsigned int);
-    *dt = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+    *dt = char(in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
     memcpy (dt, &in, sizeof (unsigned int));
   }
