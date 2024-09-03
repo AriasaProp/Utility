@@ -73,6 +73,12 @@ void buildHuffmanTree (Node *root, std::vector<bool> code, std::unordered_map<ui
 
 // Function to encode data using Huffman coding
 const codec_data huffman_encode (codec_data const &cd) {
+  
+  // Encode Huffman codes
+  codec_data out_c;
+  // write actual 32bit data size
+  out_c << size_t (cd.size_byte () / 4); // len in key (32bit)
+  
   // store frequency each data
   // store 32bit as key, and 16bit for at least 65535 copy
   std::unordered_map<uint32_t, uint16_t> freq;
@@ -82,13 +88,18 @@ const codec_data huffman_encode (codec_data const &cd) {
     uint32_t key;
     ro >> key;
     if (freq[key] < 0xffff)
-      freq[key]++;
+      ++freq[key];
   }
+  // write variations of key frequecy
+  out_c << size_t (freq.size ());
+
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
 
-  // Create leaf nodes for each character and add it to the priority queue
   for (auto pair : freq) {
+  	// Write huffman tree
+    out_c << pair.first << pair.second;
+  	// Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
 
@@ -101,22 +112,11 @@ const codec_data huffman_encode (codec_data const &cd) {
     pq.push (new Branch (left, right));
   }
   // Traverse the Huffman tree and store Huffman codes in a map
-  std::unordered_map<uint32_t,
-                     std::vector<bool>>
-      huffmanCode;
+  std::unordered_map<uint32_t, std::vector<bool>> huffmanCode;
   buildHuffmanTree (pq.top (), std::vector<bool> (), huffmanCode);
 
   delete pq.top ();
 
-  codec_data out_c;
-
-  // Encode Huffman codes
-  // Write huffman tree
-  out_c << size_t (cd.size_byte () / 4); // len in key (32bit)
-  out_c << size_t (freq.size ());        // variations
-  for (auto pair : freq) {
-    out_c << pair.first << pair.second;
-  }
   // Encode input data using Huffman codes
   uint32_t key;
   for (codec_data::reader ro = cd.begin_read (); ro.left ();) {
