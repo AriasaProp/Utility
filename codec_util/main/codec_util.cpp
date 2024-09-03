@@ -11,7 +11,7 @@
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
-  if (reserve < reserve_byte) return;
+	if (reserve < reserve_byte) return;
   // need to reserve new size
   size_t old_size_reserve = reserve_byte;
   reserve_byte = (reserve + 3) / 4 * 4;
@@ -150,11 +150,11 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   o.used_byte += sizeof (unsigned int);
   o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
-  if (o.used_bit) {
+  if (o.used_bit != 0) {
     unsigned int shifted = (in << o.used_bit) | *dt;
     memcpy (dt, &shifted, sizeof (unsigned int));
     dt += sizeof (unsigned int);
-    *dt = char (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+    *dt = char(in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
     memcpy (dt, &in, sizeof (unsigned int));
   }

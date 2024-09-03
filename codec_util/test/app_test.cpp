@@ -35,7 +35,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 }
 
 #define TRY 3
-#define CODEC_SIZE 64
+#define CODEC_SIZE 8
 // 4194304
 
 int main (int argv, char *args[]) {
@@ -51,7 +51,7 @@ int main (int argv, char *args[]) {
         cd << rndclr;
         std::cout << std::hex << rndclr << " ";
       }
-      std::cout << std::endl;
+      std::cout << std::dec << std::endl;
       std::cout << cd << std::endl;
       test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
       rss.push_back (rs);
