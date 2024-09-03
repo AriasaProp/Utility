@@ -11,7 +11,7 @@
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
-  if (reserve < reserve_byte) return;
+	if (reserve < reserve_byte) return;
   // need to reserve new size
   size_t old_size_reserve = reserve_byte;
   reserve_byte = (reserve + 3) / 4 * 4;
@@ -154,7 +154,7 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     unsigned int shifted = (in << o.used_bit) | *dt;
     memcpy (dt, &shifted, sizeof (unsigned int));
     dt += sizeof (unsigned int);
-    *dt = char (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+    *dt = char(in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
     memcpy (dt, &in, sizeof (unsigned int));
   }
@@ -226,10 +226,10 @@ std::ostream &operator<< (std::ostream &c, const codec_data &d) {
   char *begin_ = reinterpret_cast<char *> (d.data);
   char *end_ = begin_ + d.used_byte;
   if (d.used_bit) {
-    c << std::setw (2) << std::setfill ('0') << std::hex << int (*end_ & ((0x1 << d.used_bit) - 1));
+    c << std::setw (2) << std::setfill ('0') << std::hex << static_cast<int> (*end_ & ((0x1 << d.used_bit) - 1));
   }
   while ((--end_) >= begin_)
-    c << std::setw (2) << std::setfill ('0') << std::hex << int (*end_);
+    c << std::setw (2) << std::setfill ('0') << std::hex << static_cast<int> (*end_ & 0xff);
   c << std::dec;
   return c;
 }
