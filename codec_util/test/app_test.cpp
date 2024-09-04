@@ -14,7 +14,7 @@ struct test_result {
   bool success;
   unsigned long time_encode, time_decode; // ms
   double comp_ratio;                      // %
-  ~test_result () {
+  void print () {
     std::cout << name << " : " << (success ? "success" : "fail") << " encode: " << time_encode << " ms, decode: " << time_decode << " ms, compress ratio: " << comp_ratio << " %" << std::endl;
   }
 };
@@ -22,13 +22,11 @@ struct test_result {
 const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
-  (void)in;
-  (void)encode;
   (void)decode;
-  /*
   // encoding data
   const codec_data encode_result = encode (in);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  /*
   // decoding data
   const codec_data decode_result = decode (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
@@ -54,12 +52,12 @@ int main (int argv, char *args[]) {
       for (size_t j = 0; j < CODEC_SIZE; ++j) {
         uint32_t rndclr = clr (rd);
         cd << rndclr;
-        std::cout << std::hex << rndclr << " ";
       }
-      std::cout << std::dec << std::endl;
       std::cout << cd << std::endl;
-      test_result rs = test_codec ("huffman", cd, huffman_encode, huffman_decode);
-      rss.push_back (rs);
+      rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
+    }
+    for (test_result ts : rss) {
+    	rs.print();
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
