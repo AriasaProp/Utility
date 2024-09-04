@@ -56,8 +56,8 @@ int main (int argv, char *args[]) {
       std::cout << cd << std::endl;
       rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
     }
-    for (test_result ts : rss) {
-      rs.print ();
+    for (test_result rs : rss) {
+    	rs.print();
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
