@@ -87,7 +87,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     ++freq[temp];
     ++data_len;
   }
-  assert(128==data_len);
+  assert (128 == data_len);
   // write actual 32bit data size and variations of key frequecy
   out_c << data_len;
   out_c << size_t (freq.size ());
@@ -154,8 +154,8 @@ const codec_data huffman_decode (codec_data const &cd) {
       ro >> bit_read;
       Node *cur_ = bit_read ? current_branch->right : current_branch->left;
       if (cur_->type () == 1) {
-    		out_c << ((Leaf *)cur_)->data;
-      	break;
+        out_c << ((Leaf *)cur_)->data;
+        break;
       }
       current_branch = (Branch *)cur_;
     }
