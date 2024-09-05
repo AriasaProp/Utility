@@ -26,14 +26,12 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   // encoding data
   const codec_data encode_result = encode (in);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
-  /*
   // decoding data
   const codec_data decode_result = decode (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // compare
   r.success = decode_result == in;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
-  */
   return r;
 }
 
@@ -57,7 +55,7 @@ int main (int argv, char *args[]) {
       rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
     }
     for (test_result rs : rss) {
-      rs.print ();
+    	rs.print();
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
