@@ -1,11 +1,11 @@
 #include "huffman_codec.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <cstring>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
-#include <cassert>
 #include <vector>
 
 // Node structure for Huffman Tree
