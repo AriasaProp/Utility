@@ -22,12 +22,15 @@ struct test_result {
 const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
+  std::cout << "in " << cd << std::endl;
   // encoding data
   const codec_data encode_result = encode (in);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  std::cout << "encode " << cd << std::endl;
   // decoding data
   const codec_data decode_result = decode (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  std::cout << "decode " << cd << std::endl;
   // compare
   r.success = decode_result == in;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
@@ -47,14 +50,12 @@ int main (int argv, char *args[]) {
       codec_data cd (CODEC_SIZE << 2);
       // try make random data
       for (size_t j = 0; j < CODEC_SIZE; ++j) {
-        uint32_t rndclr = clr (rd);
-        cd << rndclr;
+        cd << clr (rd);
       }
-      std::cout << cd << std::endl;
       rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
     }
     for (test_result rs : rss) {
-      rs.print ();
+    	rs.print();
     }
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
