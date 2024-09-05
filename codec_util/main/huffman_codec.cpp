@@ -5,6 +5,7 @@
 #include <iostream>
 #include <queue>
 #include <unordered_map>
+#include <cassert>
 #include <vector>
 
 // Node structure for Huffman Tree
@@ -85,16 +86,14 @@ const codec_data huffman_encode (codec_data const &cd) {
   for (codec_data::reader ro = cd.begin_read (); ro.left ();) {
     uint32_t key;
     ro >> key;
-    if (freq[key] < 0xffff)
-      ++freq[key];
+    freq[key] += (freq[key] < 0xffff);
     ++data_len;
   }
+  assert(data_len == 8);
   // write actual 32bit data size and variations of key frequecy
   out_c << data_len << size_t (freq.size ());
-
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
-
   for (std::pair<uint32_t, uint16_t> pair : freq) {
     // Write huffman tree
     out_c << pair.first << pair.second;
