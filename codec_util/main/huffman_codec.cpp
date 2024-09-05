@@ -1,11 +1,11 @@
 #include "huffman_codec.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <cstring>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
-#include <cassert>
 #include <vector>
 
 // Node structure for Huffman Tree
@@ -89,7 +89,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     freq[key] += (freq[key] < 0xffff);
     ++data_len;
   }
-  assert(data_len == 8);
+  assert (data_len == 8);
   // write actual 32bit data size and variations of key frequecy
   out_c << data_len << size_t (freq.size ());
   // Create priority queue to store live nodes of Huffman tree
