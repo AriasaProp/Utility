@@ -1,11 +1,11 @@
 #include "huffman_codec.hpp"
 
-#include <cassert>
 #include <cstddef>
 #include <cstring>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
+#include <cassert>
 #include <vector>
 
 // Node structure for Huffman Tree
@@ -89,14 +89,15 @@ const codec_data huffman_encode (codec_data const &cd) {
     freq[key] += (freq[key] < 0xffff);
     ++data_len;
   }
-  assert (data_len == 8);
   // write actual 32bit data size and variations of key frequecy
-  out_c << data_len << size_t (freq.size ());
+  out_c << data_len;
+  out_c << size_t (freq.size ());
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
   for (std::pair<uint32_t, uint16_t> pair : freq) {
     // Write huffman tree
-    out_c << pair.first << pair.second;
+    out_c << pair.first;
+    out_c << pair.second;
     // Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
@@ -126,13 +127,15 @@ const codec_data huffman_encode (codec_data const &cd) {
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
   size_t len_data, variations;
-  ro >> len_data >> variations;
+  ro >> len_data;
+  ro >> variations;
   uint32_t key;
   uint16_t key_len;
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
   for (unsigned i = 0; i < variations; ++i) {
-    ro >> key >> key_len;
+    ro >> key;
+    ro >> key_len;
     pq.push (new Leaf (key, key_len));
   }
   // Create Huffman tree
