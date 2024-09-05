@@ -42,21 +42,6 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 // 4194304
 
 int main (int argv, char *args[]) {
-  {
-    codec_data cd (CODEC_SIZE << 2);
-    for (uint32_t j = 1; j < CODEC_SIZE; ++j) {
-      cd << j;
-    }
-    std::cout << cd << std::endl;
-  }
-  {
-    codec_data cd (CODEC_SIZE << 2);
-    for (unsigned char j = 1; j < CODEC_SIZE; ++j) {
-      cd << j;
-    }
-    std::cout << cd << std::endl;
-  }
-
   try {
     std::vector<test_result> rss;
     std::random_device rd;
