@@ -22,15 +22,15 @@ struct test_result {
 const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
-  std::cout << "in " << cd << std::endl;
+  std::cout << "in " << in << std::endl;
   // encoding data
   const codec_data encode_result = encode (in);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
-  std::cout << "encode " << cd << std::endl;
+  std::cout << "encode " << encode_result << std::endl;
   // decoding data
   const codec_data decode_result = decode (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
-  std::cout << "decode " << cd << std::endl;
+  std::cout << "decode " << decode_result << std::endl;
   // compare
   r.success = decode_result == in;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
