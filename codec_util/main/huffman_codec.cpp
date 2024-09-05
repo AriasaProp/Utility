@@ -158,7 +158,7 @@ const codec_data huffman_decode (codec_data const &cd) {
       if (cur_->type () == 1) break;
       current_branch = (Branch *)cur_;
     }
-    assert(cur_);
+    assert (cur_);
     if (cur_)
       out_c << ((Leaf *)cur_)->data;
     else
