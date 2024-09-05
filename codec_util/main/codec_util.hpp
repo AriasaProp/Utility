@@ -21,6 +21,9 @@ struct codec_data {
     friend reader &operator>> (reader &, unsigned int &);
     friend reader &operator>> (reader &, unsigned short &);
     friend reader &operator>> (reader &, unsigned char &);
+    friend reader &operator>> (reader &, long &);
+    friend reader &operator>> (reader &, int &);
+    friend reader &operator>> (reader &, short &);
     friend reader &operator>> (reader &, char &);
     friend reader &operator>> (reader &, bool &);
 
@@ -36,6 +39,9 @@ struct codec_data {
   friend codec_data &operator<< (codec_data &, unsigned int);
   friend codec_data &operator<< (codec_data &, unsigned short);
   friend codec_data &operator<< (codec_data &, unsigned char);
+  friend codec_data &operator<< (codec_data &, long);
+  friend codec_data &operator<< (codec_data &, int);
+  friend codec_data &operator<< (codec_data &, short);
   friend codec_data &operator<< (codec_data &, char);
   friend codec_data &operator<< (codec_data &, bool);
 

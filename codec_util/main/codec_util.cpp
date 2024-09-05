@@ -107,6 +107,48 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
   }
   return o;
 }
+codec_data::reader &operator>> (codec_data::reader &o, long &d) {
+  if (o.left () >= sizeof (long) * CHAR_BIT) {
+    char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
+    d = 0;
+    memcpy (&d, dt, sizeof (long));
+    if (o.readed_bit) {
+      d >>= o.readed_bit;
+      dt += sizeof (long);
+      d |= (((long)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (long) - 1) << 3);
+    }
+    o.readed_byte += sizeof (long);
+  }
+  return o;
+}
+codec_data::reader &operator>> (codec_data::reader &o, int &d) {
+  if (o.left () >= sizeof (int) * CHAR_BIT) {
+    char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
+    d = 0;
+    memcpy (&d, dt, sizeof (int));
+    if (o.readed_bit) {
+      d >>= o.readed_bit;
+      dt += sizeof (int);
+      d |= (((int)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (int) - 1) << 3);
+    }
+    o.readed_byte += sizeof (int);
+  }
+  return o;
+}
+codec_data::reader &operator>> (codec_data::reader &o, short &d) {
+  if (o.left () >= sizeof (short) * CHAR_BIT) {
+    char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
+    d = 0;
+    memcpy (&d, dt, sizeof (short));
+    if (o.readed_bit) {
+      d >>= o.readed_bit;
+      dt += sizeof (short);
+      d |= (((short)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (short) - 1) << 3);
+    }
+    o.readed_byte += sizeof (short);
+  }
+  return o;
+}
 codec_data::reader &operator>> (codec_data::reader &o, char &d) {
   if (o.left () >= CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
@@ -184,6 +226,48 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
     *(dt + 1) = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
     *dt = in;
+  }
+  return o;
+}
+codec_data &operator<< (codec_data &o, long in) {
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+  o.used_byte += sizeof (long);
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  if (o.used_bit) {
+    long shifted = (in << o.used_bit) | *dt;
+    memcpy (dt, &shifted, sizeof (long));
+    dt += sizeof (long);
+    *dt = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+  } else {
+    memcpy (dt, &in, sizeof (long));
+  }
+  return o;
+}
+codec_data &operator<< (codec_data &o, int in) {
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+  o.used_byte += sizeof (int);
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  if (o.used_bit) {
+    int shifted = (in << o.used_bit) | *dt;
+    memcpy (dt, &shifted, sizeof (int));
+    dt += sizeof (int);
+    *dt = char (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+  } else {
+    memcpy (dt, &in, sizeof (int));
+  }
+  return o;
+}
+codec_data &operator<< (codec_data &o, short in) {
+  char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
+  o.used_byte += sizeof (short);
+  o.check_resize (o.used_byte + (o.used_bit ? 1 : 0));
+  if (o.used_bit) {
+    short shifted = (in << o.used_bit) | *dt;
+    memcpy (dt, &shifted, sizeof (short));
+    dt += sizeof (short);
+    *dt = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+  } else {
+    memcpy (dt, &in, sizeof (short));
   }
   return o;
 }
