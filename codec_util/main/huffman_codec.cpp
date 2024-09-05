@@ -151,18 +151,15 @@ const codec_data huffman_decode (codec_data const &cd) {
   bool bit_read;
   for (unsigned i = 0; i < len_data; ++i) {
     Branch *current_branch = tree;
-    Node *cur_;
     while (ro.left ()) {
       ro >> bit_read;
-      cur_ = bit_read ? current_branch->right : current_branch->left;
-      if (cur_->type () == 1) break;
+      Node *cur_ = bit_read ? current_branch->right : current_branch->left;
+      if (cur_->type () == 1) {
+    		out_c << ((Leaf *)cur_)->data;
+      	break;
+      }
       current_branch = (Branch *)cur_;
     }
-    assert (cur_);
-    if (cur_)
-      out_c << ((Leaf *)cur_)->data;
-    else
-      out_c << uint32_t (0);
   }
   delete tree;
   return out_c;
