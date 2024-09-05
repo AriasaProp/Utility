@@ -42,13 +42,13 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 // 4194304
 
 int main (int argv, char *args[]) {
-	{
+  {
     codec_data cd (CODEC_SIZE << 2);
     for (size_t j = 0; j < CODEC_SIZE; ++j) {
       cd << true;
     }
-		std::cout << cd << std::endl;
-	}
+    std::cout << cd << std::endl;
+  }
   try {
     std::vector<test_result> rss;
     std::random_device rd;

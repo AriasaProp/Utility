@@ -153,8 +153,8 @@ const codec_data huffman_decode (codec_data const &cd) {
       ro >> bit_read;
       Node *cur_ = bit_read ? current_branch->right : current_branch->left;
       if (cur_->type () == 1) {
-    		out_c << ((Leaf *)cur_)->data;
-      	break;
+        out_c << ((Leaf *)cur_)->data;
+        break;
       }
       current_branch = (Branch *)cur_;
     }
