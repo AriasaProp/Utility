@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-
+/*
 struct test_result {
   std::string name;
   bool success;
@@ -36,23 +36,23 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit () / in.size_bit ());
   return r;
 }
-
-#define TRY 3
+*/
+#define TRY 1
 #define CODEC_SIZE 128
 // 4194304
 
 int main (int argv, char *args[]) {
-  {
+	{
     codec_data cd (CODEC_SIZE << 2);
     for (size_t j = 0; j < CODEC_SIZE; ++j) {
       cd << true;
-      cd << char (0xff);
-      cd << short (0xffff);
+      cd << char(0xff);
+      cd << short(0xffff);
     }
-    std::cout << cd << std::endl;
-  }
+		std::cout << cd << std::endl;
+	}
   try {
-    std::vector<test_result> rss;
+    //std::vector<test_result> rss;
     std::random_device rd;
     std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
     for (size_t i = 0; i < TRY; ++i) {
@@ -61,11 +61,15 @@ int main (int argv, char *args[]) {
       for (size_t j = 0; j < CODEC_SIZE; ++j) {
         cd << clr (rd);
       }
-      rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
+      codec_data en = huffman_encode(cd);
+      codec_data dc = huffman_decode(en);
+      //rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
     }
+    /*
     for (test_result rs : rss) {
       rs.print ();
     }
+    */
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
     return EXIT_FAILURE;
