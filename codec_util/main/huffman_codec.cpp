@@ -92,13 +92,13 @@ const codec_data huffman_encode (codec_data const &cd) {
   out_c << data_len << size_t (freq.size ());
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
-  
+
   std::cout << "Keys \n";
-  
+
   for (std::pair<uint8_t, uint32_t> pair : freq) {
     // Write huffman tree
     out_c << pair.first << pair.second;
-    std::cout << std::hex << int(pair.first);
+    std::cout << std::hex << int (pair.first);
     std::cout << std::dec << " : " << pair.second << std::endl;
     // Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
@@ -131,14 +131,14 @@ const codec_data huffman_decode (codec_data const &cd) {
   ro >> len_data >> variations;
   uint8_t key;
   uint32_t key_len;
-  
+
   std::cout << "Keys \n";
-  
+
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
   for (unsigned i = 0; i < variations; ++i) {
     ro >> key >> key_len;
-    std::cout << std::hex << int(key);
+    std::cout << std::hex << int (key);
     std::cout << std::dec << " : " << key_len << std::endl;
     pq.push (new Leaf (key, key_len));
   }
@@ -160,8 +160,8 @@ const codec_data huffman_decode (codec_data const &cd) {
       ro >> bit_read;
       Node *cur_ = bit_read ? current_branch->right : current_branch->left;
       if (cur_->type () == 1) {
-    		out_c << ((Leaf *)cur_)->data;
-      	break;
+        out_c << ((Leaf *)cur_)->data;
+        break;
       }
       current_branch = (Branch *)cur_;
     }
