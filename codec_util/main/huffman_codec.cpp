@@ -105,6 +105,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     // Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
+  std::cout << std::endl;
   // Create Huffman tree
   while (pq.size () > 1) {
     Node *left = pq.top ();
@@ -134,6 +135,8 @@ const codec_data huffman_decode (codec_data const &cd) {
   uint8_t key;
   uint32_t key_len;
 
+  std::cout << "Codec \n";
+  std::cout << cd << std::endl;
   std::cout << "Keys \n";
 
   // Create priority queue to store live nodes of Huffman tree

@@ -9,6 +9,7 @@
 
 #define MIN(A, B) ((A < B) ? A : B)
 
+
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
@@ -56,7 +57,6 @@ codec_data::reader codec_data::begin_read () const {
 codec_data::reader &operator>> (codec_data::reader &o, unsigned long &d) {
   if (o.left () >= sizeof (unsigned long) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = 0;
     memcpy (&d, dt, sizeof (unsigned long));
     if (o.readed_bit) {
       d >>= o.readed_bit;
@@ -70,7 +70,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned long &d) {
 codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
   if (o.left () >= sizeof (unsigned int) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    memcpy (&d, dt, sizeof (unsigned int));
+    memcpy(&d, dt, sizeof(unsigned int));
     if (o.readed_bit) {
       d >>= o.readed_bit;
       dt += sizeof (unsigned int);
@@ -83,7 +83,6 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
 codec_data::reader &operator>> (codec_data::reader &o, unsigned short &d) {
   if (o.left () >= sizeof (unsigned short) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = 0;
     memcpy (&d, dt, sizeof (unsigned short));
     if (o.readed_bit) {
       d >>= o.readed_bit;
@@ -110,7 +109,6 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
 codec_data::reader &operator>> (codec_data::reader &o, long &d) {
   if (o.left () >= sizeof (long) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = 0;
     memcpy (&d, dt, sizeof (long));
     if (o.readed_bit) {
       d >>= o.readed_bit;
@@ -124,7 +122,6 @@ codec_data::reader &operator>> (codec_data::reader &o, long &d) {
 codec_data::reader &operator>> (codec_data::reader &o, int &d) {
   if (o.left () >= sizeof (int) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = 0;
     memcpy (&d, dt, sizeof (int));
     if (o.readed_bit) {
       d >>= o.readed_bit;
@@ -138,7 +135,6 @@ codec_data::reader &operator>> (codec_data::reader &o, int &d) {
 codec_data::reader &operator>> (codec_data::reader &o, short &d) {
   if (o.left () >= sizeof (short) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = 0;
     memcpy (&d, dt, sizeof (short));
     if (o.readed_bit) {
       d >>= o.readed_bit;
