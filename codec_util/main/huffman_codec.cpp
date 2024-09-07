@@ -7,6 +7,7 @@
 #include <queue>
 #include <unordered_map>
 #include <vector>
+#include <iomanip>
 
 // Node structure for Huffman Tree
 struct Node {
