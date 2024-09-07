@@ -9,7 +9,6 @@
 
 #define MIN(A, B) ((A < B) ? A : B)
 
-bool codec_assert = false;
 
 // private
 // make reserve byte ready for future
@@ -72,7 +71,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned long &d) {
 codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
   if (o.left () >= sizeof (unsigned int) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    d = *reinterpret_cast<unsigned int *> (dt);
+    memcpy(&d, dt, sizeof(unsigned int));
     if (o.readed_bit) {
       d >>= o.readed_bit;
       dt += sizeof (unsigned int);
@@ -201,11 +200,7 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     dt += sizeof (unsigned int);
     *dt = char (in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
-    //*reinterpret_cast<unsigned int *> (dt) = in;
     memcpy (dt, &in, sizeof (unsigned int));
-  }
-  if (codec_assert) {
-    assert (*reinterpret_cast<unsigned int *> (dt) != 0);
   }
   return o;
 }
