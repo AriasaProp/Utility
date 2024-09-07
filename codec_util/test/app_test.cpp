@@ -38,7 +38,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 }
 */
 #define TRY 1
-#define CODEC_SIZE 128
+#define CODEC_SIZE 365
 // 4194304
 
 int main (int argv, char *args[]) {
