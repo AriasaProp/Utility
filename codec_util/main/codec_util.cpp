@@ -9,7 +9,6 @@
 
 #define MIN(A, B) ((A < B) ? A : B)
 
-
 // private
 // make reserve byte ready for future
 void codec_data::check_resize (size_t reserve) {
@@ -70,7 +69,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned long &d) {
 codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
   if (o.left () >= sizeof (unsigned int) * CHAR_BIT) {
     char *dt = reinterpret_cast<char *> (o.data) + o.readed_byte;
-    memcpy(&d, dt, sizeof(unsigned int));
+    memcpy (&d, dt, sizeof (unsigned int));
     if (o.readed_bit) {
       d >>= o.readed_bit;
       dt += sizeof (unsigned int);
