@@ -79,7 +79,6 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned int &d) {
       d |= (((unsigned int)*dt) >> (CHAR_BIT - o.readed_bit)) << ((sizeof (unsigned int) - 1) << 3);
     }
     o.readed_byte += sizeof (unsigned int);
-    if (codec_assert) assert (*reinterpret_cast<unsigned int *> (dt) != 0);
   }
   return o;
 }
@@ -205,7 +204,7 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     *reinterpret_cast<unsigned int *> (dt) = in;
     // memcpy (dt, &in, sizeof (unsigned int));
   }
-  if (codec_assert) assert (*reinterpret_cast<unsigned int *> (dt) != 0);
+  if (codec_assert) assert (*(reinterpret_cast<unsigned int *> (dt) - 1) != 0);
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned short in) {
