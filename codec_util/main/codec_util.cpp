@@ -205,8 +205,8 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     memcpy (dt, &in, sizeof (unsigned int));
   }
   if (codec_assert) {
-  	assert (*reinterpret_cast<unsigned int *> (dt) != 0);
-	}
+    assert (*reinterpret_cast<unsigned int *> (dt) != 0);
+  }
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned short in) {
