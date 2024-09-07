@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-extern bool codec_assert;
 
 // Node structure for Huffman Tree
 struct Node {
@@ -101,9 +100,7 @@ const codec_data huffman_encode (codec_data const &cd) {
   for (std::pair<uint8_t, uint32_t> pair : freq) {
     // Write huffman tree
     out_c << pair.first;
-    codec_assert = true;
     out_c << pair.second;
-    codec_assert = false;
     std::cout << std::setw (2) << std::setfill ('0') << std::hex << int (pair.first);
     std::cout << std::dec << "[" << std::setw (3) << std::setfill ('0') << pair.second << "]  ";
     // Create leaf nodes for each character and add it to the priority queue
@@ -144,9 +141,7 @@ const codec_data huffman_decode (codec_data const &cd) {
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
   for (unsigned i = 0; i < variations; ++i) {
     ro >> key;
-    codec_assert = true;
     ro >> key_len;
-    codec_assert = false;
     std::cout << std::setw (2) << std::setfill ('0') << std::hex << int (key);
     std::cout << std::dec << "[" << std::setw (3) << std::setfill ('0') << key_len << "]  ";
     pq.push (new Leaf (key, key_len));
