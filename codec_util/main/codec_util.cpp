@@ -201,13 +201,12 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
     dt += sizeof (unsigned int);
     *dt = char (in >> (CHAR_BIT - o.used_bit)) & 0xff;
   } else {
-    *reinterpret_cast<unsigned int *> (dt) = in;
+    //*reinterpret_cast<unsigned int *> (dt) = in;
+    memcpy (dt, &in, sizeof (unsigned int));
   }
   if (codec_assert) {
-    assert (in != 0);
-    memcpy (dt, &in, sizeof (unsigned int));
-    assert (*reinterpret_cast<unsigned int *> (dt) != 0);
-  }
+  	assert (*reinterpret_cast<unsigned int *> (dt) != 0);
+	}
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned short in) {
