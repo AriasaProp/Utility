@@ -93,21 +93,21 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
 
-  //std::cout << "Keys \n";
+  // std::cout << "Keys \n";
 
   for (std::pair<uint8_t, uint32_t> pair : freq) {
     // Write huffman tree
     out_c << pair.first << pair.second;
-    //std::cout << std::setw (2) << std::setfill ('0') << std::hex << int (pair.first);
-    //std::cout << std::dec << "[" << std::setw (3) << std::setfill ('0') << pair.second << "]  ";
-    // Create leaf nodes for each character and add it to the priority queue
+    // std::cout << std::setw (2) << std::setfill ('0') << std::hex << int (pair.first);
+    // std::cout << std::dec << "[" << std::setw (3) << std::setfill ('0') << pair.second << "]  ";
+    //  Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
-  //std::cout << std::endl;
-  
-  //std::cout << "Codec \n";
-	//std::cout << out_c << std::endl;
-  // Create Huffman tree
+  // std::cout << std::endl;
+
+  // std::cout << "Codec \n";
+  // std::cout << out_c << std::endl;
+  //  Create Huffman tree
   while (pq.size () > 1) {
     Node *left = pq.top ();
     pq.pop ();
