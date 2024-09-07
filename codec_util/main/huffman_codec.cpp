@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 // Node structure for Huffman Tree
 struct Node {
   virtual uint32_t frequency () const {
