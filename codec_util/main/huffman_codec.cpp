@@ -3,11 +3,13 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
-#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
 #include <vector>
+#include <iomanip>
+
+extern bool codec_assert;
 
 // Node structure for Huffman Tree
 struct Node {
@@ -93,14 +95,17 @@ const codec_data huffman_encode (codec_data const &cd) {
   out_c << data_len << size_t (freq.size ());
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
-
+  
   std::cout << "Keys \n";
-
+  
   for (std::pair<uint8_t, uint32_t> pair : freq) {
     // Write huffman tree
-    out_c << pair.first << pair.second;
-    std::cout << std::hex << int (pair.first);
-    std::cout << std::dec << " : " << pair.second << std::endl;
+    out_c << pair.first;
+    codec_assert = true;
+    out_c << pair.second;
+    codec_assert = true;
+    std::cout << std::setw(2) << std::setfill('0') << std::hex << int(pair.first);
+    std::cout << std::dec << "[" << std::setw(3) << std::setfill('0') << pair.second << "]  ";
     // Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
@@ -132,15 +137,15 @@ const codec_data huffman_decode (codec_data const &cd) {
   ro >> len_data >> variations;
   uint8_t key;
   uint32_t key_len;
-
+  
   std::cout << "Keys \n";
-
+  
   // Create priority queue to store live nodes of Huffman tree
   std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
   for (unsigned i = 0; i < variations; ++i) {
     ro >> key >> key_len;
-    std::cout << std::setw (2) << std::setfill ('0') << std::hex << int (key);
-    std::cout << std::dec << "[" << std::setw (3) << std::setfill ('0') << key_len << "]  ";
+    std::cout << std::setw(2) << std::setfill('0') << std::hex << int(key);
+    std::cout << std::dec << "[" << std::setw(3) << std::setfill('0') << key_len << "]  ";
     pq.push (new Leaf (key, key_len));
   }
   std::cout << std::endl;
@@ -162,8 +167,8 @@ const codec_data huffman_decode (codec_data const &cd) {
       ro >> bit_read;
       Node *cur_ = bit_read ? current_branch->right : current_branch->left;
       if (cur_->type () == 1) {
-        out_c << ((Leaf *)cur_)->data;
-        break;
+    		out_c << ((Leaf *)cur_)->data;
+      	break;
       }
       current_branch = (Branch *)cur_;
     }
