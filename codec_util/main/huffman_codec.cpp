@@ -3,11 +3,11 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
 #include <vector>
-#include <iomanip>
 
 // Node structure for Huffman Tree
 struct Node {
