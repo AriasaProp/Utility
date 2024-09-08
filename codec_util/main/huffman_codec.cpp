@@ -177,7 +177,7 @@ const codec_data huffman_decode (codec_data const &cd) {
       current_branch = (Branch *)cur_;
       break;
     }
-  } while (!eof_c && ro.left());
+  } while (!eof_c && ro.left ());
   delete tree;
   return out_c;
 }
