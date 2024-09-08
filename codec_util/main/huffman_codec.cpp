@@ -106,7 +106,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     //  Create leaf nodes for each character and add it to the priority queue
     pq.push (new Leaf (pair.first, pair.second));
   }
-  pq.push(new EOF());
+  pq.push (new EOF ());
   //  Create Huffman tree
   while (pq.size () > 1) {
     Node *left = pq.top ();
@@ -145,8 +145,8 @@ const codec_data huffman_decode (codec_data const &cd) {
     ro >> key >> key_len;
     pq.push (new Leaf (key, key_len));
   }
-  pq.push(new EOF());
-  
+  pq.push (new EOF ());
+
   // Create Huffman tree
   while (pq.size () > 1) {
     Node *left = pq.top ();
@@ -165,16 +165,16 @@ const codec_data huffman_decode (codec_data const &cd) {
     ro >> bit_read;
     cur_ = bit_read ? current_branch->right : current_branch->left;
     switch (cur_->type ()) {
-    	case 0:
-    		eof_c = true;
-    		break;
-    	case 1:
-      	out_c << ((Leaf *)cur_)->data;
-      	current_branch = tree;
-    		break;
-    	case 2:
-      	current_branch = (Branch *)cur_;
-      	break;
+    case 0:
+      eof_c = true;
+      break;
+    case 1:
+      out_c << ((Leaf *)cur_)->data;
+      current_branch = tree;
+      break;
+    case 2:
+      current_branch = (Branch *)cur_;
+      break;
     }
   } while (!eof_c);
   delete tree;
