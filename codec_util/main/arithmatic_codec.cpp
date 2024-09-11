@@ -1,21 +1,21 @@
-#include "arithmetic_codec.hpp"
+#include "arithmatic_codec.hpp"
 
 #include <unordered_map>
 /*
 struct Node {
-  virtual uint32_t length() { return 0;}
-  virtual size_t type() { return 0;}
+	virtual uint32_t length() { return 0;}
+	virtual size_t type() { return 0;}
 };
 struct Key: public Node {
-  uint8_t key;
-  uint32_t len;
-  Key(uint8_t k, uint32_t l): key(k), len(l) {}
-  uint32_t length() override { return 0;}
-  size_t type() override { return 1;}
+	uint8_t key;
+	uint32_t len;
+	Key(uint8_t k, uint32_t l): key(k), len(l) {}
+	uint32_t length() override { return 0;}
+	size_t type() override { return 1;}
 };
 struct Eof : public Node{
-  uint32_t length() override { return 1;}
-  size_t type() override { return 2;}
+	uint32_t length() override { return 1;}
+	size_t type() override { return 2;}
 };
 
 const codec_data arithmetic_encode (codec_data const &cd) {
@@ -32,7 +32,7 @@ const codec_data arithmetic_encode (codec_data const &cd) {
   codec_data out_c;
   // write actual 32bit variations of key frequecy
   out_c << size_t (freq.size ());
-
+  
   Node *tree;
 
   for (std::pair<uint8_t, uint32_t> pair : freq) {
@@ -40,11 +40,11 @@ const codec_data arithmetic_encode (codec_data const &cd) {
     out_c << pair.first << pair.second;
   }
   tree.push_back(Eof());
-  return out_c;
+	return out_c;
 }
 
 const codec_data arithmetic_decode (codec_data const &cd) {
-  codec_data::reader ro = cd.begin_read();
+	codec_data::reader ro = cd.begin_read();
   size_t variations;
   ro >> variations;
   uint8_t key;
@@ -58,8 +58,8 @@ const codec_data arithmetic_decode (codec_data const &cd) {
     freq[key] = key_len;
   }
 
-  codec_data out_c;
-
-  return out_c;
+	codec_data out_c;
+	
+	return out_c;
 }
 */
