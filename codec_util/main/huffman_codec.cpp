@@ -55,10 +55,10 @@ struct Leaf : public Node {
   }
 };
 struct Eof_ : public Node {
-  size_t frequency () const override {
+  dat_len frequency () const override {
     return 0;
   }
-  size_t type () const override {
+  dat_len type () const override {
     return 0;
   }
 };
