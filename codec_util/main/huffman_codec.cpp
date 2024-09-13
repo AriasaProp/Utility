@@ -160,7 +160,7 @@ struct Branch : public Node {
 struct Leaf : public Node {
   dat_t data;
   Leaf (dat_t d) : data (d) {}
-  
+
   dat_len type () const override {
     return 1;
   }
@@ -170,34 +170,34 @@ struct Eof_ : public Node {
     return 3;
   }
 };
-}
+} // namespace decode
 
 decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
-	switch (type) {
-		case 1: {
-			dat_t key;
-			ro >> key;
-			return new decode::Leaf(key);
-		}
-		case 2: {
-			bool a, b;
-			decode::Branch *root = new decode::Branch;
-			ro >> a >> b;
-			root->left = readHuffmanTree(ro, a | (b<<1));
-			ro >> a >> b;
-			root->right = readHuffmanTree(ro, a | (b<<1));
-			return root;
-		}
-		case 3:
-			return new decode::Eof_;
-	}
+  switch (type) {
+  case 1: {
+    dat_t key;
+    ro >> key;
+    return new decode::Leaf (key);
+  }
+  case 2: {
+    bool a, b;
+    decode::Branch *root = new decode::Branch;
+    ro >> a >> b;
+    root->left = readHuffmanTree (ro, a | (b << 1));
+    ro >> a >> b;
+    root->right = readHuffmanTree (ro, a | (b << 1));
+    return root;
+  }
+  case 3:
+    return new decode::Eof_;
+  }
 }
 
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
   dat_t key;
   dat_len key_len;
-  decode::Branch *tree = readHuffmanTree(ro, 2);
+  decode::Branch *tree = readHuffmanTree (ro, 2);
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
