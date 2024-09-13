@@ -131,7 +131,7 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Traverse the Huffman tree and store Huffman codes in a map
   std::vector<bool> eof_code;
   std::unordered_map<dat_t, std::vector<bool>> huffmanCode;
-  buildHuffmanTree (out_c, pq.top (), std::vector<bool> (), huffmanCode, eof_code);
+  encode::buildHuffmanTree (out_c, pq.top (), std::vector<bool> (), huffmanCode, eof_code);
   delete pq.top ();
 
   // Encode input data using Huffman codes
