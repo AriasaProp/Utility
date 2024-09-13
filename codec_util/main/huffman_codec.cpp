@@ -7,6 +7,7 @@
 #include <queue>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
 
 typedef uint32_t dat_t;
 typedef uint32_t dat_len;
@@ -177,8 +178,7 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   switch (type) {
   default:
   case 0:
-    assert (false);
-    return 0;
+  	break;
   case 1:
     dat_t key;
     ro >> key;
@@ -194,6 +194,8 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 3:
     return new decode::Eof_;
   }
+  assert(false);
+	return 0;
 }
 
 const codec_data huffman_decode (codec_data const &cd) {
