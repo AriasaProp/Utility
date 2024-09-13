@@ -175,10 +175,10 @@ struct Eof_ : public Node {
 
 decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   switch (type) {
-	default:
+  default:
   case 0:
-  	assert(false);
-  	return 0;
+    assert (false);
+    return 0;
   case 1:
     dat_t key;
     ro >> key;
