@@ -175,12 +175,15 @@ struct Eof_ : public Node {
 
 decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   switch (type) {
-  case 1: {
+	default:
+  case 0:
+  	assert(false);
+  	return 0;
+  case 1:
     dat_t key;
     ro >> key;
     return new decode::Leaf (key);
-  }
-  case 2: {
+  case 2:
     bool a, b;
     decode::Branch *root = new decode::Branch;
     ro >> a >> b;
@@ -188,7 +191,6 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> a >> b;
     root->right = readHuffmanTree (ro, a | (b << 1));
     return root;
-  }
   case 3:
     return new decode::Eof_;
   }
@@ -196,8 +198,6 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
 
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
-  dat_t key;
-  dat_len key_len;
   decode::Branch *tree = (decode::Branch *)readHuffmanTree (ro, 2);
   codec_data out_c;
   // decode input data using Huffman codes
