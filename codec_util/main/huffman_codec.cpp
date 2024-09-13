@@ -12,6 +12,7 @@
 typedef uint32_t dat_t;
 typedef uint32_t dat_len;
 
+namespace encode {
 // Node structure for Huffman Tree
 struct Node {
   virtual dat_len frequency () const {
@@ -96,7 +97,7 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     break;
   }
 }
-
+}
 // Function to encode data using Huffman coding
 const codec_data huffman_encode (codec_data const &cd) {
   dat_t temp;
@@ -112,20 +113,20 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
-  std::priority_queue<Node *, std::vector<Node *>, Node::compare> pq;
+  std::priority_queue<encode::Node *, std::vector<Node *>, Node::compare> pq;
 
   for (std::pair<dat_t, dat_len> pair : freq) {
     //  Create leaf nodes for each character and add it to the priority queue
-    pq.push (new Leaf (pair.first, pair.second));
+    pq.push (new encode::Leaf (pair.first, pair.second));
   }
-  pq.push (new Eof_);
+  pq.push (new encode::Eof_);
   //  Create Huffman tree
   while (pq.size () > 1) {
-    Node *left = pq.top ();
+    encode::Node *left = pq.top ();
     pq.pop ();
-    Node *right = pq.top ();
+    encode::Node *right = pq.top ();
     pq.pop ();
-    pq.push (new Branch (left, right));
+    pq.push (new encode::Branch (left, right));
   }
   // Traverse the Huffman tree and store Huffman codes in a map
   std::vector<bool> eof_code;
@@ -173,9 +174,8 @@ struct Eof_ : public Node {
     return 3;
   }
 };
-} // namespace decode
 
-decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
+Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   switch (type) {
   default:
   case 0:
@@ -183,11 +183,11 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 1: {
     dat_t key;
     ro >> key;
-    return new decode::Leaf (key);
+    return new Leaf (key);
   }
   case 2: {
     bool a, b;
-    decode::Branch *root = new decode::Branch;
+    Branch *root = new Branch;
     ro >> a >> b;
     root->left = readHuffmanTree (ro, a | (b << 1));
     ro >> a >> b;
@@ -195,15 +195,16 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     return root;
   }
   case 3:
-    return new decode::Eof_;
+    return new Eof_;
   }
   assert (false);
   return 0;
 }
+} // namespace decode
 
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
-  decode::Branch *tree = (decode::Branch *)readHuffmanTree (ro, 2);
+  decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro, 2);
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
