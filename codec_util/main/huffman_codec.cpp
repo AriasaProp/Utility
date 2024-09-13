@@ -29,8 +29,7 @@ struct Node {
   };
 };
 struct Branch : public Node {
-  Node *left,
-      *right;
+  Node *left, *right;
   Branch (Node *l, Node *r) : left (l), right (r) {}
 
   dat_len frequency () const override {
@@ -197,8 +196,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 3:
     return new Eof_;
   }
-  assert (false);
-  return 0;
+  throw "resulting 0 key";
 }
 } // namespace decode
 
