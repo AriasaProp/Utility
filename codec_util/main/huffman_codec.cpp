@@ -97,7 +97,7 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     break;
   }
 }
-}
+} // namespace encode
 // Function to encode data using Huffman coding
 const codec_data huffman_encode (codec_data const &cd) {
   dat_t temp;
