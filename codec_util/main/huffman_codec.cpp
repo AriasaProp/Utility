@@ -74,13 +74,14 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     cd << true << true; // like 3
     eof_code = code;
     break;
-  case 1:
+  case 1: {
     // Leaf node
-    dat_t key = ((Leaf *)root)->data;
+    dat_t &key = ((Leaf *)root)->data;
     huffmanCode[key] = code;
     cd << true << false; // like 1
     cd << key;
     break;
+  }
   case 2:
     // Branch node
     Branch *b = (Branch *)root;
@@ -179,11 +180,12 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   default:
   case 0:
     break;
-  case 1:
+  case 1: {
     dat_t key;
     ro >> key;
     return new decode::Leaf (key);
-  case 2:
+  }
+  case 2: {
     bool a, b;
     decode::Branch *root = new decode::Branch;
     ro >> a >> b;
@@ -191,6 +193,7 @@ decode::Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> a >> b;
     root->right = readHuffmanTree (ro, a | (b << 1));
     return root;
+  }
   case 3:
     return new decode::Eof_;
   }
