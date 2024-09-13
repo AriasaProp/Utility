@@ -113,7 +113,7 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
-  std::priority_queue<encode::Node *, std::vector<Node *>, Node::compare> pq;
+  std::priority_queue<encode::Node *, std::vector<encode::Node *>, encode::Node::compare> pq;
 
   for (std::pair<dat_t, dat_len> pair : freq) {
     //  Create leaf nodes for each character and add it to the priority queue
