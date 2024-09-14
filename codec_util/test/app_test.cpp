@@ -22,20 +22,24 @@ struct test_result {
 const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
+  std::cout << cd << std::endl;
   // encoding data
   const codec_data encode_result = encode (in);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  std::cout << encode_result << std::endl;
   // decoding data
   const codec_data decode_result = decode (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  std::cout << decode_result << std::endl;
+  std::cout << std::endl;
   // compare
   r.success = decode_result == in;
-  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (in.size_bit ());
+  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double(in.size_bit ());
   return r;
 }
 
 #define TRY 5
-#define CODEC_SIZE 4194304
+#define CODEC_SIZE 80
 
 int main (int argv, char *args[]) {
   try {

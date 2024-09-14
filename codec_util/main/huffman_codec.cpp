@@ -18,7 +18,7 @@ struct Node {
   virtual dat_len frequency () const {
     return 0;
   }
-  virtual dat_len type () const { return -1; }
+  virtual dat_len type () const { return -1;}
   // Comparator for priority queue
   struct compare {
     bool operator() (Node *l, Node *r) {
@@ -66,7 +66,7 @@ struct Eof_ : public Node {
 void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::unordered_map<dat_t, std::vector<bool>> &huffmanCode, std::vector<bool> &eof_code) {
   switch (root->type ()) {
   case 0:
-    cd << false << false; // like 3
+    cd << false << false; // like 0
     eof_code = code;
     break;
   case 1: {
@@ -105,7 +105,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     ro >> temp;
     ++freq[temp];
   }
-  aVar = freq.size ();
+  aVar = freq.size();
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
@@ -143,7 +143,7 @@ const codec_data huffman_encode (codec_data const &cd) {
 
 namespace decode {
 struct Node {
-  virtual dat_len type () const { return -1; }
+  virtual dat_len type () const { return -1;}
 };
 struct Branch : public Node {
   Node *left, *right;
@@ -176,7 +176,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> key;
     --aVar;
     if (aVar < 0)
-      std::cout << "Overload" << std::endl;
+    	std::cout << "Overload" << std::endl;
     return new Leaf (key);
   }
   case 2: {
@@ -194,20 +194,15 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
 } // namespace decode
 
 const codec_data huffman_decode (codec_data const &cd) {
-  std::cout << "Dencode begin" << std::endl;
   codec_data::reader ro = cd.begin_read ();
-  std::cout << "Reading begin" << std::endl;
-  std::cout << "Reading Tree" << std::endl;
   decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro, 2);
-  std::cout << "Reading Tree End" << std::endl;
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
   decode::Branch *current_branch = tree;
-  decode::Node *cur_;
   do {
     ro >> bit_read;
-    cur_ = bit_read ? current_branch->right : current_branch->left;
+  	decode::Node *cur_ = bit_read ? current_branch->right : current_branch->left;
     switch (cur_->type ()) {
     default:
     case 0:
