@@ -79,20 +79,19 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
   }
   case 2:
     // Branch node
+    cd << false << true; // like 2
     Branch *b = (Branch *)root;
     std::vector<bool> code_left = code;
     code_left.push_back (false);
-    cd << false << true; // like 2
     buildHuffmanTree (cd, b->left, code_left, huffmanCode, eof_code);
     std::vector<bool> code_right = code;
     code_right.push_back (true);
-    cd << false << true; // like 2
     buildHuffmanTree (cd, b->right, code_right, huffmanCode, eof_code);
     break;
   }
 }
 } // namespace encode
-static long aVar;
+
 // Function to encode data using Huffman coding
 const codec_data huffman_encode (codec_data const &cd) {
   dat_t temp;
@@ -105,7 +104,6 @@ const codec_data huffman_encode (codec_data const &cd) {
     ro >> temp;
     ++freq[temp];
   }
-  aVar = freq.size ();
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
@@ -127,7 +125,9 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Traverse the Huffman tree and store Huffman codes in a map
   std::vector<bool> eof_code;
   std::unordered_map<dat_t, std::vector<bool>> huffmanCode;
+  std::cout << "Write: {" << std::endl;
   encode::buildHuffmanTree (out_c, pq.top (), std::vector<bool> (), huffmanCode, eof_code);
+  std::cout << "} End" << std::endl;
   delete pq.top ();
 
   // Encode input data using Huffman codes
@@ -174,9 +174,6 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 1: {
     dat_t key;
     ro >> key;
-    --aVar;
-    if (aVar < 0)
-      std::cout << "Overload" << std::endl;
     return new Leaf (key);
   }
   case 2: {
