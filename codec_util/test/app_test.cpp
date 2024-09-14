@@ -23,17 +23,14 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   test_result r;
   profiling::clock_adjustment clck = profiling::clock_adjustment (name);
   // encoding data
-  std::cout << "Encode begin" << std::endl;
   const codec_data encode_result = encode (in);
-  std::cout << "Encode end" << std::endl;
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // decoding data
   const codec_data decode_result = decode (encode_result);
-  std::cout << "Dencode end" << std::endl;
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // compare
   r.success = decode_result == in;
-  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (in.size_bit ());
+  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double(in.size_bit ());
   return r;
 }
 

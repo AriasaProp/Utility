@@ -180,20 +180,25 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 0:
     break;
   case 1: {
+  	std::cout << "Get Leaf" << std::endl;
     dat_t key;
     ro >> key;
     return new Leaf (key);
   }
   case 2: {
+  	std::cout << "Get Branch" << std::endl;
     bool a, b;
     Branch *root = new Branch;
     ro >> a >> b;
+  	std::cout << "left" << std::endl;
     root->left = readHuffmanTree (ro, a | (b << 1));
     ro >> a >> b;
+  	std::cout << "right" << std::endl;
     root->right = readHuffmanTree (ro, a | (b << 1));
     return root;
   }
   case 3:
+  	std::cout << "Get EOF" << std::endl;
     return new Eof_;
   }
   throw "resulting 0 key";
@@ -201,8 +206,12 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
 } // namespace decode
 
 const codec_data huffman_decode (codec_data const &cd) {
+  std::cout << "Dencode begin" << std::endl;
   codec_data::reader ro = cd.begin_read ();
+  std::cout << "Reading begin" << std::endl;
+  std::cout << "Reading Tree" << std::endl;
   decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro, 2);
+  std::cout << "Reading Tree End" << std::endl;
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
