@@ -30,7 +30,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // compare
   r.success = decode_result == in;
-  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double(in.size_bit ());
+  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (in.size_bit ());
   return r;
 }
 
@@ -42,18 +42,17 @@ int main (int argv, char *args[]) {
     std::vector<test_result> rss;
     std::random_device rd;
     std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
-    uint32_t rdmA[10] {
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd),
-    	clr(rd)
-    };
+    uint32_t rdmA[10]{
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd),
+        clr (rd)};
     for (size_t i = 0; i < TRY; ++i) {
       codec_data cd (CODEC_SIZE << 2);
       // try make random data
