@@ -34,7 +34,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
   std::cout << std::endl;
   // compare
   r.success = decode_result == in;
-  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double(in.size_bit ());
+  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (in.size_bit ());
   return r;
 }
 
