@@ -105,7 +105,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     ro >> temp;
     ++freq[temp];
   }
-  aVar = freq.size();
+  aVar = freq.size ();
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
@@ -176,7 +176,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> key;
     --aVar;
     if (aVar < 0)
-    	std::cout << "Overload" << std::endl;
+      std::cout << "Overload" << std::endl;
     return new Leaf (key);
   }
   case 2: {
