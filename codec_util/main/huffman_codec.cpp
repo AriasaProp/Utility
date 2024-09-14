@@ -180,25 +180,25 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   case 0:
     break;
   case 1: {
-  	std::cout << "Get Leaf" << std::endl;
+    std::cout << "Get Leaf" << std::endl;
     dat_t key;
     ro >> key;
     return new Leaf (key);
   }
   case 2: {
-  	std::cout << "Get Branch" << std::endl;
+    std::cout << "Get Branch" << std::endl;
     bool a, b;
     Branch *root = new Branch;
     ro >> a >> b;
-  	std::cout << "left" << std::endl;
+    std::cout << "left" << std::endl;
     root->left = readHuffmanTree (ro, a | (b << 1));
     ro >> a >> b;
-  	std::cout << "right" << std::endl;
+    std::cout << "right" << std::endl;
     root->right = readHuffmanTree (ro, a | (b << 1));
     return root;
   }
   case 3:
-  	std::cout << "Get EOF" << std::endl;
+    std::cout << "Get EOF" << std::endl;
     return new Eof_;
   }
   throw "resulting 0 key";
