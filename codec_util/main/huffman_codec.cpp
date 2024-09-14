@@ -18,9 +18,7 @@ struct Node {
   virtual dat_len frequency () const {
     return 0;
   }
-  virtual dat_len type () const {
-    return 0;
-  }
+  virtual dat_len type () const;
   // Comparator for priority queue
   struct compare {
     bool operator() (Node *l, Node *r) {
@@ -60,18 +58,15 @@ struct Eof_ : public Node {
     return 0;
   }
   dat_len type () const override {
-    return 3;
+    return 0;
   }
 };
 
 // Utility function to build Huffman Tree and store the codes
 void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::unordered_map<dat_t, std::vector<bool>> &huffmanCode, std::vector<bool> &eof_code) {
   switch (root->type ()) {
-  default:
   case 0:
-    break;
-  case 3:
-    cd << true << true; // like 3
+    cd << false << false; // like 3
     eof_code = code;
     break;
   case 1: {
@@ -97,6 +92,7 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
   }
 }
 } // namespace encode
+static long aVar;
 // Function to encode data using Huffman coding
 const codec_data huffman_encode (codec_data const &cd) {
   dat_t temp;
@@ -109,6 +105,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     ro >> temp;
     ++freq[temp];
   }
+  aVar = freq.size();
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
@@ -146,9 +143,7 @@ const codec_data huffman_encode (codec_data const &cd) {
 
 namespace decode {
 struct Node {
-  virtual dat_len type () const {
-    return 0;
-  }
+  virtual dat_len type () const;
 };
 struct Branch : public Node {
   Node *left, *right;
@@ -170,18 +165,18 @@ struct Leaf : public Node {
 };
 struct Eof_ : public Node {
   dat_len type () const override {
-    return 3;
+    return 0;
   }
 };
 
 Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
   switch (type) {
-  default:
-  case 0:
-    break;
   case 1: {
     dat_t key;
     ro >> key;
+    --aVar;
+    if (aVar < 0)
+    	std::cout << "Overload" << std::endl;
     return new Leaf (key);
   }
   case 2: {
@@ -193,10 +188,8 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     root->right = readHuffmanTree (ro, a | (b << 1));
     return root;
   }
-  case 3:
-    return new Eof_;
   }
-  throw "resulting 0 key";
+  return new Eof_;
 }
 } // namespace decode
 
@@ -218,8 +211,6 @@ const codec_data huffman_decode (codec_data const &cd) {
     switch (cur_->type ()) {
     default:
     case 0:
-      break;
-    case 3:
       eof_c = true;
       break;
     case 1:
@@ -230,7 +221,7 @@ const codec_data huffman_decode (codec_data const &cd) {
       current_branch = (decode::Branch *)cur_;
       break;
     }
-  } while (!eof_c && ro.left ());
+  } while (!eof_c);
   delete tree;
   return out_c;
 }
