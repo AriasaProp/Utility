@@ -18,7 +18,7 @@ struct Node {
   virtual dat_len frequency () const {
     return 0;
   }
-  virtual dat_len type () const { return -1;}
+  virtual dat_len type () const { return -1; }
   // Comparator for priority queue
   struct compare {
     bool operator() (Node *l, Node *r) {
@@ -105,7 +105,7 @@ const codec_data huffman_encode (codec_data const &cd) {
     ro >> temp;
     ++freq[temp];
   }
-  aVar = freq.size();
+  aVar = freq.size ();
   // Encode Huffman codes
   codec_data out_c;
   // Create priority queue to store live nodes of Huffman tree
@@ -143,7 +143,7 @@ const codec_data huffman_encode (codec_data const &cd) {
 
 namespace decode {
 struct Node {
-  virtual dat_len type () const { return -1;}
+  virtual dat_len type () const { return -1; }
 };
 struct Branch : public Node {
   Node *left, *right;
@@ -176,7 +176,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> key;
     --aVar;
     if (aVar < 0)
-    	std::cout << "Overload" << std::endl;
+      std::cout << "Overload" << std::endl;
     return new Leaf (key);
   }
   case 2: {
