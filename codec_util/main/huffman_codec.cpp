@@ -68,7 +68,7 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
   case 0:
     cd << false << false; // like 0
     eof_code = code;
-    std::cout << " 0 ";
+    std::cout << "0 ";
     break;
   case 1: {
     cd << true << false; // like 1
@@ -78,22 +78,22 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     cd << key;
     unsigned char a1 = key & 0xf;
     unsigned char a2 = (key >> 4) & 0xf;
-    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << " ) ";
+    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ")";
     break;
   }
   case 2:
     // Branch node
-    std::cout << " 2 { ";
+    std::cout << "2{";
     cd << false << true; // like 2
     Branch *b = (Branch *)root;
     std::vector<bool> code_left = code;
     code_left.push_back (false);
     buildHuffmanTree (cd, b->left, code_left, huffmanCode, eof_code);
-    std::cout << " , ";
+    std::cout << ",";
     std::vector<bool> code_right = code;
     code_right.push_back (true);
     buildHuffmanTree (cd, b->right, code_right, huffmanCode, eof_code);
-    std::cout << " } ";
+    std::cout << "}";
     break;
   }
 }
@@ -176,43 +176,39 @@ struct Eof_ : public Node {
   }
 };
 
-Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
+Node *readHuffmanTree (codec_data::reader &ro) {
+  bool a, b;
+  ro >> a >> b;
+  unsigned char type = a | (b << 1);
   switch (type) {
   case 1: {
     dat_t key;
     ro >> key;
     char a1 = key & 0xf;
     char a2 = (key >> 4) & 0xf;
-    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << " ) ";
+    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ") ";
     return new Leaf (key);
   }
   case 2: {
-    std::cout << "2 { ";
-    bool a, b;
+  	std::cout << "2{";
     Branch *root = new Branch;
-    ro >> a >> b;
-    root->left = readHuffmanTree (ro, a | (b << 1));
-    std::cout << " , ";
-    ro >> a >> b;
-    root->right = readHuffmanTree (ro, a | (b << 1));
-    std::cout << " }";
+    root->left = readHuffmanTree (ro);
+    std::cout << ",";
+    root->right = readHuffmanTree (ro);
+    std::cout << "}";
     return root;
   }
   }
-  std::cout << " 0 ";
+  std::cout << "0";
   return new Eof_;
 }
 } // namespace decode
 
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
-  bool a, b;
-  ro >> a >> b;
-  unsigned char type = a | (b << 1);
-  assert (type == 2);
-  std::cout << "Read: 2 {";
-  decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro, type);
-  std::cout << "} End" << std::endl;
+  std::cout << "Read:";
+  decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro);
+  std::cout << " End" << std::endl;
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
