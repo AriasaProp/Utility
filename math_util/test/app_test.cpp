@@ -11,7 +11,7 @@ int main (int argv, char *args[]) {
   passed &= BigInteger_test ();
   passed &= matrix_test ();
   passed &= ComplexNumber_test ();
-  
+
   passed &= Math_test ();
 
   return !passed;

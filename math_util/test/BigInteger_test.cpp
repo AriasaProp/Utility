@@ -175,6 +175,6 @@ bool BigInteger_test () {
     std::cout << "Error has occure " << msg << std::endl;
   }
   std::cout << "BigInteger code test, End" << std::endl;
-  
+
   return result;
 }
