@@ -187,7 +187,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     return new Leaf (key);
   }
   case 2: {
-  	std::cout << "2 { ";
+    std::cout << "2 { ";
     bool a, b;
     Branch *root = new Branch;
     ro >> a >> b;
