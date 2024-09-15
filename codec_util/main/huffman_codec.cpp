@@ -186,11 +186,11 @@ Node *readHuffmanTree (codec_data::reader &ro) {
     ro >> key;
     char a1 = key & 0xf;
     char a2 = (key >> 4) & 0xf;
-    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ") ";
+    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ")";
     return new Leaf (key);
   }
   case 2: {
-    std::cout << "2{";
+  	std::cout << "2{";
     Branch *root = new Branch;
     root->left = readHuffmanTree (ro);
     std::cout << ",";

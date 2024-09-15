@@ -98,8 +98,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
     d = *dt;
     if (o.readed_bit) {
       d >>= o.readed_bit;
-      ++dt;
-      d |= (*dt >> (CHAR_BIT - o.readed_bit));
+      d |= (*(dt+1) >> (CHAR_BIT - o.readed_bit));
     }
     ++o.readed_byte;
   }
@@ -216,8 +215,8 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
   o.check_resize (o.used_byte + 1 + (o.used_bit > 0));
   unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   if (o.used_bit) {
-    *dt |= (in << o.used_bit) & 0xff;
-    *(dt + 1) = (in >> (CHAR_BIT - o.used_bit)) & 0xff;
+    *dt |= (in << o.used_bit);
+    *(dt + 1) = (in >> (CHAR_BIT - o.used_bit));
   } else {
     *dt = in;
   }
