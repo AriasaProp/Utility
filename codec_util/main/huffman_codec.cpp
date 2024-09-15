@@ -190,7 +190,7 @@ Node *readHuffmanTree (codec_data::reader &ro) {
     return new Leaf (key);
   }
   case 2: {
-  	std::cout << "2{";
+    std::cout << "2{";
     Branch *root = new Branch;
     root->left = readHuffmanTree (ro);
     std::cout << ",";
