@@ -76,7 +76,9 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     dat_t &key = ((Leaf *)root)->data;
     huffmanCode[key] = code;
     cd << key;
-    std::cout << " 1( " << key << " ) ";
+		unsigned char a1 = key & 0xf;
+	  unsigned char a2 = (key >> 4) & 0xf;
+    std::cout << " 1( " << char (a1 > 9 ? 'A' + a1 : '0' + a1) << char (a2 > 9 ? 'A' + a2 : '0' + a2) << " ) ";
     break;
   }
   case 2:
