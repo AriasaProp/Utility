@@ -78,7 +78,7 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     cd << key;
     unsigned char a1 = key & 0xf;
     unsigned char a2 = (key >> 4) & 0xf;
-    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' + a2 : '0' + a2) << " ) ";
+    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << " ) ";
     break;
   }
   case 2:
@@ -183,7 +183,7 @@ Node *readHuffmanTree (codec_data::reader &ro, unsigned char type) {
     ro >> key;
     char a1 = key & 0xf;
     char a2 = (key >> 4) & 0xf;
-    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'a' + a2 : '0' + a2) << " ) ";
+    std::cout << " 1( " << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << " ) ";
     return new Leaf (key);
   }
   case 2: {
