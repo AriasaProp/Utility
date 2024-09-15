@@ -7,8 +7,8 @@
 
 bool BigInteger_test () {
   std::cout << "BigInteger code test" << std::endl;
+  bool result = true;
   try {
-    bool result;
     profiling::clock_adjustment _clock ("Big Integer Operator Test");
     BigInteger
         a = "17109938276655544333234567880088776588224401929\0",
@@ -173,52 +173,8 @@ bool BigInteger_test () {
     // operator end of operator_clock
   } catch (const char *msg) {
     std::cout << "Error has occure " << msg << std::endl;
-    return false;
   }
-  /*
-
-  //totalBytes = 0;
-  profiling::clock_adjustment pi_clock("π Generator Test");
-  BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
-  int N;
-  unsigned long generated = 0;
-  while (generated<6000) { //limit digits with 6.000
-    if (q.tot()>200000) { //limit bits size 200.000
-      std::cout << " max out ";
-      break;
-    }
-    if (n > (0x7fffffff)) {
-      std::cout << " n value are broken in " << generated;
-      return false;
-    }
-    N = (int) n;
-    if ((q * 4 + r - t)<(t * n)) {
-      generated++;
-      q *= 10;
-      r -= t * n;
-      r *= 10;
-      n = q;
-      n *= 3;
-      n += r;
-      n /= t;
-    } else {
-      t *= l;
-      n = q;
-      n *= k;
-      n *= 7;
-      n += q * 2;
-      n += r * l;
-      n /= t;
-      r += q * 2;
-      r *= l;
-      q *= k;
-      ++k;
-      l += 2;
-    }
-  }
-
-  std::cout << std::endl;
-  std::cout << "pi generator gain : " << std::setfill('0') << std::setw(20) << generated << " digits" << std::endl;
-  */
-  return true;
+  std::cout << "BigInteger code test, End" << std::endl;
+  
+  return result;
 }

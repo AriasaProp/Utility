@@ -68,25 +68,30 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
   case 0:
     cd << false << false; // like 0
     eof_code = code;
+    std::cout << " 0 ";
     break;
   case 1: {
+    cd << true << false; // like 1
     // Leaf node
     dat_t &key = ((Leaf *)root)->data;
     huffmanCode[key] = code;
-    cd << true << false; // like 1
     cd << key;
+    std::cout << " 1( " << key << " ) ";
     break;
   }
   case 2:
     // Branch node
+    std::cout << " 2 { ";
     cd << false << true; // like 2
     Branch *b = (Branch *)root;
     std::vector<bool> code_left = code;
     code_left.push_back (false);
     buildHuffmanTree (cd, b->left, code_left, huffmanCode, eof_code);
+    std::cout << " , ";
     std::vector<bool> code_right = code;
     code_right.push_back (true);
     buildHuffmanTree (cd, b->right, code_right, huffmanCode, eof_code);
+    std::cout << " } ";
     break;
   }
 }
@@ -125,9 +130,9 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Traverse the Huffman tree and store Huffman codes in a map
   std::vector<bool> eof_code;
   std::unordered_map<dat_t, std::vector<bool>> huffmanCode;
-  std::cout << "Write: {" << std::endl;
+  std::cout << "Write: {";
   encode::buildHuffmanTree (out_c, pq.top (), std::vector<bool> (), huffmanCode, eof_code);
-  std::cout << "} End" << std::endl;
+  std::cout << " } End" << std::endl;
   delete pq.top ();
 
   // Encode input data using Huffman codes
