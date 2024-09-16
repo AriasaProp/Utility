@@ -42,7 +42,7 @@ int main (int argv, char *args[]) {
     unsigned char ct;
     codec_data cd;
     cd << false << false;
-    cd << (ct = 0xba);
+    cd << (ct = 0xbau);
     cd << true << false;
     cd << (ct = 0x2b);
     cd << false << true;
