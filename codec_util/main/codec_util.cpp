@@ -98,10 +98,10 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
     d = *dt;
     if (o.readed_bit) {
       d >>= o.readed_bit;
-      d |= (*(dt + 1) >> (CHAR_BIT - o.readed_bit));
+      d |= (*(dt+1) >> (CHAR_BIT - o.readed_bit));
     }
     ++o.readed_byte;
-    std::cout << "Read " << std::hex << int ((*dt >> o.readed_bit) | (o.readed_bit ? *(dt + 1) >> (CHAR_BIT - o.readed_bit) : 0)) << std::endl;
+  	std::cout << "Read " << std::hex << int((*dt>>o.readed_bit) | (o.readed_bit?*(dt+1) >> (CHAR_BIT - o.readed_bit):0)) << std::endl;
   }
   return o;
 }
@@ -213,16 +213,13 @@ codec_data &operator<< (codec_data &o, unsigned short in) {
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned char in) {
-  std::cout << "Pre-Write " << std::hex << int (in) << std::endl;
   o.check_resize (o.used_byte + 1 + (o.used_bit > 0));
   unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
+  *dt |= (in << o.used_bit);
   if (o.used_bit) {
-    *dt |= (in << o.used_bit);
     *(dt + 1) = (in >> (CHAR_BIT - o.used_bit));
-  } else {
-    *dt = in;
   }
-  std::cout << "Write " << std::hex << int ((*dt >> o.used_bit) | (o.used_bit ? *(dt + 1) >> (CHAR_BIT - o.used_bit) : 0)) << std::endl;
+  std::cout << "Write: " << (*dt >> o.used_bit) | (o.used_bit?*(dt+1) << (CHAR_BIT - o.used_bit):0) << std::endl;
   ++o.used_byte;
   return o;
 }
