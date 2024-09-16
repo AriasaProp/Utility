@@ -219,7 +219,7 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
   if (o.used_bit) {
     *(dt + 1) = (in >> (CHAR_BIT - o.used_bit));
   }
-  std::cout << "Write: " << (*dt >> o.used_bit) | (o.used_bit ? *(dt + 1) << (CHAR_BIT - o.used_bit) : 0) << std::endl;
+  std::cout << "Write: " << std::hex << int((*dt >> o.used_bit) | (o.used_bit ? *(dt + 1) << (CHAR_BIT - o.used_bit) : 0)) << std::endl;
   ++o.used_byte;
   return o;
 }
