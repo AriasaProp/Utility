@@ -38,6 +38,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 #define CODEC_SIZE 80
 
 int main (int argv, char *args[]) {
+  /*
   {
     unsigned char ct;
     codec_data cd;
@@ -60,7 +61,7 @@ int main (int argv, char *args[]) {
     ro >> a >> b >> ct;
     std::cout << int (a | (b << 1)) << " " << std::hex << int (ct) << std::endl;
   }
-  /*
+  */
   try {
     std::vector<test_result> rss;
     std::random_device rd;
@@ -97,6 +98,5 @@ int main (int argv, char *args[]) {
     std::cout << "Error : uncaught" << std::endl;
     return EXIT_FAILURE;
   }
-  */
   return EXIT_SUCCESS;
 }
