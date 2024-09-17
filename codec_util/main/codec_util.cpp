@@ -101,7 +101,7 @@ codec_data::reader &operator>> (codec_data::reader &o, unsigned char &d) {
       d |= (*(dt + 1) << (CHAR_BIT - o.readed_bit));
     }
     ++o.readed_byte;
-    //std::cout << "Read: " << std::hex << int ((*dt >> o.readed_bit) | (o.readed_bit ? *(dt + 1) << (CHAR_BIT - o.readed_bit) : 0)) << std::endl;
+    // std::cout << "Read: " << std::hex << int ((*dt >> o.readed_bit) | (o.readed_bit ? *(dt + 1) << (CHAR_BIT - o.readed_bit) : 0)) << std::endl;
   }
   return o;
 }
@@ -206,7 +206,7 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
   *dt |= in << o.used_bit;
   *(dt + 1) = in >> (CHAR_BIT - o.used_bit);
   ++o.used_byte;
-  //std::cout << "Write: " << std::hex << int ((*dt >> o.used_bit) | *(dt + 1) << (CHAR_BIT - o.used_bit)) << std::endl;
+  // std::cout << "Write: " << std::hex << int ((*dt >> o.used_bit) | *(dt + 1) << (CHAR_BIT - o.used_bit)) << std::endl;
   return o;
 }
 codec_data &operator<< (codec_data &o, long in) {
