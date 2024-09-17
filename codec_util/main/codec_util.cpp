@@ -225,7 +225,7 @@ codec_data &operator<< (codec_data &o, int in) {
   int shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (int));
   dt += sizeof (int);
-  *dt = char in >> (sizeof (int) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (int) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (int);
   return o;
 }
@@ -243,7 +243,7 @@ codec_data &operator<< (codec_data &o, char in) {
   o.check_resize (o.used_byte + 2);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
   *dt |= in << o.used_bit;
-  *(dt + 1) = (in >> (CHAR_BIT - o.used_bit);
+  *(dt + 1) = in >> (CHAR_BIT - o.used_bit);
   ++o.used_byte;
   return o;
 }
