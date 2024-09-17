@@ -38,7 +38,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 #define CODEC_SIZE 80
 
 int main (int argv, char *args[]) {
-  
+
   {
     unsigned char ct;
     codec_data cd;
