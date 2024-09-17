@@ -204,9 +204,9 @@ codec_data &operator<< (codec_data &o, unsigned char in) {
   o.check_resize (o.used_byte + 2);
   unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   *dt |= in << o.used_bit;
-  *(dt + 1) = in << (CHAR_BIT - o.used_bit);
+  *(dt + 1) = in >> (CHAR_BIT - o.used_bit);
   ++o.used_byte;
-  std::cout << "Write: " << std::hex << int ((*dt >> o.used_bit) | (o.used_bit ? *(dt + 1) << (CHAR_BIT - o.used_bit) : 0)) << std::endl;
+  std::cout << "Write: " << std::hex << int ((*dt >> o.used_bit) | *(dt + 1) << (CHAR_BIT - o.used_bit)) << std::endl;
   return o;
 }
 codec_data &operator<< (codec_data &o, long in) {
