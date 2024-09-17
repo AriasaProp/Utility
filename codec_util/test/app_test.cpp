@@ -35,48 +35,25 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 }
 
 #define TRY 5
-constexpr size_t CODEC_SIZE = 2048 * 2048;
+constexpr size_t CODEC_SIZE = 2048*2048;
 
 int main (int argv, char *args[]) {
-  /*
-  {
-    unsigned char ct;
-    codec_data cd;
-    cd << false << false;
-    cd << (ct = 0xba);
-    cd << true << false;
-    cd << (ct = 0x2b);
-    cd << false << true;
-    cd << (ct = 0x9c);
-    cd << true << true;
-    cd << (ct = 0xff);
-    codec_data::reader ro = cd.begin_read ();
-    bool a, b;
-    ro >> a >> b >> ct;
-    std::cout << int (a | (b << 1)) << " " << std::hex << int (ct) << std::endl;
-    ro >> a >> b >> ct;
-    std::cout << int (a | (b << 1)) << " " << std::hex << int (ct) << std::endl;
-    ro >> a >> b >> ct;
-    std::cout << int (a | (b << 1)) << " " << std::hex << int (ct) << std::endl;
-    ro >> a >> b >> ct;
-    std::cout << int (a | (b << 1)) << " " << std::hex << int (ct) << std::endl;
-  }
-  */
   try {
     std::vector<test_result> rss;
     std::random_device rd;
     std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
-    uint32_t rdmA[10]{
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd)};
+    uint32_t rdmA[10] {
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd),
+      clr(rd)
+    };
     for (size_t i = 0; i < TRY; ++i) {
       codec_data cd (CODEC_SIZE << 2);
       // try make random data
@@ -97,6 +74,6 @@ int main (int argv, char *args[]) {
     std::cout << "Error : uncaught" << std::endl;
     return EXIT_FAILURE;
   }
-
+  
   return EXIT_SUCCESS;
 }

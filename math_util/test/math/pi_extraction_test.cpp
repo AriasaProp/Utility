@@ -119,7 +119,7 @@ public:
   }
 };
 
-#define PROVE_FILENAME "data\/piDigits.txt"
+#define PROVE_FILENAME "..\\data\\piDigits.txt"
 #define TIME 10.0
 
 bool pi_extraction_test () {
