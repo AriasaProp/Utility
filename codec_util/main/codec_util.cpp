@@ -171,108 +171,79 @@ codec_data::reader &operator>> (codec_data::reader &o, bool &d) {
 
 // writing function
 codec_data &operator<< (codec_data &o, unsigned long in) {
-  o.check_resize (o.used_byte + sizeof (unsigned long) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (unsigned long) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    unsigned long shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (unsigned long));
-    dt += sizeof (unsigned long);
-    *dt = (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (unsigned long));
-  }
+  unsigned long shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (unsigned long));
+  dt += sizeof (unsigned long);
+  *dt = in >> (sizeof(unsigned long) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned long);
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned int in) {
-  o.check_resize (o.used_byte + sizeof (unsigned int) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (unsigned int) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    unsigned int shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (unsigned int));
-    dt += sizeof (unsigned int);
-    *dt = char (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (unsigned int));
-  }
+  unsigned int shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (unsigned int));
+  dt += sizeof (unsigned int);
+  *dt = in >> (sizeof(unsigned int) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned int);
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned short in) {
-  o.check_resize (o.used_byte + sizeof (unsigned short) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (unsigned short) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    unsigned short shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (unsigned short));
-    dt += sizeof (unsigned short);
-    *dt = (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (unsigned short));
-  }
+  unsigned short shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (unsigned short));
+  dt += sizeof (unsigned short);
+  *dt = in >> (sizeof(unsigned short) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned short);
   return o;
 }
 codec_data &operator<< (codec_data &o, unsigned char in) {
-  o.check_resize (o.used_byte + 1 + (o.used_bit > 0));
+  o.check_resize (o.used_byte + 2);
   unsigned char *dt = reinterpret_cast<unsigned char *> (o.data) + o.used_byte;
   *dt |= in << o.used_bit;
-  if (o.used_bit)
-    *(dt + 1) = in << (CHAR_BIT - o.used_bit);
+  *(dt + 1) = in << (CHAR_BIT - o.used_bit);
   ++o.used_byte;
   std::cout << "Write: " << std::hex << int ((*dt >> o.used_bit) | (o.used_bit ? *(dt + 1) << (CHAR_BIT - o.used_bit) : 0)) << std::endl;
   return o;
 }
 codec_data &operator<< (codec_data &o, long in) {
-  o.check_resize (o.used_byte + sizeof (long) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (long) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    long shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (long));
-    dt += sizeof (long);
-    *dt = (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (long));
-  }
+  long shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (long));
+  dt += sizeof (long);
+  *dt = in >> (sizeof(long) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (long);
   return o;
 }
 codec_data &operator<< (codec_data &o, int in) {
-  o.check_resize (o.used_byte + sizeof (int) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (int) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    int shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (int));
-    dt += sizeof (int);
-    *dt = char (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (int));
-  }
+  int shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (int));
+  dt += sizeof (int);
+  *dt = char in >> (sizeof(int) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (int);
   return o;
 }
 codec_data &operator<< (codec_data &o, short in) {
-  o.check_resize (o.used_byte + sizeof (short) + (o.used_bit > 0));
+  o.check_resize (o.used_byte + sizeof (short) + 1);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    short shifted = (in << o.used_bit) | *dt;
-    memcpy (dt, &shifted, sizeof (short));
-    dt += sizeof (short);
-    *dt = (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    memcpy (dt, &in, sizeof (short));
-  }
+  short shifted = (in << o.used_bit) | *dt;
+  memcpy (dt, &shifted, sizeof (short));
+  dt += sizeof (short);
+  *dt = in >> (sizeof(short) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (short);
   return o;
 }
 codec_data &operator<< (codec_data &o, char in) {
-  o.check_resize (o.used_byte + 1 + (o.used_bit > 0));
+  o.check_resize (o.used_byte + 2);
   char *dt = reinterpret_cast<char *> (o.data) + o.used_byte;
-  if (o.used_bit) {
-    *dt |= (in << o.used_bit) & 0xff;
-    *(dt + 1) = (in << (CHAR_BIT - o.used_bit)) & 0xff;
-  } else {
-    *dt = in;
-  }
+  *dt |= in << o.used_bit;
+  *(dt + 1) = (in >> (CHAR_BIT - o.used_bit);
   ++o.used_byte;
   return o;
 }
