@@ -35,7 +35,7 @@ const test_result test_codec (const char *name, const codec_data &in, const code
 }
 
 #define TRY 5
-#define CODEC_SIZE 80
+constexpr size_t CODEC_SIZE = 2048*2048;
 
 int main (int argv, char *args[]) {
   /*

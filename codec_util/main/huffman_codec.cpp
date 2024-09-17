@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
-#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
@@ -68,7 +67,6 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
   case 0:
     cd << false << false; // like 0
     eof_code = code;
-    std::cout << "0 ";
     break;
   case 1: {
     cd << true << false; // like 1
@@ -76,24 +74,18 @@ void buildHuffmanTree (codec_data &cd, Node *root, std::vector<bool> code, std::
     dat_t &key = ((Leaf *)root)->data;
     huffmanCode[key] = code;
     cd << key;
-    unsigned char a1 = key & 0xf;
-    unsigned char a2 = (key >> 4) & 0xf;
-    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ")";
     break;
   }
   case 2:
     // Branch node
-    std::cout << "2{";
     cd << false << true; // like 2
     Branch *b = (Branch *)root;
     std::vector<bool> code_left = code;
     code_left.push_back (false);
     buildHuffmanTree (cd, b->left, code_left, huffmanCode, eof_code);
-    std::cout << ",";
     std::vector<bool> code_right = code;
     code_right.push_back (true);
     buildHuffmanTree (cd, b->right, code_right, huffmanCode, eof_code);
-    std::cout << "}";
     break;
   }
 }
@@ -132,9 +124,7 @@ const codec_data huffman_encode (codec_data const &cd) {
   // Traverse the Huffman tree and store Huffman codes in a map
   std::vector<bool> eof_code;
   std::unordered_map<dat_t, std::vector<bool>> huffmanCode;
-  std::cout << "Write:";
   encode::buildHuffmanTree (out_c, pq.top (), std::vector<bool> (), huffmanCode, eof_code);
-  std::cout << " End" << std::endl;
   delete pq.top ();
 
   // Encode input data using Huffman codes
@@ -184,31 +174,22 @@ Node *readHuffmanTree (codec_data::reader &ro) {
   case 1: {
     dat_t key;
     ro >> key;
-    char a1 = key & 0xf;
-    char a2 = (key >> 4) & 0xf;
-    std::cout << "1(" << char (a1 > 9 ? 'A' - 10 + a1 : '0' + a1) << char (a2 > 9 ? 'A' - 10 + a2 : '0' + a2) << ")";
     return new Leaf (key);
   }
   case 2: {
-    std::cout << "2{";
     Branch *root = new Branch;
     root->left = readHuffmanTree (ro);
-    std::cout << ",";
     root->right = readHuffmanTree (ro);
-    std::cout << "}";
     return root;
   }
   }
-  std::cout << "0";
   return new Eof_;
 }
 } // namespace decode
 
 const codec_data huffman_decode (codec_data const &cd) {
   codec_data::reader ro = cd.begin_read ();
-  std::cout << "Read:";
   decode::Branch *tree = (decode::Branch *)decode::readHuffmanTree (ro);
-  std::cout << " End" << std::endl;
   codec_data out_c;
   // decode input data using Huffman codes
   bool bit_read, eof_c = false;
