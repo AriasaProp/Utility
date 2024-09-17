@@ -13,6 +13,9 @@ unitTest {
     source.from file('test')
     privateHeaders.from file('test')
 }
+tasks.withType(CppExec) {
+    args 'data/piDigits.txt'
+}
 
 dependencies {
     testImplementation project(':profiling_util')

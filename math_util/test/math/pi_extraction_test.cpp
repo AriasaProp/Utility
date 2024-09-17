@@ -119,10 +119,9 @@ public:
   }
 };
 
-#define PROVE_FILENAME "..\\data\\piDigits.txt"
 #define TIME 10.0
 
-bool pi_extraction_test () {
+bool pi_extraction_test (const char *o) {
   std::cout << "Start π Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
@@ -133,7 +132,7 @@ bool pi_extraction_test () {
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
-    FILE *pi_digits_stream = fopen (PROVE_FILENAME, "rb");
+    FILE *pi_digits_stream = fopen (o, "rb");
     if (pi_digits_stream) {
       try {
         char out,
@@ -181,7 +180,7 @@ bool pi_extraction_test () {
       }
       fclose (pi_digits_stream);
     } else {
-      std::cerr << "Error: failed to open " << PROVE_FILENAME << std::endl;
+      std::cerr << "Error: failed to open " << o << std::endl;
       passed &= false;
     }
     delete algo;
