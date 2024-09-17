@@ -176,7 +176,7 @@ codec_data &operator<< (codec_data &o, unsigned long in) {
   unsigned long shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (unsigned long));
   dt += sizeof (unsigned long);
-  *dt = in >> (sizeof(unsigned long) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (unsigned long) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned long);
   return o;
 }
@@ -186,7 +186,7 @@ codec_data &operator<< (codec_data &o, unsigned int in) {
   unsigned int shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (unsigned int));
   dt += sizeof (unsigned int);
-  *dt = in >> (sizeof(unsigned int) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (unsigned int) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned int);
   return o;
 }
@@ -196,7 +196,7 @@ codec_data &operator<< (codec_data &o, unsigned short in) {
   unsigned short shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (unsigned short));
   dt += sizeof (unsigned short);
-  *dt = in >> (sizeof(unsigned short) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (unsigned short) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (unsigned short);
   return o;
 }
@@ -215,7 +215,7 @@ codec_data &operator<< (codec_data &o, long in) {
   long shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (long));
   dt += sizeof (long);
-  *dt = in >> (sizeof(long) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (long) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (long);
   return o;
 }
@@ -225,7 +225,7 @@ codec_data &operator<< (codec_data &o, int in) {
   int shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (int));
   dt += sizeof (int);
-  *dt = char in >> (sizeof(int) * CHAR_BIT - o.used_bit);
+  *dt = char in >> (sizeof (int) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (int);
   return o;
 }
@@ -235,7 +235,7 @@ codec_data &operator<< (codec_data &o, short in) {
   short shifted = (in << o.used_bit) | *dt;
   memcpy (dt, &shifted, sizeof (short));
   dt += sizeof (short);
-  *dt = in >> (sizeof(short) * CHAR_BIT - o.used_bit);
+  *dt = in >> (sizeof (short) * CHAR_BIT - o.used_bit);
   o.used_byte += sizeof (short);
   return o;
 }
