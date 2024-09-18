@@ -132,37 +132,6 @@ bool pi_extraction_test () {
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
-<<<<<<< HEAD
-    try {
-      unsigned long long generated = 0;
-      double timed_average[3] = {0.0000001};
-      auto timed = std::chrono::high_resolution_clock::now ();
-      auto whole_timed = std::chrono::high_resolution_clock::now ();
-      do {
-        algo->extract ();
-        ++generated;
-      } while (wt < TIME);
-    } catch (const std::exception &e) {
-      std::cout << "\nError: " << e.what () << std::endl;
-      passed &= false;
-    }
-    {
-      // print result profiling
-      auto now = std::chrono::high_resolution_clock::now ();
-
-      double t_av = (timed_average[0] = timed_average[1]);
-      t_av += (timed_average[1] = timed_average[2]);
-      t_av += (timed_average[2] = std::chrono::duration<double> (now - timed).count ());
-      t_av = 3 / t_av;
-      timed = now;
-      double wt = std::chrono::duration<double> (now - whole_timed).count ();
-
-      std::cout << std::flush << "\r| ";
-      std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << t_av << " || ";
-      std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
-    }
-=======
       try {
         unsigned long long generated = 0;
         std::chrono::high_resolution_clock start_timed = std::chrono::high_resolution_clock::now ();
@@ -183,7 +152,6 @@ bool pi_extraction_test () {
         std::cout << "\nError: " << e.what () << std::endl;
       	passed &= false;
       }
->>>>>>> f8ad7fe (try-read-file : 15:45:18 09/18/24)
     delete algo;
   }
   std::cout << "Ended π Test Generator" << std::endl;
