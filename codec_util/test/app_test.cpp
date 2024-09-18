@@ -3,13 +3,13 @@
 #include "clock_adjustment.hpp"
 #include "huffman_codec.hpp"
 
-#include <random>
-#include <vector>
 #include <cstdint>
 #include <iostream>
 #include <map>
+#include <random>
 #include <string>
 #include <utility>
+#include <vector>
 
 struct test_result {
   std::string name;
@@ -21,10 +21,10 @@ struct test_result {
   }
 };
 
-const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> codec_n) {
+const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
-  r.name = "data("+ data_n.first + "), codec(" + codec_n.first + ")";
-  profiling::clock_adjustment clck = profiling::clock_adjustment (r.name.c_str());
+  r.name = "data(" + data_n.first + "), codec(" + codec_n.first + ")";
+  profiling::clock_adjustment clck = profiling::clock_adjustment (r.name.c_str ());
   // encoding data
   const codec_data encode_result = codec_n.second.first (data_n.second);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
@@ -44,43 +44,42 @@ int main (int argv, char *args[]) {
   try {
     std::vector<test_result> rss;
     {
-	    std::random_device rd;
-	    std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
-	    std::map<std::string, codec_data> data_var;
-	    // make data variations
-	    {
-	    	data_var["var10_a"] = codec_data (CODEC_SIZE << 2);
-	    	data_var["var10_b"] = codec_data (CODEC_SIZE << 2);
-	    	data_var["var100_a"] = codec_data (CODEC_SIZE << 2);
-	    	data_var["var100_b"] = codec_data (CODEC_SIZE << 2);
-	    	data_var["var_noise"] = codec_data (CODEC_SIZE << 2);
-	    	uint32_t rdmA[10];
-	    	for (size_t i = 0; i < 10; ++i) {
-	    		rdmA[i] = clr (rd);
-	    	}
-	    	uint32_t rdmB[100];
-	    	for (size_t i = 0; i < 100; ++i) {
-	    		rdmB[i] = clr (rd);
-	    	}
-	      // try make random data
-	      for (size_t i = 0; i < CODEC_SIZE; ++i) {
-	        data_var["var10_a"] << rdmA[clr (rd) % 10];
-	        data_var["var10_b"] << rdmA[clr (rd) % 10];
-	        data_var["var100_a"] << rdmB[clr (rd) % 100];
-	        data_var["var100_b"] << rdmB[clr (rd) % 100];
-	        data_var["var_noise"] << clr (rd);
-	      }
-	    }
-	    // make codec variations
-	    std::map<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> codec_var {
-	    	{"Huffman",{huffman_encode,huffman_decode}}
-	    };
-	    //do codec
-	    for (std::pair<std::string, codec_data> d : data_var) {
-	    	for (std::pair<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> cod : codec_var) {
-	      	rss.push_back (test_codec (d, cod));
-	    	}
-	    }
+      std::random_device rd;
+      std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
+      std::map<std::string, codec_data> data_var;
+      // make data variations
+      {
+        data_var["var10_a"] = codec_data (CODEC_SIZE << 2);
+        data_var["var10_b"] = codec_data (CODEC_SIZE << 2);
+        data_var["var100_a"] = codec_data (CODEC_SIZE << 2);
+        data_var["var100_b"] = codec_data (CODEC_SIZE << 2);
+        data_var["var_noise"] = codec_data (CODEC_SIZE << 2);
+        uint32_t rdmA[10];
+        for (size_t i = 0; i < 10; ++i) {
+          rdmA[i] = clr (rd);
+        }
+        uint32_t rdmB[100];
+        for (size_t i = 0; i < 100; ++i) {
+          rdmB[i] = clr (rd);
+        }
+        // try make random data
+        for (size_t i = 0; i < CODEC_SIZE; ++i) {
+          data_var["var10_a"] << rdmA[clr (rd) % 10];
+          data_var["var10_b"] << rdmA[clr (rd) % 10];
+          data_var["var100_a"] << rdmB[clr (rd) % 100];
+          data_var["var100_b"] << rdmB[clr (rd) % 100];
+          data_var["var_noise"] << clr (rd);
+        }
+      }
+      // make codec variations
+      std::map<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_var{
+          {"Huffman", {huffman_encode, huffman_decode}}};
+      // do codec
+      for (std::pair<std::string, codec_data> d : data_var) {
+        for (std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> cod : codec_var) {
+          rss.push_back (test_codec (d, cod));
+        }
+      }
     }
     for (test_result rs : rss) {
       rs.print ();
