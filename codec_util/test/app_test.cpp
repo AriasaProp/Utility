@@ -2,12 +2,14 @@
 
 #include "clock_adjustment.hpp"
 #include "huffman_codec.hpp"
+
 #include <random>
 #include <vector>
-
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
+#include <map>
+#include <string>
+#include <utility>
 
 struct test_result {
   std::string name;
@@ -19,18 +21,19 @@ struct test_result {
   }
 };
 
-const test_result test_codec (const char *name, const codec_data &in, const codec_data (*encode) (codec_data const &), const codec_data (*decode) (codec_data const &)) {
+const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
-  profiling::clock_adjustment clck = profiling::clock_adjustment (name);
+  r.name = "data("+ data_n.first + "), codec(" + codec_n.first + ")";
+  profiling::clock_adjustment clck = profiling::clock_adjustment (r.name);
   // encoding data
-  const codec_data encode_result = encode (in);
+  const codec_data encode_result = codec_n.second.first (data_n.second);
   r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // decoding data
-  const codec_data decode_result = decode (encode_result);
+  const codec_data decode_result = codec_n.second.second (encode_result);
   r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
   // compare
   r.success = decode_result == in;
-  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (in.size_bit ());
+  r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (data_n.second.size_bit ());
   return r;
 }
 
@@ -40,28 +43,45 @@ constexpr size_t CODEC_SIZE = 2048 * 2048;
 int main (int argv, char *args[]) {
   try {
     std::vector<test_result> rss;
-    std::random_device rd;
-    std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
-    uint32_t rdmA[10]{
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd),
-        clr (rd)};
-    for (size_t i = 0; i < TRY; ++i) {
-      codec_data cd (CODEC_SIZE << 2);
-      // try make random data
-      for (size_t j = 0; j < CODEC_SIZE; ++j) {
-        cd << rdmA[clr (rd) % 10];
-      }
-      rss.push_back (test_codec ("huffman", cd, huffman_encode, huffman_decode));
+    {
+	    std::random_device rd;
+	    std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
+	    std::map<std::string, codec_data> data_var;
+	    // make data variations
+	    {
+	    	data_var["var10_a"] = codec_data (CODEC_SIZE << 2);
+	    	data_var["var10_b"] = codec_data (CODEC_SIZE << 2);
+	    	data_var["var100_a"] = codec_data (CODEC_SIZE << 2);
+	    	data_var["var100_b"] = codec_data (CODEC_SIZE << 2);
+	    	data_var["var_noise"] = codec_data (CODEC_SIZE << 2);
+	    	uint32_t rdmA[10];
+	    	for (size_t i = 0; i < 10; ++i) {
+	    		rdmA[i] = clr (rd);
+	    	}
+	    	uint32_t rdmB[100];
+	    	for (size_t i = 0; i < 100; ++i) {
+	    		rdmB[i] = clr (rd);
+	    	}
+	      // try make random data
+	      for (size_t i = 0; i < CODEC_SIZE; ++i) {
+	        data_var["var10_a"] << rdmA[clr (rd) % 10];
+	        data_var["var10_b"] << rdmA[clr (rd) % 10];
+	        data_var["var100_a"] << rdmB[clr (rd) % 100];
+	        data_var["var100_b"] << rdmB[clr (rd) % 100];
+	        data_var["var_noise"] << clr (rd);
+	      }
+	    }
+	    // make codec variations
+	    std::map<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> codec_var {
+	    	{"Huffman",{huffman_encode,huffman_decode}}
+	    };
+	    //do codec
+	    for (std::pair<std::string, codec_data> d : data_var) {
+	    	for (std::pair<std::string, std::pair<const codec_data (*) (codec_data const &),const codec_data (*) (codec_data const &)>> cod : codec_var) {
+	      	rss.push_back (test_codec (cod, d));
+	    	}
+	    }
     }
-
     for (test_result rs : rss) {
       rs.print ();
     }

@@ -166,14 +166,6 @@ bool BigInteger_test () {
     for (std::pair<std::string, unsigned long> n : obj) {
       std::cout << n.first << ": ";
       unsigned long T = n.second;
-      if (T > 60000000) {
-        std::cout << T / 60000000 << " M ";
-        T %= 60000000;
-      }
-      if (T > 1000000) {
-        std::cout << T / 1000000 << " s ";
-        T %= 1000000;
-      }
       if (T > 1000) {
         std::cout << T / 1000 << " ms ";
         T %= 1000;
