@@ -12,9 +12,7 @@ library {
 unitTest {
     source.from file('test')
     privateHeaders.from file('test')
-}
-tasks.withName('RunTestExecutable') {
-    args 'data/piDigits.txt'
+    macros.put('DATA_DIR', projectDir.file('data/piDigits.txt'))
 }
 
 dependencies {

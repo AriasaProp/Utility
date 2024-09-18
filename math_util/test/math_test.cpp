@@ -1,9 +1,9 @@
-extern bool pi_extraction_test (const char *);
+extern bool pi_extraction_test ();
 
-bool Math_test (const char *o) {
+bool Math_test () {
   bool passed = true;
 
-  passed &= pi_extraction_test (o);
+  passed &= pi_extraction_test ();
 
   return passed;
 }

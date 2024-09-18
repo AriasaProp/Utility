@@ -121,7 +121,7 @@ public:
 
 #define TIME 10.0
 
-bool pi_extraction_test (const char *o) {
+bool pi_extraction_test () {
   std::cout << "Start π Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
@@ -132,7 +132,7 @@ bool pi_extraction_test (const char *o) {
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
-    FILE *pi_digits_stream = fopen (o, "rb");
+    FILE *pi_digits_stream = fopen (DATA_DIR, "rb");
     if (pi_digits_stream) {
       try {
         char out,
