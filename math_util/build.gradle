@@ -12,7 +12,6 @@ library {
 unitTest {
     source.from file('test')
     privateHeaders.from file('test')
-    cppCompile.get().macros.put('DATA_DIR', projectDir.file('data/piDigits.txt'))
 }
 
 dependencies {

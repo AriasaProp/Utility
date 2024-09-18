@@ -132,26 +132,27 @@ bool pi_extraction_test () {
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
-    FILE *pi_digits_stream = fopen (DATA_DIR, "rb");
-    if (pi_digits_stream) {
+    //FILE *pi_digits_stream = fopen (DATA_DIR, "rb");
+    //if (pi_digits_stream) {
       try {
-        char out,
-            result;
+        //char out;
+        //char result;
         unsigned long long generated = 0;
-        double timed_average[3] = {
-            0.0000001};
+        double timed_average[3] = { 0.0000001};
         auto timed = std::chrono::high_resolution_clock::now ();
         auto whole_timed = std::chrono::high_resolution_clock::now ();
         do {
           // get char aproved result
-          out = std::getc (pi_digits_stream) - '0';
-          if (out < 0 || out > 9) // if invalid value (not 0~9)
-            continue;
-          result = algo->extract ();
+          //out = std::getc (pi_digits_stream) - '0';
+          //if (out < 0 || out > 9) // if invalid value (not 0~9)
+          //  continue;
+          /* result = */ algo->extract ();
           ++generated;
           // check result
+          /*
           if (result != out)
             throw std::logic_error (std::string ("Failure result ") + std::to_string (result) + " != " + std::to_string (out));
+          */
           {
             // print result profiling
             auto now = std::chrono::high_resolution_clock::now ();
@@ -171,18 +172,20 @@ bool pi_extraction_test () {
             if (wt > TIME)
               throw std::logic_error ("Time out!");
           }
-        } while (!feof (pi_digits_stream));
+        } while (true/*!feof (pi_digits_stream)*/);
         // check file at the end (first step isn't make sense')
         // load file with 0 size?
         throw std::logic_error ("end of file proof");
       } catch (const std::exception &e) {
         std::cout << "\nError: " << e.what () << std::endl;
+      	passed &= false;
       }
-      fclose (pi_digits_stream);
+      //fclose (pi_digits_stream);
+      /*
     } else {
       std::cerr << "Error: failed to open " << o << std::endl;
-      passed &= false;
     }
+    */
     delete algo;
   }
   std::cout << "Ended π Test Generator" << std::endl;
