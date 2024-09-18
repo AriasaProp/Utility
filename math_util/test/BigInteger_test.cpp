@@ -3,15 +3,15 @@
 
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
-#include <map>
 
 bool BigInteger_test () {
   std::cout << "BigInteger code test" << std::endl;
   bool result = true;
   try {
-  	std::map<std::string,unsigned long> obj;
+    std::map<std::string, unsigned long> obj;
     profiling::clock_adjustment _clock ("Big Integer Operator Test");
     BigInteger
         a = "17109938276655544333234567880088776588224401929\0",
@@ -163,23 +163,23 @@ bool BigInteger_test () {
     obj["sqrt"] = _clock.get_clock (profiling::clock_adjustment::period::microseconds);
     // operator end of operator_clock
     std::cout << "Result: " << std::endl;
-    for (std::pair<const char*,unsigned long> n : obj) {
-    	std::cout << n.first() << ": ";
-    	unsigned long b = n.second();
-    	if (b > 1000000000) {
-    		std::cout << b / 1000000000 << " s ";
-    		b %= 1000000000;
-    	}
-    	if (b > 1000000) {
-    		std::cout << b / 1000000 << " ms ";
-    		b %= 1000000;
-    	}
-    	if (b > 1000) {
-    		std::cout << b << " us";
-    	}
-    	std::cout << std::endl;
+    for (std::pair<const char *, unsigned long> n : obj) {
+      std::cout << n.first () << ": ";
+      unsigned long b = n.second ();
+      if (b > 1000000000) {
+        std::cout << b / 1000000000 << " s ";
+        b %= 1000000000;
+      }
+      if (b > 1000000) {
+        std::cout << b / 1000000 << " ms ";
+        b %= 1000000;
+      }
+      if (b > 1000) {
+        std::cout << b << " us";
+      }
+      std::cout << std::endl;
     }
- 
+
   } catch (const char *msg) {
     std::cout << "Error has occure " << msg << std::endl;
   }
