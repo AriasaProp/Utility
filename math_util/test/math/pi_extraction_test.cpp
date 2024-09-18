@@ -132,26 +132,26 @@ bool pi_extraction_test () {
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
-    try {
-      unsigned long long generated = 0;
-      std::chrono::high_resolution_clock start_timed = std::chrono::high_resolution_clock::now ();
-      std::chrono::high_resolution_clock now;
+      try {
+        unsigned long long generated = 0;
+        std::chrono::time_point<std::chrono::high_resolution_clock> start_timed = std::chrono::high_resolution_clock::now ();
+	      std::chrono::time_point<std::chrono::high_resolution_clock> now;
 
-      do {
-        algo->extract ();
-        ++generated;
-        now = std::chrono::high_resolution_clock::now ();
-      } while (std::chrono::duration<double> (now - start_timed).count () < TIME);
-      {
-        // print result profiling
-        std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
-        std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
-        std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
+        do {
+        	algo->extract ();
+          ++generated;
+		      now = std::chrono::high_resolution_clock::now ();
+        } while (std::chrono::duration<double> (now - start_timed).count () < TIME);
+		    {
+	        // print result profiling
+		      std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
+		      std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated/std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
+		      std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
+		    }
+      } catch (const std::exception &e) {
+        std::cout << "\nError: " << e.what () << std::endl;
+      	passed &= false;
       }
-    } catch (const std::exception &e) {
-      std::cout << "\nError: " << e.what () << std::endl;
-      passed &= false;
-    }
     delete algo;
   }
   std::cout << "Ended π Test Generator" << std::endl;
