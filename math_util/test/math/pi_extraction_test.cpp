@@ -144,6 +144,7 @@ bool pi_extraction_test () {
       } while (std::chrono::duration<double> (now - start_timed).count () < TIME);
       {
         // print result profiling
+        std::cout << "| ";
         std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
         std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
         std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
