@@ -1,11 +1,11 @@
 #include "BigInteger.hpp"
 //#include "clock_adjustment.hpp"
 
-#include <cstring>
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -134,7 +134,8 @@ bool pi_extraction_test (char *d) {
   // Draw table header
   std::cout << "|     π    ||    rate    ||   memory  |\n";
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
-  std::cout.width(47); std::cout.fill('-');
+  std::cout.width (47);
+  std::cout.fill ('-');
   std::cout << std::endl;
 
   // pi proof
@@ -171,7 +172,7 @@ bool pi_extraction_test (char *d) {
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
-        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count () ;
+        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
       } while (elapsed_time < TIME);
       {
         // print result profiling
