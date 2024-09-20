@@ -48,6 +48,9 @@ jobs:
           cache: 'gradle'
  
       - uses: gradle/actions/setup-gradle@v3
+        with:
+          version: 8.10.1
+ 
       - run: gradle wrapper --gradle-version 8.10.1
 
       - name: Push Change
