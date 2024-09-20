@@ -133,23 +133,24 @@ bool pi_extraction_test (char *d) {
   // Draw table header
   std::cout << "|     π    ||    rate    ||   memory  |\n";
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
-  std::cout << std::setfill ('-') << std::setw (47) << std::endl;
+  std::cout.width(47); std::cout.fill("-");
+  std::cout << std::endl;
 
   // pi proof
   char piBuffer[BUFFER_BYTE_SIZE];
   size_t piIndex, piReaded;
   char result;
+  unsigned long long generated = 0;
   // time proof
-
+  long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
     std::cout << "| ";
     try {
       FILE *fpi = fopen ((std::string (d) + std::string ("/piDigits.txt")).c_str (), "r");
       if (!fpi) throw std::logic_error ("file not found");
-      unsigned long long generated = 0;
-      mem
-          piIndex = 0;
+      piIndex = 0;
+      piReaded = 0;
       start_timed = std::chrono::high_resolution_clock::now ();
       do {
         if (piIndex >= piReaded) {
@@ -169,11 +170,12 @@ bool pi_extraction_test (char *d) {
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
-      } while (std::chrono::duration<double> (now_timed - start_timed).count () < TIME);
+        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count () ;
+      } while (elapsed_time < TIME);
       {
         // print result profiling
         std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
-        std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
+        std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / elapsed_time) << " || ";
         std::cout << std::setfill ('0') << std::setw (9) << algo->size ();
       }
       fclose (fpi);
