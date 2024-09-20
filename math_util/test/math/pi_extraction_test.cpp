@@ -2,7 +2,9 @@
 //#include "clock_adjustment.hpp"
 
 #include <chrono>
+#include <cstdlib>
 #include <cstdio>
+#include <cerrno>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -119,7 +121,8 @@ public:
   }
 };
 
-#define TIME 10.0
+#define TIME 100.0
+#define BUFFER_BYTE_SIZE 4096
 
 bool pi_extraction_test (char *d) {
   std::cout << "Start π Extraction Test Generator" << std::endl;
@@ -130,33 +133,56 @@ bool pi_extraction_test (char *d) {
   // Draw table header
   std::cout << "|     π    ||    rate    ||   memory  |\n";
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
-  std::cout << "-------------------------------------------------------" << std::endl;
+  std::cout << std::setfill ('-') << std::setw (47) << std::endl;
+  
+  //pi proof
+  char piBuffer[BUFFER_BYTE_SIZE];
+  size_t piIndex, piReaded;
+  char result;
+  //time proof
+  
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
+    std::cout << "| ";
     try {
     	FILE *fpi = fopen((std::string(d)+std::string("/piDigits.txt")).c_str(), "r");
-      if (!fpi) throw "file not found";
+      if (!fpi) throw std::logic_error("file not found");
       unsigned long long generated = 0;
-      std::chrono::time_point<std::chrono::high_resolution_clock> start_timed = std::chrono::high_resolution_clock::now ();
-      std::chrono::time_point<std::chrono::high_resolution_clock> now;
-
+      mem
+      piIndex = 0;
+      start_timed = std::chrono::high_resolution_clock::now ();
       do {
-        algo->extract ();
+      	if (piIndex >= piReaded) {
+      		piIndex = 0;
+      		piReaded = fread(piBuffer, 1, BUFFER_BYTE_SIZE, fpi);
+      	}
+      	if (piReaded == 0) {
+      		if (feof(fpi))
+      			throw std::logic_error("end of file");
+      		if (ferror(fpi))
+      			throw std::logic_error(strerror(errno));
+    			throw std::logic_error("cannot get digits from file");
+      	}
+        result = algo->extract () + '0';
+        if (result != piBuffer[piIndex++]) {
+        	throw std::logic_error("wrong pi result");
+        }
         ++generated;
-        now = std::chrono::high_resolution_clock::now ();
-      } while (std::chrono::duration<double> (now - start_timed).count () < TIME);
+        now_timed = std::chrono::high_resolution_clock::now ();
+      } while (std::chrono::duration<double> (now_timed - start_timed).count () < TIME);
       {
         // print result profiling
-        std::cout << "| ";
         std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
         std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
-        std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
-        std::cout << std::endl;
+        std::cout << std::setfill ('0') << std::setw (9) << algo->size ();
+        
       }
       fclose(fpi);
     } catch (const std::exception &e) {
-      std::cout << "\nError: " << e.what () << std::endl;
+      std::cout << std::setfill(' ') << std::setw (43) << std::internal << "Error: " << e.what ();
       passed &= false;
     }
+    std::cout << " |" << std::endl;
     delete algo;
   }
   std::cout << "Ended π Test Generator" << std::endl;
