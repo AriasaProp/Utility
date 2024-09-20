@@ -1,10 +1,10 @@
 #include "BigInteger.hpp"
 //#include "clock_adjustment.hpp"
 
-#include <chrono>
-#include <cstdlib>
-#include <cstdio>
 #include <cerrno>
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -134,38 +134,38 @@ bool pi_extraction_test (char *d) {
   std::cout << "|     π    ||    rate    ||   memory  |\n";
   std::cout << "|  digits  || digits/sec ||    byte   |\n";
   std::cout << std::setfill ('-') << std::setw (47) << std::endl;
-  
-  //pi proof
+
+  // pi proof
   char piBuffer[BUFFER_BYTE_SIZE];
   size_t piIndex, piReaded;
   char result;
-  //time proof
-  
+  // time proof
+
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
     std::cout << "| ";
     try {
-    	FILE *fpi = fopen((std::string(d)+std::string("/piDigits.txt")).c_str(), "r");
-      if (!fpi) throw std::logic_error("file not found");
+      FILE *fpi = fopen ((std::string (d) + std::string ("/piDigits.txt")).c_str (), "r");
+      if (!fpi) throw std::logic_error ("file not found");
       unsigned long long generated = 0;
       mem
-      piIndex = 0;
+          piIndex = 0;
       start_timed = std::chrono::high_resolution_clock::now ();
       do {
-      	if (piIndex >= piReaded) {
-      		piIndex = 0;
-      		piReaded = fread(piBuffer, 1, BUFFER_BYTE_SIZE, fpi);
-      	}
-      	if (piReaded == 0) {
-      		if (feof(fpi))
-      			throw std::logic_error("end of file");
-      		if (ferror(fpi))
-      			throw std::logic_error(strerror(errno));
-    			throw std::logic_error("cannot get digits from file");
-      	}
+        if (piIndex >= piReaded) {
+          piIndex = 0;
+          piReaded = fread (piBuffer, 1, BUFFER_BYTE_SIZE, fpi);
+        }
+        if (piReaded == 0) {
+          if (feof (fpi))
+            throw std::logic_error ("end of file");
+          if (ferror (fpi))
+            throw std::logic_error (strerror (errno));
+          throw std::logic_error ("cannot get digits from file");
+        }
         result = algo->extract () + '0';
         if (result != piBuffer[piIndex++]) {
-        	throw std::logic_error("wrong pi result");
+          throw std::logic_error ("wrong pi result");
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
@@ -175,11 +175,10 @@ bool pi_extraction_test (char *d) {
         std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
         std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / std::chrono::duration<long double> (now - start_timed).count ()) << " || ";
         std::cout << std::setfill ('0') << std::setw (9) << algo->size ();
-        
       }
-      fclose(fpi);
+      fclose (fpi);
     } catch (const std::exception &e) {
-      std::cout << std::setfill(' ') << std::setw (43) << std::internal << "Error: " << e.what ();
+      std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e.what ();
       passed &= false;
     }
     std::cout << " |" << std::endl;
