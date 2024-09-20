@@ -20,9 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-
-      - name: Filter Formating Files
-        uses: dorny/paths-filter@v3.0.1
+      - uses: dorny/paths-filter@v3.0.1
         id: files
         with:
           list-files: shell
@@ -39,15 +37,9 @@ jobs:
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
-        continue-on-error: true
         run: |
           sudo apt-get install -y clang-format
           echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
-          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
-          git config --global user.name "AriasaProp"
-          git add .
-          git commit -m "changes of formating"
-          git push
 
       - uses: actions/setup-java@v4.2.1
         with:
@@ -56,6 +48,16 @@ jobs:
           cache: 'gradle'
  
       - uses: gradle/actions/setup-gradle@v3
+      - run: gradle wrapper --gradle-version 8.10.1
+
+      - name: Push Change
+        continue-on-error: true
+        run: |
+          git config --global user.email "ikomangwidiadaariasa12@gmail.com"
+          git config --global user.name "AriasaProp"
+          git add .
+          git commit -m "changes of formating"
+          git push
 
       - if: steps.files.outputs.profiling_util == 'true'
         run: gradle :profiling_util:test

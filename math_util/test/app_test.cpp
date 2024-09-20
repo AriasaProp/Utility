@@ -2,7 +2,7 @@ extern bool BigInteger_test ();
 [[maybe_unused]] extern bool matrix_test ();
 [[maybe_unused]] extern bool ComplexNumber_test ();
 
-extern bool Math_test ();
+extern bool Math_test (char *);
 
 int main (int argv, char *args[]) {
   bool passed = true;
@@ -11,7 +11,7 @@ int main (int argv, char *args[]) {
     passed &= matrix_test ();
     passed &= ComplexNumber_test ();
   */
-  passed &= Math_test ();
+  passed &= Math_test (args[1]);
 
   return !passed;
 }

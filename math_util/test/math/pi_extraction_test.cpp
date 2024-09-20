@@ -121,7 +121,7 @@ public:
 
 #define TIME 10.0
 
-bool pi_extraction_test () {
+bool pi_extraction_test (char *d) {
   std::cout << "Start π Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
@@ -133,6 +133,8 @@ bool pi_extraction_test () {
   std::cout << "-------------------------------------------------------" << std::endl;
   for (base_ex *algo : algos) {
     try {
+    	FILE *fpi = fopen((std::string(d)+std::string("/piDigits.txt")).c_str(), "r");
+      if (!fpi) throw "file not found";
       unsigned long long generated = 0;
       std::chrono::time_point<std::chrono::high_resolution_clock> start_timed = std::chrono::high_resolution_clock::now ();
       std::chrono::time_point<std::chrono::high_resolution_clock> now;
@@ -150,6 +152,7 @@ bool pi_extraction_test () {
         std::cout << std::setfill ('0') << std::setw (9) << algo->size () << " |";
         std::cout << std::endl;
       }
+      fclose(fpi);
     } catch (const std::exception &e) {
       std::cout << "\nError: " << e.what () << std::endl;
       passed &= false;
