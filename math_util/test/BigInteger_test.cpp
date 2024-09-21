@@ -163,8 +163,9 @@ bool BigInteger_test () {
     obj["sqrt"] = _clock.get_clock (profiling::clock_adjustment::period::microseconds);
     // operator end of operator_clock
     std::cout << "Result: " << std::endl;
+    bool first = true;
     for (std::pair<std::string, unsigned long> n : obj) {
-      std::cout << n.first << ": ";
+      std::cout << first?"":", "<< n.first << "(";
       unsigned long T = n.second;
       if (T > 1000) {
         std::cout << T / 1000 << " ms ";
@@ -173,8 +174,10 @@ bool BigInteger_test () {
       if (T) {
         std::cout << T << " us";
       }
-      std::cout << std::endl;
+      std::cout << ")";
+      if (first) first = false;
     }
+    std::cout << std::endl;
   } catch (const char *msg) {
     std::cout << "Error has occure " << msg << std::endl;
   }

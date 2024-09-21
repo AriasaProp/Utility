@@ -1,11 +1,11 @@
 #include "BigInteger.hpp"
 //#include "clock_adjustment.hpp"
 
+#include <cstring>
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -122,7 +122,7 @@ public:
   }
 };
 
-#define TIME 100.0
+#define TIME 1.0  
 #define BUFFER_BYTE_SIZE 4096
 
 bool pi_extraction_test (char *d) {
@@ -132,11 +132,8 @@ bool pi_extraction_test (char *d) {
       new extract_algo (),
       new spigot_algo (250000)};
   // Draw table header
-  std::cout << "|     π    ||    rate    ||   memory  |\n";
-  std::cout << "|  digits  || digits/sec ||    byte   |\n";
-  std::cout.width (47);
-  std::cout.fill ('-');
-  std::cout << std::endl;
+  std::cout << "|   π(digits)   || rate(digits/sec) ||   memory(byte)   |\n";
+  std::cout << "|---------------||------------------||------------------|\n";
 
   // pi proof
   char piBuffer[BUFFER_BYTE_SIZE];
@@ -172,13 +169,13 @@ bool pi_extraction_test (char *d) {
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
-        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
+        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count () ;
       } while (elapsed_time < TIME);
       {
         // print result profiling
-        std::cout << std::setfill ('0') << std::setw (8) << generated << " || ";
-        std::cout << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (2) << ((long double)generated / elapsed_time) << " || ";
-        std::cout << std::setfill ('0') << std::setw (9) << algo->size ();
+        std::cout << std::setfill ('0') << std::setw (13) << generated << " || ";
+        std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
+        std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
       }
       fclose (fpi);
     } catch (const std::exception &e) {
