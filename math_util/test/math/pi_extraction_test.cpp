@@ -1,11 +1,11 @@
 #include "BigInteger.hpp"
 //#include "clock_adjustment.hpp"
 
-#include <cstring>
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -122,7 +122,7 @@ public:
   }
 };
 
-#define TIME 1.0  
+#define TIME 1.0
 #define BUFFER_BYTE_SIZE 4096
 
 bool pi_extraction_test (char *d) {
@@ -169,7 +169,7 @@ bool pi_extraction_test (char *d) {
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
-        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count () ;
+        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
       } while (elapsed_time < TIME);
       {
         // print result profiling
