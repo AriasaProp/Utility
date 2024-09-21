@@ -165,8 +165,10 @@ bool BigInteger_test () {
     std::cout << "Result: " << std::endl;
     bool first = true;
     for (std::pair<std::string, unsigned long> n : obj) {
-    	if (!first) std::cout << ", ";
-    	else first = false;
+      if (!first)
+        std::cout << ", ";
+      else
+        first = false;
       std::cout << n.first << "(";
       unsigned long T = n.second;
       if (T > 1000) {
