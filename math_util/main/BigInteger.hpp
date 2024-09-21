@@ -22,8 +22,8 @@ public:
   // Destructor
   ~BigInteger ();
   // operator casting
-  operator bool () const;
-  operator int () const;
+  explicit operator bool () const;
+  explicit operator int () const;
   // operator double() const;
   char *to_chars () const;
   // math operational function

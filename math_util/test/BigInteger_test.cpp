@@ -165,7 +165,9 @@ bool BigInteger_test () {
     std::cout << "Result: " << std::endl;
     bool first = true;
     for (std::pair<std::string, unsigned long> n : obj) {
-      std::cout << first ? "" : ", " << n.first << "(";
+    	if (!first) std::cout << ", ";
+    	else first = false;
+      std::cout << n.first << "(";
       unsigned long T = n.second;
       if (T > 1000) {
         std::cout << T / 1000 << " ms ";
@@ -175,7 +177,6 @@ bool BigInteger_test () {
         std::cout << T << " us";
       }
       std::cout << ")";
-      if (first) first = false;
     }
     std::cout << std::endl;
   } catch (const char *msg) {
