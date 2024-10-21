@@ -116,7 +116,7 @@ static void mul_word (std::vector<word>::iterator r, const mul_in d) {
     size_t half_len = d.len / 2;
     std::vector<word> re (d.len * 2, 0);
     mul_word (re.begin (), mul_in{half_len, d.a, d.a_end, d.b, d.b_end});
-    mul_word (re.begin () + d.len, mul_in{half_len, d.a + half_len, d.b + half_len, d.b_end});
+    mul_word (re.begin () + d.len, mul_in{half_len, d.a + half_len, d.a_end, d.b + half_len, d.b_end});
   }
 }
 
