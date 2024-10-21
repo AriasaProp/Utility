@@ -75,8 +75,8 @@ public:
           1     1     1     1               1
 e => 1 + --- + --- + --- + ---- + ...... + ----
           1!    2!   3!     4!              n!
-
-          1 > (a*c + d) * 100 /(b*c)
+          
+          1 > d*100
 */
 struct e_algo : public base_ex {
 private:
@@ -89,17 +89,17 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while (((a * c + d) * 100) < (b * c)) {
-      a *= c;
-      a += d;
-      b *= c;
-      ++c;
-    }
-    e = a / b;
-    char result = static_cast<char> ((int)e);
-    a %= b;
-    d *= 10;
-    a *= 10;
+  	while ((d * d * 1000) > (b * c)) {
+  		a *= c;
+  		a += d;
+  		b *= c;
+  		++c;
+  	}
+  	e = a / b;
+  	char result = static_cast<char> ((int)e);
+  	a %= b;
+  	d *= 10;
+  	a *= 10;
     return result;
   }
   const char *testFile () override { return "eDigits.txt"; }
@@ -117,8 +117,8 @@ bool extraction_test (const char *d) {
       new pi_algo (),
       new e_algo ()};
   // Draw table header
-  std::cout << "|     digits    || rate(digits/sec) ||   memory(byte)   |\n";
-  std::cout << "|---------------||------------------||------------------|\n";
+  std::cout << "|    digits    || rate(digits/sec) ||   memory(byte)   |\n";
+  std::cout << "|--------------||------------------||------------------|\n";
 
   // pi proof
   char buff[BUFFER_BYTE_SIZE];
@@ -151,7 +151,7 @@ bool extraction_test (const char *d) {
         }
         result = algo->extract () + '0';
         if (result != buff[piIndex++]) {
-          throw std::logic_error ("wrong pi result");
+          throw std::logic_error ("wrong result");
         }
         ++generated;
         now_timed = std::chrono::high_resolution_clock::now ();
@@ -159,7 +159,7 @@ bool extraction_test (const char *d) {
       } while (elapsed_time < TIME);
       {
         // print result profiling
-        std::cout << std::setfill ('0') << std::setw (13) << generated << " || ";
+        std::cout << std::setfill ('0') << std::setw (12) << generated << " || ";
         std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
         std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
       }
