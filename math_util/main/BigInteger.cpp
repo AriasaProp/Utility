@@ -112,12 +112,12 @@ static void mul_word (std::vector<word>::iterator r, const mul_in d) {
     r2 += a_lo * b_hi;
     r2 >>= WORD_HALF_BITS;
     r2 += a_hi * b_hi;
-  } else {
-    size_t half_len = d.len / 2;
-    std::vector<word> re (d.len * 2, 0);
-    mul_word (re.begin (), {half_len, d.a, d.a_end, d.b, d.b_end});
-    mul_word (re.begin () + d.len, {half_len, d.a + half_len, d.b + half_len, d.b_end});
-  }
+	} else {
+		size_t half_len = d.len / 2;
+		std::vector<word> re(d.len * 2, 0);
+		mul_word(re.begin(), mul_in{half_len, d.a, d.a_end, d.b, d.b_end});
+		mul_word(re.begin() + d.len, mul_in{half_len, d.a+half_len, d.b+half_len, d.b_end});
+	}
 }
 
 // initialize BigInteger functions
