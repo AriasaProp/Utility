@@ -122,7 +122,7 @@ public:
   }
 };
 
-#define TIME 1.0
+#define TIME 10.0
 #define BUFFER_BYTE_SIZE 4096
 
 bool pi_extraction_test (char *d) {
