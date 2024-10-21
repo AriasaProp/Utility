@@ -24,19 +24,19 @@ static int compare (const std::vector<word> &a, const std::vector<word> &b) {
   return 0;
 }
 static word add_a_word (
-    std::vector<word>::iterator i,
-    std::vector<word>::iterator j,
-    word carry = 1) {
-  for (; (i < j) && carry; ++i)
+	std::vector<word>::iterator i, 
+	std::vector<word>::iterator j,
+	word carry = 1) {
+  for (;(i < j) && carry; ++i)
     carry = carry > (*i += carry);
   return carry;
 }
 // a should be greater or equal than carry
-static word sub_a_word (
-    std::vector<word>::iterator i,
-    std::vector<word>::iterator j,
-    word carry = 1) {
-  for (; (i < j) && carry; ++i)
+static word sub_a_word  (
+	std::vector<word>::iterator i, 
+	std::vector<word>::iterator j,
+	word carry = 1) {
+  for (;(i < j) && carry; ++i)
     carry = *i < (*i -= carry);
   return carry;
 }
@@ -399,29 +399,30 @@ BigInteger &BigInteger::operator= (const BigInteger a) {
 // safe operator
 BigInteger &BigInteger::operator-- () {
   if (neg) {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
+    word carry = add_a_word (words.begin(), words.end());
+    if (carry) words.push_back(carry);
   } else {
-    word carry = sub_a_word (words.begin (), words.end ());
+    word carry = sub_a_word (words.begin(), words.end());
     if (carry) {
-      neg = !neg;
-      for (word w : words)
-        w = ~w;
+    	neg = !neg;
+    	for (word w : words)
+    		w = ~w;
     }
+    
   }
   return *this;
 }
 BigInteger &BigInteger::operator++ () {
   if (neg) {
-    word carry = sub_a_word (words.begin (), words.end ());
+    word carry = sub_a_word (words.begin(), words.end());
     if (carry) {
-      neg = !neg;
-      for (word w : words)
-        w = ~w;
+    	neg = !neg;
+    	for (word w : words)
+    		w = ~w;
     }
   } else {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
+    word carry = add_a_word (words.begin(), words.end());
+    if (carry) words.push_back(carry);
   }
   return *this;
 }
@@ -431,16 +432,16 @@ BigInteger &BigInteger::operator+= (const signed b) {
     neg = (b < 0);
     words.push_back (B);
   } else if (neg == (b < 0)) {
-    word carry = add_a_word (words.begin (), words.end (), B);
-    if (carry) words.push_back (carry);
+    word carry = add_a_word (words.begin(), words.end(), B);
+    if (carry) words.push_back(carry);
   } else {
     if ((words.size () > 1) || (words[0] > B)) {
-      word carry = sub_a_word (words.begin (), words.end (), B);
-      if (carry) {
-        neg = !neg;
-        for (word w : words)
-          w = ~w;
-      }
+	    word carry = sub_a_word (words.begin(), words.end(), B);
+	    if (carry) {
+	    	neg = !neg;
+	    	for (word w : words)
+	    		w = ~w;
+	    }
     } else if (words[0] < B) {
       neg = !neg;
       words[0] = B - words[0];
@@ -476,15 +477,16 @@ BigInteger &BigInteger::operator-= (const signed b) {
     neg = (b >= 0);
     words.push_back (B);
   } else if (neg != (b < 0)) {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
+    word carry = add_a_word (words.begin(), words.end());
+    if (carry) words.push_back(carry);
   } else {
-    if ((words.size () > 1) || (words[0] > B))
-      word carry = sub_a_word (words.begin (), words.end (), B);
-    if (carry) {
-      neg = !neg;
-      for (word w : words)
-        w = ~w;
+    if ((words.size () > 1) || (words[0] > B)) {
+      word carry = sub_a_word (words.begin(), words.end(), B);
+	    if (carry) {
+	    	neg = !neg;
+	    	for (word w : words)
+	    		w = ~w;
+	    }
     } else if (words[0] < B) {
       neg = !neg;
       words[0] = B - words[0];
