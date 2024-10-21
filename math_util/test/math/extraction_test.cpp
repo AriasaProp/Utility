@@ -20,7 +20,7 @@ struct base_ex {
   virtual char extract () {
     return -1;
   }
-  virtual const char *testFile () = 0;
+  virtual const char *testFile() = 0;
   virtual size_t size () {
     return sizeof (base_ex);
   }
@@ -65,7 +65,7 @@ public:
 
     return result;
   }
-  const char *testFile () override { return "piDigits.txt"; }
+  const char *testFile() override { return "piDigits.txt"; }
   size_t size () {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
@@ -75,35 +75,35 @@ public:
           1     1     1     1               1
 e => 1 + --- + --- + --- + ---- + ...... + ----
           1!    2!   3!     4!              n!
-
+          
           1 > (a*c + d) * 100 /(b*c)
 */
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 2, // nominator
-      b = 1,        // denominator
-      c = 2,        // counter
-      d = 1,        // base digit
-      e = 0;        // result hold
+	BigInteger a = 2, // nominator
+						 b = 1, // denominator
+						 c = 2, // counter
+						 d = 1, // base digit
+						 e = 0; // result hold
 
 public:
   e_algo () {}
   char extract () override {
-    while (((a * c + d) * 100) < (b * c)) {
-      a *= c;
-      a += d;
-      b *= c;
-      c++;
-    }
-    e = a / b;
-    char result = static_cast<char> ((int)e);
-    a %= b;
-    d *= 10;
-    a *= 10;
+  	while (((a * c + d) * 100) < (b * c)) {
+  		a *= c;
+  		a += d;
+  		b *= c;
+  		++c;
+  	}
+  	e = a / b;
+  	char result = static_cast<char> ((int)e);
+  	a %= b;
+  	d *= 10;
+  	a *= 10;
     return result;
   }
-  const char *testFile () override { return "eDigits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
+  const char *testFile() override { return "eDigits.txt"; }
+  size_t size () { return sizeof(a) + sizeof(b) + sizeof(c) + sizeof(d) + sizeof(e); }
   ~e_algo () {}
 };
 
@@ -131,7 +131,7 @@ bool extraction_test (const char *d) {
   for (base_ex *algo : algos) {
     std::cout << "| ";
     try {
-      sprintf (buff, "%s/%s", d, algo->testFile ());
+    	sprintf(buff, "%s/%s", d, algo->testFile());
       FILE *fpi = fopen (buff, "r");
       if (!fpi) throw std::logic_error ("file not found");
       piIndex = 0;
