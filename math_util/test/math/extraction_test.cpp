@@ -75,7 +75,7 @@ public:
           1     1     1     1               1
 e => 1 + --- + --- + --- + ---- + ...... + ----
           1!    2!   3!     4!              n!
-          
+
           1 > d*100
 */
 struct e_algo : public base_ex {
@@ -89,17 +89,17 @@ private:
 public:
   e_algo () {}
   char extract () override {
-  	while ((d * d * 1000) > (b * c)) {
-  		a *= c;
-  		a += d;
-  		b *= c;
-  		++c;
-  	}
-  	e = a / b;
-  	char result = static_cast<char> ((int)e);
-  	a %= b;
-  	d *= 10;
-  	a *= 10;
+    while ((d * d * 1000) > (b * c)) {
+      a *= c;
+      a += d;
+      b *= c;
+      ++c;
+    }
+    e = a / b;
+    char result = static_cast<char> ((int)e);
+    a %= b;
+    d *= 10;
+    a *= 10;
     return result;
   }
   const char *testFile () override { return "eDigits.txt"; }
