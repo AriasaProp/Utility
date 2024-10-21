@@ -2,7 +2,7 @@ extern bool BigInteger_test ();
 [[maybe_unused]] extern bool matrix_test ();
 [[maybe_unused]] extern bool ComplexNumber_test ();
 
-extern bool Math_test (char *);
+extern bool Math_test (const char *);
 
 int main (int argv, char *args[]) {
   bool passed = true;

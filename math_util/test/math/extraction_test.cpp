@@ -20,13 +20,14 @@ struct base_ex {
   virtual char extract () {
     return -1;
   }
+  virtual const char *testFile() = 0;
   virtual size_t size () {
     return sizeof (base_ex);
   }
   ~base_ex () {}
 };
 
-struct extract_algo : public base_ex {
+struct pi_algo : public base_ex {
 private:
   BigInteger q = 1,
              r = 6,
@@ -36,7 +37,7 @@ private:
              n = 3;
 
 public:
-  extract_algo () {}
+  pi_algo () {}
   char extract () override {
     // do math
     while ((q * 4 + r - t) >= (t * n)) {
@@ -64,79 +65,63 @@ public:
 
     return result;
   }
+  const char *testFile() override { return "piDigits.txt"; }
   size_t size () {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
-  ~extract_algo () {}
+  ~pi_algo () {}
 };
-
-struct spigot_algo : public base_ex {
+/*
+          1     1     1     1               1
+e => 1 + --- + --- + --- + ---- + ...... + ----
+          1!    2!   3!     4!              n!
+          
+          1 > (a*c + d) * 100 /(b*c)
+*/
+struct e_algo : public base_ex {
 private:
-  unsigned int *A;
-  bool growth = false;
-  unsigned int len, predigit = 3, nines = 0;
-  // safe digit for temp result, predigit, nines, result, check
-  // temp
-  unsigned tempResult, x, i;
-  char result;
+	BigInteger a = 2, // nominator
+						 b = 1, // denominator
+						 c = 2, // counter
+						 d = 1, // base digit
+						 e = 0; // result hold
 
 public:
-  spigot_algo (const unsigned int _len) {
-    len = _len + 10;
-    A = new unsigned int[len]{0, 2, 2, 4, 3, 10, 1, 13, 12, 1};
-    std::fill (A + 10, A + len, 20);
-  }
+  e_algo () {}
   char extract () override {
-    if (nines) {
-      --nines;
-      return growth ? 0 : 9;
-    }
-    for (;;) {
-      tempResult = 0;
-      x = 0, i = len;
-      while (--i) {
-        x += 10 * A[i];
-        tempResult = x / (2 * i + 1);
-        A[i] = x % (2 * i + 1);
-        x = tempResult * i;
-      }
-      x += 10 * A[0];
-      A[0] = tempResult % 10;
-      tempResult = x / 10;
-
-      if (tempResult != 9)
-        break;
-
-      ++nines;
-    }
-    growth = (tempResult == 10);
-    result = predigit + growth;
-    predigit = !growth * tempResult;
+  	while (((a * c + d) * 100) < (b * c)) {
+  		a *= c;
+  		a += d;
+  		b *= c;
+  		c++;
+  	}
+  	e = a / b;
+  	char result = static_cast<char> ((int)e);
+  	a %= b;
+  	d *= 10;
+  	a *= 10;
     return result;
   }
-  size_t size () override {
-    return sizeof (this) + sizeof (unsigned int) * len;
-  }
-  ~spigot_algo () {
-    delete[] A;
-  }
+  const char *testFile() override { return "eDigits.txt"; }
+  size_t size () { return sizeof(a) + sizeof(b) + sizeof(c) + sizeof(d) + sizeof(e); }
+  ~e_algo () {}
 };
 
 #define TIME 10.0
 #define BUFFER_BYTE_SIZE 4096
 
-bool pi_extraction_test (char *d) {
-  std::cout << "Start π Extraction Test Generator" << std::endl;
+bool extraction_test (const char *d) {
+  std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
-      new extract_algo (),
-      new spigot_algo (250000)};
+      new pi_algo (),
+      new e_algo ()};
   // Draw table header
-  std::cout << "|   π(digits)   || rate(digits/sec) ||   memory(byte)   |\n";
+  std::cout << "|     digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "|---------------||------------------||------------------|\n";
 
   // pi proof
-  char piBuffer[BUFFER_BYTE_SIZE];
+  char buff[BUFFER_BYTE_SIZE];
   size_t piIndex, piReaded;
   char result;
   unsigned long long generated = 0;
@@ -146,7 +131,8 @@ bool pi_extraction_test (char *d) {
   for (base_ex *algo : algos) {
     std::cout << "| ";
     try {
-      FILE *fpi = fopen ((std::string (d) + std::string ("/piDigits.txt")).c_str (), "r");
+    	sprintf(buff, "%s/%s", d, algo->testFile());
+      FILE *fpi = fopen (buff, "r");
       if (!fpi) throw std::logic_error ("file not found");
       piIndex = 0;
       piReaded = 0;
@@ -154,7 +140,7 @@ bool pi_extraction_test (char *d) {
       do {
         if (piIndex >= piReaded) {
           piIndex = 0;
-          piReaded = fread (piBuffer, 1, BUFFER_BYTE_SIZE, fpi);
+          piReaded = fread (buff, 1, BUFFER_BYTE_SIZE, fpi);
         }
         if (piReaded == 0) {
           if (feof (fpi))
@@ -164,7 +150,7 @@ bool pi_extraction_test (char *d) {
           throw std::logic_error ("cannot get digits from file");
         }
         result = algo->extract () + '0';
-        if (result != piBuffer[piIndex++]) {
+        if (result != buff[piIndex++]) {
           throw std::logic_error ("wrong pi result");
         }
         ++generated;
@@ -185,6 +171,6 @@ bool pi_extraction_test (char *d) {
     std::cout << " |" << std::endl;
     delete algo;
   }
-  std::cout << "Ended π Test Generator" << std::endl;
+  std::cout << "Ended Test Generator" << std::endl;
   return passed;
 }
