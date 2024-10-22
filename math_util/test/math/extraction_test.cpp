@@ -139,6 +139,7 @@ public:
   ~e_algo () {}
 };
 
+
 bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;

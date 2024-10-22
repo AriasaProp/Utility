@@ -48,7 +48,6 @@ jobs:
           cache: 'gradle'
  
       - uses: gradle/actions/setup-gradle@v3
-        with:
 
       - name: Push Change
         continue-on-error: true
