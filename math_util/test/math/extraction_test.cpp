@@ -71,19 +71,19 @@ public:
   ~pi_algo () {}
 };
 /*
-     1     1     1x2     1x2x3           n!
+     2    2x1   2x1x2   2x1x2x3           2xn!
 π = --- + --- + ----- + ------- + ... + -----
      1    1x3   1x3x5   1x3x5x7          odd!
 */
 struct pis_algo : public base_ex {
 private:
-  BigInteger a = 1, // nominator
+  BigInteger a = 2, // nominator
       b = 1,        // denominator
 
       c = 1, // counter
       d = 3, // counter odd
 
-      e = 1, // factorial
+      e = 2, // factorial
 
       g = 1; // base digit
 
@@ -106,9 +106,9 @@ public:
     return result;
   }
   char buff[1024];
-  const char *report () {
-    sprintf (buff, "%d/%d %d, %d", (int)a, (int)b, (int)c, (int)d);
-    return buff;
+  const char *report() {
+  	sprintf(buff, "%d/%d %d, %d", (int)a, (int)b, (int)c, (int)d);
+  	return buff;
   }
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
@@ -199,7 +199,7 @@ bool extraction_test (const char *d) {
       std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
       fclose (fpi);
     } catch (const char *e) {
-      std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e << " - " << ((pis_algo *)algo)->report ();
+      std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e << " - " << ((pis_algo*)algo)->report();
       passed &= false;
     }
     std::cout << " |" << std::endl;
