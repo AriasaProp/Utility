@@ -100,7 +100,7 @@ public:
   		d += 2;
   		++c;
   	}
-  	char result = char(a / b);
+  	char result = (char)int(a / b);
   	a %= b;
   	g *= 10;
   	a *= 10;
@@ -127,7 +127,7 @@ public:
   		b *= c;
   		++c;
   	}
-  	char result = char(a / b)
+  	char result = (char)int(a / b)
   	a %= b;
   	d *= 10;
   	a *= 10;
