@@ -125,8 +125,8 @@ public:
       b *= c;
       ++c;
     }
-    char result = (char)int (a / b)
-        a %= b;
+    char result = (char)int (a / b);
+    a %= b;
     d *= 10;
     a *= 10;
     return result;
