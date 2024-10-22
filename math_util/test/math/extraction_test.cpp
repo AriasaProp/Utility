@@ -10,7 +10,7 @@
 #include <iostream>
 #include <memory>
 
-// Set TIME to 0.0 to reach limit of file digits
+// undef TIME to reach limit of file digits
 #define TIME 10.0
 #define BUFFER_BYTE_SIZE 4096
 
@@ -178,7 +178,7 @@ bool extraction_test (const char *d) {
         result = algo->extract () + '0';
         if (result != buff[piIndex++]) throw "wrong result";
         ++generated;
-#if TIME == 0.0
+#ifndef TIME
       } while (true);
       now_timed = std::chrono::high_resolution_clock::now ();
       elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
