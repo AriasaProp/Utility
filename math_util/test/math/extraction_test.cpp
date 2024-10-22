@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 
+
 // Set TIME to 0.0 to reach limit of file digits
 #define TIME 10.0
 #define BUFFER_BYTE_SIZE 4096
@@ -63,7 +64,7 @@ public:
 
     return result;
   }
-  const char *lbl () override { return "π"; }
+  const char *lbl() override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
@@ -71,7 +72,7 @@ public:
   ~pi_algo () {}
 };
 /*
-     1     1     1x2     1x2x3           n!
+     1     1     1x2     1x2x3           n!      
 π = --- + --- + ----- + ------- + ... + -----
      1    1x3   1x3x5   1x3x5x7          odd!
 */
@@ -79,31 +80,33 @@ struct pis_algo : public base_ex {
 private:
   BigInteger a = 1, // nominator
       b = 1,        // denominator
+      
+      c = 1,        // counter
+      d = 3,        // counter odd
+      
+      e = 1,        // factorial
+      
+      g = 1;        // base digit
 
-      c = 1, // counter
-      d = 3, // counter odd
-
-      e = 1, // factorial
-
-      g = 1; // base digit
 
 public:
   pis_algo () {}
   char extract () override {
-    while ((d * b) < (e * c * g * 1000)) {
-      e *= c;
-      a += e;
-      b *= d;
-
-      d += 2;
-      ++c;
-    }
-    char result = char (a / b);
-    g *= 10;
-    a *= 10;
+  	while ((d*b) < (e*c*g*1000)) {
+  		e *= c;
+  		a += e;
+  		b *= d;
+  		
+  		d += 2;
+  		++c;
+  	}
+  	char result = char(a / b);
+  	a %= b;
+  	g *= 10;
+  	a *= 10;
     return result;
   }
-  const char *lbl () override { return "π"; }
+  const char *lbl() override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~pis_algo () {}
@@ -118,19 +121,19 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 1000) > (b * c)) {
-      a *= c;
-      a += d;
-      b *= c;
-      ++c;
-    }
-    char result = char (a / b)
-        a %= b;
-    d *= 10;
-    a *= 10;
+  	while ((d * d * 1000) > (b * c)) {
+  		a *= c;
+  		a += d;
+  		b *= c;
+  		++c;
+  	}
+  	char result = char(a / b)
+  	a %= b;
+  	d *= 10;
+  	a *= 10;
     return result;
   }
-  const char *lbl () override { return "e"; }
+  const char *lbl() override { return "e"; }
   const char *testFile () override { return "eDigits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
@@ -156,7 +159,7 @@ bool extraction_test (const char *d) {
   long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
-    std::cout << algo->lbl () << "| ";
+    std::cout << algo->lbl() << "| ";
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *fpi = fopen (buff, "r");
