@@ -107,7 +107,7 @@ public:
   }
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof(e) + sizeof(g); }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e) + sizeof (g); }
   ~pis_algo () {}
 };
 struct e_algo : public base_ex {
