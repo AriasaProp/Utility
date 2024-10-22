@@ -106,9 +106,9 @@ public:
     return result;
   }
   char buff[1024];
-  const char *report() {
-  	sprintf(buff, "%d/%d %d, %d", (int)a, (int)b, (int)c, (int)d);
-  	return buff;
+  const char *report () {
+    sprintf (buff, "%d/%d %d, %d", (int)a, (int)b, (int)c, (int)d);
+    return buff;
   }
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
@@ -199,7 +199,7 @@ bool extraction_test (const char *d) {
       std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
       fclose (fpi);
     } catch (const char *e) {
-      std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e << " - " << ((pis_algo*)algo)->report();
+      std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e << " - " << ((pis_algo *)algo)->report ();
       passed &= false;
     }
     std::cout << " |" << std::endl;
