@@ -90,7 +90,7 @@ private:
 public:
   pis_algo () {}
   char extract () override {
-    while ((d * b) > (e * c * g * 1000)) {
+    while ((d * b) < (e * c * g * 1000)) {
       a *= d;
       e *= c;
       a += e;
