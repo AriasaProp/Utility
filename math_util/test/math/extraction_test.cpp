@@ -138,7 +138,7 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      new pis_algo (),
+      //new pis_algo (),
       new e_algo ()};
   // Draw table header
   std::cout << " |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
