@@ -162,6 +162,7 @@ bool extraction_test (const char *d) {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *fpi = fopen (buff, "r");
       if (!fpi) throw "file not found";
+      generated = 0;
       piIndex = 0;
       piReaded = 0;
       start_timed = std::chrono::high_resolution_clock::now ();
