@@ -83,14 +83,12 @@ private:
       c = 1, // counter
       d = 3, // counter odd
 
-      e = 2, // factorial
-
-      g = 1; // base digit
+      e = 2; // factorial
 
 public:
   pis_algo () {}
   char extract () override {
-    while ((d * b) < (e * c * g * 1000000)) {
+    while ((d * b) < (e * c * 1000)) {
       a *= d;
       e *= c;
       a += e;
@@ -100,13 +98,13 @@ public:
     }
     char result = (char)int (a / b);
     a %= b;
-    g *= 10;
     a *= 10;
+    e *= 10;
     return result;
   }
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e) + sizeof (g); }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
   ~pis_algo () {}
 };
 struct e_algo : public base_ex {
