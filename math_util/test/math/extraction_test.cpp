@@ -77,11 +77,11 @@ public:
 */
 struct pis_algo : public base_ex {
 private:
-  BigInteger a = 2928, // nominator
-      b = 945,         // denominator
-      c = 5,           // counter
-      d = 9,           // counter odd
-      e = 48;          // factorial
+  BigInteger a = 2, // nominator
+      b = 1,        // denominator
+      c = 2, // counter
+      d = 3, // counter odd
+      e = 2; // factorial
 
 public:
   pis_algo () {}
