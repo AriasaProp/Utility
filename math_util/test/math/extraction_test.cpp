@@ -99,24 +99,45 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 1, // counter
-      d = 1; // factorial
+      c = 1,        // counter
+      d = 1;        // factorial
+  BigInteger nines = 0;
+  bool growth = false;
+  char safe_before_out, check;
 
 public:
-  root2_algo () {}
+  root2_algo () {
+  	safe_before_out = extract();
+  }
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 250) {
-      d *= c * 2 + 1;
-      a *= c * 4;
-      a += d;
-      b *= c * 4;
-
-      ++c;
-    }
-    char result = (char)int (a / b);
-    a %= b;
-    a *= 10;
-    d *= 10;
+  	if (nines) {
+  		--nines;
+  		return growth ? 0 : '9';
+  	}
+  	growth = false;
+  	for (;;) {
+	    while (b * c < d * (c * 2 + 1) * 250) {
+	    	d *= c * 2 + 1;
+	    	a *= c * 4;
+	    	a += d;
+	    	b *= c * 4;
+	    	++c;
+	    }
+	    check = (char)int (a / b);
+	    a %= b;
+	    a *= 10;
+	    d *= 10;
+	    if (check == 9) {
+	    	++nines;
+	    	continue;
+	    }
+	    if (check > 9) {
+	    	growth = true;
+	    	break;
+	    }
+  	}
+    char result = safe_before_out + growth;
+    safe_before_out = check - (growth * 10);
     return result;
   }
   const char *lbl () override { return "√2"; }
@@ -149,8 +170,7 @@ bool extraction_test (const char *d) {
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *file_digits = fopen (buff, "r");
-      if (!file_digits) [[unlikely]]
-        throw "file not found";
+      if (!file_digits) [[unlikely]] throw "file not found";
       generated = 0;
       digit_index = 0;
       digit_readed = 0;
