@@ -94,16 +94,47 @@ public:
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
 };
+struct root2_algo : public base_ex {
+private:
+  BigInteger a = 1, // nominator
+      b = 2,        // denominator
+      
+      c = 1,        // odd counter
+      d = 1;        // counter
+
+public:
+  root2_algo () {}
+  char extract () override {
+    while (b*8*d*d < a * (c + 1) * (c + 2) * 1000) {
+    	a *= 8 * d * d;
+    	a *= ((c + 1) * (c + 2)) + 1;
+    	b *= 8 * d * d;
+    	
+      c += 2;
+      ++d;
+    }
+    char result = (char)int (a / b);
+    a %= b;
+    a *= 10;
+    return result;
+  }
+  const char *lbl () override { return "√2"; }
+  const char *testFile () override { return "√2Digits.txt"; }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
+  ~root2_algo () {}
+};
 
 bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      new e_algo ()};
+      new e_algo (),
+  		new root2_algo()
+  };
   // Draw table header
-  std::cout << " |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
-  std::cout << "-|--------------||------------------||------------------|\n";
+  std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
+  std::cout << "-----|--------------||------------------||------------------|\n";
 
   // pi proof
   char buff[BUFFER_BYTE_SIZE];
@@ -114,7 +145,7 @@ bool extraction_test (const char *d) {
   long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
-    std::cout << algo->lbl () << "| ";
+    std::cout  << std::setfill (' ') << std::setw (5) << std::internal << algo->lbl () << "| ";
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *fpi = fopen (buff, "r");
