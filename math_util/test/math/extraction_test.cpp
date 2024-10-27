@@ -71,33 +71,34 @@ public:
   ~pi_algo () {}
 };
 /*
-     2    2x1   2x1x2   2x1x2x3           2xn!
-π = --- + --- + ----- + ------- + ... + -----
-     1    1x3   1x3x5   1x3x5x7          odd!
+     4     4     4     4           4*(-1)^n
+π = --- - --- + --- - --- + ... + --------
+     1     3     5     7           odd(n)
 */
 struct pis_algo : public base_ex {
 private:
-  BigInteger a = 2, // nominator
+  BigInteger a = 4, // nominator
       b = 1,        // denominator
-      c = 1,        // counter
+      c = 4,        // counter
       d = 3,        // counter odd
-      e = 2;        // factorial
+      e = 0;        // factorial
+  bool sign = true;
 
 public:
   pis_algo () {}
   char extract () override {
-    while ((d * b) < (e * c * 1000)) {
+    while (d < (c * 1000)) {
       a *= d;
-      e *= c;
-      a += e;
       b *= d;
+      
+      a += c * b;
+      
       d += 2;
-      ++c;
     }
     char result = (char)int (a / b);
     a %= b;
     a *= 10;
-    e *= 10;
+    c *= 10;
     return result;
   }
   const char *lbl () override { return "π"; }
@@ -138,7 +139,7 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      // new pis_algo (),
+      new pis_algo (),
       new e_algo ()};
   // Draw table header
   std::cout << " |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
