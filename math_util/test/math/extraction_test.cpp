@@ -98,18 +98,18 @@ struct root2_algo : public base_ex {
 private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
-      
-      c = 1,        // odd counter
-      d = 1;        // counter
+
+      c = 1, // odd counter
+      d = 1; // counter
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b*8*d*d < a * (c + 1) * (c + 2) * 1000) {
-    	a *= 8 * d * d;
-    	a *= ((c + 1) * (c + 2)) + 1;
-    	b *= 8 * d * d;
-    	
+    while (b * 8 * d * d < a * (c + 1) * (c + 2) * 1000) {
+      a *= 8 * d * d;
+      a *= ((c + 1) * (c + 2)) + 1;
+      b *= 8 * d * d;
+
       c += 2;
       ++d;
     }
@@ -130,8 +130,7 @@ bool extraction_test (const char *d) {
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
-  		new root2_algo()
-  };
+      new root2_algo ()};
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
@@ -145,7 +144,7 @@ bool extraction_test (const char *d) {
   long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
-    std::cout  << std::setfill (' ') << std::setw (5) << std::internal << algo->lbl () << "| ";
+    std::cout << std::setfill (' ') << std::setw (5) << std::internal << algo->lbl () << "| ";
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *fpi = fopen (buff, "r");
