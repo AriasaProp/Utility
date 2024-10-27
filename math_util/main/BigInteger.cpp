@@ -941,8 +941,8 @@ BigInteger BigInteger::operator* (const signed b) const {
     const word b_hi = B >> WORD_HALF_BITS;
     const word b_lo = B & WORD_HALF_MASK;
     word a_hi, a_lo, carry = 0, carry0;
-    for (size_t i = 0; i < words.size (); ++i) {
-      word &wA = words[i];
+    for (size_t i = 0; i < words.size(); ++i) {
+      const word &wA = words[i];
       a_hi = wA >> WORD_HALF_BITS;
       a_lo = wA & WORD_HALF_MASK;
       r[i] = wA * B;
@@ -961,7 +961,7 @@ BigInteger BigInteger::operator* (const signed b) const {
 BigInteger BigInteger::operator* (const BigInteger b) const {
   BigInteger result;
   const std::vector<word> &B = b.words;
-  const size_t na = A.size (), nb = B.size ();
+  const size_t na = words.size (), nb = B.size ();
   if (na && nb) {
     std::vector<word> &a = result.words;
     a.resize (na + nb, 0);
