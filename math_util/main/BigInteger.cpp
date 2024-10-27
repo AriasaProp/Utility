@@ -517,13 +517,13 @@ BigInteger &BigInteger::operator-= (const BigInteger b) {
 }
 BigInteger &BigInteger::operator*= (const signed b) {
   BigInteger r = *this * b;
-  words = std::move(r.words);
+  words = std::move (r.words);
   neg = r.neg;
   return *this;
 }
 BigInteger &BigInteger::operator*= (const BigInteger b) {
   BigInteger r = *this * b;
-  words = std::move(r.words);
+  words = std::move (r.words);
   neg = r.neg;
   return *this;
 }
@@ -932,16 +932,16 @@ BigInteger BigInteger::operator- (const BigInteger b) const {
   return BigInteger (*this) -= b;
 }
 BigInteger BigInteger::operator* (const signed b) const {
-	BigInteger result;
-	if (b && words.size()) {
-		result.neg = neg ^ b < 0;
+  BigInteger result;
+  if (b && words.size ()) {
+    result.neg = neg ^ b < 0;
     std::vector<word> &r = result.words;
-    r.reserve(words.size() + 1);
+    r.reserve (words.size () + 1);
     const word B = word (abs (b));
     const word b_hi = B >> WORD_HALF_BITS;
     const word b_lo = B & WORD_HALF_MASK;
     word a_hi, a_lo, carry = 0, carry0;
-    for (size_t i = 0; i < words.size(); ++i) {
+    for (size_t i = 0; i < words.size (); ++i) {
       word &wA = words[i];
       a_hi = wA >> WORD_HALF_BITS;
       a_lo = wA & WORD_HALF_MASK;
@@ -956,14 +956,14 @@ BigInteger BigInteger::operator* (const signed b) const {
     if (carry)
       r.push_back (carry);
   }
-	return result;
+  return result;
 }
 BigInteger BigInteger::operator* (const BigInteger b) const {
-	BigInteger result;
+  BigInteger result;
   const std::vector<word> &B = b.words;
   const size_t na = A.size (), nb = B.size ();
   if (na && nb) {
-  	std::vector<word> &a = result.words;
+    std::vector<word> &a = result.words;
     a.resize (na + nb, 0);
     a.reserve (na + nb + 1);
     result.neg = neg ^ b.neg;
