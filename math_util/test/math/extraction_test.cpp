@@ -74,11 +74,11 @@ public:
      4     4     4     4           4*(-1)^n
 π = --- - --- + --- - --- + ... + --------
      1     3     5     7           odd(n)
-     
+
      8     8     8      8                  8
 π = --- + --- + --- + ----- + ... + -----------------
      3    35    99    13*15         odd(2n)*odd(2n+1)
-     
+
 f(n) = (4n + 1)(4n + 3)
 */
 struct pis_algo : public base_ex {
@@ -93,7 +93,7 @@ public:
   pis_algo () {}
   char extract () override {
     while ((d * (d + 2)) < (c * 1000)) {
-    	e = d * (d + 2);
+      e = d * (d + 2);
       a *= e;
 
       a += c * b;
