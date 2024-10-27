@@ -92,10 +92,10 @@ public:
       b *= d;
 
       if (sign)
-      	a -= c * b;
+        a -= c * b;
       else
-      	a += c * b;
-      
+        a += c * b;
+
       d += 2;
       sign = !sign;
     }
