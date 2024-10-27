@@ -941,7 +941,7 @@ BigInteger BigInteger::operator* (const signed b) const {
     const word b_hi = B >> WORD_HALF_BITS;
     const word b_lo = B & WORD_HALF_MASK;
     word a_hi, a_lo, carry = 0, carry0;
-    for (size_t i = 0; i < words.size(); ++i) {
+    for (size_t i = 0; i < words.size (); ++i) {
       const word &wA = words[i];
       a_hi = wA >> WORD_HALF_BITS;
       a_lo = wA & WORD_HALF_MASK;
