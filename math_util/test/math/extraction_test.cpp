@@ -90,9 +90,9 @@ public:
     while (d < (c * 1000)) {
       a *= d;
       b *= d;
-      
+
       a += c * b;
-      
+
       d += 2;
     }
     char result = (char)int (a / b);
