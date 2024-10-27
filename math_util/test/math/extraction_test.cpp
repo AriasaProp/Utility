@@ -74,29 +74,33 @@ public:
      4     4     4     4           4*(-1)^n
 π = --- - --- + --- - --- + ... + --------
      1     3     5     7           odd(n)
+     
+     8     8     8      8                  8
+π = --- + --- + --- + ----- + ... + -----------------
+     3    35    99    13*15         odd(2n)*odd(2n+1)
+     
+f(n) = (4n + 1)(4n + 3)
 */
 struct pis_algo : public base_ex {
 private:
-  BigInteger a = 4, // nominator
-      b = 1,        // denominator
-      c = 4,        // counter
-      d = 3;        // factorial
-  bool sign = true;
+  BigInteger a = 8, // nominator
+      b = 3,        // denominator
+      c = 8,        // counter
+      d = 5,        // odd counter
+      e = 0;        // temp
 
 public:
   pis_algo () {}
   char extract () override {
-    while (d < (c * 1000)) {
-      a *= d;
+    e = 
+    while ((d * (d + 2)) < (c * 1000)) {
+    	e = d * (d + 2);
+      a *= e;
 
-      if (sign)
-        a -= c * b;
-      else
-        a += c * b;
+      a += c * b;
 
-      b *= d;
-      d += 2;
-      sign = !sign;
+      b *= e;
+      d += 4;
     }
     char result = (char)int (a / b);
     a %= b;
