@@ -91,9 +91,13 @@ public:
       a *= d;
       b *= d;
 
-      a += c * b;
-
+      if (sign)
+      	a -= c * b;
+      else
+      	a += c * b;
+      
       d += 2;
+      sign = !sign;
     }
     char result = (char)int (a / b);
     a %= b;
