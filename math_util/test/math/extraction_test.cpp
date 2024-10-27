@@ -80,8 +80,7 @@ private:
   BigInteger a = 4, // nominator
       b = 1,        // denominator
       c = 4,        // counter
-      d = 3,        // counter odd
-      e = 0;        // factorial
+      d = 3;        // factorial
   bool sign = true;
 
 public:
@@ -89,13 +88,13 @@ public:
   char extract () override {
     while (d < (c * 1000)) {
       a *= d;
-      b *= d;
 
       if (sign)
         a -= c * b;
       else
         a += c * b;
 
+      b *= d;
       d += 2;
       sign = !sign;
     }
