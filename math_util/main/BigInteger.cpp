@@ -935,13 +935,13 @@ BigInteger BigInteger::operator* (const signed b) const {
   if (b && words.size ()) {
     result.neg = neg ^ (b < 0);
     std::vector<word> &r = result.words;
-    r.resize(words.size());
+    r.resize (words.size ());
     r.reserve (words.size () + 1);
     const word B = word (abs (b));
     const word b_hi = B >> WORD_HALF_BITS;
     const word b_lo = B & WORD_HALF_MASK;
     word a_hi, a_lo, carry = 0, carry0;
-    for (size_t i = 0; i < words.size(); ++i) {
+    for (size_t i = 0; i < words.size (); ++i) {
       const word &wA = words[i];
       a_hi = wA >> WORD_HALF_BITS;
       a_lo = wA & WORD_HALF_MASK;
