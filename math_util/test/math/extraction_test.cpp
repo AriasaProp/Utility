@@ -99,23 +99,24 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 1, // odd counter
-      d = 1; // counter
+      c = 1,        // counter
+      d = 1;        // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * 8 * d * d < a * (c + 1) * (c + 2) * 1000) {
-      a *= d * d * 8;
-      a *= ((c + 1) * (c + 2)) + 1;
-      b *= d * d * 8;
-
-      c += 2;
-      ++d;
+    while (b * c < d * (c * 2 + 1) * 250) {
+    	d *= c * 2 + 1;
+    	a *= c * 4;
+    	a += d;
+    	b *= c * 4;
+    	
+    	++c;
     }
     char result = (char)int (a / b);
     a %= b;
     a *= 10;
+    d *= 10;
     return result;
   }
   const char *lbl () override { return "√2"; }
@@ -137,34 +138,34 @@ bool extraction_test (const char *d) {
 
   // pi proof
   char buff[BUFFER_BYTE_SIZE];
-  size_t piIndex, piReaded;
+  size_t digit_index, digit_readed;
   char result;
   unsigned long long generated = 0;
   // time proof
   long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
-    std::cout << std::setfill (' ') << std::setw (5) << std::internal << algo->lbl () << "| ";
+    std::cout << std::setfill (' ') << std::setw (4) << std::right << algo->lbl () << " | ";
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
-      FILE *fpi = fopen (buff, "r");
-      if (!fpi) throw "file not found";
+      FILE *file_digits = fopen (buff, "r");
+      if (!file_digits) [[unlikely]] throw "file not found";
       generated = 0;
-      piIndex = 0;
-      piReaded = 0;
+      digit_index = 0;
+      digit_readed = 0;
       start_timed = std::chrono::high_resolution_clock::now ();
       do {
-        if (piIndex >= piReaded) {
-          piIndex = 0;
-          piReaded = fread (buff, 1, BUFFER_BYTE_SIZE, fpi);
+        if (digit_index >= digit_readed) {
+          digit_index = 0;
+          digit_readed = fread (buff, 1, BUFFER_BYTE_SIZE, file_digits);
         }
-        if (!piReaded) {
-          if (feof (fpi)) throw "end of file";
-          if (ferror (fpi)) throw strerror (errno);
+        if (!digit_readed) [[unlikely]] {
+          if (feof (file_digits)) throw "end of file";
+          if (ferror (file_digits)) throw strerror (errno);
           throw "cannot get digits from file";
         }
         result = algo->extract () + '0';
-        if (result != buff[piIndex++]) throw "wrong result";
+        if (result != buff[digit_index++]) throw "wrong result";
         ++generated;
 #ifndef TIME
       } while (true);
@@ -179,7 +180,7 @@ bool extraction_test (const char *d) {
       std::cout << std::setfill ('0') << std::setw (12) << generated << " || ";
       std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
       std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
-      fclose (fpi);
+      fclose (file_digits);
     } catch (const char *e) {
       std::cout << std::setfill (' ') << std::setw (43) << std::internal << "Error: " << e << " digits: " << generated;
       passed &= false;
