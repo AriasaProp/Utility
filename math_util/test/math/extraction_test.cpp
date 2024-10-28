@@ -99,18 +99,18 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 1,        // counter
-      d = 1;        // factorial
+      c = 1, // counter
+      d = 1; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
     while (b * c < d * (c * 2 + 1) * 25000) {
-    	d *= c * 2 + 1;
-    	a *= c * 4;
-    	a += d;
-    	b *= c * 4;
-    	++c;
+      d *= c * 2 + 1;
+      a *= c * 4;
+      a += d;
+      b *= c * 4;
+      ++c;
     }
     char result = (char)int (a / b);
     a %= b;
@@ -148,7 +148,8 @@ bool extraction_test (const char *d) {
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *file_digits = fopen (buff, "r");
-      if (!file_digits) [[unlikely]] throw "file not found";
+      if (!file_digits) [[unlikely]]
+        throw "file not found";
       generated = 0;
       digit_index = 0;
       digit_readed = 0;
