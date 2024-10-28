@@ -22,7 +22,7 @@ public:
   // Destructor
   ~BigInteger ();
   // operator casting
-  explicit operator bool () const;
+  operator bool () const;
   explicit operator int () const;
   // operator double() const;
   char *to_chars () const;
