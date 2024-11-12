@@ -5,7 +5,7 @@ extern bool BigInteger_test ();
 extern bool Math_test (const char *);
 
 int main (int argv, char *args[]) {
-  
+
   if (!BigInteger_test ()) return 1;
   /*
     passed &= matrix_test ();

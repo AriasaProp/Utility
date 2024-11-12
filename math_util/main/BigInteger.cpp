@@ -75,7 +75,7 @@ static bool sub_word (wstack &a, const wstack &b) {
     carry += *i < (*i -= c);
     ++i;
   }
-  j = a.cend();
+  j = a.cend ();
   while ((i < j) && carry) {
     carry = *i < (*i -= carry);
     ++i;
