@@ -39,41 +39,50 @@ static bool sub_a_word (wstack &a, word carry = 1) {
       w = ~w;
     return true;
   }
-  while (a.size () && !a.back ()) a.pop_back ();
+  while (a.size () && !a.back ())
+  	a.pop_back ();
   return false;
 }
 // params b shall be same memory as a
 static void add_word (wstack &a, const wstack &b) {
-  size_t i = 0, j = b.size ();
-  if (a.size () < j)
-    a.resize (j, 0);
+	if (a.size () < b.size())
+    a.resize (b.size(), 0);
+  wstack::iterator i = a.begin(), j = b.begin();
+  wstack::const_iterator jend = b.cend();
   word carry = 0, c;
-  while (i < j) {
-    c = b[i]; // because b can be same memory as a
-    carry = carry > (a[i] += carry);
-    carry += c > (a[i] += c);
+  while (j < jend) {
+    c = *(j++); // because b can be same memory as a
+    carry = carry > (*i += carry);
+    carry += c > (*i += c);
     ++i;
   }
-  j = a.size ();
+  j = a.cend();
   while ((i < j) && carry)
-    carry = carry > (a[i++] += carry);
+    carry = carry > (*(i++) += carry);
   if (carry)
     a.push_back (carry);
 }
 // params b shall be same memory as a but it always compare before operation
-static void sub_word (wstack &a, const wstack &b) {
-  size_t i = 0, j = b.size ();
-  word carry = 0;
-  while (i < j) {
-    carry = a[i] < (a[i] -= carry);
-    carry += a[i] < (a[i] -= b[i]);
+static bool sub_word (wstack &a, const wstack &b) {
+	if (a.size () < b.size())
+    a.resize (b.size(), 0);
+  wstack::iterator i = a.begin(), j = b.begin();
+  wstack::const_iterator jend = b.cend();
+  word carry = 0, c;
+  while (j < jend) {
+  	c = *(j++);
+    carry = *i < (*i -= carry);
+    carry += *i < (*i -= c);
     ++i;
   }
-  j = a.size ();
-  while ((i < j) && carry)
-    carry = a[i] < (a[i] -= carry), ++i;
+  if (carry) {
+    for (word &w : a)
+      w = ~w;
+    return true;
+  }
   while (a.size () && !a.back ())
-    a.pop_back ();
+  	a.pop_back ();
+  return false;
 }
 // karatsuba loop
 /*
@@ -415,64 +424,32 @@ BigInteger &BigInteger::operator++ () {
 }
 BigInteger &BigInteger::operator+= (const signed b) {
   const word B = word (abs (b));
-  if (!words.size ()) {
-    neg = (b < 0);
-    words.push_back (B);
-  } else if (neg == (b < 0)) {
+  if (neg == (b < 0))
     add_a_word (words, B);
-  } else {
+  else
     neg ^= sub_a_word (words, B);
-  }
   return *this;
 }
-BigInteger &BigInteger::operator+= (const BigInteger b) {
-  if (neg == b.neg) {
+BigInteger &BigInteger::operator+= (const BigInteger &b) {
+  if (neg == b.neg)
     add_word (words, b.words);
-  } else {
-    int cmp = compare (words, b.words);
-    if (cmp < 0) {
-      wstack t = words;
-      neg = b.neg;
-      words = b.words;
-      sub_word (words, t);
-    } else if (cmp > 0)
-      sub_word (words, b.words);
-    else {
-      neg = false;
-      words.clear ();
-    }
-  }
+  else
+    neg ^= sub_word (words, b.words);
   return *this;
 }
 BigInteger &BigInteger::operator-= (const signed b) {
   const word B = word (abs (b));
-  if (!words.size ()) {
-    neg = (b >= 0);
-    words.push_back (B);
-  } else if (neg != (b < 0)) {
+  if (neg != (b < 0))
     add_a_word (words);
-  } else {
+  else
     neg ^= sub_a_word (words, B);
-  }
   return *this;
 }
-BigInteger &BigInteger::operator-= (const BigInteger b) {
+BigInteger &BigInteger::operator-= (const BigInteger &b) {
   if (neg != b.neg)
     add_word (words, b.words);
-  else {
-    int cmp = compare (words, b.words);
-    if (cmp < 0) {
-      neg = !neg;
-      wstack t = words;
-      words = b.words;
-      sub_word (words, t);
-    } else if (cmp > 0) {
-      sub_word (words, b.words);
-    } else {
-      neg = false;
-      words.clear ();
-    }
-  }
+  else
+    neg ^= sub_word (words, b.words);
   return *this;
 }
 BigInteger &BigInteger::operator*= (const signed b) {
