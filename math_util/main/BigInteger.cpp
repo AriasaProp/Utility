@@ -11,9 +11,11 @@ constexpr size_t WORD_BITS_1 = WORD_BITS - 1;
 constexpr size_t WORD_HALF_BITS = WORD_BITS / 2;
 constexpr word WORD_HALF_MASK = ((word)-1) >> WORD_HALF_BITS;
 
+typedef std::vector<word> wstack;
+
 // private function for repeated use
 //  +1 mean a is greater, -1 mean a is less, 0 mean equal
-static int compare (const std::vector<word> &a, const std::vector<word> &b) {
+static int compare (const wstack &a, const wstack &b) {
   if (a == b) return 0;
   size_t as = a.size (), bs = b.size ();
   if (as != bs)
@@ -23,25 +25,25 @@ static int compare (const std::vector<word> &a, const std::vector<word> &b) {
       return a[as] > b[as] ? +1 : -1;
   return 0;
 }
-static word add_a_word (
-    std::vector<word>::iterator i,
-    std::vector<word>::iterator j,
-    word carry = 1) {
-  for (; (i < j) && carry; ++i)
+static void add_a_word (wstack &a, word carry = 1) {
+  for (wstack::iterator i = a.begin(), j = a.end(); (i < j) && carry; ++i)
     carry = carry > (*i += carry);
-  return carry;
+  if (carry) a.push_back(carry);
 }
 // a should be greater or equal than carry
-static word sub_a_word (
-    std::vector<word>::iterator i,
-    std::vector<word>::iterator j,
-    word carry = 1) {
-  for (; (i < j) && carry; ++i)
+static bool sub_a_word (wstack &a, word carry = 1) {
+  for (wstack::iterator i = a.begin(), j = a.end(); (i < j) && carry; ++i)
     carry = *i < (*i -= carry);
-  return carry;
+  if (carry) {
+  	for (word &w : a)
+  		w = ~w;
+  	return true;
+  }
+  while (a.size() && !a.back()) a.pop_back();
+  return false;
 }
 // params b shall be same memory as a
-static void add_word (std::vector<word> &a, const std::vector<word> &b) {
+static void add_word (wstack &a, const wstack &b) {
   size_t i = 0, j = b.size ();
   if (a.size () < j)
     a.resize (j, 0);
@@ -59,7 +61,7 @@ static void add_word (std::vector<word> &a, const std::vector<word> &b) {
     a.push_back (carry);
 }
 // params b shall be same memory as a but it always compare before operation
-static void sub_word (std::vector<word> &a, const std::vector<word> &b) {
+static void sub_word (wstack &a, const wstack &b) {
   size_t i = 0, j = b.size ();
   word carry = 0;
   while (i < j) {
@@ -94,10 +96,10 @@ mul(a, b):
 */
 struct mul_in {
   size_t len;
-  const std::vector<word>::iterator a, &a_end;
-  const std::vector<word>::iterator b, &b_end;
+  const wstack::iterator a, &a_end;
+  const wstack::iterator b, &b_end;
 };
-static void mul_word (std::vector<word>::iterator r, const mul_in d) {
+static void mul_word (wstack::iterator r, const mul_in d) {
   if (d.len == 1) {
     if (d.a >= d.a_end || d.b >= d.b_end) return;
     const word Ar = *d.a;
@@ -116,7 +118,7 @@ static void mul_word (std::vector<word>::iterator r, const mul_in d) {
     r2 += a_hi * b_hi;
   } else {
     size_t half_len = d.len / 2;
-    std::vector<word> re (d.len * 2, 0);
+    wstack re (d.len * 2, 0);
     mul_word (re.begin (), mul_in{half_len, d.a, d.a_end, d.b, d.b_end});
     mul_word (re.begin () + d.len, mul_in{half_len, d.a + half_len, d.a_end, d.b + half_len, d.b_end});
   }
@@ -161,7 +163,7 @@ BigInteger::BigInteger (const char *c) : neg (false) {
     c++;
   }
 }
-BigInteger::BigInteger (const std::vector<word> v, bool neg = false) : neg (neg), words (v) {}
+BigInteger::BigInteger (const wstack v, bool neg = false) : neg (neg), words (v) {}
 // Destructors
 BigInteger::~BigInteger () {
   words.clear ();
@@ -187,10 +189,10 @@ char *BigInteger::to_chars () const {
   size_t texN = neg ? 1 : 0;
   word rmr, current;
   // grt decimal count
-  std::vector<word> A = words;
+  wstack A = words;
   do {
     rmr = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
+    for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
       current = *cur;
       rmr <<= WORD_HALF_BITS;
       rmr |= current >> WORD_HALF_BITS;
@@ -213,7 +215,7 @@ char *BigInteger::to_chars () const {
   char *tcr = text + texN;
   while (!A.empty ()) {
     rmr = 0;
-    for (std::vector<word>::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
+    for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
       current = *cur;
       rmr <<= WORD_HALF_BITS;
       rmr |= current >> WORD_HALF_BITS;
@@ -243,7 +245,7 @@ BigInteger BigInteger::sqrt () const {
       n++, carry >>= 1;
     if (n & 1)
       n++;
-    std::vector<word> remaining (1, 0), &res = result.words;
+    wstack remaining (1, 0), &res = result.words;
     res.push_back (0);
     size_t i, j;
     const size_t l_shift = WORD_BITS - 2;
@@ -291,7 +293,7 @@ BigInteger BigInteger::pow (size_t exponent) const {
   BigInteger result = *this;
   size_t na = result.words.size ();
   if (na) {
-    std::vector<word> p = result.words, &R = result.words;
+    wstack p = result.words, &R = result.words;
     R.clear ();
     R.push_back (1);
     word A[na * exponent], B[na * exponent];
@@ -398,31 +400,17 @@ BigInteger &BigInteger::operator= (const BigInteger a) {
 }
 // safe operator
 BigInteger &BigInteger::operator-- () {
-  if (neg) {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
-  } else {
-    word carry = sub_a_word (words.begin (), words.end ());
-    if (carry) {
-      neg = !neg;
-      for (word w : words)
-        w = ~w;
-    }
-  }
+  if (neg)
+    add_a_word (words);
+  else
+    neg ^= sub_a_word (words);
   return *this;
 }
 BigInteger &BigInteger::operator++ () {
-  if (neg) {
-    word carry = sub_a_word (words.begin (), words.end ());
-    if (carry) {
-      neg = !neg;
-      for (word w : words)
-        w = ~w;
-    }
-  } else {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
-  }
+  if (neg)
+    neg ^= sub_a_word (words);
+  else
+  	add_a_word (words);
   return *this;
 }
 BigInteger &BigInteger::operator+= (const signed b) {
@@ -431,23 +419,9 @@ BigInteger &BigInteger::operator+= (const signed b) {
     neg = (b < 0);
     words.push_back (B);
   } else if (neg == (b < 0)) {
-    word carry = add_a_word (words.begin (), words.end (), B);
-    if (carry) words.push_back (carry);
+    add_a_word (words, B);
   } else {
-    if ((words.size () > 1) || (words[0] > B)) {
-      word carry = sub_a_word (words.begin (), words.end (), B);
-      if (carry) {
-        neg = !neg;
-        for (word w : words)
-          w = ~w;
-      }
-    } else if (words[0] < B) {
-      neg = !neg;
-      words[0] = B - words[0];
-    } else {
-      neg = false;
-      words.clear ();
-    }
+    neg ^= sub_a_word (words, B);
   }
   return *this;
 }
@@ -457,7 +431,7 @@ BigInteger &BigInteger::operator+= (const BigInteger b) {
   } else {
     int cmp = compare (words, b.words);
     if (cmp < 0) {
-      std::vector<word> t = words;
+      wstack t = words;
       neg = b.neg;
       words = b.words;
       sub_word (words, t);
@@ -476,23 +450,9 @@ BigInteger &BigInteger::operator-= (const signed b) {
     neg = (b >= 0);
     words.push_back (B);
   } else if (neg != (b < 0)) {
-    word carry = add_a_word (words.begin (), words.end ());
-    if (carry) words.push_back (carry);
+    add_a_word (words);
   } else {
-    if ((words.size () > 1) || (words[0] > B)) {
-      word carry = sub_a_word (words.begin (), words.end (), B);
-      if (carry) {
-        neg = !neg;
-        for (word w : words)
-          w = ~w;
-      }
-    } else if (words[0] < B) {
-      neg = !neg;
-      words[0] = B - words[0];
-    } else {
-      neg = false;
-      words.clear ();
-    }
+    neg ^= sub_a_word (words, B);
   }
   return *this;
 }
@@ -503,7 +463,7 @@ BigInteger &BigInteger::operator-= (const BigInteger b) {
     int cmp = compare (words, b.words);
     if (cmp < 0) {
       neg = !neg;
-      std::vector<word> t = words;
+      wstack t = words;
       words = b.words;
       sub_word (words, t);
     } else if (cmp > 0) {
@@ -529,7 +489,7 @@ BigInteger &BigInteger::operator*= (const BigInteger b) {
 }
 BigInteger &BigInteger::operator/= (const signed b) {
   if (!b) throw ("Undefined number cause / 0 !");
-  std::vector<word> rem = words, div{word (abs (b))};
+  wstack rem = words, div{word (abs (b))};
   words.clear ();
   if (compare (rem, div) >= 0) {
     // shifting count
@@ -579,7 +539,7 @@ BigInteger &BigInteger::operator/= (const signed b) {
 BigInteger &BigInteger::operator/= (const BigInteger b) {
   if (!b.words.size ())
     throw ("Undefined number cause / 0 !");
-  std::vector<word> rem = words, div = b.words;
+  wstack rem = words, div = b.words;
   words.clear ();
   if (compare (rem, div) >= 0) {
     // shifting count
@@ -629,7 +589,7 @@ BigInteger &BigInteger::operator/= (const BigInteger b) {
 }
 BigInteger &BigInteger::operator%= (const signed b) {
   if (b != 0) {
-    std::vector<word> &rem = words, div{word (abs (b))};
+    wstack &rem = words, div{word (abs (b))};
     int cmp = compare (rem, div);
     if (cmp >= 0) {
       // shifting count
@@ -676,7 +636,7 @@ BigInteger &BigInteger::operator%= (const signed b) {
 }
 BigInteger &BigInteger::operator%= (const BigInteger b) {
   if (b.words.size ()) {
-    std::vector<word> &rem = words, div = b.words;
+    wstack &rem = words, div = b.words;
     int cmp = compare (rem, div);
     if (cmp >= 0) {
       // shifting count
@@ -726,11 +686,11 @@ BigInteger &operator>>= (BigInteger &a, size_t n_bits) {
   if (n_bits && a.words.size ()) {
     size_t j = n_bits / WORD_BITS;
     if (j < a.words.size ()) {
-      std::vector<word>::iterator carried = a.words.begin ();
+      wstack::iterator carried = a.words.begin ();
       a.words.erase (carried, carried + j);
       n_bits %= WORD_BITS;
       if (n_bits) {
-        std::vector<word>::iterator endCarried = a.words.end () - 1;
+        wstack::iterator endCarried = a.words.end () - 1;
         const size_t r_shift = WORD_BITS - n_bits;
         *carried >>= n_bits;
         while (carried != endCarried) {
@@ -753,8 +713,8 @@ BigInteger &operator<<= (BigInteger &a, size_t bits) {
     size_t n = bits % WORD_BITS;
     if (n) {
       const size_t l_shift = WORD_BITS - n;
-      std::vector<word>::reverse_iterator carried = a.words.rbegin ();
-      std::vector<word>::reverse_iterator endCarried = a.words.rend () - 1;
+      wstack::reverse_iterator carried = a.words.rbegin ();
+      wstack::reverse_iterator endCarried = a.words.rend () - 1;
       word lo = *carried >> l_shift;
       while (carried != endCarried) {
         *carried <<= n;
@@ -934,7 +894,7 @@ BigInteger BigInteger::operator* (const signed b) const {
   BigInteger result;
   if (b && words.size ()) {
     result.neg = neg ^ (b < 0);
-    std::vector<word> &r = result.words;
+    wstack &r = result.words;
     r.resize (words.size ());
     r.reserve (words.size () + 1);
     const word B = word (abs (b));
@@ -960,10 +920,10 @@ BigInteger BigInteger::operator* (const signed b) const {
 }
 BigInteger BigInteger::operator* (const BigInteger b) const {
   BigInteger result;
-  const std::vector<word> &B = b.words;
+  const wstack &B = b.words;
   const size_t na = words.size (), nb = B.size ();
   if (na && nb) {
-    std::vector<word> &a = result.words;
+    wstack &a = result.words;
     a.resize (na + nb, 0);
     a.reserve (na + nb + 1);
     result.neg = neg ^ b.neg;
@@ -1024,11 +984,11 @@ BigInteger operator>> (const BigInteger &A, size_t n_bits) {
   if (n_bits && a.words.size ()) {
     size_t j = n_bits / WORD_BITS;
     if (j < a.words.size ()) {
-      std::vector<word>::iterator carried = a.words.begin ();
+      wstack::iterator carried = a.words.begin ();
       a.words.erase (carried, carried + j);
       n_bits %= WORD_BITS;
       if (n_bits) {
-        std::vector<word>::iterator endCarried = a.words.end () - 1;
+        wstack::iterator endCarried = a.words.end () - 1;
         const size_t r_shift = WORD_BITS - n_bits;
         *carried >>= n_bits;
         while (carried != endCarried) {
@@ -1051,8 +1011,8 @@ BigInteger operator<< (const BigInteger &A, size_t bits) {
   size_t n = bits % WORD_BITS;
   if (n) {
     const size_t l_shift = WORD_BITS - n;
-    std::vector<word>::reverse_iterator carried = a.words.rbegin ();
-    std::vector<word>::reverse_iterator endCarried = a.words.rend () - 1;
+    wstack::reverse_iterator carried = a.words.rbegin ();
+    wstack::reverse_iterator endCarried = a.words.rend () - 1;
     word lo = *carried >> l_shift;
     while (carried != endCarried) {
       *carried <<= n;
@@ -1070,7 +1030,7 @@ BigInteger operator<< (const BigInteger &A, size_t bits) {
 BigInteger operator& (const BigInteger a, const BigInteger b) {
   size_t la = a.words.size (), lb = b.words.size ();
   size_t lu = (la < lb) ? la : lb;
-  std::vector<word> r = a.words;
+  wstack r = a.words;
   r.resize (lu);
   while (lu--) r[lu] &= b.words[lu];
   while (r.size () && !r.back ())
@@ -1080,7 +1040,7 @@ BigInteger operator& (const BigInteger a, const BigInteger b) {
 BigInteger operator| (const BigInteger a, const BigInteger b) {
   size_t la = a.words.size (), lb = b.words.size ();
   size_t lu = (la > lb) ? la : lb;
-  std::vector<word> r = a.words;
+  wstack r = a.words;
   r.resize (lu);
   while (lb--) r[lb] |= b.words[lb];
   return BigInteger (r, a.neg & b.neg);
@@ -1095,10 +1055,10 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     size_t texN = 0;
     word rmr, current;
     // grt decimal count
-    std::vector<word> A = num.words;
+    wstack A = num.words;
     do {
       rmr = 0;
-      for (std::vector<word>::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
+      for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
         current = *cur;
         rmr <<= WORD_HALF_BITS;
         rmr |= current >> WORD_HALF_BITS;
@@ -1120,7 +1080,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     char *tcr = text + texN;
     do {
       rmr = 0;
-      for (std::vector<word>::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
+      for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
         current = *cur;
         rmr <<= WORD_HALF_BITS;
         rmr |= current >> WORD_HALF_BITS;
