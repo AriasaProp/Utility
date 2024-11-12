@@ -49,9 +49,9 @@ public:
   BigInteger &operator-- ();
   BigInteger &operator++ ();
   BigInteger &operator+= (const signed);
-  BigInteger &operator+= (const BigInteger&);
+  BigInteger &operator+= (const BigInteger &);
   BigInteger &operator-= (const signed);
-  BigInteger &operator-= (const BigInteger&);
+  BigInteger &operator-= (const BigInteger &);
   BigInteger &operator*= (const signed);
   BigInteger &operator*= (const BigInteger);
   BigInteger &operator/= (const signed);
