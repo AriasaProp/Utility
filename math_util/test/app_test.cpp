@@ -5,13 +5,13 @@ extern bool BigInteger_test ();
 extern bool Math_test (const char *);
 
 int main (int argv, char *args[]) {
-  bool passed = true;
-  passed &= BigInteger_test ();
+  
+  if (!BigInteger_test ()) return 1;
   /*
     passed &= matrix_test ();
     passed &= ComplexNumber_test ();
   */
-  passed &= Math_test (args[1]);
+  if (!Math_test (args[1])) return 1;
 
-  return !passed;
+  return 0;
 }

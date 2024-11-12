@@ -66,16 +66,17 @@ static void add_word (wstack &a, const wstack &b) {
 static bool sub_word (wstack &a, const wstack &b) {
   if (a.size () < b.size ())
     a.resize (b.size (), 0);
-  wstack::iterator i = a.begin (), iend = a.end ();
+  wstack::iterator i = a.begin ();
   wstack::const_iterator jend = b.end (), j = b.begin ();
-  word carry = 0, c, d;
+  word carry = 0, c;
   while (j < jend) {
     c = *(j++);
     carry = *i < (*i -= carry);
     carry += *i < (*i -= c);
     ++i;
   }
-  while ((i < iend) && carry) {
+  j = a.cend();
+  while ((i < j) && carry) {
     carry = *i < (*i -= carry);
     ++i;
   }
