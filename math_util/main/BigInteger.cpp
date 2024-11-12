@@ -40,15 +40,15 @@ static bool sub_a_word (wstack &a, word carry = 1) {
     return true;
   }
   while (a.size () && !a.back ())
-  	a.pop_back ();
+    a.pop_back ();
   return false;
 }
 // params b shall be same memory as a
 static void add_word (wstack &a, const wstack &b) {
-	if (a.size () < b.size())
-    a.resize (b.size(), 0);
-  wstack::iterator i = a.begin();
-  wstack::const_iterator jend = b.end(), j = b.begin();
+  if (a.size () < b.size ())
+    a.resize (b.size (), 0);
+  wstack::iterator i = a.begin ();
+  wstack::const_iterator jend = b.end (), j = b.begin ();
   word carry = 0, c;
   while (j < jend) {
     c = *(j++); // because b can be same memory as a
@@ -56,7 +56,7 @@ static void add_word (wstack &a, const wstack &b) {
     carry += c > (*i += c);
     ++i;
   }
-  j = a.cend();
+  j = a.cend ();
   while ((i < j) && carry)
     carry = carry > (*(i++) += carry);
   if (carry)
@@ -64,16 +64,16 @@ static void add_word (wstack &a, const wstack &b) {
 }
 // params b shall be same memory as a but it always compare before operation
 static bool sub_word (wstack &a, const wstack &b) {
-	if (a.size () < b.size())
-    a.resize (b.size(), 0);
-  wstack::iterator i = a.begin();
-  wstack::const_iterator jend = b.end(), j = b.begin();
+  if (a.size () < b.size ())
+    a.resize (b.size (), 0);
+  wstack::iterator i = a.begin ();
+  wstack::const_iterator jend = b.end (), j = b.begin ();
   word carry = 0, c, d;
   while (j < jend) {
-  	c = *(j++);
-  	d = *i;
+    c = *(j++);
+    d = *i;
     carry = d < (*i -= carry);
-  	d = *i;
+    d = *i;
     carry += d < (*i -= c);
     ++i;
   }
@@ -83,7 +83,7 @@ static bool sub_word (wstack &a, const wstack &b) {
     return true;
   }
   while (a.size () && !a.back ())
-  	a.pop_back ();
+    a.pop_back ();
   return false;
 }
 // karatsuba loop
