@@ -26,20 +26,20 @@ static int compare (const wstack &a, const wstack &b) {
   return 0;
 }
 static void add_a_word (wstack &a, word carry = 1) {
-  for (wstack::iterator i = a.begin(), j = a.end(); (i < j) && carry; ++i)
+  for (wstack::iterator i = a.begin (), j = a.end (); (i < j) && carry; ++i)
     carry = carry > (*i += carry);
-  if (carry) a.push_back(carry);
+  if (carry) a.push_back (carry);
 }
 // a should be greater or equal than carry
 static bool sub_a_word (wstack &a, word carry = 1) {
-  for (wstack::iterator i = a.begin(), j = a.end(); (i < j) && carry; ++i)
+  for (wstack::iterator i = a.begin (), j = a.end (); (i < j) && carry; ++i)
     carry = *i < (*i -= carry);
   if (carry) {
-  	for (word &w : a)
-  		w = ~w;
-  	return true;
+    for (word &w : a)
+      w = ~w;
+    return true;
   }
-  while (a.size() && !a.back()) a.pop_back();
+  while (a.size () && !a.back ()) a.pop_back ();
   return false;
 }
 // params b shall be same memory as a
@@ -410,7 +410,7 @@ BigInteger &BigInteger::operator++ () {
   if (neg)
     neg ^= sub_a_word (words);
   else
-  	add_a_word (words);
+    add_a_word (words);
   return *this;
 }
 BigInteger &BigInteger::operator+= (const signed b) {
