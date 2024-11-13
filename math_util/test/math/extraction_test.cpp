@@ -208,6 +208,6 @@ bool extraction_test (const char *d) {
     delete algo;
   }
   std::cout << "Ended Test Generator" << std::endl;
-  std::cout << out.str();
+  std::cout << out.str ();
   return passed;
 }
