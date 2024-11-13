@@ -8,6 +8,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <memory>
 
 // undef TIME to reach limit of file digits
@@ -25,6 +26,7 @@ struct base_ex {
   }
   ~base_ex () {}
 };
+static std::stringstream out;
 struct pi_algo : public base_ex {
 private:
   BigInteger q = 1,
@@ -33,30 +35,46 @@ private:
              k = 2,
              l = 5,
              n = 3;
-
 public:
-  pi_algo () {}
+  pi_algo () {
+  	out << "q:" << q << "\n";
+  	out << "r:" << r << "\n";
+  	out << "t:" << t << "\n";
+  	out << "k:" << k << "\n";
+  	out << "l:" << l << "\n";
+  	out << "n:" << n << "\n";
+  }
   char extract () override {
     // do math
     while ((q * 4 + r - t) >= (t * n)) {
+    	out << "loop? " << (q * 4 + r - t) << " >= " << (t * n) << "\n";
       t *= l;
+  		out << "t*=l:" << t << "\n";
       n = q * (k * 7 + 2);
       n += r * l;
       n /= t;
+  		out << "n=(q(k7+2)+rl) / t:" << n << "\n";
       r += q * 2;
       r *= l;
+  		out << "r=(r+q2)l:" << r << "\n";
       q *= k;
+  		out << "q*=k:" << q << "\n";
       ++k;
+  		out << "++k:" << k << "\n";
       l += 2;
+  		out << "l+=2:" << l << "\n";
     }
     char result = static_cast<char> ((int)n);
+    out << "result:" << (result + '0') << "\n";
     q *= 10;
+  	out << "q10:" << q << "\n";
     r -= t * n;
     r *= 10;
+  	out << "r=(r-tn)10:" << r << "\n";
     n = q * 3;
     n += r;
     n /= t;
-
+  	out << "n=(q3+r)/t:" << n << "\n";
     return result;
   }
   const char *lbl () override { return "π"; }
@@ -189,5 +207,6 @@ bool extraction_test (const char *d) {
     delete algo;
   }
   std::cout << "Ended Test Generator" << std::endl;
+  std::cout << out.c_str();
   return passed;
 }
