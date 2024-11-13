@@ -64,8 +64,8 @@ static void add_word (wstack &a, const wstack &b) {
 }
 // params b shall be same memory as a but it always compare before operation
 static bool sub_word (wstack &a, const wstack &b) {
-  if (a.size () < (b.size () + 1))
-    a.resize (b.size () + 1, 0);
+  if (a.size () < b.size ())
+    a.resize (b.size (), 0);
   wstack::iterator i = a.begin ();
   wstack::const_iterator jend = b.end (), j = b.begin ();
   word carry = 0, c;
@@ -75,14 +75,14 @@ static bool sub_word (wstack &a, const wstack &b) {
     carry += *i < (*i -= c);
     ++i;
   }
-  j = a.cend ();
+  j = a.cend();
   while ((i < j) && carry) {
     carry = *i < (*i -= carry);
     ++i;
   }
   if (carry) {
     for (word &w : a)
-      w = (~w + 1);
+      carry = !(w = ~w + carry);
     return true;
   }
   while (a.size () && !a.back ())
@@ -1058,7 +1058,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = new char[texN + 1];
+    char *text = new char[texN+1];
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
