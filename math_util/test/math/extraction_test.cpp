@@ -69,22 +69,22 @@ public:
 struct pi_clone : public base_ex {
 private:
   BigInteger a = 2, b = 1,
-  					 c = 2,
-  					 d = 1,
-  					 e = 3;
+             c = 2,
+             d = 1,
+             e = 3;
 
 public:
   pi_clone () {}
   char extract () override {
-  	while (c*1000 > b*e) {
-  		a *= e;
-  		b *= e;
-  		c *= d;
-  		a += c * e;
-  		++d;
-  		e += 2;
-  	}
-  	char result = (char)int (a.div_mod(b));
+    while (c * 1000 > b * e) {
+      a *= e;
+      b *= e;
+      c *= d;
+      a += c * e;
+      ++d;
+      e += 2;
+    }
+    char result = (char)int (a.div_mod (b));
     d *= 10;
     a *= 10;
     return result;
@@ -113,7 +113,7 @@ public:
       b *= c;
       ++c;
     }
-    char result = (char)int (a.div_mod(b));
+    char result = (char)int (a.div_mod (b));
     d *= 10;
     a *= 10;
     return result;
@@ -141,7 +141,7 @@ public:
       b *= c * 4;
       ++c;
     }
-    char result = (char)int (a.div_mod(b));
+    char result = (char)int (a.div_mod (b));
     a *= 10;
     d *= 10;
     return result;
