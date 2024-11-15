@@ -29,8 +29,8 @@ public:
   /** math operational function **/
   BigInteger sqrt () const;
   BigInteger pow (size_t) const;
-  //returning division result and this has remaining
-  BigInteger div_mod(const BigInteger);
+  // returning division result and this has remaining
+  BigInteger div_mod (const BigInteger);
   /** re-initialize operational function **/
   BigInteger &operator= (const signed);
   BigInteger &operator= (const BigInteger);
@@ -51,9 +51,9 @@ public:
   BigInteger &operator-- ();
   BigInteger &operator++ ();
   BigInteger &operator+= (const signed);
-  BigInteger &operator+= (const BigInteger&);
+  BigInteger &operator+= (const BigInteger &);
   BigInteger &operator-= (const signed);
-  BigInteger &operator-= (const BigInteger&);
+  BigInteger &operator-= (const BigInteger &);
   BigInteger &operator*= (const signed);
   BigInteger &operator*= (const BigInteger);
   BigInteger &operator/= (const signed);
