@@ -75,7 +75,7 @@ static bool sub_word (wstack &a, const wstack &b) {
     carry += *i < (*i -= c);
     ++i;
   }
-  j = a.cend();
+  j = a.cend ();
   while ((i < j) && carry) {
     carry = *i < (*i -= carry);
     ++i;
@@ -395,12 +395,12 @@ BigInteger BigInteger::pow (size_t exponent) const {
   return result;
 }
 // returning division result and this has remaining
-BigInteger BigInteger::div_mod(const BigInteger b) {
+BigInteger BigInteger::div_mod (const BigInteger b) {
   if (!b.words.size ())
     throw ("Undefined number cause / 0 !");
-	BigInteger res;
-	wstack &r = res.words;
-	const wstack div = b.words;
+  BigInteger res;
+  wstack &r = res.words;
+  const wstack div = b.words;
   if (compare (words, div) >= 0) {
     // shifting count
     size_t i = div.size ();
@@ -442,8 +442,8 @@ BigInteger BigInteger::div_mod(const BigInteger b) {
     while (r.size () && !r.back ())
       r.pop_back ();
   }
-  res.neg = r.size() ? neg ^ b.neg : false;
-	return res;
+  res.neg = r.size () ? neg ^ b.neg : false;
+  return res;
 }
 /** re-initialize **/
 BigInteger &BigInteger::operator= (const signed a) {
@@ -1111,7 +1111,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = new char[texN+1];
+    char *text = new char[texN + 1];
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
