@@ -26,7 +26,6 @@ struct base_ex {
   }
   ~base_ex () {}
 };
-static std::stringstream out;
 struct pi_algo : public base_ex {
 private:
   BigInteger q = 1,
@@ -37,45 +36,27 @@ private:
              n = 3;
 
 public:
-  pi_algo () {
-    out << "q:" << q << "\n";
-    out << "r:" << r << "\n";
-    out << "t:" << t << "\n";
-    out << "k:" << k << "\n";
-    out << "l:" << l << "\n";
-    out << "n:" << n << "\n";
-  }
+  pi_algo () {}
   char extract () override {
     // do math
-    while ((q * 4 + r - t) >= (t * n)) {
-      out << "loop? " << (q * 4 + r - t) << " >= " << (t * n) << "\n";
+    while (q * 4 + r - t >= t * n) {
       t *= l;
-      out << "t*=l:" << t << "\n";
       n = q * (k * 7 + 2);
       n += r * l;
       n /= t;
-      out << "n=(q(k7+2)+rl) / t:" << n << "\n";
       r += q * 2;
       r *= l;
-      out << "r=(r+q2)l:" << r << "\n";
       q *= k;
-      out << "q*=k:" << q << "\n";
       ++k;
-      out << "++k:" << k << "\n";
       l += 2;
-      out << "l+=2:" << l << "\n";
     }
     char result = static_cast<char> ((int)n);
-    out << "result:" << (result + '0') << "\n";
     q *= 10;
-    out << "q10:" << q << "\n";
     r -= t * n;
     r *= 10;
-    out << "r=(r-tn)10:" << r << "\n";
     n = q * 3;
     n += r;
     n /= t;
-    out << "n=(q3+r)/t:" << n << "\n";
     return result;
   }
   const char *lbl () override { return "π"; }
@@ -84,6 +65,37 @@ public:
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
   ~pi_algo () {}
+};
+struct pi_clone : public base_ex {
+private:
+  BigInteger a = 2, b = 1,
+  					 c = 2,
+  					 d = 1,
+  					 e = 3;
+
+public:
+  pi_clone () {}
+  char extract () override {
+  	while (c*1000 > b*e) {
+  		a *= e;
+  		b *= e;
+  		c *= d;
+  		a += c * e;
+  		++d;
+  		e += 2;
+  	}
+  	char result = (char)int (a / b);
+    a %= b;
+    d *= 10;
+    a *= 10;
+    return result;
+  }
+  const char *lbl () override { return "π"; }
+  const char *testFile () override { return "piDigits.txt"; }
+  size_t size () {
+    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e);
+  }
+  ~pi_clone () {}
 };
 
 struct e_algo : public base_ex {
@@ -148,6 +160,7 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
+      new pi_clone (),
       new e_algo (),
       new root2_algo ()};
   // Draw table header
@@ -208,6 +221,5 @@ bool extraction_test (const char *d) {
     delete algo;
   }
   std::cout << "Ended Test Generator" << std::endl;
-  std::cout << out.str ();
   return passed;
 }
