@@ -67,10 +67,10 @@ public:
   ~pi_algo () {}
 };
 /*
-     4*2   4*6   4*10   4*14
+      8     8      8      8
 π =  --- + --- + ---- + ----- + -----
      1*3   5*7   9*11   13*15
-         16x + 8
+            8
 π = £ -------------
       (4x+1)(4x+3)
 
@@ -79,27 +79,26 @@ public:
 struct pi_clone : public base_ex {
 private:
   BigInteger a = 8, b = 3,
-             c = 24,
+             c = 8,
              d = 5,
-             e, f = 1;
+             e;
 
 public:
   pi_clone () {}
   char extract () override {
     while (c * 10000 > d * (d + 2)) {
-      e = d * (d + 2);
-
+    	e = d * (d + 2);
+    	
       a *= e;
-      a += c * f * b;
-
+      a += c * b;
+      
       b *= e;
-
+      
       d += 4;
-      c += 16;
     }
     char result = (char)int (a.div_mod (b));
     a *= 10;
-    f *= 10;
+    c *= 10;
     return result;
   }
   const char *lbl () override { return "π"; }
