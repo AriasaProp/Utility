@@ -81,25 +81,26 @@ private:
   BigInteger a = 8, b = 3,
              c = 24,
              d = 5,
-             e;
+             e, f = 1;
 
 public:
   pi_clone () {}
   char extract () override {
-    while (c * 10000 > d * (d + 2)) {
-      e = d * (d + 2);
-
+    while (c*10000 > d*(d+2)) {
+    	e = d*(d+2);
+    	
+    	
       a *= e;
-      a += c * b;
-
+      a += c * f * b;
+      
       b *= e;
-
+      
       d += 4;
       c += 16;
     }
     char result = (char)int (a.div_mod (b));
     a *= 10;
-    c *= 10;
+    f *= 10;
     return result;
   }
   const char *lbl () override { return "π"; }
