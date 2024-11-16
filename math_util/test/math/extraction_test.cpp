@@ -73,6 +73,9 @@ public:
             8
 π = £ -------------
       (4x+1)(4x+3)
+       8((8x+5)(8x+7) + (8x+1)(8x+3))
+π = £ -------------------------------
+         (8x+1)(8x+3)(8x+5)(8x+7)
 
 
 */
@@ -81,20 +84,17 @@ private:
   BigInteger a = 8, b = 3,
              c = 8,
              d = 5,
-             e;
-
+             e = 7;
+ 
 public:
   pi_clone () {}
   char extract () override {
-    while (c * 10000 > d * (d + 2)) {
-      e = d * (d + 2);
-
-      a *= e;
+    while (c * 1000000 > d * e) {
+      a *= d * e;
       a += c * b;
-
-      b *= e;
-
+      b *= d * e;
       d += 4;
+      e += 4;
     }
     char result = (char)int (a.div_mod (b));
     a *= 10;
