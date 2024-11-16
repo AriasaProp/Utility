@@ -86,14 +86,15 @@ private:
 public:
   pi_clone () {}
   char extract () override {
-    while (c * 10000 > d * (d + 2)) {
-      e = d * (d + 2);
-
+    while (c*10000 > d*(d+2)) {
+    	e = d*(d+2);
+    	
+    	
       a *= e;
-      b *= e;
-
       a += c * b;
-
+      
+      b *= e;
+      
       d += 4;
       c += 16;
     }
