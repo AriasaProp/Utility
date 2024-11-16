@@ -85,7 +85,7 @@ private:
              c = 8,
              d = 5,
              e = 7;
- 
+
 public:
   pi_clone () {}
   char extract () override {
