@@ -68,10 +68,10 @@ public:
 };
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 65, // nominator
-      b = 24,        // denominator
-      c = 5,         // counter
-      d = 1;         // base digit
+  BigInteger a = 2, // nominator
+      b = 1,        // denominator
+      c = 2,        // counter
+      d = 1;        // base digit
 
 public:
   e_algo () {}
@@ -95,11 +95,11 @@ public:
 };
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 319, // nominator
-      b = 256,        // denominator
+  BigInteger a = 1, // nominator
+      b = 2,        // denominator
 
-      c = 4,   // counter
-      d = 105; // factorial
+      c = 1, // counter
+      d = 1; // factorial
 
 public:
   root2_algo () {}
