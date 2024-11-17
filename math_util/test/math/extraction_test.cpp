@@ -66,49 +66,6 @@ public:
   }
   ~pi_algo () {}
 };
-/*
-      8     8      8      8
-π =  --- + --- + ---- + ----- + -----
-     1*3   5*7   9*11   13*15
-            8
-π = £ -------------
-      (4x+1)(4x+3)
-       8((8x+5)(8x+7) + (8x+1)(8x+3))
-π = £ -------------------------------
-         (8x+1)(8x+3)(8x+5)(8x+7)
-
-
-*/
-struct pi_clone : public base_ex {
-private:
-  BigInteger a = 8, b = 3,
-             c = 8,
-             d = 5,
-             e = 7;
-
-public:
-  pi_clone () {}
-  char extract () override {
-    while (c * 1000000 > d * e) {
-      a *= d * e;
-      a += c * b;
-      b *= d * e;
-      d += 4;
-      e += 4;
-    }
-    char result = (char)int (a.div_mod (b));
-    a *= 10;
-    c *= 10;
-    return result;
-  }
-  const char *lbl () override { return "π"; }
-  const char *testFile () override { return "piDigits.txt"; }
-  size_t size () {
-    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e);
-  }
-  ~pi_clone () {}
-};
-
 struct e_algo : public base_ex {
 private:
   BigInteger a = 2, // nominator
@@ -154,8 +111,9 @@ public:
       ++c;
     }
     char result = (char)int (a.div_mod (b));
-    a *= 10;
-    d *= 10;
+    a *= 5;
+    d *= 5;
+    b /= 2;
     return result;
   }
   const char *lbl () override { return "√2"; }
@@ -169,7 +127,6 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      new pi_clone (),
       new e_algo (),
       new root2_algo ()};
   // Draw table header
