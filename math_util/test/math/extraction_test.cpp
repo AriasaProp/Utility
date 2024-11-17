@@ -76,7 +76,7 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 10) > (b * c)) {
+    while ((d * d * 100) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
@@ -104,7 +104,7 @@ private:
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 250) {
+    while (b * c < d * (c * 2 + 1) * 2500) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
@@ -114,7 +114,7 @@ public:
     char result = (char)int (a.div_mod (b));
     a *= 5;
     d *= 5;
-    b >>= 2;
+    b >>= 1;
     return result;
   }
   const char *lbl () override { return "√2"; }
