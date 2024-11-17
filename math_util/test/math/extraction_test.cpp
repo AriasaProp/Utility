@@ -90,7 +90,6 @@ public:
     char result = (char)int (a.div_mod (b));
     d *= 10;
     a *= 10;
-    b >>= 1;
     return result;
   }
   const char *lbl () override { return "e"; }
@@ -103,13 +102,13 @@ private:
   BigInteger a = 957, // nominator
       b = 768,        // denominator
 
-      c = 4,   // counter
+      c = 4, // counter
       d = 105; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 25) {
+    while (b * c < d * (c * 2 + 1) * 250) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
