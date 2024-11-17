@@ -103,7 +103,7 @@ private:
   BigInteger a = 957, // nominator
       b = 768,        // denominator
 
-      c = 4, // counter
+      c = 4,   // counter
       d = 105; // factorial
 
 public:
