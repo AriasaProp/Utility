@@ -70,13 +70,13 @@ struct e_algo : public base_ex {
 private:
   BigInteger a = 65, // nominator
       b = 24,        // denominator
-      c = 5,         // counter
-      d = 1;         // base digit
+      c = 5,        // counter
+      d = 1;        // base digit
 
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 100) > (b * c)) {
+    while ((d * d * 1000) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
@@ -98,13 +98,13 @@ private:
   BigInteger a = 319, // nominator
       b = 256,        // denominator
 
-      c = 4,   // counter
+      c = 4, // counter
       d = 105; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 2500) {
+    while (b * c < d * (c * 2 + 1) * 25000) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
