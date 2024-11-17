@@ -68,23 +68,24 @@ public:
 };
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 2, // nominator
-      b = 1,        // denominator
-      c = 2,        // counter
+  BigInteger a = 65, // nominator
+      b = 24,        // denominator
+      c = 5,        // counter
       d = 1;        // base digit
 
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 1000) > (b * c)) {
+    while ((d * d * 10) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
       ++c;
     }
     char result = (char)int (a.div_mod (b));
-    d *= 10;
-    a *= 10;
+    d *= 5;
+    a *= 5;
+    b >>= 1;
     return result;
   }
   const char *lbl () override { return "e"; }
@@ -94,16 +95,16 @@ public:
 };
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 1, // nominator
-      b = 2,        // denominator
+  BigInteger a = 319, // nominator
+      b = 256,        // denominator
 
-      c = 1, // counter
-      d = 1; // factorial
+      c = 4, // counter
+      d = 105; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 25000) {
+    while (b * c < d * (c * 2 + 1) * 250) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
@@ -113,7 +114,7 @@ public:
     char result = (char)int (a.div_mod (b));
     a *= 5;
     d *= 5;
-    b /= 2;
+    b >>= 2;
     return result;
   }
   const char *lbl () override { return "√2"; }
