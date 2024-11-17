@@ -102,13 +102,13 @@ private:
   BigInteger a = 957, // nominator
       b = 768,        // denominator
 
-      c = 4,   // counter
+      c = 4, // counter
       d = 105; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 250) {
+    while (b * c < d * (c * 2 + 1) * 2500) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
