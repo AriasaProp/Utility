@@ -66,6 +66,11 @@ public:
   }
   ~pi_algo () {}
 };
+/*
+      x+1
+e = ------
+      x!
+*/
 struct e_algo : public base_ex {
 private:
   BigInteger a = 2, // nominator
@@ -76,15 +81,15 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 1000) > (b * c)) {
+    while ((d * d * 500) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
       ++c;
     }
     char result = (char)int (a.div_mod (b));
-    d *= 5;
-    a *= 5;
+    d *= 10;
+    a *= 10;
     b >>= 1;
     return result;
   }
@@ -95,16 +100,16 @@ public:
 };
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 1, // nominator
-      b = 2,        // denominator
+  BigInteger a = 957, // nominator
+      b = 768,        // denominator
 
-      c = 1, // counter
-      d = 1; // factorial
+      c = 4, // counter
+      d = 105; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 25000) {
+    while (b * c < d * (c * 2 + 1) * 25) {
       d *= c * 2 + 1;
       a *= c * 4;
       a += d;
