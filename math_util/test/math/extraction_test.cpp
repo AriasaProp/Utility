@@ -75,8 +75,8 @@ struct e_algo : public base_ex {
 private:
   BigInteger a = 2982250, // nominator
       b = 1088640,        // denominator
-      c = 9,        // counter
-      d = 1;        // base digit
+      c = 9,              // counter
+      d = 1;              // base digit
 
 public:
   e_algo () {}
@@ -102,7 +102,7 @@ private:
   BigInteger a = 22369, // nominator
       b = 16384,        // denominator
 
-      c = 6, // counter
+      c = 6,   // counter
       d = 693; // factorial
 
 public:
