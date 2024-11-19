@@ -81,7 +81,7 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 500) > (b * c)) {
+    while ((d * d * 1000) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
