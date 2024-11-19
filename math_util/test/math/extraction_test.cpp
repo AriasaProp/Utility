@@ -67,15 +67,15 @@ public:
   ~pi_algo () {}
 };
 /*
-      x+1
-e = ------
-      x!
+           1
+e = £     ------
+   x=0      x!
 */
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 2, // nominator
-      b = 1,        // denominator
-      c = 2,        // counter
+  BigInteger a = 2982250, // nominator
+      b = 1088640,        // denominator
+      c = 9,        // counter
       d = 1;        // base digit
 
 public:
@@ -99,11 +99,11 @@ public:
 };
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 957, // nominator
-      b = 768,        // denominator
+  BigInteger a = 22369, // nominator
+      b = 16384,        // denominator
 
-      c = 4,   // counter
-      d = 105; // factorial
+      c = 6, // counter
+      d = 693; // factorial
 
 public:
   root2_algo () {}
