@@ -49,7 +49,8 @@ public:
       for (r = 1; r; ++r) {
         a *= d;
         a += c;
-        b *= d : c *= i;
+        b *= d;
+        c *= i;
         d += 2;
         ++i;
       }
