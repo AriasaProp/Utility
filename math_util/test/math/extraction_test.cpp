@@ -44,7 +44,7 @@ public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 1000 < b) {
+    while (c * 1000 > b * d) {
       a *= d;
       a += c;
       b *= d;
@@ -88,13 +88,13 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while (d * 1000 < (b * c)) {
+    while (d * 1000 > (b * c)) {
       a *= c;
       a += d;
       b *= c;
       ++c;
     }
-    char result = (char)int (a.div_mod (b));
+    char result = static_cast<char> (a.div_mod (b));
     b /= 10;
     return result;
   }
@@ -125,7 +125,7 @@ private:
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < e * 2500) {
+    while (b * c < e * 25000) {
       a *= c * 4;
       a += e;
       b *= c * 4;
@@ -134,7 +134,7 @@ public:
       ++c;
       d += 2;
     }
-    char result = (char)int (a.div_mod (b));
+    char result = static_cast<char> (a.div_mod (b));
     a *= 5;
     e *= 5;
     b >>= 1;
