@@ -48,7 +48,7 @@ public:
       a *= d;
       b *= d;
       a += c;
-      
+
       c *= ++i;
       d += 2;
     }
@@ -152,8 +152,7 @@ bool extraction_test (const char *d) {
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
-      new root2_algo ()
-  };
+      new root2_algo ()};
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
