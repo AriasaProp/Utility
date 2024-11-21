@@ -153,7 +153,7 @@ bool extraction_test (const char *d) {
       new root2_algo (),
       new e_algo (),
       new pi_algo ()
-  	
+
   };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
