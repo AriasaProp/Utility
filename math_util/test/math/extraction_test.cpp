@@ -48,9 +48,10 @@ public:
       a *= d;
       a += c;
       b *= d;
+      
+      ++i;
       c *= i;
       d += 2;
-      ++i;
     }
     char result = static_cast<char> (a.div_mod (b));
     a *= 10;
@@ -150,10 +151,9 @@ bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
-      new root2_algo (),
+      new pi_algo (),
       new e_algo (),
-      new pi_algo ()
-
+      new root2_algo ()
   };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
