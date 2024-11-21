@@ -39,26 +39,22 @@ struct base_ex {
 struct pi_algo : public base_ex {
 private:
   BigInteger a = 2, b = 1, c = 2, d = 3, i = 1;
-  unsigned char r;
 
 public:
   pi_algo () {}
   char extract () override {
     // do math
     while (c * 1000 < b) {
-      for (r = 0; r++ < 10;) {
-        a *= d;
-        a += c;
-        b *= d;
-        c *= i;
-        d += 2;
-        ++i;
-      }
+      a *= d;
+      a += c;
+      b *= d;
+      c *= i;
+      d += 2;
+      ++i;
     }
     char result = static_cast<char> (a.div_mod (b));
-    a <<= 1;
-    c <<= 1;
-    b /= 5;
+    a *= 10;
+    c *= 10;
     return result;
   }
   const char *lbl () override { return "π"; }
@@ -88,18 +84,15 @@ private:
       b = 1,        // denominator
       c = 1,        // counter
       d = 1;        // base digit
-  unsigned char r;
 
 public:
   e_algo () {}
   char extract () override {
-    while (d * 1000 > (b * c)) {
-      for (r = 0; r++ < 10;) {
-        a *= c;
-        a += d;
-        b *= c;
-        ++c;
-      }
+    while (d * 1000 < (b * c)) {
+      a *= c;
+      a += d;
+      b *= c;
+      ++c;
     }
     char result = (char)int (a.div_mod (b));
     b /= 10;
@@ -128,21 +121,18 @@ private:
       c = 1, // counter
       d = 3, // odd counter
       e = 3; // factorial odd
-  unsigned char r;
 
 public:
   root2_algo () {}
   char extract () override {
     while (b * c < e * 2500) {
-      for (r = 0; r++ < 10;) {
-        a *= c * 4;
-        a += e;
-        b *= c * 4;
+      a *= c * 4;
+      a += e;
+      b *= c * 4;
 
-        e *= d;
-        ++c;
-        d += 2;
-      }
+      e *= d;
+      ++c;
+      d += 2;
     }
     char result = (char)int (a.div_mod (b));
     a *= 5;
@@ -160,9 +150,11 @@ bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
-      new pi_algo (),
+      new root2_algo (),
       new e_algo (),
-      new root2_algo ()};
+      new pi_algo ()
+  	
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
