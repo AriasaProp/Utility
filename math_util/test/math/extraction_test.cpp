@@ -27,7 +27,6 @@ struct base_ex {
   ~base_ex () {}
 };
 /*
-
     2   2*1   2*1*2   2*1*2*3   2*1*2*3*4
 π = - + --- + ----- + ------- + --------- + .....
     1   1*3   1*3*5   1*3*5*7   1*3*5*7*9
@@ -44,13 +43,12 @@ public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 1000 > b * d) {
+    while (c * 10000 > b * d) {
       a *= d;
       a += c;
       b *= d;
-
-      ++i;
-      c *= i;
+      
+      c *= ++i;
       d += 2;
     }
     char result = static_cast<char> (a.div_mod (b));
@@ -89,7 +87,7 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while (d * 1000 > (b * c)) {
+    while (d * 10000 > (b * c)) {
       a *= c;
       a += d;
       b *= c;
@@ -126,7 +124,7 @@ private:
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < e * 25000) {
+    while (b * c < e * 250000) {
       a *= c * 4;
       a += e;
       b *= c * 4;
@@ -153,7 +151,8 @@ bool extraction_test (const char *d) {
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
-      new root2_algo ()};
+      new root2_algo ()
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
