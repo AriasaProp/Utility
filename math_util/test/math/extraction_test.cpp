@@ -35,6 +35,7 @@ struct base_ex {
 π = £   -------
    x=0  (2x+1)!!
 */
+
 struct pi_algo : public base_ex {
 private:
   BigInteger a = 2, b = 1, c = 2, d = 3, i = 1;
@@ -43,11 +44,11 @@ public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 10000 > b * d) {
+    while (c * 10000000 > b * d) {
       a *= d;
-      a += c;
       b *= d;
-
+      a += c;
+      
       c *= ++i;
       d += 2;
     }
@@ -151,7 +152,8 @@ bool extraction_test (const char *d) {
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
-      new root2_algo ()};
+      new root2_algo ()
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
