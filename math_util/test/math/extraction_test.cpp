@@ -26,70 +26,83 @@ struct base_ex {
   }
   ~base_ex () {}
 };
+/*
+
+    2   2*1   2*1*2   2*1*2*3   2*1*2*3*4
+π = - + --- + ----- + ------- + --------- + .....
+    1   1*3   1*3*5   1*3*5*7   1*3*5*7*9
+   
+          2*x!
+π = £   -------
+   x=0  (2x+1)!!
+*/
 struct pi_algo : public base_ex {
 private:
-  BigInteger q = 1,
-             r = 6,
-             t = 3,
-             k = 2,
-             l = 5,
-             n = 3;
-
+  BigInteger a = 2, b = 1, c = 2, d = 3, i = 1;
+ 	unsigned char r;
+	
 public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (q * 4 + r - t >= t * n) {
-      t *= l;
-      n = q * (k * 7 + 2);
-      n += r * l;
-      n /= t;
-      r += q * 2;
-      r *= l;
-      q *= k;
-      ++k;
-      l += 2;
+    while (c * 1000 < b) {
+    	for (r = 1; r; ++r) {
+	    	a *= d;
+	    	a += c;
+	    	b *= d:
+	    	c *= i;
+	    	d += 2;
+	      ++i;
+    	}
     }
-    char result = static_cast<char> ((int)n);
-    q *= 10;
-    r -= t * n;
-    r *= 10;
-    n = q * 3;
-    n += r;
-    n /= t;
+    char result = static_cast<char> (a.div_mod(b));
+    a <<= 1;
+    c <<= 1;
+    b /= 5;
     return result;
   }
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
-    return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
+    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (i);
   }
   ~pi_algo () {}
 };
 /*
-           1
+            1
 e = £     ------
    x=0      x!
+
+    1    1    1
+e = -- + -- + -- + ....
+    0!   1!   2!
+
+    1     1     1
+e = -- + --- + ---- + .....
+    1     1    1*2
+
 */
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 9864101, // nominator
-      b = 3628800,        // denominator
-      c = 11,             // counter
+  BigInteger a = 1, // nominator
+      b = 1,        // denominator
+      c = 1,             // counter
       d = 1;              // base digit
-
+	unsigned char r;
+	
 public:
   e_algo () {}
   char extract () override {
-    while ((d * d * 1000) > (b * c)) {
-      a *= c;
-      a += d;
-      b *= c;
-      ++c;
+    while (d * 1000 > (b * c)) {
+    	for (r = 1; r; ++r) {
+	      a *= c;
+	      a += d;
+	      b *= c;
+	      ++c;
+    	}
     }
     char result = (char)int (a.div_mod (b));
-    d *= 10;
-    a *= 10;
+    b /= 10;
     return result;
   }
   const char *lbl () override { return "e"; }
@@ -97,33 +110,49 @@ public:
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
 };
+/*
+                  (2x+1)!!
+√2 = £     -------------------
+   x=0      (x!) * 2^(2x+1)
+
+      1        1*3         1*3*5
+√2 = ----- + -------- + ----------- + ....
+     1 * 2   1 * 2^3    (1*2) * 2^5
+
+*/
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 22369, // nominator
-      b = 16384,        // denominator
+  BigInteger a = 1, // nominator
+      b = 2,        // denominator
 
-      c = 6,   // counter
-      d = 693; // factorial
-
+      c = 1,   // counter
+      d = 3,   // odd counter
+      e = 3; // factorial odd
+	unsigned char r;
+	
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < d * (c * 2 + 1) * 2500) {
-      d *= c * 2 + 1;
-      a *= c * 4;
-      a += d;
-      b *= c * 4;
-      ++c;
+    while (b * c < e * 2500) {
+    	for (r = 1; r; ++r) {
+	      a *= c * 4;
+	      a += e;
+	      b *= c * 4;
+	      
+	      e *= d;
+	      ++c;
+	      d += 2;
+	    }
     }
     char result = (char)int (a.div_mod (b));
     a *= 5;
-    d *= 5;
+    e *= 5;
     b >>= 1;
     return result;
   }
   const char *lbl () override { return "√2"; }
   const char *testFile () override { return "√2Digits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof(e); }
   ~root2_algo () {}
 };
 

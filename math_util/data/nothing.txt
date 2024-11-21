@@ -1,0 +1,31 @@
+BigInteger q = 1,
+             r = 6,
+             t = 3,
+             k = 2,
+             l = 5,
+             n = 3;
+
+public:
+  pi_algo () {}
+  char extract () override {
+    // do math
+    while (q * 4 + r - t >= t * n) {
+      t *= l;
+      n = q * (k * 7 + 2);
+      n += r * l;
+      n /= t;
+      r += q * 2;
+      r *= l;
+      q *= k;
+      ++k;
+      l += 2;
+    }
+    char result = static_cast<char> ((int)n);
+    q *= 10;
+    r -= t * n;
+    r *= 10;
+    n = q * 3;
+    n += r;
+    n /= t;
+    return result;
+  }
