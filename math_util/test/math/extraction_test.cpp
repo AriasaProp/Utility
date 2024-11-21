@@ -31,7 +31,7 @@ struct base_ex {
     2   2*1   2*1*2   2*1*2*3   2*1*2*3*4
 π = - + --- + ----- + ------- + --------- + .....
     1   1*3   1*3*5   1*3*5*7   1*3*5*7*9
-   
+
           2*x!
 π = £   -------
    x=0  (2x+1)!!
@@ -39,23 +39,22 @@ struct base_ex {
 struct pi_algo : public base_ex {
 private:
   BigInteger a = 2, b = 1, c = 2, d = 3, i = 1;
- 	unsigned char r;
-	
+  unsigned char r;
+
 public:
   pi_algo () {}
   char extract () override {
     // do math
     while (c * 1000 < b) {
-    	for (r = 1; r; ++r) {
-	    	a *= d;
-	    	a += c;
-	    	b *= d:
-	    	c *= i;
-	    	d += 2;
-	      ++i;
-    	}
+      for (r = 1; r; ++r) {
+        a *= d;
+        a += c;
+        b *= d : c *= i;
+        d += 2;
+        ++i;
+      }
     }
-    char result = static_cast<char> (a.div_mod(b));
+    char result = static_cast<char> (a.div_mod (b));
     a <<= 1;
     c <<= 1;
     b /= 5;
@@ -86,20 +85,20 @@ struct e_algo : public base_ex {
 private:
   BigInteger a = 1, // nominator
       b = 1,        // denominator
-      c = 1,             // counter
-      d = 1;              // base digit
-	unsigned char r;
-	
+      c = 1,        // counter
+      d = 1;        // base digit
+  unsigned char r;
+
 public:
   e_algo () {}
   char extract () override {
     while (d * 1000 > (b * c)) {
-    	for (r = 1; r; ++r) {
-	      a *= c;
-	      a += d;
-	      b *= c;
-	      ++c;
-    	}
+      for (r = 1; r; ++r) {
+        a *= c;
+        a += d;
+        b *= c;
+        ++c;
+      }
     }
     char result = (char)int (a.div_mod (b));
     b /= 10;
@@ -125,24 +124,24 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 1,   // counter
-      d = 3,   // odd counter
+      c = 1, // counter
+      d = 3, // odd counter
       e = 3; // factorial odd
-	unsigned char r;
-	
+  unsigned char r;
+
 public:
   root2_algo () {}
   char extract () override {
     while (b * c < e * 2500) {
-    	for (r = 1; r; ++r) {
-	      a *= c * 4;
-	      a += e;
-	      b *= c * 4;
-	      
-	      e *= d;
-	      ++c;
-	      d += 2;
-	    }
+      for (r = 1; r; ++r) {
+        a *= c * 4;
+        a += e;
+        b *= c * 4;
+
+        e *= d;
+        ++c;
+        d += 2;
+      }
     }
     char result = (char)int (a.div_mod (b));
     a *= 5;
@@ -152,7 +151,7 @@ public:
   }
   const char *lbl () override { return "√2"; }
   const char *testFile () override { return "√2Digits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof(e); }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
   ~root2_algo () {}
 };
 
