@@ -46,7 +46,7 @@ public:
   char extract () override {
     // do math
     while (c * 1000 < b) {
-      for (r = 1; r; ++r) {
+      for (r = 1; r < 100; ++r) {
         a *= d;
         a += c;
         b *= d;
@@ -94,7 +94,7 @@ public:
   e_algo () {}
   char extract () override {
     while (d * 1000 > (b * c)) {
-      for (r = 1; r; ++r) {
+      for (r = 1; r < 100; ++r) {
         a *= c;
         a += d;
         b *= c;
@@ -134,7 +134,7 @@ public:
   root2_algo () {}
   char extract () override {
     while (b * c < e * 2500) {
-      for (r = 1; r; ++r) {
+      for (r = 1; r < 100; ++r) {
         a *= c * 4;
         a += e;
         b *= c * 4;
