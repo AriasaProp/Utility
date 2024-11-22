@@ -27,44 +27,52 @@ struct base_ex {
   ~base_ex () {}
 };
 /*
-    2   2*1   2*1*2   2*1*2*3   2*1*2*3*4
-π = - + --- + ----- + ------- + --------- + .....
-    1   1*3   1*3*5   1*3*5*7   1*3*5*7*9
+     4     4     4     4     4     4     4
+π = --- - --- + --- - --- + --- - --- + --- + .....
+     1     3     5     7     9    11    13
 
-          2*x!
-π = £   -------
-   x=0  (2x+1)!!
+     8     8      8       8      8       8
+π = --- + --- + ---- + ----- + ----- + ----- + .....
+    1*3   5*7   9*11   13*15   17*19   21*23
 
-   c      1
+              8
+π = £   ------------
+   x=0  (4x+1)(4x+3)
+   
+   8      1
    bd  > 100000
 */
 
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 2, b = 1, c = 2, d = 3, i = 1, B = "10000000000000000000";
+  BigInteger a = 8, //nominator
+  b = 3, //denominator
+  
+  c = 5, // odd 1
+  d = 7, // odd 
+  e = 8;
 
 public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * B > b * d) {
-      a *= d;
-      b *= d;
-      a += c;
-
-      c *= ++i;
-      d += 2;
+    while (e * 1000 > c * d) {
+      a *= c * d;
+      a += b * e;
+      b *= c * d;
+      c += 4;
+      d += 4;
     }
     char result = static_cast<char> (a.div_mod (b));
     a *= 10;
-    c *= 10;
+    e *= 10;
     return result;
   }
-
+  
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
-    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (i);
+    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e);
   }
   ~pi_algo () {}
 };
@@ -154,9 +162,10 @@ bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
-      // new pi_algo (),
-      new e_algo (),
-      new root2_algo ()};
+      new pi_algo (),
+      //new e_algo (),
+      //new root2_algo ()
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
