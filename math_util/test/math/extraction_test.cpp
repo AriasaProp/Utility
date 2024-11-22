@@ -41,17 +41,17 @@ struct base_ex {
 
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 2, b = 1, c = 2, d = 3, i = 1;
+  BigInteger a = 2, b = 1, c = 2, d = 3, i = 1, B = "10000000000000000000";
 
 public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 10000000 < b * d) {
+    while (c * B > b * d) {
       a *= d;
       b *= d;
       a += c;
-
+      
       c *= ++i;
       d += 2;
     }
@@ -60,6 +60,7 @@ public:
     c *= 10;
     return result;
   }
+  
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
@@ -155,7 +156,8 @@ bool extraction_test (const char *d) {
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
-      new root2_algo ()};
+      new root2_algo ()
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
