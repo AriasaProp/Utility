@@ -34,7 +34,7 @@ struct base_ex {
           2*x!
 π = £   -------
    x=0  (2x+1)!!
-
+   
    c      1
    bd  > 100000
 */
@@ -51,7 +51,7 @@ public:
       a *= d;
       b *= d;
       a += c;
-
+      
       c *= ++i;
       d += 2;
     }
@@ -60,7 +60,7 @@ public:
     c *= 10;
     return result;
   }
-
+  
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
@@ -99,7 +99,8 @@ public:
       ++c;
     }
     char result = static_cast<char> (a.div_mod (b));
-    b /= 10;
+    a *= 10;
+    d *= 10;
     return result;
   }
   const char *lbl () override { return "e"; }
@@ -139,9 +140,8 @@ public:
       d += 2;
     }
     char result = static_cast<char> (a.div_mod (b));
-    a *= 5;
-    e *= 5;
-    b >>= 1;
+    a *= 10;
+    e *= 10;
     return result;
   }
   const char *lbl () override { return "√2"; }
@@ -154,9 +154,10 @@ bool extraction_test (const char *d) {
   std::cout << "Start Extraction Test Generator" << std::endl;
   bool passed = true;
   base_ex *algos[]{
-      // new pi_algo (),
+      //new pi_algo (),
       new e_algo (),
-      new root2_algo ()};
+      new root2_algo ()
+  };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
