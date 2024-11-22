@@ -38,19 +38,19 @@ struct base_ex {
               8
 π = £   ------------
    x=0  (4x+1)(4x+3)
-   
+
    8      1
    bd  > 100000
 */
 
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 8, //nominator
-  b = 3, //denominator
-  
-  c = 5, // odd 1
-  d = 7, // odd 
-  e = 8;
+  BigInteger a = 8, // nominator
+      b = 3,        // denominator
+
+      c = 5, // odd 1
+      d = 7, // odd
+      e = 8;
 
 public:
   pi_algo () {}
@@ -68,7 +68,7 @@ public:
     e *= 10;
     return result;
   }
-  
+
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
@@ -163,8 +163,8 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      //new e_algo (),
-      //new root2_algo ()
+      // new e_algo (),
+      // new root2_algo ()
   };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
