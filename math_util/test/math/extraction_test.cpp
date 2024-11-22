@@ -34,6 +34,9 @@ struct base_ex {
           2*x!
 π = £   -------
    x=0  (2x+1)!!
+   
+   c      1
+   bd  > 100000
 */
 
 struct pi_algo : public base_ex {
@@ -44,7 +47,7 @@ public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 10000000 > b * d) {
+    while (c * 10000000 < b * d) {
       a *= d;
       b *= d;
       a += c;
