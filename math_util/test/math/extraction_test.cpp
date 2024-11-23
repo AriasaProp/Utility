@@ -60,7 +60,8 @@ public:
       ++d;
       e += 2;
     }
-    char result = static_cast<char> (a.div_mod (b));
+    char result = static_cast<char> (a/b);
+    a %= b;
     a *= 10;
     c *= 10;
     return result;
