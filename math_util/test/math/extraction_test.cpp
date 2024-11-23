@@ -26,87 +26,70 @@ struct base_ex {
   }
   ~base_ex () {}
 };
-/*
-     2    2*1!   2*2!   2*3!  2*4!   2*5!   2*6!
-π = --- + ---- + ---- + --- + ---- + ---- + ---- + .....
-     1    3!!    5!!    7!!   9!!    11!!   13!!
-
-          2*x!
-π = £   --------
-   x=0  (2x+1)!!
-
-
-*/
-
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 2, // nominator
-      b = 1,        // denominator
-
-      c = 2, // factorial
-      d = 1, // counter
-      e = 3; // counter odd
+  BigInteger q = 1,
+             r = 6,
+             t = 3,
+             k = 2,
+             l = 5,
+             n = 3;
 
 public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (c * 100 > b * e) {
-      c *= d;
-      a *= e;
-      a += c;
-      b *= e;
-
-      ++d;
-      e += 2;
+    while (q * 4 + r - t >= t * n) {
+      t *= l;
+      n = q * (k * 7 + 2);
+      n += r * l;
+      n /= t;
+      r += q * 2;
+      r *= l;
+      q *= k;
+      ++k;
+      l += 2;
     }
-    char result = static_cast<char> (a / b);
-    a %= b;
-    a *= 10;
-    c *= 10;
+    char result = static_cast<char> ((int)n);
+    q *= 10;
+    r -= t * n;
+    r *= 10;
+    n = q * 3;
+    n += r;
+    n /= t;
     return result;
   }
-
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
-    return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e);
+    return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
   ~pi_algo () {}
 };
 /*
-            1
+           1
 e = £     ------
    x=0      x!
-
-    1    1    1
-e = -- + -- + -- + ....
-    0!   1!   2!
-
-    1     1     1
-e = -- + --- + ---- + .....
-    1     1    1*2
-
 */
 struct e_algo : public base_ex {
 private:
-  BigInteger a = 1, // nominator
-      b = 1,        // denominator
-      c = 1,        // counter
+  BigInteger a = 9864101, // nominator
+      b = 3628800,        // denominator
+      c = 11,        // counter
       d = 1;        // base digit
 
 public:
   e_algo () {}
   char extract () override {
-    while (d * 10000 > (b * c)) {
+    while ((d * d * 1000) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
       ++c;
     }
-    char result = static_cast<char> (a.div_mod (b));
-    a *= 10;
+    char result = (char)int (a.div_mod (b));
     d *= 10;
+    a *= 10;
     return result;
   }
   const char *lbl () override { return "e"; }
@@ -114,45 +97,33 @@ public:
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
 };
-/*
-                  (2x+1)!!
-√2 = £     -------------------
-   x=0      (x!) * 2^(2x+1)
-
-      1        1*3         1*3*5
-√2 = ----- + -------- + ----------- + ....
-     1 * 2   1 * 2^3    (1*2) * 2^5
-
-*/
 struct root2_algo : public base_ex {
 private:
-  BigInteger a = 1, // nominator
-      b = 2,        // denominator
+  BigInteger a = 22369, // nominator
+      b = 16384,        // denominator
 
-      c = 1, // counter
-      d = 3, // odd counter
-      e = 3; // factorial odd
+      c = 6, // counter
+      d = 693; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while (b * c < e * 250000) {
+    while (b * c < d * (c * 2 + 1) * 2500) {
+      d *= c * 2 + 1;
       a *= c * 4;
-      a += e;
+      a += d;
       b *= c * 4;
-
-      e *= d;
       ++c;
-      d += 2;
     }
-    char result = static_cast<char> (a.div_mod (b));
-    a *= 10;
-    e *= 10;
+    char result = (char)int (a.div_mod (b));
+    a *= 5;
+    d *= 5;
+    b >>= 1;
     return result;
   }
   const char *lbl () override { return "√2"; }
   const char *testFile () override { return "√2Digits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
+  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~root2_algo () {}
 };
 
@@ -161,9 +132,8 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      // new e_algo (),
-      // new root2_algo ()
-  };
+      new e_algo (),
+      new root2_algo ()};
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
   std::cout << "-----|--------------||------------------||------------------|\n";
