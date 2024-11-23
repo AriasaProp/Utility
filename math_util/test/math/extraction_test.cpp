@@ -27,48 +27,45 @@ struct base_ex {
   ~base_ex () {}
 };
 /*
-     4     4     4     4     4     4     4
-π = --- - --- + --- - --- + --- - --- + --- + .....
-     1     3     5     7     9    11    13
+     2    2*1!   2*2!   2*3!  2*4!   2*5!   2*6!
+π = --- + ---- + ---- + --- + ---- + ---- + ---- + .....
+     1    3!!    5!!    7!!   9!!    11!!   13!!
 
-     8     8      8       8      8       8
-π = --- + --- + ---- + ----- + ----- + ----- + .....
-    1*3   5*7   9*11   13*15   17*19   21*23
+          2*x!
+π = £   --------
+   x=0  (2x+1)!!
 
-              8
-π = £   ------------
-   x=0  (4x+1)(4x+3)
 
-   8      1
-   bd  > 100000
 */
 
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 8, // nominator
-      b = 3,        // denominator
-
-      c = 5, // odd 1
-      d = 7, // odd
-      e = 8;
+  BigInteger a = 2, //nominator
+  b = 1, //denominator
+  
+  c = 2, // factorial 
+  d = 1, // counter
+  e = 3; // counter odd
 
 public:
   pi_algo () {}
   char extract () override {
     // do math
-    while (e * 1000 > c * d) {
-      a *= c * d;
-      a += b * e;
-      b *= c * d;
-      c += 4;
-      d += 4;
+    while (c > b * e) {
+      a *= e;
+      a += c * d;
+      b *= e;
+      
+      c *= d;
+      ++d;
+      e += 2;
     }
     char result = static_cast<char> (a.div_mod (b));
     a *= 10;
-    e *= 10;
+    c *= 10;
     return result;
   }
-
+  
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
@@ -163,8 +160,8 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      // new e_algo (),
-      // new root2_algo ()
+      //new e_algo (),
+      //new root2_algo ()
   };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
