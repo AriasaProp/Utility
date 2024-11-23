@@ -40,13 +40,12 @@ struct base_ex {
 
 struct pi_algo : public base_ex {
 private:
-  BigInteger a = 2, //nominator
-  b = 1, //denominator
-  
-  c = 2, // factorial 
-  d = 1, // counter
-  e = 3; // counter odd
+  BigInteger a = 2, // nominator
+      b = 1,        // denominator
 
+      c = 2, // factorial
+      d = 1, // counter
+      e = 3; // counter odd
 
 public:
   pi_algo () {}
@@ -57,7 +56,7 @@ public:
       a *= e;
       a += c;
       b *= e;
-      
+
       ++d;
       e += 2;
     }
@@ -66,7 +65,7 @@ public:
     c *= 10;
     return result;
   }
-  
+
   const char *lbl () override { return "π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
@@ -161,8 +160,8 @@ bool extraction_test (const char *d) {
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
-      //new e_algo (),
-      //new root2_algo ()
+      // new e_algo (),
+      // new root2_algo ()
   };
   // Draw table header
   std::cout << "     |    digits    || rate(digits/sec) ||   memory(byte)   |\n";
