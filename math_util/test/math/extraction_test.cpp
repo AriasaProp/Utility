@@ -60,7 +60,7 @@ public:
       ++d;
       e += 2;
     }
-    char result = static_cast<char> (a/b);
+    char result = static_cast<char> (a / b);
     a %= b;
     a *= 10;
     c *= 10;
