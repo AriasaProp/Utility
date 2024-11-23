@@ -107,20 +107,20 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 4, // counter
+      c = 1, // counter
       d = 3, // counter odd
       e = 1; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while ((b * c) < (e * d * 1000)) {
+    while ((b * c * 4) < (e * d * 1000)) {
       e *= d;
-      a *= c;
+      a *= c * 4;
       a += e;
-      b *= c;
-
-      c += 4;
+      b *= c * 4;
+      
+      c += 1;
       d += 2;
     }
     char result = (char)int (a.div_mod (b));
