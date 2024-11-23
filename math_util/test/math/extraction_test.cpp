@@ -81,7 +81,7 @@ private:
 public:
   e_algo () {}
   char extract () override {
-    while ((d * 1000) > (b * c)) {
+    while ((d * 10000) > (b * c)) {
       a *= c;
       a += d;
       b *= c;
@@ -107,20 +107,20 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 1, // counter
+      c = 4, // counter
       d = 3, // counter odd
       e = 1; // factorial
 
 public:
   root2_algo () {}
   char extract () override {
-    while ((b * c * 4) < (e * d * 1000)) {
+    while ((b * c) < (e * d * 10000)) {
       e *= d;
-      a *= c * 4;
+      a *= c;
       a += e;
-      b *= c * 4;
-
-      c += 1;
+      b *= c;
+      
+      c += 4;
       d += 2;
     }
     char result = (char)int (a.div_mod (b));
