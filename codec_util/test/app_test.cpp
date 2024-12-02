@@ -14,14 +14,16 @@
 
 namespace chr = std::chrono;
 typedef chr::high_resolution_clock rc;
+typedef chr::duration<chr::nanoseconds> dn;
 typedef chr::time_point<rc> tp;
 
 struct test_result {
   std::string name, data;
   bool success;
-  tp time_encode, time_decode; // time report
+  dn time_encode, time_decode; // time report
   double comp_ratio;           // %
 };
+
 
 const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
@@ -134,30 +136,28 @@ int main (int argv, char *args[]) {
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
 
-      duration = chr::duration_cast<chr::nanoseconds> (rs.time_encode);
-      if (duration < chr::microseconds (1))
-        std::cout << std::to_string (duration.count ()) << " ns";
-      else if (duration < chr::seconds (1))
-        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
-      else if (duration < chr::minutes (1))
-        std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
-      else if (duration < chr::hours (1))
-        std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
+      if (rs.time_encode < chr::microseconds(1))
+        std::cout << std::to_string (rs.time_encode.count ()) << " ns";
+      else if (rs.time_encode < chr::seconds(1))
+        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (rs.time_encode).count ()) << " ms";
+      else if (rs.time_encode < chr::minutes(1))
+        std::cout << std::to_string (chr::duration_cast<chr::seconds> (rs.time_encode).count ()) << " s";
+      else if (rs.time_encode < chr::hours(1))
+        std::cout << std::to_string (chr::duration_cast<chr::minutes> (rs.time_encode).count ()) << " M";
       else
-        std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
+        std::cout << std::to_string (chr::duration_cast<chr::hours> (rs.time_encode).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-      duration = chr::duration_cast<chr::nanoseconds> (rs.time_decode);
-      if (duration < chr::microseconds (1))
-        std::cout << std::to_string (duration.count ()) << " ns";
-      else if (duration < chr::seconds (1))
-        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
-      else if (duration < chr::minutes (1))
-        std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
-      else if (duration < chr::hours (1))
-        std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
+      if (rs.time_decode < chr::microseconds(1))
+        std::cout << std::to_string (rs.time_decode.count ()) << " ns";
+      else if (rs.time_decode < chr::seconds(1))
+        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (rs.time_decode).count ()) << " ms";
+      else if (rs.time_decode < chr::minutes(1))
+        std::cout << std::to_string (chr::duration_cast<chr::seconds> (rs.time_decode).count ()) << " s";
+      else if (rs.time_decode < chr::hours(1))
+        std::cout << std::to_string (chr::duration_cast<chr::minutes> (rs.time_decode).count ()) << " M";
       else
-        std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
+        std::cout << std::to_string (chr::duration_cast<chr::hours> (rs.time_decode).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (6) << rs.comp_ratio << " % |" << std::endl;
     }
