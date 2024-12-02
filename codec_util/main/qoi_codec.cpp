@@ -1,10 +1,10 @@
 #include "qoi_codec.hpp"
 
 union qoi_t {
-	struct{
-		uint8_t r,g,b,a;
-	} rgba;
-	uint32_t clr;
+  struct {
+    uint8_t r, g, b, a;
+  } rgba;
+  uint32_t clr;
 };
 
 #include <cstring>
@@ -32,33 +32,33 @@ const codec_data qoi_encode (codec_data const &in) {
 
   uint8_t run = 0; // store run_len code
   qoi_t px_prev = 0xff000000, px = px_prev;
-  
+
   uint8_t bd; // store to out as byte, 32bit
-  
-	for (codec_data::reader ro = in.begin_read (); ro.left () || run;) {
-		
+
+  for (codec_data::reader ro = in.begin_read (); ro.left () || run;) {
+
     ro >> px.clr;
-    
+
     if (((px.clr == px_prev.clr) && (++run == 62)) || !ro.left ()) {
-  	// run length codec
-    	bd = QOI_OP_RUN | (run - 1);
-    	out << bd;
+      // run length codec
+      bd = QOI_OP_RUN | (run - 1);
+      out << bd;
       run = 0;
       continue;
     } else if (run) {
-  	// run_length end
+      // run_length end
       bd = QOI_OP_RUN | (run - 1);
-    	out << bd;
+      out << bd;
       run = 0;
     }
-      
+
     uint8_t index_pos = QOI_COLOR_HASH (px);
     if (index[index_pos] == px) {
-    // write down to code library index
+      // write down to code library index
       bd = QOI_OP_INDEX | index_pos;
       out << bd;
     } else {
-    // write down to library index
+      // write down to library index
       index[index_pos] = px;
       // check alpha
       if (px.rgba.a == px_prev.rgba.a) {
@@ -94,31 +94,31 @@ const codec_data qoi_encode (codec_data const &in) {
           out << bd;
         }
       } else {
-      	// write full code
+        // write full code
         bd = QOI_OP_RGBA;
         out << bd;
         out << px.clr;
       }
     }
-  	px_prev = px;
+    px_prev = px;
   }
   return out;
 }
 
 const codec_data qoi_decode (codec_data const &in) {
-	codec_data out;
-	qoi_t index[64]{}; // store code library = 0x3f => 0x11_1111b
+  codec_data out;
+  qoi_t index[64]{}; // store code library = 0x3f => 0x11_1111b
 
-	qoi_t px {.clr = 0xff000000};
-	uint8_t run, b1;
-	for (codec_data::reader ro = in.begin_read (); ro.left ();) {
+  qoi_t px{.clr = 0xff000000};
+  uint8_t run, b1;
+  for (codec_data::reader ro = in.begin_read (); ro.left ();) {
     ro >> b1;
     if (b1 == QOI_OP_RGB) {
       ro >> px.rgba.r;
       ro >> px.rgba.g;
       ro >> px.rgba.b;
     } else if (b1 == QOI_OP_RGBA) {
-    	ro >> px.clr;
+      ro >> px.clr;
     } else if ((b1 & QOI_MASK_2) == QOI_OP_INDEX) {
       px = index[b1 & QOI_MASK_1];
     } else if ((b1 & QOI_MASK_2) == QOI_OP_DIFF) {
@@ -136,12 +136,11 @@ const codec_data qoi_decode (codec_data const &in) {
       run = (b1 & QOI_MASK_1);
     }
     index[QOI_COLOR_HASH (px)] = px;
-    
+
     do {
-    	out << px.clr;
+      out << px.clr;
     } while (--run);
   }
 
   return out;
 }
-
