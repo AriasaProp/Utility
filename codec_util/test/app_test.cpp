@@ -13,8 +13,8 @@
 #include <vector>
 
 namespace chr = std::chrono;
-namespace rc = chr::high_resolution_clock;
-namespace tp = chr::time_point<rc>;
+typedef chr::high_resolution_clock rc;
+typedef chr::time_point<rc> tp;
 
 struct test_result {
   std::string name, data;
