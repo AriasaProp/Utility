@@ -2,8 +2,6 @@
 #include "huffman_codec.hpp"
 #include "qoi_codec.hpp"
 
-#include "clock_adjustment.hpp"
-
 #include <cstdint>
 #include <iostream>
 #include <map>
@@ -12,26 +10,29 @@
 #include <utility>
 #include <vector>
 
+namespace chr = std::chrono;
+namespace rc = chr::high_resolution_clock;
+namespace tp = chr::time_point<rc>;
+
 struct test_result {
-  std::string name;
+  std::string name, data;
   bool success;
-  unsigned long time_encode, time_decode; // ms
+  tp time_encode, time_decode; // time report
   double comp_ratio;                      // %
-  void print () {
-    std::cout << name << " : " << (success ? "success" : "fail") << " encode: " << time_encode << " ms, decode: " << time_decode << " ms, compress ratio: " << comp_ratio << " %" << std::endl;
-  }
 };
 
 const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
-  r.name = "data(" + data_n.first + "), codec(" + codec_n.first + ")";
-  profiling::clock_adjustment clck = profiling::clock_adjustment (r.name.c_str ());
+  r.name = codec_n.first;
+  r.data = data_n.first;
   // encoding data
+  tp startc = rc::now();
   const codec_data encode_result = codec_n.second.first (data_n.second);
-  r.time_encode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  r.time_encode = rc::now() - startc;
   // decoding data
+  startc = rc::now();
   const codec_data decode_result = codec_n.second.second (encode_result);
-  r.time_decode = clck.get_clock (profiling::clock_adjustment::period::microseconds);
+  r.time_decode =  rc::now() - startc;
   // compare
   r.success = decode_result == data_n.second;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (data_n.second.size_bit ());
@@ -42,6 +43,7 @@ const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pa
 constexpr size_t CODEC_SIZE = 2048 * 2048;
 
 int main (int argv, char *args[]) {
+  std::cout << "Start Codec Test" << std::endl;
   try {
     std::vector<test_result> rss;
     {
@@ -49,11 +51,9 @@ int main (int argv, char *args[]) {
       std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
       // make codec variations
       std::map<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_var{
-          {"Huffman", {huffman_encode, huffman_decode}},
-          {"Huffman2", {huffman_encode, huffman_decode}},
-          {"QOI", {qoi_encode, qoi_decode}},
-          {"QOI2", {qoi_encode, qoi_decode}},
-
+          {"Huffman", {huffman_encode, huffman_decode}}, {"Huffman2", {huffman_encode, huffman_decode}},
+          {"QOI", {qoi_encode, qoi_decode}}, {"QOI2", {qoi_encode, qoi_decode}},
+      	
       };
       // do codec
       {
@@ -119,8 +119,43 @@ int main (int argv, char *args[]) {
         }
       }
     }
+	  // Draw table header
+	  std::cout << "   codec   ||  data type  || res ||    encode    ||    decode    ||  ratio  |\n";
+	  std::cout << "-----------||-------------||-----||--------------||--------------||---------|\n";
+		chr::nanoseconds duration;
     for (test_result rs : rss) {
-      rs.print ();
+    	// name
+    	std::cout << " " << std::setfill (' ') << std::setw (9) << rs.name << " ||  ";
+    	std::cout << (rs.success?"√":"×") << "  || ";
+    	std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
+    	std::cout << std::setfill (' ') << std::setw (12);
+    	
+    	duration = duration_cast<chr::nanoseconds>(rs.time_encode);
+	    if (duration < 1ms)
+        std::cout << std::to_string(duration.count()) << " ns";
+	    else if (duration < 1s)
+        std::cout << std::to_string(duration_cast<milliseconds>(duration).count()) << " ms";
+	    else if (duration < 1min)
+        std::cout << std::to_string(duration_cast<seconds>(duration).count()) << " s";
+	    else if (duration < 1h)
+        std::cout << std::to_string(duration_cast<minutes>(duration).count()) << " M";
+	    else
+        std::cout << std::to_string(duration_cast<hours>(duration).count()) << " H";
+    	
+    	std::cout << " || " << std::setfill (' ') << std::setw (12);
+    	duration = duration_cast<chr::nanoseconds>(rs.time_decode);
+	    if (duration < 1ms)
+        std::cout << std::to_string(duration.count()) << " ns";
+	    else if (duration < 1s)
+        std::cout << std::to_string(duration_cast<milliseconds>(duration).count()) << " ms";
+	    else if (duration < 1min)
+        std::cout << std::to_string(duration_cast<seconds>(duration).count()) << " s";
+	    else if (duration < 1h)
+        std::cout << std::to_string(duration_cast<minutes>(duration).count()) << " M";
+	    else
+        std::cout << std::to_string(duration_cast<hours>(duration).count()) << " H";
+    	
+    	std::cout  << " || " << std::setfill (' ') << std::setw (6) << rs.comp_ratio << " % |" << std::endl;
     }
 
   } catch (const char *err) {
