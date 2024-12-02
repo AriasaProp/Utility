@@ -62,7 +62,7 @@ int main (int argv, char *args[]) {
       // do codec
       {
         uint32_t rdmA[10];
-        for (size_t i = 0; i < 10; ++i) {
+        for (size_t i = 0; i < 1chr::0; ++i) {
           rdmA[i] = clr (rd);
         }
         {
@@ -88,7 +88,7 @@ int main (int argv, char *args[]) {
       }
       {
         uint32_t rdmA[100];
-        for (size_t i = 0; i < 100; ++i) {
+        for (size_t i = 0; i < 1chr::00; ++i) {
           rdmA[i] = clr (rd);
         }
         {
@@ -134,27 +134,27 @@ int main (int argv, char *args[]) {
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
 
-      duration = chr::duration_cast<chr::chr::nanoseconds> (rs.time_encode);
-      if (duration < 1ms)
+      duration = chr::duration_cast<chr::nanoseconds> (rs.time_encode);
+      if (duration < 1chr::ms)
         std::cout << std::to_string (duration.count ()) << " ns";
-      else if (duration < 1s)
+      else if (duration < 1chr::s)
         std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
-      else if (duration < 1min)
+      else if (duration < 1chr::min)
         std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
-      else if (duration < 1h)
+      else if (duration < 1chr::h)
         std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
       else
         std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-      duration = chr::duration_cast<chr::chr::nanoseconds> (rs.time_decode);
-      if (duration < 1ms)
+      duration = chr::duration_cast<chr::nanoseconds> (rs.time_decode);
+      if (duration < 1chr::ms)
         std::cout << std::to_string (duration.count ()) << " ns";
-      else if (duration < 1s)
+      else if (duration < 1chr::s)
         std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
-      else if (duration < 1min)
+      else if (duration < 1chr::min)
         std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
-      else if (duration < 1h)
+      else if (duration < 1chr::h)
         std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
       else
         std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
