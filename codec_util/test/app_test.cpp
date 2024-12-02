@@ -134,30 +134,30 @@ int main (int argv, char *args[]) {
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
 
-      duration = duration_cast<chr::nanoseconds> (rs.time_encode);
+      duration = chr::duration_cast<chr::chr::nanoseconds> (rs.time_encode);
       if (duration < 1ms)
         std::cout << std::to_string (duration.count ()) << " ns";
       else if (duration < 1s)
-        std::cout << std::to_string (duration_cast<milliseconds> (duration).count ()) << " ms";
+        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
       else if (duration < 1min)
-        std::cout << std::to_string (duration_cast<seconds> (duration).count ()) << " s";
+        std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
       else if (duration < 1h)
-        std::cout << std::to_string (duration_cast<minutes> (duration).count ()) << " M";
+        std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
       else
-        std::cout << std::to_string (duration_cast<hours> (duration).count ()) << " H";
+        std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-      duration = duration_cast<chr::nanoseconds> (rs.time_decode);
+      duration = chr::duration_cast<chr::chr::nanoseconds> (rs.time_decode);
       if (duration < 1ms)
         std::cout << std::to_string (duration.count ()) << " ns";
       else if (duration < 1s)
-        std::cout << std::to_string (duration_cast<milliseconds> (duration).count ()) << " ms";
+        std::cout << std::to_string (chr::duration_cast<chr::milliseconds> (duration).count ()) << " ms";
       else if (duration < 1min)
-        std::cout << std::to_string (duration_cast<seconds> (duration).count ()) << " s";
+        std::cout << std::to_string (chr::duration_cast<chr::seconds> (duration).count ()) << " s";
       else if (duration < 1h)
-        std::cout << std::to_string (duration_cast<minutes> (duration).count ()) << " M";
+        std::cout << std::to_string (chr::duration_cast<chr::minutes> (duration).count ()) << " M";
       else
-        std::cout << std::to_string (duration_cast<hours> (duration).count ()) << " H";
+        std::cout << std::to_string (chr::duration_cast<chr::hours> (duration).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (6) << rs.comp_ratio << " % |" << std::endl;
     }
