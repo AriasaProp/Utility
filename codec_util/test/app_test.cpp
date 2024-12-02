@@ -1,7 +1,8 @@
 #include "codec_util.hpp"
+#include "huffman_codec.hpp"
+#include "qoi_codec.hpp"
 
 #include "clock_adjustment.hpp"
-#include "huffman_codec.hpp"
 
 #include <cstdint>
 #include <iostream>
@@ -48,7 +49,10 @@ int main (int argv, char *args[]) {
       std::uniform_int_distribution<uint32_t> clr (0x0, 0xffffffff);
       // make codec variations
       std::map<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_var{
-          {"Huffman", {huffman_encode, huffman_decode}}, {"Huffman2", {huffman_encode, huffman_decode}}};
+          {"Huffman", {huffman_encode, huffman_decode}}, {"Huffman2", {huffman_encode, huffman_decode}},
+          {"QOI", {qoi_encode, qoi_decode}}, {"QOI2", {qoi_encode, qoi_decode}},
+      	
+      };
       // do codec
       {
         uint32_t rdmA[10];

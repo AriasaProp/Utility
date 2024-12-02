@@ -89,54 +89,6 @@ static bool sub_word (wstack &a, const wstack &b) {
     a.pop_back ();
   return false;
 }
-// karatsuba loop
-/*
-mul(a, b):
-    max = sizeof a or b
-  A <-	  a1  +  a2
-  *   	  *       *
-  B <-  	b1  +  b2
-  |     	 |      |
-  C  -   c1  -   c2 -> DD
-
-
-    result
-    @@@@
-    c1
-      c2
-     DD
-    _____+
-
-*/
-struct mul_in {
-  size_t len;
-  const wstack::iterator a, &a_end;
-  const wstack::iterator b, &b_end;
-};
-static void mul_word (wstack::iterator r, const mul_in d) {
-  if (d.len == 1) {
-    if (d.a >= d.a_end || d.b >= d.b_end) return;
-    const word Ar = *d.a;
-    const word a_hi = Ar >> WORD_HALF_BITS;
-    const word a_lo = Ar & WORD_HALF_MASK;
-    const word &Br = *d.b;
-    const word b_hi = Br >> WORD_HALF_BITS;
-    const word b_lo = Br & WORD_HALF_MASK;
-    *r = Ar * Br;
-
-    word &r2 = *(r + 1);
-    r2 = (a_lo * b_lo) >> WORD_HALF_BITS;
-    r2 += a_hi * b_lo;
-    r2 += a_lo * b_hi;
-    r2 >>= WORD_HALF_BITS;
-    r2 += a_hi * b_hi;
-  } else {
-    size_t half_len = d.len / 2;
-    wstack re (d.len * 2, 0);
-    mul_word (re.begin (), mul_in{half_len, d.a, d.a_end, d.b, d.b_end});
-    mul_word (re.begin () + d.len, mul_in{half_len, d.a + half_len, d.a_end, d.b + half_len, d.b_end});
-  }
-}
 
 /**********************************
  * initialize BigInteger functions

@@ -107,7 +107,7 @@ private:
   BigInteger a = 1, // nominator
       b = 2,        // denominator
 
-      c = 4, // counter
+      c = 4, // counter 4x
       d = 3, // counter odd
       e = 1; // factorial
 
