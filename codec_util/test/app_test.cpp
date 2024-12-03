@@ -16,9 +16,8 @@ struct test_result {
   std::string name, data;
   bool success;
   unsigned long long time_encode, time_decode; // time report ns
-  double comp_ratio;           // %
+  double comp_ratio;                           // %
 };
-
 
 const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
@@ -27,11 +26,11 @@ const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pa
   // encoding data
   std::chrono::time_point<std::chrono::high_resolution_clock> startc = std::chrono::high_resolution_clock::now ();
   const codec_data encode_result = codec_n.second.first (data_n.second);
-  r.time_encode = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now () - startc).count();
+  r.time_encode = std::chrono::duration_cast<std::chrono::nanoseconds> (std::chrono::high_resolution_clock::now () - startc).count ();
   // decoding data
   startc = std::chrono::high_resolution_clock::now ();
   const codec_data decode_result = codec_n.second.second (encode_result);
-  r.time_decode = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now () - startc).count();
+  r.time_decode = std::chrono::duration_cast<std::chrono::nanoseconds> (std::chrono::high_resolution_clock::now () - startc).count ();
   // compare
   r.success = decode_result == data_n.second;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (data_n.second.size_bit ());
@@ -124,46 +123,46 @@ int main (int argv, char *args[]) {
     std::cout << "   codec   ||  data type  || res ||    encode    ||    decode    ||  ratio  |\n";
     std::cout << "-----------||-------------||-----||--------------||--------------||---------|\n";
     static const long double units[]{
-    	1000,  // ns
-    	1000,  // us
-    	1000,  // ms
-    	1000,  // s
-    	60,  // M
-    	60  // H
+        1000, // ns
+        1000, // us
+        1000, // ms
+        1000, // s
+        60,   // M
+        60    // H
     };
-    static const char *const uname[]{"ns","us","ms","s","M","H"};
-    
+    static const char *const uname[]{"ns", "us", "ms", "s", "M", "H"};
+
     for (test_result rs : rss) {
       // name
       std::cout << " " << std::setfill (' ') << std::setw (9) << rs.name << " ||  ";
       std::cout << (rs.success ? "√" : "×") << "  || ";
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
-{
-    	long double dcast = rs.time_encode;
-    	unsigned int lcast = 0;
-    	std::cout << std::setprecision(2);
-    	for(long double &u : units) {
-    		if (dcast < u)
-    			break;
-    		dcast /= u;
-    		++lcast;
-    	}
-      std::cout << dcast << " " << uname[lcast];
-}
+      {
+        long double dcast = rs.time_encode;
+        unsigned int lcast = 0;
+        std::cout << std::setprecision (2);
+        for (long double &u : units) {
+          if (dcast < u)
+            break;
+          dcast /= u;
+          ++lcast;
+        }
+        std::cout << dcast << " " << uname[lcast];
+      }
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-{
-    	long double dcast = rs.time_decode;
-    	unsigned int lcast = 0;
-    	std::cout << std::setprecision(2);
-    	for(long double &u : units) {
-    		if (dcast < u)
-    			break;
-    		dcast /= u;
-    		++lcast;
-    	}
-      std::cout << dcast << " " << uname[lcast];
-}
+      {
+        long double dcast = rs.time_decode;
+        unsigned int lcast = 0;
+        std::cout << std::setprecision (2);
+        for (long double &u : units) {
+          if (dcast < u)
+            break;
+          dcast /= u;
+          ++lcast;
+        }
+        std::cout << dcast << " " << uname[lcast];
+      }
       std::cout << " || " << std::setfill (' ') << std::setw (6) << rs.comp_ratio << " % |" << std::endl;
     }
 
