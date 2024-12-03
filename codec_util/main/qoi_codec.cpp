@@ -28,6 +28,26 @@ bool operator== (qoi_t a, qoi_t b) {
   (((uint32_t)'q') << 24 | ((uint32_t)'o') << 16 | \
    ((uint32_t)'i') << 8 | ((uint32_t)'f'))
 
+
+const codec_data qoi_encode (codec_data const &in) {
+	codec_data out;
+	uint32_t px;
+  for (codec_data::reader ro = in.begin_read (); ro.left ();) {
+  	ro >> px;
+  	out << px;
+  }
+	return out;
+}
+const codec_data qoi_decode (codec_data const &in) {
+	codec_data out;
+	uint32_t px;
+  for (codec_data::reader ro = in.begin_read (); ro.left ();) {
+  	ro >> px;
+  	out << px;
+  }
+	return out;
+}
+/*
 const codec_data qoi_encode (codec_data const &in) {
   codec_data out;
   qoi_t index[64]{}; // store code library = 0x3f => 0x11_1111b
@@ -142,3 +162,4 @@ const codec_data qoi_decode (codec_data const &in) {
 
   return out;
 }
+*/
