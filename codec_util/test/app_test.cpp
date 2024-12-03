@@ -16,9 +16,8 @@ struct test_result {
   std::string name, data;
   bool success;
   std::chrono::duration<unsigned long long, std::chrono::nanoseconds> time_encode, time_decode; // time report
-  double comp_ratio;           // %
+  double comp_ratio;                                                                            // %
 };
-
 
 const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
@@ -131,25 +130,25 @@ int main (int argv, char *args[]) {
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
 
-      if (rs.time_encode < std::chrono::microseconds(1))
+      if (rs.time_encode < std::chrono::microseconds (1))
         std::cout << std::to_string (rs.time_encode.count ()) << " ns";
-      else if (rs.time_encode < std::chrono::seconds(1))
+      else if (rs.time_encode < std::chrono::seconds (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::milliseconds> (rs.time_encode).count ()) << " ms";
-      else if (rs.time_encode < std::chrono::minutes(1))
+      else if (rs.time_encode < std::chrono::minutes (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::seconds> (rs.time_encode).count ()) << " s";
-      else if (rs.time_encode < std::chrono::hours(1))
+      else if (rs.time_encode < std::chrono::hours (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::minutes> (rs.time_encode).count ()) << " M";
       else
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::hours> (rs.time_encode).count ()) << " H";
 
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-      if (rs.time_decode < std::chrono::microseconds(1))
+      if (rs.time_decode < std::chrono::microseconds (1))
         std::cout << std::to_string (rs.time_decode.count ()) << " ns";
-      else if (rs.time_decode < std::chrono::seconds(1))
+      else if (rs.time_decode < std::chrono::seconds (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::milliseconds> (rs.time_decode).count ()) << " ms";
-      else if (rs.time_decode < std::chrono::minutes(1))
+      else if (rs.time_decode < std::chrono::minutes (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::seconds> (rs.time_decode).count ()) << " s";
-      else if (rs.time_decode < std::chrono::hours(1))
+      else if (rs.time_decode < std::chrono::hours (1))
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::minutes> (rs.time_decode).count ()) << " M";
       else
         std::cout << std::to_string (std::chrono::duration_cast<std::chrono::hours> (rs.time_decode).count ()) << " H";
