@@ -15,9 +15,10 @@
 struct test_result {
   std::string name, data;
   bool success;
-  std::chrono::duration<unsigned long long, std::chrono::nanoseconds> time_encode, time_decode; // time report
-  double comp_ratio;                                                                            // %
+  unsigned long long time_encode, time_decode; // time report ns
+  double comp_ratio;           // %
 };
+
 
 const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pair<std::string, std::pair<const codec_data (*) (codec_data const &), const codec_data (*) (codec_data const &)>> codec_n) {
   test_result r;
@@ -26,11 +27,11 @@ const test_result test_codec (std::pair<std::string, codec_data> data_n, std::pa
   // encoding data
   std::chrono::time_point<std::chrono::high_resolution_clock> startc = std::chrono::high_resolution_clock::now ();
   const codec_data encode_result = codec_n.second.first (data_n.second);
-  r.time_encode = std::chrono::high_resolution_clock::now () - startc;
+  r.time_encode = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now () - startc).count();
   // decoding data
   startc = std::chrono::high_resolution_clock::now ();
   const codec_data decode_result = codec_n.second.second (encode_result);
-  r.time_decode = std::chrono::high_resolution_clock::now () - startc;
+  r.time_decode = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now () - startc).count();
   // compare
   r.success = decode_result == data_n.second;
   r.comp_ratio = 100.00 - 100.00 * double (encode_result.size_bit ()) / double (data_n.second.size_bit ());
@@ -122,37 +123,47 @@ int main (int argv, char *args[]) {
     // Draw table header
     std::cout << "   codec   ||  data type  || res ||    encode    ||    decode    ||  ratio  |\n";
     std::cout << "-----------||-------------||-----||--------------||--------------||---------|\n";
-    std::chrono::nanoseconds duration;
+    static const long double units[]{
+    	1000,  // ns
+    	1000,  // us
+    	1000,  // ms
+    	1000,  // s
+    	60,  // M
+    	60  // H
+    };
+    static const char *const uname[]{"ns","us","ms","s","M","H"};
+    
     for (test_result rs : rss) {
       // name
       std::cout << " " << std::setfill (' ') << std::setw (9) << rs.name << " ||  ";
       std::cout << (rs.success ? "√" : "×") << "  || ";
       std::cout << std::setfill (' ') << std::setw (11) << rs.data << " || ";
       std::cout << std::setfill (' ') << std::setw (12);
-
-      if (rs.time_encode < std::chrono::microseconds (1))
-        std::cout << std::to_string (rs.time_encode.count ()) << " ns";
-      else if (rs.time_encode < std::chrono::seconds (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::milliseconds> (rs.time_encode).count ()) << " ms";
-      else if (rs.time_encode < std::chrono::minutes (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::seconds> (rs.time_encode).count ()) << " s";
-      else if (rs.time_encode < std::chrono::hours (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::minutes> (rs.time_encode).count ()) << " M";
-      else
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::hours> (rs.time_encode).count ()) << " H";
-
+{
+    	long double dcast = rs.time_encode;
+    	unsigned int lcast = 0;
+    	std::cout << std::setprecision(2);
+    	for(long double &u : units) {
+    		if (dcast < u)
+    			break;
+    		dcast /= u;
+    		++lcast;
+    	}
+      std::cout << dcast << " " << uname[lcast];
+}
       std::cout << " || " << std::setfill (' ') << std::setw (12);
-      if (rs.time_decode < std::chrono::microseconds (1))
-        std::cout << std::to_string (rs.time_decode.count ()) << " ns";
-      else if (rs.time_decode < std::chrono::seconds (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::milliseconds> (rs.time_decode).count ()) << " ms";
-      else if (rs.time_decode < std::chrono::minutes (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::seconds> (rs.time_decode).count ()) << " s";
-      else if (rs.time_decode < std::chrono::hours (1))
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::minutes> (rs.time_decode).count ()) << " M";
-      else
-        std::cout << std::to_string (std::chrono::duration_cast<std::chrono::hours> (rs.time_decode).count ()) << " H";
-
+{
+    	long double dcast = rs.time_decode;
+    	unsigned int lcast = 0;
+    	std::cout << std::setprecision(2);
+    	for(long double &u : units) {
+    		if (dcast < u)
+    			break;
+    		dcast /= u;
+    		++lcast;
+    	}
+      std::cout << dcast << " " << uname[lcast];
+}
       std::cout << " || " << std::setfill (' ') << std::setw (6) << rs.comp_ratio << " % |" << std::endl;
     }
 
