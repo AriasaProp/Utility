@@ -28,21 +28,14 @@ bool operator== (qoi_t a, qoi_t b) {
   (((uint32_t)'q') << 24 | ((uint32_t)'o') << 16 | \
    ((uint32_t)'i') << 8 | ((uint32_t)'f'))
 
-static const uint8_t qoi_padding[8] = {0, 0, 0, 0, 0, 0, 0, 1};
-
 const codec_data qoi_encode (codec_data const &in) {
   codec_data out;
   qoi_t index[64]{}; // store code library = 0x3f => 0x11_1111b
-
   uint8_t run = 0; // store run_len code
   qoi_t px_prev{.clr = 0xff000000}, px = px_prev;
-
   uint8_t bd; // store to out as byte, 32bit
-
   for (codec_data::reader ro = in.begin_read (); ro.left () || run;) {
-
     ro >> px.clr;
-
     if (((px.clr == px_prev.clr) && (++run == 62)) || !ro.left ()) {
       // run length codec
       bd = QOI_OP_RUN | (run - 1);
@@ -116,34 +109,35 @@ const codec_data qoi_decode (codec_data const &in) {
   qoi_t px{.clr = 0xff000000};
   uint8_t run, b1;
   for (codec_data::reader ro = in.begin_read (); ro.left ();) {
-    ro >> b1;
-    if (b1 == QOI_OP_RGB) {
-      ro >> px.rgba.r;
-      ro >> px.rgba.g;
-      ro >> px.rgba.b;
-    } else if (b1 == QOI_OP_RGBA) {
-      ro >> px.clr;
-    } else if ((b1 & QOI_MASK_2) == QOI_OP_INDEX) {
-      px = index[b1 & QOI_MASK_1];
-    } else if ((b1 & QOI_MASK_2) == QOI_OP_DIFF) {
-      px.rgba.r += ((b1 >> 4) & 0x03) - 2;
-      px.rgba.g += ((b1 >> 2) & 0x03) - 2;
-      px.rgba.b += (b1 & 0x03) - 2;
-    } else if ((b1 & QOI_MASK_2) == QOI_OP_LUMA) {
-      int vg = (b1 & QOI_MASK_1) - 0x20;
-      ro >> b1;
-      px.rgba.g += vg;
-      px.rgba.b += vg - 8 + (b1 & 0x0f);
-      b1 >>= 4;
-      px.rgba.r += vg - 8 + (b1 & 0x0f);
-    } else if ((b1 & QOI_MASK_2) == QOI_OP_RUN) {
-      run = (b1 & QOI_MASK_1);
-    }
-    index[QOI_COLOR_HASH (px)] = px;
-
-    do {
-      out << px.clr;
-    } while (--run);
+    if (run) {
+    	--run;
+    } else {
+	    ro >> b1;
+	    if (b1 == QOI_OP_RGB) {
+	      ro >> px.rgba.r;
+	      ro >> px.rgba.g;
+	      ro >> px.rgba.b;
+	    } else if (b1 == QOI_OP_RGBA) {
+	      ro >> px.clr;
+	    } else if ((b1 & QOI_MASK_2) == QOI_OP_INDEX) {
+	      px = index[b1 & QOI_MASK_1];
+	    } else if ((b1 & QOI_MASK_2) == QOI_OP_DIFF) {
+	      px.rgba.r += ((b1 >> 4) & 0x03) - 2;
+	      px.rgba.g += ((b1 >> 2) & 0x03) - 2;
+	      px.rgba.b += (b1 & 0x03) - 2;
+	    } else if ((b1 & QOI_MASK_2) == QOI_OP_LUMA) {
+	      int vg = (b1 & QOI_MASK_1) - 0x20;
+	      ro >> b1;
+	      px.rgba.g += vg;
+	      px.rgba.b += vg - 8 + (b1 & 0x0f);
+	      b1 >>= 4;
+	      px.rgba.r += vg - 8 + (b1 & 0x0f);
+	    } else if ((b1 & QOI_MASK_2) == QOI_OP_RUN) {
+	      run = (b1 & QOI_MASK_1);
+	    }
+	    index[QOI_COLOR_HASH (px)] = px;
+		}
+    out << px.clr;
   }
 
   return out;
