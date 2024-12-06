@@ -73,10 +73,11 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 // input: data, data length in byte
 unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte_len, image_param *param) {
   if (!bytes) throw "data memory is null";
-  if (byte_len < (HEADER_ARRAY + sizeof (image_param))) throw "byte length is to small";
-  const unsigned char *read_px = pixels, *end_px = pixels + byte_len;
+  if (byte_len < (HEADER_SIZE + sizeof (image_param))) throw "byte length is to small";
+  const unsigned char *read_px = bytes, *end_px = bytes + byte_len;
   // read header
-  if (memcmp (read_px, HEADER_ARRAY, HEADER_SIZE)) throw "header is wrong" read_px += HEADER_SIZE;
+  if (memcmp (read_px, HEADER_ARRAY, HEADER_SIZE)) throw "header is wrong";
+  read_px += HEADER_SIZE;
   // read params
   memcpy (param, read_px, sizeof (image_param));
   read_px += sizeof (image_param);
