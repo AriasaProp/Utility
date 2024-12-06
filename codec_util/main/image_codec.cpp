@@ -32,7 +32,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write header 8 bytes
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 12 bytes
-  write_px.insert (write_px.end (), static_cast<const unsigned char *> (&param), static_cast<const unsigned char *> (&param) + sizeof (image_param));
+  write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   std::vector<unsigned char> prev_px;
   unsigned char i, run = 0;
 
