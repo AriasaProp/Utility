@@ -74,7 +74,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte_len, image_param *param) {
   if (!bytes) throw "data memory is null";
   if (byte_len < (HEADER_ARRAY + sizeof (image_param))) throw "byte length is to small";
-  const unsigned char *read_px = pixels, end_px = pixels + byte_len;
+  const unsigned char *read_px = pixels, *end_px = pixels + byte_len;
   // read header
   if (memcmp (read_px, HEADER_ARRAY, HEADER_SIZE)) throw "header is wrong" read_px += HEADER_SIZE;
   // read params
@@ -83,7 +83,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // check param validity
   if ((end_px - read_px) < param->channel) throw "data is too small";
 
-  std::vector<pixel> prev_px;
+  std::vector<unsigned char> prev_px;
   unsigned char *out_px = static_cast<unsigned char *> (malloc (param->width * param->height * param->channel));
   unsigned char *write_px = out_px, *end_out_px = out_px + param->width * param->height * param->channel;
 
