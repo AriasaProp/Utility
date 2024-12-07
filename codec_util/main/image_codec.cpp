@@ -33,8 +33,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 12 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned char *buff_px = new unsigned char[param.channel*64];
-  memset (buff_px, 0xff, param.channel*64);
+  unsigned char *buff_px = new unsigned char[param.channel * 64];
+  memset (buff_px, 0xff, param.channel * 64);
   unsigned char *prev_px = new unsigned char[param.channel];
   memset (prev_px, 0xff, param.channel);
   unsigned char i, run = 0;
@@ -60,18 +60,18 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       bool lookup = false;
       for (i = 0; i < 64; ++i) {
         lookup = !memcmp (buff_px + (i * param.channel), read_px, param.channel);
-	      write_px.push_back (IMGC_LOOKBACK | i);
+        write_px.push_back (IMGC_LOOKBACK | i);
       }
       if (!lookup) {
-	      // write code for full channel
-	      write_px.push_back (IMGC_FULLCHANNEL);
-	      // write full channel for current pixel
-	      write_px.insert (write_px.end (), read_px, read_px + param.channel);
-	      // put previous pixel to buffer for look up
-	      memmove(buff_px + param.channel, buff_px, param.channel * 63);
-	      memcpy (buff_px, prev_px, param.channel);
-	      // put current pixel to previous
-	      memcpy (prev_px, read_px, param.channel);
+        // write code for full channel
+        write_px.push_back (IMGC_FULLCHANNEL);
+        // write full channel for current pixel
+        write_px.insert (write_px.end (), read_px, read_px + param.channel);
+        // put previous pixel to buffer for look up
+        memmove (buff_px + param.channel, buff_px, param.channel * 63);
+        memcpy (buff_px, prev_px, param.channel);
+        // put current pixel to previous
+        memcpy (prev_px, read_px, param.channel);
       }
     }
     read_px += param.channel;
@@ -101,8 +101,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // check param validity
   if ((end_px - read_px) < param->channel) throw "data is too small";
 
-  unsigned char *buff_px = new unsigned char[param->channel*64];
-  memset (buff_px, 0xff, param->channel*64);
+  unsigned char *buff_px = new unsigned char[param->channel * 64];
+  memset (buff_px, 0xff, param->channel * 64);
   unsigned char *prev_px = new unsigned char[param->channel];
   memset (prev_px, 0xff, param->channel);
   unsigned char *out_px = static_cast<unsigned char *> (malloc (param->width * param->height * param->channel));
@@ -136,10 +136,10 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
         write_px += param->channel;
-        
-	      memmove(buff_px + param.channel, buff_px, param.channel * 63);
-	      memcpy (buff_px, prev_px, param.channel);
-	      
+
+        memmove (buff_px + param.channel, buff_px, param.channel * 63);
+        memcpy (buff_px, prev_px, param.channel);
+
         memcpy (prev_px, read_px, param->channel);
         read_px += param->channel;
         break;
