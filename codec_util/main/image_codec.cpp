@@ -137,8 +137,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         memcpy (write_px, read_px, param->channel);
         write_px += param->channel;
 
-        memmove (buff_px + param.channel, buff_px, param.channel * 63);
-        memcpy (buff_px, prev_px, param.channel);
+        memmove (buff_px + param->channel, buff_px, param->channel * 63);
+        memcpy (buff_px, prev_px, param->channel);
 
         memcpy (prev_px, read_px, param->channel);
         read_px += param->channel;
