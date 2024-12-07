@@ -15,10 +15,10 @@
 int main (int argv, char *args[]) {
   std::cout << "Start Codec Test" << std::endl;
   try {
-    int outx = 2, outy = 2, outc = 4;
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
     char buff[1024];
+    image_param img_p;
     for (unsigned int f = 0; f <= 5; ++f) {
       sprintf (buff, "%s/%02d.png", args[1], f);
       std::cout << "Test: " << buff;
@@ -26,7 +26,6 @@ int main (int argv, char *args[]) {
       outbytes = outx * outy * outc;
       if (!s) throw stbi::load::failure_reason ();
 
-      image_param img_p{(unsigned int)outx, (unsigned int)outy, (unsigned char)outc};
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
 
