@@ -263,59 +263,59 @@ struct stbi__result_info {
 
 #ifndef STBI_NO_JPEG
 static int stbi__jpeg_test (stbi__context *s);
-static void *stbi__jpeg_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__jpeg_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__jpeg_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__jpeg_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_PNG
 static int stbi__png_test (stbi__context *s);
-static void *stbi__png_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__png_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__png_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__png_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 static int stbi__png_is16 (stbi__context *s);
 #endif
 
 #ifndef STBI_NO_BMP
 static int stbi__bmp_test (stbi__context *s);
-static void *stbi__bmp_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__bmp_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__bmp_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__bmp_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_TGA
 static int stbi__tga_test (stbi__context *s);
-static void *stbi__tga_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__tga_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__tga_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__tga_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_PSD
 static int stbi__psd_test (stbi__context *s);
-static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri, int bpc);
-static int stbi__psd_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri, int bpc);
+static int stbi__psd_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 static int stbi__psd_is16 (stbi__context *s);
 #endif
 
 #ifndef STBI_NO_HDR
 static int stbi__hdr_test (stbi__context *s);
-static float *stbi__hdr_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__hdr_info (stbi__context *s, int *x, int *y, channel *chnl);
+static float *stbi__hdr_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__hdr_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_PIC
 static int stbi__pic_test (stbi__context *s);
-static void *stbi__pic_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__pic_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__pic_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__pic_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_GIF
 static int stbi__gif_test (stbi__context *s);
-static void *stbi__gif_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static void *stbi__load_gif_main (stbi__context *s, int **delays, int *x, int *y, int *z, channel *chnl, channel req_chnl);
-static int stbi__gif_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__gif_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static void *stbi__load_gif_main (stbi__context *s, int **delays, int *x, int *y, int *z, stbi::load::channel *chnl, stbi::load::channel req_chnl);
+static int stbi__gif_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 #endif
 
 #ifndef STBI_NO_PNM
 static int stbi__pnm_test (stbi__context *s);
-static void *stbi__pnm_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri);
-static int stbi__pnm_info (stbi__context *s, int *x, int *y, channel *chnl);
+static void *stbi__pnm_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri);
+static int stbi__pnm_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl);
 static int stbi__pnm_is16 (stbi__context *s);
 #endif
 
@@ -460,9 +460,9 @@ void stbi::load::set_flip_vertically_on_load_thread (int flag_true_if_should_fli
                                            : stbi__vertically_flip_on_load_global)
 #endif // STBI_THREAD_LOCAL
 
-static void *stbi__load_main (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri, int bpc) {
+static void *stbi__load_main (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri, int bpc) {
   memset (ri, 0, sizeof (*ri));       // make sure it's initialized if we add new fields
-  ri->bits_per_channel = 8;           // default is 8 so most paths don't have to be changed
+  ri->bits_per_stbi::load::channel = 8;           // default is 8 so most paths don't have to be changed
   ri->channel_order = STBI_ORDER_RGB; // all current input & output are this, but this is here so we can add BGR order
   ri->num_chnl = 0;
 
@@ -512,7 +512,7 @@ static void *stbi__load_main (stbi__context *s, int *x, int *y, channel *chnl, c
   return stbi__errpuc ("unknown image type : Image not of any known type, or corrupt");
 }
 
-static unsigned char *stbi__convert_16_to_8 (uint16_t *orig, int w, int h, channel chnl) {
+static unsigned char *stbi__convert_16_to_8 (uint16_t *orig, int w, int h, stbi::load::channel chnl) {
   int i;
   int img_len = w * h * chnl;
   unsigned char *reduced;
@@ -527,7 +527,7 @@ static unsigned char *stbi__convert_16_to_8 (uint16_t *orig, int w, int h, chann
   return reduced;
 }
 
-static uint16_t *stbi__convert_8_to_16 (unsigned char *orig, int w, int h, channel chnl) {
+static uint16_t *stbi__convert_8_to_16 (unsigned char *orig, int w, int h, stbi::load::channel chnl) {
   int i;
   int img_len = w * h * chnl;
   uint16_t *enlarged;
@@ -566,7 +566,7 @@ static void stbi__vertical_flip (void *image, int w, int h, int bytes_per_pixel)
 }
 
 #ifndef STBI_NO_GIF
-static void stbi__vertical_flip_slices (void *image, int w, int h, int z, channel chnl) {
+static void stbi__vertical_flip_slices (void *image, int w, int h, int z, stbi::load::channel chnl) {
   int slice;
   int slice_size = w * h * chnl;
 
@@ -578,7 +578,7 @@ static void stbi__vertical_flip_slices (void *image, int w, int h, int z, channe
 }
 #endif
 
-static unsigned char *stbi__load_and_postprocess_8bit (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl) {
+static unsigned char *stbi__load_and_postprocess_8bit (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   stbi__result_info ri;
   void *result = stbi__load_main (s, x, y, chnl, req_chnl, &ri, 8);
 
@@ -586,24 +586,24 @@ static unsigned char *stbi__load_and_postprocess_8bit (stbi__context *s, int *x,
     return NULL;
 
   // it is the responsibility of the loaders to make sure we get either 8 or 16 bit.
-  ASSERT (ri.bits_per_channel == 8 || ri.bits_per_channel == 16);
+  ASSERT (ri.bits_per_stbi::load::channel == 8 || ri.bits_per_stbi::load::channel == 16);
 
-  if (ri.bits_per_channel != 8) {
+  if (ri.bits_per_stbi::load::channel != 8) {
     result = stbi__convert_16_to_8 ((uint16_t *)result, *x, *y, req_chnl == 0 ? *chnl : req_chnl);
-    ri.bits_per_channel = 8;
+    ri.bits_per_stbi::load::channel = 8;
   }
 
   // @TODO: move stbi__convert_format to here
 
   if (stbi__vertically_flip_on_load) {
-    channel chnl = req_chnl ? req_chnl : *chnl;
+    stbi::load::channel chnl = req_chnl ? req_chnl : *chnl;
     stbi__vertical_flip (result, *x, *y, chnl * sizeof (unsigned char));
   }
 
   return (unsigned char *)result;
 }
 
-static uint16_t *stbi__load_and_postprocess_16bit (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl) {
+static uint16_t *stbi__load_and_postprocess_16bit (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   stbi__result_info ri;
   void *result = stbi__load_main (s, x, y, chnl, req_chnl, &ri, 16);
 
@@ -611,18 +611,18 @@ static uint16_t *stbi__load_and_postprocess_16bit (stbi__context *s, int *x, int
     return NULL;
 
   // it is the responsibility of the loaders to make sure we get either 8 or 16 bit.
-  ASSERT (ri.bits_per_channel == 8 || ri.bits_per_channel == 16);
+  ASSERT (ri.bits_per_stbi::load::channel == 8 || ri.bits_per_stbi::load::channel == 16);
 
-  if (ri.bits_per_channel != 16) {
+  if (ri.bits_per_stbi::load::channel != 16) {
     result = stbi__convert_8_to_16 ((unsigned char *)result, *x, *y, req_chnl == 0 ? *chnl : req_chnl);
-    ri.bits_per_channel = 16;
+    ri.bits_per_stbi::load::channel = 16;
   }
 
   // @TODO: move stbi__convert_format16 to here
   // @TODO: special case RGB-to-Y (and RGBA-to-YA) for 8-bit-to-16-bit case to keep more precision
 
   if (stbi__vertically_flip_on_load) {
-    channel chnl = req_chnl ? req_chnl : *chnl;
+    stbi::load::channel chnl = req_chnl ? req_chnl : *chnl;
     stbi__vertical_flip (result, *x, *y, chnl * sizeof (uint16_t));
   }
 
@@ -630,9 +630,9 @@ static uint16_t *stbi__load_and_postprocess_16bit (stbi__context *s, int *x, int
 }
 
 #if !defined(STBI_NO_HDR) && !defined(STBI_NO_LINEAR)
-static void stbi__float_postprocess (float *result, int *x, int *y, channel *chnl, channel req_chnl) {
+static void stbi__float_postprocess (float *result, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   if (stbi__vertically_flip_on_load && result != NULL) {
-    channel chnl = req_chnl ? req_chnl : *chnl;
+    stbi::load::channel chnl = req_chnl ? req_chnl : *chnl;
     stbi__vertical_flip (result, *x, *y, chnl * sizeof (float));
   }
 }
@@ -678,7 +678,7 @@ static FILE *stbi__fopen (char const *filename, char const *mode) {
   return f;
 }
 
-unsigned char *stbi::load::load_from_filename (char const *filename, int *x, int *y, channel *chnl, channel req_chnl) {
+unsigned char *stbi::load::load_from_filename (char const *filename, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   FILE *f = stbi__fopen (filename, "rb");
   unsigned char *result;
   if (!f) return stbi__errpuc ("can't fopen : Unable to open file");
@@ -687,7 +687,7 @@ unsigned char *stbi::load::load_from_filename (char const *filename, int *x, int
   return result;
 }
 
-unsigned char *stbi::load::load_from_file (FILE *f, int *x, int *y, channel *chnl, channel req_chnl) {
+unsigned char *stbi::load::load_from_file (FILE *f, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   unsigned char *result;
   stbi__context s;
   stbi__start_callbacks (&s, &stbi__stdio_callback, (void *)f);
@@ -699,7 +699,7 @@ unsigned char *stbi::load::load_from_file (FILE *f, int *x, int *y, channel *chn
   return result;
 }
 
-uint16_t *stbi::load::load_from_file_16 (FILE *f, int *x, int *y, channel *chnl, channel req_chnl) {
+uint16_t *stbi::load::load_from_file_16 (FILE *f, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   uint16_t *result;
   stbi__context s;
   stbi__start_callbacks (&s, &stbi__stdio_callback, (void *)f);
@@ -711,7 +711,7 @@ uint16_t *stbi::load::load_from_file_16 (FILE *f, int *x, int *y, channel *chnl,
   return result;
 }
 
-unsigned short *stbi::load::load_16 (char const *filename, int *x, int *y, channel *chnl, channel req_chnl) {
+unsigned short *stbi::load::load_16 (char const *filename, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   FILE *f = stbi__fopen (filename, "rb");
   uint16_t *result;
   if (!f) return (unsigned short *)stbi__errpuc ("can't fopen : Unable to open file");
@@ -722,20 +722,20 @@ unsigned short *stbi::load::load_16 (char const *filename, int *x, int *y, chann
 
 #endif //! STBI_NO_STDIO
 
-unsigned short *stbi::load::load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl, channel desired_chnl) {
+unsigned short *stbi::load::load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel desired_chnl) {
   stbi__context s;
   stbi__start_mem (&s, buffer, len);
   return stbi__load_and_postprocess_16bit (&s, x, y, chnl_in_file, desired_chnl);
 }
 
-unsigned char *stbi::load::load_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl, channel req_chnl) {
+unsigned char *stbi::load::load_from_memory (unsigned char const *buffer, int len, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   stbi__context s;
   stbi__start_mem (&s, buffer, len);
   return stbi__load_and_postprocess_8bit (&s, x, y, chnl, req_chnl);
 }
 
 #ifndef STBI_NO_GIF
-unsigned char *stbi::load::load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, channel *chnl, channel req_chnl) {
+unsigned char *stbi::load::load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   unsigned char *result;
   stbi__context s;
   stbi__start_mem (&s, buffer, len);
@@ -750,7 +750,7 @@ unsigned char *stbi::load::load_gif_from_memory (unsigned char const *buffer, in
 #endif
 
 #ifndef STBI_NO_LINEAR
-static float *stbi__loadf_main (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl) {
+static float *stbi__loadf_main (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   unsigned char *data;
 #ifndef STBI_NO_HDR
   if (stbi__hdr_test (s)) {
@@ -767,14 +767,14 @@ static float *stbi__loadf_main (stbi__context *s, int *x, int *y, channel *chnl,
   return stbi__errpf ("unknown image type : Image not of any known type, or corrupt");
 }
 
-float *stbi::load::loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl, channel req_chnl) {
+float *stbi::load::loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   stbi__context s;
   stbi__start_mem (&s, buffer, len);
   return stbi__loadf_main (&s, x, y, chnl, req_chnl);
 }
 
 #ifndef STBI_NO_STDIO
-float *stbi::load::loadf (char const *filename, int *x, int *y, channel *chnl, channel req_chnl) {
+float *stbi::load::loadf (char const *filename, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   float *result;
   FILE *f = stbi__fopen (filename, "rb");
   if (!f) return stbi__errpf ("can't fopen : Unable to open file");
@@ -783,7 +783,7 @@ float *stbi::load::loadf (char const *filename, int *x, int *y, channel *chnl, c
   return result;
 }
 
-float *stbi::load::loadf_from_file (FILE *f, int *x, int *y, channel *chnl, channel req_chnl) {
+float *stbi::load::loadf_from_file (FILE *f, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   stbi__context s;
   stbi__start_callbacks (&s, &stbi__stdio_callback, (void *)f);
   return stbi__loadf_main (&s, x, y, chnl, req_chnl);
@@ -3261,7 +3261,7 @@ static unsigned char stbi__blinn_8x8 (unsigned char x, unsigned char y) {
   return (unsigned char)((t + (t >> 8)) >> 8);
 }
 
-static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, channel *chnl, channel req_chnl) {
+static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   int n, decode_n, is_rgb;
   z->s->img_n = 0; // make stbi__cleanup_jpeg safe
 
@@ -3386,7 +3386,7 @@ static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, ch
               out[2] = stbi__blinn_8x8 (255 - out[2], m);
               out += n;
             }
-          } else { // YCbCr + alpha?  Ignore the fourth channel for now
+          } else { // YCbCr + alpha?  Ignore the fourth stbi::load::channel for now
             z->YCbCr_to_RGB_kernel (out, y, coutput[1], coutput[2], z->s->img_x, n);
           }
         } else
@@ -3442,7 +3442,7 @@ static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, ch
   }
 }
 
-static void *stbi__jpeg_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__jpeg_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   unsigned char *result;
   stbi__jpeg *j = (stbi__jpeg *)malloc (sizeof (stbi__jpeg));
   if (!j) return stbi__errpuc ("Out of memory");
@@ -3468,7 +3468,7 @@ static int stbi__jpeg_test (stbi__context *s) {
   return r;
 }
 
-static int stbi__jpeg_info_raw (stbi__jpeg *j, int *x, int *y, channel *chnl) {
+static int stbi__jpeg_info_raw (stbi__jpeg *j, int *x, int *y, stbi::load::channel *chnl) {
   if (!stbi__decode_jpeg_header (j, STBI__SCAN_header)) {
     stbi__rewind (j->s);
     return 0;
@@ -3479,7 +3479,7 @@ static int stbi__jpeg_info_raw (stbi__jpeg *j, int *x, int *y, channel *chnl) {
   return 1;
 }
 
-static int stbi__jpeg_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__jpeg_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   int result;
   stbi__jpeg *j = (stbi__jpeg *)(malloc (sizeof (stbi__jpeg)));
   if (!j) return stbi__err ("Out of memory");
@@ -4160,7 +4160,7 @@ static int stbi__create_png_image_raw (stbi__png *a, unsigned char *raw, uint32_
 
     raw += nk;
 
-    // expand decoded bits in cur to dest, also adding an extra alpha channel if desired
+    // expand decoded bits in cur to dest, also adding an extra alpha stbi::load::channel if desired
     if (depth < 8) {
       unsigned char scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayscale values to 0..255 range
       unsigned char *in = cur;
@@ -4643,15 +4643,15 @@ static void *stbi__do_png (stbi__png *p, int *x, int *y, int *n, int req_chnl, s
   if (req_chnl < 0 || req_chnl > 4) return stbi__errpuc ("bad req_chnl : Internal error");
   if (stbi__parse_png_file (p, STBI__SCAN_load, req_chnl)) {
     if (p->depth <= 8)
-      ri->bits_per_channel = 8;
+      ri->bits_per_stbi::load::channel = 8;
     else if (p->depth == 16)
-      ri->bits_per_channel = 16;
+      ri->bits_per_stbi::load::channel = 16;
     else
-      return stbi__errpuc ("bad bits_per_channel : PNG not supported: unsupported color depth");
+      return stbi__errpuc ("bad bits_per_stbi::load::channel : PNG not supported: unsupported color depth");
     result = p->out;
     p->out = NULL;
     if (req_chnl && req_chnl != p->s->img_out_n) {
-      if (ri->bits_per_channel == 8)
+      if (ri->bits_per_stbi::load::channel == 8)
         result = stbi__convert_format ((unsigned char *)result, p->s->img_out_n, req_chnl, p->s->img_x, p->s->img_y);
       else
         result = stbi__convert_format16 ((uint16_t *)result, p->s->img_out_n, req_chnl, p->s->img_x, p->s->img_y);
@@ -4672,7 +4672,7 @@ static void *stbi__do_png (stbi__png *p, int *x, int *y, int *n, int req_chnl, s
   return result;
 }
 
-static void *stbi__png_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__png_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   stbi__png p;
   p.s = s;
   return stbi__do_png (&p, x, y, chnl, req_chnl, ri);
@@ -4685,7 +4685,7 @@ static int stbi__png_test (stbi__context *s) {
   return r;
 }
 
-static int stbi__png_info_raw (stbi__png *p, int *x, int *y, channel *chnl) {
+static int stbi__png_info_raw (stbi__png *p, int *x, int *y, stbi::load::channel *chnl) {
   if (!stbi__parse_png_file (p, STBI__SCAN_header, 0)) {
     stbi__rewind (p->s);
     return 0;
@@ -4696,7 +4696,7 @@ static int stbi__png_info_raw (stbi__png *p, int *x, int *y, channel *chnl) {
   return 1;
 }
 
-static int stbi__png_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__png_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   stbi__png p;
   p.s = s;
   return stbi__png_info_raw (&p, x, y, chnl);
@@ -4830,7 +4830,7 @@ static int stbi__bmp_set_mask_defaults (stbi__bmp_data *info, int chnlress) {
       info->mg = 0xffu << 8;
       info->mb = 0xffu << 0;
       info->ma = 0xffu << 24;
-      info->all_a = 0; // if all_a is 0 at end, then we loaded alpha channel but it was all 0
+      info->all_a = 0; // if all_a is 0 at end, then we loaded alpha stbi::load::channel but it was all 0
     } else {
       // otherwise, use defaults, which is all-0
       info->mr = info->mg = info->mb = info->ma = 0;
@@ -4921,7 +4921,7 @@ static void *stbi__bmp_parse_header (stbi__context *s, stbi__bmp_data *info) {
   return (void *)1;
 }
 
-static void *stbi__bmp_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__bmp_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   unsigned char *out;
   unsigned int mr = 0, mg = 0, mb = 0, ma = 0, all_a;
   unsigned char pal[256][4];
@@ -5118,7 +5118,7 @@ static void *stbi__bmp_load (stbi__context *s, int *x, int *y, channel *chnl, ch
     }
   }
 
-  // if alpha channel is all 0s, replace with all 255s
+  // if alpha stbi::load::channel is all 0s, replace with all 255s
   if (target == 4 && all_a == 0)
     for (i = 4 * s->img_x * s->img_y - 1; i >= 0; i -= 4)
       out[i] = 255;
@@ -5172,7 +5172,7 @@ static int stbi__tga_get_chnl (int bits_per_pixel, int is_grey, int *is_rgb16) {
   }
 }
 
-static int stbi__tga_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__tga_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   int tga_w, tga_h, tga_chnl, tga_image_type, tga_bits_per_pixel, tga_colormap_bpp;
   int sz, tga_colormap_type;
   stbi__get8 (s);                     // discard Offset
@@ -5285,7 +5285,7 @@ static void stbi__tga_read_rgb16 (stbi__context *s, unsigned char *out) {
   // so let's treat all 15 and 16bit TGAs as RGB with no alpha.
 }
 
-static void *stbi__tga_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__tga_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   //   read in the TGA header stuff
   int tga_offset = stbi__get8 (s);
   int tga_indexed = stbi__get8 (s);
@@ -5524,7 +5524,7 @@ static int stbi__psd_decode_rle (stbi__context *s, unsigned char *p, int pixelCo
   return 1;
 }
 
-static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri, int bpc) {
+static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri, int bpc) {
   int pixelCount;
   int channelCount, chnlression;
   int channel, i;
@@ -5547,7 +5547,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
   // Read the number of chnl (R, G, B, A, etc).
   channelCount = stbi__get16be (s);
   if (channelCount < 0 || channelCount > 16)
-    return stbi__errpuc ("wrong channel count : Unsupported number of chnl in PSD image");
+    return stbi__errpuc ("wrong stbi::load::channel count : Unsupported number of chnl in PSD image");
 
   // Read the rows and columns of the image.
   h = stbi__get32be (s);
@@ -5599,7 +5599,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
 
   if (!chnlression && bitdepth == 16 && bpc == 16) {
     out = (unsigned char *)stbi__malloc_mad3 (8, w, h, 0);
-    ri->bits_per_channel = 16;
+    ri->bits_per_stbi::load::channel = 16;
   } else
     out = (unsigned char *)malloc (4 * w * h);
 
@@ -5624,14 +5624,14 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
     stbi__skip (s, h * channelCount * 2);
 
     // Read the RLE data by channel.
-    for (channel = 0; channel < 4; channel++) {
+    for (stbi::load::channel = 0; stbi::load::channel < 4; channel++) {
       unsigned char *p;
 
       p = out + channel;
-      if (channel >= channelCount) {
-        // Fill this channel with default data.
+      if (stbi::load::channel >= channelCount) {
+        // Fill this stbi::load::channel with default data.
         for (i = 0; i < pixelCount; i++, p += 4)
-          *p = (channel == 3 ? 255 : 0);
+          *p = (stbi::load::channel == 3 ? 255 : 0);
       } else {
         // Read the RLE data.
         if (!stbi__psd_decode_rle (s, p, pixelCount)) {
@@ -5642,26 +5642,26 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
     }
 
   } else {
-    // We're at the raw image data.  It's each channel in order (Red, Green, Blue, Alpha, ...)
-    // where each channel consists of an 8-bit (or 16-bit) value for each pixel in the image.
+    // We're at the raw image data.  It's each stbi::load::channel in order (Red, Green, Blue, Alpha, ...)
+    // where each stbi::load::channel consists of an 8-bit (or 16-bit) value for each pixel in the image.
 
     // Read the data by channel.
-    for (channel = 0; channel < 4; channel++) {
-      if (channel >= channelCount) {
-        // Fill this channel with default data.
+    for (stbi::load::channel = 0; stbi::load::channel < 4; channel++) {
+      if (stbi::load::channel >= channelCount) {
+        // Fill this stbi::load::channel with default data.
         if (bitdepth == 16 && bpc == 16) {
           uint16_t *q = ((uint16_t *)out) + channel;
-          uint16_t val = channel == 3 ? 65535 : 0;
+          uint16_t val = stbi::load::channel == 3 ? 65535 : 0;
           for (i = 0; i < pixelCount; i++, q += 4)
             *q = val;
         } else {
           unsigned char *p = out + channel;
-          unsigned char val = channel == 3 ? 255 : 0;
+          unsigned char val = stbi::load::channel == 3 ? 255 : 0;
           for (i = 0; i < pixelCount; i++, p += 4)
             *p = val;
         }
       } else {
-        if (ri->bits_per_channel == 16) { // output bpc
+        if (ri->bits_per_stbi::load::channel == 16) { // output bpc
           uint16_t *q = ((uint16_t *)out) + channel;
           for (i = 0; i < pixelCount; i++, q += 4)
             *q = (uint16_t)stbi__get16be (s);
@@ -5681,7 +5681,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
 
   // remove weird white matte from PSD
   if (channelCount >= 4) {
-    if (ri->bits_per_channel == 16) {
+    if (ri->bits_per_stbi::load::channel == 16) {
       for (i = 0; i < w * h; ++i) {
         uint16_t *pixel = (uint16_t *)out + 4 * i;
         if (pixel[3] != 0 && pixel[3] != 65535) {
@@ -5710,7 +5710,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, channel *chnl, ch
 
   // convert to desired output format
   if (req_chnl && req_chnl != 4) {
-    if (ri->bits_per_channel == 16)
+    if (ri->bits_per_stbi::load::channel == 16)
       out = (unsigned char *)stbi__convert_format16 ((uint16_t *)out, 4, req_chnl, w, h);
     else
       out = stbi__convert_format (out, 4, req_chnl, w, h);
@@ -5765,7 +5765,7 @@ static unsigned char *stbi__readval (stbi__context *s, int channel, unsigned cha
   int mask = 0x80, i;
 
   for (i = 0; i < 4; ++i, mask >>= 1) {
-    if (channel & mask) {
+    if (stbi::load::channel & mask) {
       if (stbi__at_eof (s)) return stbi__errpuc ("bad file : PIC file too short");
       dest[i] = stbi__get8 (s);
     }
@@ -5778,16 +5778,16 @@ static void stbi__copyval (int channel, unsigned char *dest, const unsigned char
   int mask = 0x80, i;
 
   for (i = 0; i < 4; ++i, mask >>= 1)
-    if (channel & mask)
+    if (stbi::load::channel & mask)
       dest[i] = src[i];
 }
 
-static unsigned char *stbi__pic_load_core (stbi__context *s, int width, int height, channel *chnl, unsigned char *result) {
+static unsigned char *stbi__pic_load_core (stbi__context *s, int width, int height, stbi::load::channel *chnl, unsigned char *result) {
   int act_chnl = 0, num_packets = 0, y, chained;
   stbi__pic_packet packets[10];
 
   // this will (should...) cater for even some bizarre stuff like having data
-  // for the same channel in multiple packets.
+  // for the same stbi::load::channel in multiple packets.
   do {
     stbi__pic_packet *packet;
 
@@ -5799,7 +5799,7 @@ static unsigned char *stbi__pic_load_core (stbi__context *s, int width, int heig
     chained = stbi__get8 (s);
     packet->size = stbi__get8 (s);
     packet->type = stbi__get8 (s);
-    packet->channel = stbi__get8 (s);
+    packet->stbi::load::channel = stbi__get8 (s);
 
     act_chnl |= packet->channel;
 
@@ -5890,7 +5890,7 @@ static unsigned char *stbi__pic_load_core (stbi__context *s, int width, int heig
   return result;
 }
 
-static void *stbi__pic_load (stbi__context *s, int *px, int *py, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__pic_load (stbi__context *s, int *px, int *py, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   unsigned char *result;
   int i, x, y, internal_chnl;
   NO_USE (ri);
@@ -5991,7 +5991,7 @@ static void stbi__gif_parse_colortable (stbi__context *s, unsigned char pal[256]
   }
 }
 
-static int stbi__gif_header (stbi__context *s, stbi__gif *g, channel *chnl, int is_info) {
+static int stbi__gif_header (stbi__context *s, stbi__gif *g, stbi::load::channel *chnl, int is_info) {
   unsigned char version;
   if (stbi__get8 (s) != 'G' || stbi__get8 (s) != 'I' || stbi__get8 (s) != 'F' || stbi__get8 (s) != '8')
     return stbi__err ("not GIF : Corrupt GIF");
@@ -6021,7 +6021,7 @@ static int stbi__gif_header (stbi__context *s, stbi__gif *g, channel *chnl, int 
   return 1;
 }
 
-static int stbi__gif_info_raw (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__gif_info_raw (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   stbi__gif *g = (stbi__gif *)malloc (sizeof (stbi__gif));
   if (!g) return stbi__err ("Out of memory");
   if (!stbi__gif_header (s, g, chnl, 1)) {
@@ -6157,7 +6157,7 @@ static unsigned char *stbi__process_gif_raster (stbi__context *s, stbi__gif *g) 
 
 // this function is designed to support animated gifs, although stb_image doesn't support it
 // two back is the image from two frames ago, used for a very specific disposal format
-static unsigned char *stbi__gif_load_next (stbi__context *s, stbi__gif *g, channel *chnl, channel req_chnl, unsigned char *two_back) {
+static unsigned char *stbi__gif_load_next (stbi__context *s, stbi__gif *g, stbi::load::channel *chnl, stbi::load::channel req_chnl, unsigned char *two_back) {
   int dispose;
   int first_frame;
   int pi;
@@ -6340,7 +6340,7 @@ static void *stbi__load_gif_main_outofmem (stbi__gif *g, unsigned char *out, int
   return stbi__errpuc ("Out of memory");
 }
 
-static void *stbi__load_gif_main (stbi__context *s, int **delays, int *x, int *y, int *z, channel *chnl, channel req_chnl) {
+static void *stbi__load_gif_main (stbi__context *s, int **delays, int *x, int *y, int *z, stbi::load::channel *chnl, stbi::load::channel req_chnl) {
   if (stbi__gif_test (s)) {
     int layers = 0;
     unsigned char *u = 0;
@@ -6424,7 +6424,7 @@ static void *stbi__load_gif_main (stbi__context *s, int **delays, int *x, int *y
   }
 }
 
-static void *stbi__gif_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__gif_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   unsigned char *u = 0;
   stbi__gif g;
   memset (&g, 0, sizeof (g));
@@ -6452,7 +6452,7 @@ static void *stbi__gif_load (stbi__context *s, int *x, int *y, channel *chnl, ch
   return u;
 }
 
-static int stbi__gif_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__gif_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   return stbi__gif_info_raw (s, x, y, chnl);
 }
 #endif
@@ -6532,7 +6532,7 @@ static void stbi__hdr_convert (float *output, unsigned char *input, int req_chnl
   }
 }
 
-static float *stbi__hdr_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static float *stbi__hdr_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   char buffer[STBI__HDR_BUFLEN];
   char *token;
   int valid = 0;
@@ -6674,7 +6674,7 @@ static float *stbi__hdr_load (stbi__context *s, int *x, int *y, channel *chnl, c
   return hdr_data;
 }
 
-static int stbi__hdr_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__hdr_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   char buffer[STBI__HDR_BUFLEN];
   char *token;
   int valid = 0;
@@ -6719,7 +6719,7 @@ static int stbi__hdr_info (stbi__context *s, int *x, int *y, channel *chnl) {
 #endif // STBI_NO_HDR
 
 #ifndef STBI_NO_BMP
-static int stbi__bmp_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__bmp_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   void *p;
   stbi__bmp_data info;
 
@@ -6742,7 +6742,7 @@ static int stbi__bmp_info (stbi__context *s, int *x, int *y, channel *chnl) {
 #endif
 
 #ifndef STBI_NO_PSD
-static int stbi__psd_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__psd_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   int channelCount, dummy, depth;
   if (!x) x = &dummy;
   if (!y) y = &dummy;
@@ -6804,7 +6804,7 @@ static int stbi__psd_is16 (stbi__context *s) {
 #endif
 
 #ifndef STBI_NO_PIC
-static int stbi__pic_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__pic_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   int act_chnl = 0, num_packets = 0, chained, dummy;
   stbi__pic_packet packets[10];
 
@@ -6842,7 +6842,7 @@ static int stbi__pic_info (stbi__context *s, int *x, int *y, channel *chnl) {
     chained = stbi__get8 (s);
     packet->size = stbi__get8 (s);
     packet->type = stbi__get8 (s);
-    packet->channel = stbi__get8 (s);
+    packet->stbi::load::channel = stbi__get8 (s);
     act_chnl |= packet->channel;
 
     if (stbi__at_eof (s)) {
@@ -6885,12 +6885,12 @@ static int stbi__pnm_test (stbi__context *s) {
   return 1;
 }
 
-static void *stbi__pnm_load (stbi__context *s, int *x, int *y, channel *chnl, channel req_chnl, stbi__result_info *ri) {
+static void *stbi__pnm_load (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri) {
   unsigned char *out;
   NO_USE (ri);
 
-  ri->bits_per_channel = stbi__pnm_info (s, (int *)&s->img_x, (int *)&s->img_y, (int *)&s->img_n);
-  if (ri->bits_per_channel == 0)
+  ri->bits_per_stbi::load::channel = stbi__pnm_info (s, (int *)&s->img_x, (int *)&s->img_y, (int *)&s->img_n);
+  if (ri->bits_per_stbi::load::channel == 0)
     return 0;
 
   if (s->img_y > STBI_MAX_DIMENSIONS) return stbi__errpuc ("too large : Very large image (corrupt?)");
@@ -6900,18 +6900,18 @@ static void *stbi__pnm_load (stbi__context *s, int *x, int *y, channel *chnl, ch
   *y = s->img_y;
   if (chnl) *chnl = s->img_n;
 
-  if (!stbi__mad4sizes_valid (s->img_n, s->img_x, s->img_y, ri->bits_per_channel / 8, 0))
+  if (!stbi__mad4sizes_valid (s->img_n, s->img_x, s->img_y, ri->bits_per_stbi::load::channel / 8, 0))
     return stbi__errpuc ("too large : PNM too large");
 
-  out = (unsigned char *)stbi__malloc_mad4 (s->img_n, s->img_x, s->img_y, ri->bits_per_channel / 8, 0);
+  out = (unsigned char *)stbi__malloc_mad4 (s->img_n, s->img_x, s->img_y, ri->bits_per_stbi::load::channel / 8, 0);
   if (!out) return stbi__errpuc ("Out of memory");
-  if (!stbi__getn (s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_channel / 8))) {
+  if (!stbi__getn (s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_stbi::load::channel / 8))) {
     free (out);
     return stbi__errpuc ("bad PNM : PNM file truncated");
   }
 
   if (req_chnl && req_chnl != s->img_n) {
-    if (ri->bits_per_channel == 16) {
+    if (ri->bits_per_stbi::load::channel == 16) {
       out = (unsigned char *)stbi__convert_format16 ((uint16_t *)out, s->img_n, req_chnl, s->img_x, s->img_y);
     } else {
       out = stbi__convert_format (out, s->img_n, req_chnl, s->img_x, s->img_y);
@@ -6955,7 +6955,7 @@ static int stbi__pnm_getinteger (stbi__context *s, char *c) {
   return value;
 }
 
-static int stbi__pnm_info (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__pnm_info (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
   int maxv, dummy;
   char c, p, t;
 
@@ -7004,7 +7004,7 @@ static int stbi__pnm_is16 (stbi__context *s) {
 }
 #endif
 
-static int stbi__info_main (stbi__context *s, int *x, int *y, channel *chnl) {
+static int stbi__info_main (stbi__context *s, int *x, int *y, stbi::load::channel *chnl) {
 #ifndef STBI_NO_JPEG
   if (stbi__jpeg_info (s, x, y, chnl)) return 1;
 #endif
@@ -7061,7 +7061,7 @@ static int stbi__is_16_main (stbi__context *s) {
 }
 
 #ifndef STBI_NO_STDIO
-int stbi::load::info (char const *filename, int *x, int *y, channel *chnl) {
+int stbi::load::info (char const *filename, int *x, int *y, stbi::load::channel *chnl) {
   FILE *f = stbi__fopen (filename, "rb");
   int result;
   if (!f) return stbi__err ("can't fopen : Unable to open file");
@@ -7070,7 +7070,7 @@ int stbi::load::info (char const *filename, int *x, int *y, channel *chnl) {
   return result;
 }
 
-int stbi::load::info_from_file (FILE *f, int *x, int *y, channel *chnl) {
+int stbi::load::info_from_file (FILE *f, int *x, int *y, stbi::load::channel *chnl) {
   int r;
   stbi__context s;
   long pos = ftell (f);
@@ -7100,7 +7100,7 @@ int stbi::load::is_16_bit_from_file (FILE *f) {
 }
 #endif // !STBI_NO_STDIO
 
-int stbi::load::info_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl) {
+int stbi::load::info_from_memory (unsigned char const *buffer, int len, int *x, int *y, stbi::load::channel *chnl) {
   stbi__context s;
   stbi__start_mem (&s, buffer, len);
   return stbi__info_main (&s, x, y, chnl);
