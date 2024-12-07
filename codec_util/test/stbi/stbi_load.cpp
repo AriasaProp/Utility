@@ -3272,7 +3272,8 @@ static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, ch
   }
 
   // determine actual number of chnlonents to generate
-  n = req_chnl ? req_chnl : z->s->img_n >= 3 ? 3 : 1;
+  n = req_chnl ? req_chnl : z->s->img_n >= 3 ? 3
+                                             : 1;
 
   is_rgb = z->s->img_n == 3 && (z->rgb == 3 || (z->app14_color_transform == 0 && !z->jfif));
 

@@ -7,7 +7,7 @@
 #endif // STBI_NO_STDIO
 namespace stbi {
 namespace load {
-  enum channel: unsigned char {
+  enum channel : unsigned char {
     none = 0, // only used for req_chnl
     grey = 1,
     grey_alpha = 2,
@@ -23,7 +23,7 @@ namespace load {
   unsigned char *load_from_memory (unsigned char const *, int, int *, int *, channel *, channel);
 
 #ifndef STBI_NO_STDIO
-  unsigned char *load_from_filename (char const *filename, int *x, int *y, channel *chnl,channel req_chnl);
+  unsigned char *load_from_filename (char const *filename, int *x, int *y, channel *chnl, channel req_chnl);
   unsigned char *load_from_file (FILE *f, int *x, int *y, channel *chnl, channel req_chnl);
 // for load_from_file, file pointer is left pointing immediately after image
 #endif
