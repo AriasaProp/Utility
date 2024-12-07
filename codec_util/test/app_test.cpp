@@ -25,7 +25,7 @@ int main (int argv, char *args[]) {
       s = stbi::load::load_from_filename (buff, &outx, &outy, &outc, 0);
       outbytes = outx * outy * outc;
       if (!s) throw stbi::load::failure_reason ();
-      
+
       image_param img_p{(unsigned int)outx, (unsigned int)outy, (unsigned char)outc};
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
@@ -34,9 +34,9 @@ int main (int argv, char *args[]) {
         std::cout << " Failure " << std::endl;
         std::cout << "A info x " << outx << " y " << outy << " ch " << outc << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
-      	int *a = reinterpret_cast<int*>(s), *b = reinterpret_cast<int*>(is);
-      	for (unsigned int i = 0; i < outx * outy; ++i)
-    			std::cout << std::hex << *(a+i) << " : " << std::hex << *(b+i) << std::endl;
+        int *a = reinterpret_cast<int *> (s), *b = reinterpret_cast<int *> (is);
+        for (unsigned int i = 0; i < outx * outy; ++i)
+          std::cout << std::hex << *(a + i) << " : " << std::hex << *(b + i) << std::endl;
       } else {
         std::cout << " Succes with " << outbytes << " bytes";
       }
