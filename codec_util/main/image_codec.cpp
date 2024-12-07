@@ -33,10 +33,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 12 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned char *buff_px = new unsigned char[param.channel * 64];
-  memset (buff_px, 0xff, param.channel * 64);
-  unsigned char *prev_px = new unsigned char[param.channel];
-  memset (prev_px, 0xff, param.channel);
+  unsigned char *buff_px = new unsigned char[param.channel * 64]{};
+  unsigned char *prev_px = new unsigned char[param.channel]{};
   unsigned char i, run = 0;
 
   while (read_px < end_px) {
@@ -57,12 +55,13 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         write_px.push_back (IMGC_RUNLENGTH | (run - 1));
         run = 0;
       }
-      bool lookup = false;
-      for (i = 0; i < 64; ++i) {
-        lookup = !memcmp (buff_px + (i * param.channel), read_px, param.channel);
-        write_px.push_back (IMGC_LOOKBACK | i);
+      bool notfound = true;
+      for (i = 0; notfound && i < 64; ++i) {
+        notfound = memcmp (buff_px + (i * param.channel), read_px, param.channel);
       }
-      if (!lookup) {
+      if (!notfound) {
+      	write_px.push_back (IMGC_LOOKBACK | i);
+      } else {
         // write code for full channel
         write_px.push_back (IMGC_FULLCHANNEL);
         // write full channel for current pixel
@@ -83,7 +82,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     write_px.push_back (IMGC_RUNLENGTH | (run - 1));
 
   *out_byte = write_px.size ();
-  unsigned char *out = static_cast<unsigned char *> (malloc (*out_byte));
+  unsigned char *out = new unsigned char[*out_byte];
   memcpy (out, write_px.data (), *out_byte);
   return out;
 }
@@ -101,11 +100,9 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // check param validity
   if ((end_px - read_px) < param->channel) throw "data is too small";
 
-  unsigned char *buff_px = new unsigned char[param->channel * 64];
-  memset (buff_px, 0xff, param->channel * 64);
-  unsigned char *prev_px = new unsigned char[param->channel];
-  memset (prev_px, 0xff, param->channel);
-  unsigned char *out_px = static_cast<unsigned char *> (malloc (param->width * param->height * param->channel));
+  unsigned char *buff_px = new unsigned char[param->channel * 64]{};
+  unsigned char *prev_px = new unsigned char[param->channel]{};
+  unsigned char *out_px = new unsigned char[param->width * param->height * param->channel]{};
   unsigned char *write_px = out_px, *end_out_px = out_px + param->width * param->height * param->channel;
 
   // read byte
@@ -156,5 +153,5 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
 
 // void release memory
 void image_free (unsigned char *f) {
-  free ((void *)f);
+  delete[] f;
 }
