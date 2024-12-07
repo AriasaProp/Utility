@@ -7,8 +7,8 @@
 #endif // STBI_NO_STDIO
 namespace stbi {
 namespace load {
-  enum channel : unsigned char {
-    none = 0, // only used for req_chnl
+  enum channel {
+    none = 0, // only used for desired_channels
     grey = 1,
     grey_alpha = 2,
     rgb = 3,
@@ -20,16 +20,16 @@ namespace load {
   // 8-bits-per-channel interface
   //
 
-  unsigned char *load_from_memory (unsigned char const *, int, int *, int *, channel *, channel);
+  unsigned char *load_from_memory (unsigned char const *, int, int *, int *, int *, int);
 
 #ifndef STBI_NO_STDIO
-  unsigned char *load_from_filename (char const *filename, int *x, int *y, channel *, channel);
-  unsigned char *load_from_file (FILE *f, int *x, int *y, channel *, channel);
+  unsigned char *load_from_filename (char const *filename, int *x, int *y, int *channels_in_file, int desired_channels);
+  unsigned char *load_from_file (FILE *f, int *x, int *y, int *channels_in_file, int desired_channels);
 // for load_from_file, file pointer is left pointing immediately after image
 #endif
 
 #ifndef STBI_NO_GIF
-  unsigned char *load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, channel *, channel);
+  unsigned char *load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, int *comp, int req_comp);
 #endif
 
 #ifdef STBI_WINDOWS_UTF8
@@ -41,11 +41,11 @@ namespace load {
   // 16-bits-per-channel interface
   //
 
-  unsigned short *load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *, channel);
+  unsigned short *load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, int *channels_in_file, int desired_channels);
 
 #ifndef STBI_NO_STDIO
-  unsigned short *load_16 (char const *filename, int *x, int *y, channel *, channel);
-  unsigned short *load_from_file_16 (FILE *f, int *x, int *y, channel *, channel);
+  unsigned short *load_16 (char const *filename, int *x, int *y, int *channels_in_file, int desired_channels);
+  unsigned short *load_from_file_16 (FILE *f, int *x, int *y, int *channels_in_file, int desired_channels);
 #endif
 
 ////////////////////////////////////
@@ -53,11 +53,11 @@ namespace load {
 // float-per-channel interface
 //
 #ifndef STBI_NO_LINEAR
-  float *loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *, channel);
+  float *loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, int *channels_in_file, int desired_channels);
 
 #ifndef STBI_NO_STDIO
-  float *loadf (char const *filename, int *x, int *y, channel *, channel);
-  float *loadf_from_file (FILE *f, int *x, int *y, channel *, channel);
+  float *loadf (char const *filename, int *x, int *y, int *channels_in_file, int desired_channels);
+  float *loadf_from_file (FILE *f, int *x, int *y, int *channels_in_file, int desired_channels);
 #endif
 #endif
 
