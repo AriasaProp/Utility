@@ -60,7 +60,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         notfound = memcmp (buff_px + (i * param.channel), read_px, param.channel);
       }
       if (!notfound) {
-      	write_px.push_back (IMGC_LOOKBACK | i);
+        write_px.push_back (IMGC_LOOKBACK | i);
       } else {
         // write code for full channel
         write_px.push_back (IMGC_FULLCHANNEL);
