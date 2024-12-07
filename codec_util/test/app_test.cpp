@@ -19,7 +19,7 @@ int main (int argv, char *args[]) {
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
     char buff[1024];
-    for (unsigned int f = 0; f <= 4; ++f) {
+    for (unsigned int f = 0; f <= 5; ++f) {
       sprintf (buff, "%s/%02d.png", args[1], f);
       std::cout << "Test: " << buff << " comp ";
       s = stbi::load::load_from_filename (buff, &outx, &outy, &outc, 0);
@@ -29,15 +29,19 @@ int main (int argv, char *args[]) {
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
 
-      stbi::load::image_free (s);
-
       if (memcmp (s, is, outx * outy * outc)) {
-        std::cout << " Failure ";
+        std::cout << " Failure " << std::endl;
+        if (!f) {
+        	int *a = reintepre_cast<int*>(s), *b = reintepre_cast<int*>(is);
+        	for (unsigned int i = 0; i < outx * outy; ++i)
+      			std::cout << std::hex << *(a+i) << " : " << std::hex << *(b+i) << std::endl;
+        }
       } else {
         std::cout << " Succes with " << outbytes << " bytes";
       }
       std::cout << std::endl;
 
+      stbi::load::image_free (s);
       image_free (ic);
       image_free (is);
     }
