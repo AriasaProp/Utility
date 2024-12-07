@@ -6,17 +6,17 @@
 #include <vector>
 
 // masking
-#define IMGC_MASKFILTER		0xc0		/* 11000000 */
-#define IMGC_MASKVALUE		0x3f 		/* 00111111 */
+#define IMGC_MASKFILTER 0xc0 /* 11000000 */
+#define IMGC_MASKVALUE 0x3f  /* 00111111 */
 
 // filter keys
-#define IMGC_RUNLENGTH		0x00 		/* 00xxxxxx */
-#define IMGC_LOOKBACK			0x40  	/* 01xxxxxx */
+#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
+#define IMGC_LOOKBACK 0x40  /* 01xxxxxx */
 
-#define IMGC_V1    	  		0x80		/* 10xxxxxx */
+#define IMGC_V1 0x80 /* 10xxxxxx */
 
-#define IMGC_V2						0xc0		/* 11xxxxxx */
-#define IMGC_FULLCHANNEL	0xc0		/* 11000000 */
+#define IMGC_V2 0xc0          /* 11xxxxxx */
+#define IMGC_FULLCHANNEL 0xc0 /* 11000000 */
 
 // utf8 : IMGCODEC
 const unsigned int HEADER_SIZE = 8;
@@ -35,9 +35,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   std::vector<unsigned char> buff_px;
   unsigned char *prev_px = new unsigned char[param.channel];
-  memset(prev_pv, 0xff, param.channel);
+  memset (prev_pv, 0xff, param.channel);
   unsigned char i, run = 0;
-
 
   while (read_px < end_px) {
     // apply some filter encoding
@@ -45,23 +44,23 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     int cmp_px = memcmp (prev_px, read_px, param.channel);
 
     if (!cmp_px) {
-    	// if equal, add run_length
+      // if equal, add run_length
       if (++run > 63) {
-    		// write down when pass the limit
+        // write down when pass the limit
         write_px.push_back (IMGC_RUNLENGTH & (run - 1));
         run = 0;
       }
     } else {
       if (run) {
-    		// write down when run_length end
+        // write down when run_length end
         write_px.push_back (IMGC_RUNLENGTH & (run - 1));
         run = 0;
       }
       bool lookup = false;
-      for (std::vector<unsigned char>::iterator look = buff_px.begin(), el = buff_px.end(); !lookup && look < el; look += param.channel) {
-      	lookup = !memcmp (look, read_px, param.channel);
+      for (std::vector<unsigned char>::iterator look = buff_px.begin (), el = buff_px.end (); !lookup && look < el; look += param.channel) {
+        lookup = !memcmp (look, read_px, param.channel);
       }
-      
+
       // write code for full channel
       write_px.push_back (IMGC_FULLCHANNEL);
       // write full channel for current pixel
@@ -69,12 +68,12 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       // put previous pixel to buffer for look up
       buff_px.insert (buff_px.begin (), prev_px, prev_px + param.channel);
       // put current pixel to previous
-      memcpy(prev_pv, read_px, param.channel);
+      memcpy (prev_pv, read_px, param.channel);
     }
     read_px += param.channel;
   }
   delete[] prev_px;
-	// write down when pixel out
+  // write down when pixel out
   if (run)
     write_px.push_back (IMGC_RUNLENGTH & (run - 1));
 
@@ -99,7 +98,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
 
   std::vector<unsigned char> buff_px;
   unsigned char *prev_px = new unsigned char[param->channel];
-  memset(prev_pv, 0xff, param->channel);
+  memset (prev_pv, 0xff, param->channel);
   unsigned char *out_px = static_cast<unsigned char *> (malloc (param->width * param->height * param->channel));
   unsigned char *write_px = out_px, *end_out_px = out_px + param->width * param->height * param->channel;
 
@@ -109,36 +108,36 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // next pixel
   while (read_px < end_px) {
     readed = *(read_px++);
-    
+
     switch (readed & IMGC_MASKFILTER) {
-    	case IMGC_RUNLENGTH:
-    		readed &= IMGC_MASKVALUE;
-	      readed++;
-	      do {
-	        memcpy (write_px, prev_px, param->channel);
-	        write_px += param->channel;
-	      } while (--readed);
-    		break;
-    	case IMGC_LOOKBACK:
-    		readed &= IMGC_MASKVALUE;
-	      memcpy (write_px, buff_px.data() + (readed * param->channel), param->channel);
+    case IMGC_RUNLENGTH:
+      readed &= IMGC_MASKVALUE;
+      readed++;
+      do {
+        memcpy (write_px, prev_px, param->channel);
         write_px += param->channel;
-    		break;
-    	case IMGC_V1:
-    		throw "not yet";
-    	case IMGC_V2:
-    		switch (readed) {
-    			case IMGC_FULLCHANNEL:
-    				memcpy (write_px, read_px, param->channel);
-			      memcpy (prev_px, read_px, param->channel);
-			      buff_px.insert (buff_px.begin (), prev_px, prev_px + param->channel);
-			      read_px += param->channel;
-			      write_px += param->channel;
-    				break;
-    			default:
-    				throw "not yet";
-    		}
-    		break;
+      } while (--readed);
+      break;
+    case IMGC_LOOKBACK:
+      readed &= IMGC_MASKVALUE;
+      memcpy (write_px, buff_px.data () + (readed * param->channel), param->channel);
+      write_px += param->channel;
+      break;
+    case IMGC_V1:
+      throw "not yet";
+    case IMGC_V2:
+      switch (readed) {
+      case IMGC_FULLCHANNEL:
+        memcpy (write_px, read_px, param->channel);
+        memcpy (prev_px, read_px, param->channel);
+        buff_px.insert (buff_px.begin (), prev_px, prev_px + param->channel);
+        read_px += param->channel;
+        write_px += param->channel;
+        break;
+      default:
+        throw "not yet";
+      }
+      break;
     }
   }
   delete[] prev_px;
