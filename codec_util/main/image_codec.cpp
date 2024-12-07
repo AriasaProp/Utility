@@ -6,17 +6,17 @@
 #include <vector>
 
 // masking
-#define IMGC_MASKFILTER 0xc0 /* 11000000 */
-#define IMGC_MASKVALUE 0x3f  /* 00111111 */
+#define IMGC_MASKFILTER 0xc0	/* 11000000 */
+#define IMGC_MASKVALUE 0x3f 	/* 00111111 */
 
 // filter keys
-#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
-#define IMGC_LOOKBACK 0x40  /* 01xxxxxx */
+#define IMGC_RUNLENGTH 0x00 	/* 00xxxxxx */
+#define IMGC_LOOKBACK 0x40  	/* 01xxxxxx */
 
-#define IMGC_V1 0x80 /* 10xxxxxx */
+#define IMGC_V1 0x80					/* 10xxxxxx */
 
 #define IMGC_V2 0xc0          /* 11xxxxxx */
-#define IMGC_FULLCHANNEL 0xc0 /* 11000000 */
+#define IMGC_FULLCHANNEL 0xc0 /* 11111111 */
 
 // utf8 : IMGCODEC
 const unsigned int HEADER_SIZE = 8;

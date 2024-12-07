@@ -31,10 +31,12 @@ int main (int argv, char *args[]) {
 
       if (memcmp (s, is, outx * outy * outc)) {
         std::cout << " Failure " << std::endl;
+        std::cout << "A info x " << outx << " y " << outy << " ch " << outc << std::endl;
+        std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << img_p.channel << std::endl;
         if (!f) {
-          int *a = reinterpret_cast<int *> (s), *b = reinterpret_cast<int *> (is);
-          for (unsigned int i = 0; i < outx * outy; ++i)
-            std::cout << std::hex << *(a + i) << " : " << std::hex << *(b + i) << std::endl;
+        	int *a = reinterpret_cast<int*>(s), *b = reinterpret_cast<int*>(is);
+        	for (unsigned int i = 0; i < outx * outy; ++i)
+      			std::cout << std::hex << *(a+i) << " : " << std::hex << *(b+i) << std::endl;
         }
       } else {
         std::cout << " Succes with " << outbytes << " bytes";
