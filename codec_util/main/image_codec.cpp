@@ -148,7 +148,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   }
   delete[] prev_px;
   delete[] buff_px;
-  return write_px;
+  return out_px;
 }
 
 // void release memory
