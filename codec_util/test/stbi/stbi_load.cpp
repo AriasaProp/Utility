@@ -461,9 +461,9 @@ void stbi::load::set_flip_vertically_on_load_thread (int flag_true_if_should_fli
 #endif // STBI_THREAD_LOCAL
 
 static void *stbi__load_main (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri, int bpc) {
-  memset (ri, 0, sizeof (*ri));       // make sure it's initialized if we add new fields
-  ri->bits_per_stbi::load::channel = 8;           // default is 8 so most paths don't have to be changed
-  ri->channel_order = STBI_ORDER_RGB; // all current input & output are this, but this is here so we can add BGR order
+  memset (ri, 0, sizeof (*ri));         // make sure it's initialized if we add new fields
+  ri->bits_per_stbi::load::channel = 8; // default is 8 so most paths don't have to be changed
+  ri->channel_order = STBI_ORDER_RGB;   // all current input & output are this, but this is here so we can add BGR order
   ri->num_chnl = 0;
 
 // test the formats with a very explicit header first (at least a FOURCC
