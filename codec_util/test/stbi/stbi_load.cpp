@@ -461,9 +461,9 @@ void stbi::load::set_flip_vertically_on_load_thread (int flag_true_if_should_fli
 #endif // STBI_THREAD_LOCAL
 
 static void *stbi__load_main (stbi__context *s, int *x, int *y, stbi::load::channel *chnl, stbi::load::channel req_chnl, stbi__result_info *ri, int bpc) {
-  memset (ri, 0, sizeof (*ri));         // make sure it's initialized if we add new fields
-  ri->bits_per_stbi::load::channel = 8; // default is 8 so most paths don't have to be changed
-  ri->channel_order = STBI_ORDER_RGB;   // all current input & output are this, but this is here so we can add BGR order
+  memset (ri, 0, sizeof (*ri));       // make sure it's initialized if we add new fields
+  ri->bits_per_channel = 8;           // default is 8 so most paths don't have to be changed
+  ri->channel_order = STBI_ORDER_RGB; // all current input & output are this, but this is here so we can add BGR order
   ri->num_chnl = 0;
 
 // test the formats with a very explicit header first (at least a FOURCC
@@ -586,11 +586,11 @@ static unsigned char *stbi__load_and_postprocess_8bit (stbi__context *s, int *x,
     return NULL;
 
   // it is the responsibility of the loaders to make sure we get either 8 or 16 bit.
-  ASSERT (ri.bits_per_stbi::load::channel == 8 || ri.bits_per_stbi::load::channel == 16);
+  ASSERT (ri.bits_per_channel == 8 || ri.bits_per_channel == 16);
 
-  if (ri.bits_per_stbi::load::channel != 8) {
+  if (ri.bits_per_channel != 8) {
     result = stbi__convert_16_to_8 ((uint16_t *)result, *x, *y, req_chnl == 0 ? *chnl : req_chnl);
-    ri.bits_per_stbi::load::channel = 8;
+    ri.bits_per_channel = 8;
   }
 
   // @TODO: move stbi__convert_format to here
@@ -611,11 +611,11 @@ static uint16_t *stbi__load_and_postprocess_16bit (stbi__context *s, int *x, int
     return NULL;
 
   // it is the responsibility of the loaders to make sure we get either 8 or 16 bit.
-  ASSERT (ri.bits_per_stbi::load::channel == 8 || ri.bits_per_stbi::load::channel == 16);
+  ASSERT (ri.bits_per_channel == 8 || ri.bits_per_channel == 16);
 
-  if (ri.bits_per_stbi::load::channel != 16) {
+  if (ri.bits_per_channel != 16) {
     result = stbi__convert_8_to_16 ((unsigned char *)result, *x, *y, req_chnl == 0 ? *chnl : req_chnl);
-    ri.bits_per_stbi::load::channel = 16;
+    ri.bits_per_channel = 16;
   }
 
   // @TODO: move stbi__convert_format16 to here
@@ -3437,7 +3437,7 @@ static unsigned char *load_jpeg_image (stbi__jpeg *z, int *out_x, int *out_y, st
     stbi__cleanup_jpeg (z);
     *out_x = z->s->img_x;
     *out_y = z->s->img_y;
-    if (chnl) *chnl = z->s->img_n >= 3 ? 3 : 1; // report original chnlonents, not output
+    if (chnl) *chnl = z->s->img_n >= stbi::load::channel::rgb ? stbi::load::channel::rgb : stbi::load::channel::grey; // report original channel components, not output
     return output;
   }
 }
@@ -4643,15 +4643,15 @@ static void *stbi__do_png (stbi__png *p, int *x, int *y, int *n, int req_chnl, s
   if (req_chnl < 0 || req_chnl > 4) return stbi__errpuc ("bad req_chnl : Internal error");
   if (stbi__parse_png_file (p, STBI__SCAN_load, req_chnl)) {
     if (p->depth <= 8)
-      ri->bits_per_stbi::load::channel = 8;
+      ri->bits_per_channel = 8;
     else if (p->depth == 16)
-      ri->bits_per_stbi::load::channel = 16;
+      ri->bits_per_channel = 16;
     else
-      return stbi__errpuc ("bad bits_per_stbi::load::channel : PNG not supported: unsupported color depth");
+      return stbi__errpuc ("bad bits_per_channel : PNG not supported: unsupported color depth");
     result = p->out;
     p->out = NULL;
     if (req_chnl && req_chnl != p->s->img_out_n) {
-      if (ri->bits_per_stbi::load::channel == 8)
+      if (ri->bits_per_channel == 8)
         result = stbi__convert_format ((unsigned char *)result, p->s->img_out_n, req_chnl, p->s->img_x, p->s->img_y);
       else
         result = stbi__convert_format16 ((uint16_t *)result, p->s->img_out_n, req_chnl, p->s->img_x, p->s->img_y);
@@ -5599,7 +5599,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::chann
 
   if (!chnlression && bitdepth == 16 && bpc == 16) {
     out = (unsigned char *)stbi__malloc_mad3 (8, w, h, 0);
-    ri->bits_per_stbi::load::channel = 16;
+    ri->bits_per_channel = 16;
   } else
     out = (unsigned char *)malloc (4 * w * h);
 
@@ -5661,7 +5661,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::chann
             *p = val;
         }
       } else {
-        if (ri->bits_per_stbi::load::channel == 16) { // output bpc
+        if (ri->bits_per_channel == 16) { // output bpc
           uint16_t *q = ((uint16_t *)out) + channel;
           for (i = 0; i < pixelCount; i++, q += 4)
             *q = (uint16_t)stbi__get16be (s);
@@ -5681,7 +5681,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::chann
 
   // remove weird white matte from PSD
   if (channelCount >= 4) {
-    if (ri->bits_per_stbi::load::channel == 16) {
+    if (ri->bits_per_channel == 16) {
       for (i = 0; i < w * h; ++i) {
         uint16_t *pixel = (uint16_t *)out + 4 * i;
         if (pixel[3] != 0 && pixel[3] != 65535) {
@@ -5710,7 +5710,7 @@ static void *stbi__psd_load (stbi__context *s, int *x, int *y, stbi::load::chann
 
   // convert to desired output format
   if (req_chnl && req_chnl != 4) {
-    if (ri->bits_per_stbi::load::channel == 16)
+    if (ri->bits_per_channel == 16)
       out = (unsigned char *)stbi__convert_format16 ((uint16_t *)out, 4, req_chnl, w, h);
     else
       out = stbi__convert_format (out, 4, req_chnl, w, h);
@@ -6889,8 +6889,8 @@ static void *stbi__pnm_load (stbi__context *s, int *x, int *y, stbi::load::chann
   unsigned char *out;
   NO_USE (ri);
 
-  ri->bits_per_stbi::load::channel = stbi__pnm_info (s, (int *)&s->img_x, (int *)&s->img_y, (int *)&s->img_n);
-  if (ri->bits_per_stbi::load::channel == 0)
+  ri->bits_per_channel = stbi__pnm_info (s, (int *)&s->img_x, (int *)&s->img_y, (int *)&s->img_n);
+  if (ri->bits_per_channel == 0)
     return 0;
 
   if (s->img_y > STBI_MAX_DIMENSIONS) return stbi__errpuc ("too large : Very large image (corrupt?)");
@@ -6900,18 +6900,18 @@ static void *stbi__pnm_load (stbi__context *s, int *x, int *y, stbi::load::chann
   *y = s->img_y;
   if (chnl) *chnl = s->img_n;
 
-  if (!stbi__mad4sizes_valid (s->img_n, s->img_x, s->img_y, ri->bits_per_stbi::load::channel / 8, 0))
+  if (!stbi__mad4sizes_valid (s->img_n, s->img_x, s->img_y, ri->bits_per_channel / 8, 0))
     return stbi__errpuc ("too large : PNM too large");
 
-  out = (unsigned char *)stbi__malloc_mad4 (s->img_n, s->img_x, s->img_y, ri->bits_per_stbi::load::channel / 8, 0);
+  out = (unsigned char *)stbi__malloc_mad4 (s->img_n, s->img_x, s->img_y, ri->bits_per_channel / 8, 0);
   if (!out) return stbi__errpuc ("Out of memory");
-  if (!stbi__getn (s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_stbi::load::channel / 8))) {
+  if (!stbi__getn (s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_channel / 8))) {
     free (out);
     return stbi__errpuc ("bad PNM : PNM file truncated");
   }
 
   if (req_chnl && req_chnl != s->img_n) {
-    if (ri->bits_per_stbi::load::channel == 16) {
+    if (ri->bits_per_channel == 16) {
       out = (unsigned char *)stbi__convert_format16 ((uint16_t *)out, s->img_n, req_chnl, s->img_x, s->img_y);
     } else {
       out = stbi__convert_format (out, s->img_n, req_chnl, s->img_x, s->img_y);

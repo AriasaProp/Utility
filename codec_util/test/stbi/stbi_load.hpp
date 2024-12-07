@@ -23,13 +23,13 @@ namespace load {
   unsigned char *load_from_memory (unsigned char const *, int, int *, int *, channel *, channel);
 
 #ifndef STBI_NO_STDIO
-  unsigned char *load_from_filename (char const *filename, int *x, int *y, channel *chnl, channel req_chnl);
-  unsigned char *load_from_file (FILE *f, int *x, int *y, channel *chnl, channel req_chnl);
+  unsigned char *load_from_filename (char const *filename, int *x, int *y, channel *, channel);
+  unsigned char *load_from_file (FILE *f, int *x, int *y, channel *, channel);
 // for load_from_file, file pointer is left pointing immediately after image
 #endif
 
 #ifndef STBI_NO_GIF
-  unsigned char *load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, int *comp, int req_comp);
+  unsigned char *load_gif_from_memory (unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, channel *, channel);
 #endif
 
 #ifdef STBI_WINDOWS_UTF8
@@ -41,11 +41,11 @@ namespace load {
   // 16-bits-per-channel interface
   //
 
-  unsigned short *load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl, channel req_chnl);
+  unsigned short *load_16_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *, channel);
 
 #ifndef STBI_NO_STDIO
-  unsigned short *load_16 (char const *filename, int *x, int *y, channel *chnl, channel req_chnl);
-  unsigned short *load_from_file_16 (FILE *f, int *x, int *y, channel *chnl, channel req_chnl);
+  unsigned short *load_16 (char const *filename, int *x, int *y, channel *, channel);
+  unsigned short *load_from_file_16 (FILE *f, int *x, int *y, channel *, channel);
 #endif
 
 ////////////////////////////////////
@@ -53,11 +53,11 @@ namespace load {
 // float-per-channel interface
 //
 #ifndef STBI_NO_LINEAR
-  float *loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *chnl, channel req_chnl);
+  float *loadf_from_memory (unsigned char const *buffer, int len, int *x, int *y, channel *, channel);
 
 #ifndef STBI_NO_STDIO
-  float *loadf (char const *filename, int *x, int *y, channel *chnl, channel req_chnl);
-  float *loadf_from_file (FILE *f, int *x, int *y, channel *chnl, channel req_chnl);
+  float *loadf (char const *filename, int *x, int *y, channel *, channel);
+  float *loadf_from_file (FILE *f, int *x, int *y, channel *, channel);
 #endif
 #endif
 
