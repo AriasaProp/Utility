@@ -17,25 +17,27 @@ int main (int argv, char *args[]) {
   try {
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
+    int stbix, stbiy, stbic;
     char buff[1024];
     image_param img_p;
     for (unsigned int f = 0; f <= 5; ++f) {
       sprintf (buff, "%s/%02d.png", args[1], f);
       std::cout << "Test: " << buff;
-      s = stbi::load::load_from_filename (buff, &img_p.width, &img_p.height, &img_p.channel, 0);
-      outbytes = img_p.width * img_p.height * img_p.channel;
+      s = stbi::load::load_from_filename (buff, &stbix, &stbiy, &stbic, 0);
+      outbytes = stbix * stbiy * stbic;
       if (!s) throw stbi::load::failure_reason ();
 
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
-
-      if (memcmp (s, is, img_p.width * img_p.height * img_p.channel)) {
+      
+      if (
+      	(stbix != img_p.width) ||
+      	(stbiy != img_p.height) ||
+      	(stbic != img_p.channel) ||
+      	memcmp (s, is, img_p.width * img_p.height * img_p.channel)) {
         std::cout << " Failure " << std::endl;
-        std::cout << "A info x " << outx << " y " << outy << " ch " << outc << std::endl;
+        std::cout << "A info x " << stbix << " y " << stbiy << " ch " << stbic << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
-        int *a = reinterpret_cast<int *> (s), *b = reinterpret_cast<int *> (is);
-        for (unsigned int i = 0; i < outx * outy; ++i)
-          std::cout << std::hex << *(a + i) << " : " << std::hex << *(b + i) << std::endl;
       } else {
         std::cout << " Succes with " << outbytes << " bytes";
       }
