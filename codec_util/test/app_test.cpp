@@ -31,12 +31,12 @@ int main (int argv, char *args[]) {
       img_p.channel = stbic;
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
-      
+
       if (
-      	(stbix != img_p.width) ||
-      	(stbiy != img_p.height) ||
-      	(stbic != img_p.channel) ||
-      	memcmp (s, is, img_p.width * img_p.height * img_p.channel)) {
+          (stbix != img_p.width) ||
+          (stbiy != img_p.height) ||
+          (stbic != img_p.channel) ||
+          memcmp (s, is, img_p.width * img_p.height * img_p.channel)) {
         std::cout << " Failure " << std::endl;
         std::cout << "A info x " << stbix << " y " << stbiy << " ch " << stbic << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
