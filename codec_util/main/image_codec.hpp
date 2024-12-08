@@ -4,7 +4,7 @@
 // width pixel, height pixel, channel per pixels ? 3 or 4
 struct image_param {
   unsigned int width, height;
-  unsigned char channel;
+  unsigned int channel;
 };
 
 // input: data, image param in, out len in bytes
