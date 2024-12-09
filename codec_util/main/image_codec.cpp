@@ -39,8 +39,9 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char run = 0, px_cmp = 0;
 
   do {
-    for (px_cmp = 0; px_cmp < 65; ++px_cmp)
+    for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
       if (!memcmp (prev_px + (px_cmp * param.channel), read_px, param.channel)) break;
+    }
 
     // run length filtering
     if (

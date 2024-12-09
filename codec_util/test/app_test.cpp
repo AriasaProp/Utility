@@ -41,7 +41,10 @@ int main (int argv, char *args[]) {
         std::cout << "A info x " << stbix << " y " << stbiy << " ch " << stbic << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
       } else {
-        std::cout << " Succes with " << outbytes << " bytes";
+      	long double ratio = outbytes;
+      	ratio /= (stbix * stbiy * stbic);
+      	ratio *= 100
+        std::cout << " √ " << ratio << " \% origin";
       }
       std::cout << std::endl;
 
