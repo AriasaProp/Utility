@@ -36,11 +36,11 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   unsigned char *prev_px = new unsigned char[param.channel * 65]{};
-  unsigned char i, run = 0, px_cmp = 0;
+  unsigned char run = 0, px_cmp = 0;
 
-  for (;;) {
+  do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp)
-      if (!memcmp (prev_px + (i * param.channel), read_px, param.channel)) break;
+      if (!memcmp (prev_px + (px_cmp * param.channel), read_px, param.channel)) break;
 
     // run length filtering
     if (
@@ -63,9 +63,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     }
 
     read_px += param.channel;
-  }
-  while (read_px < end_px)
-    ;
+  } while (read_px < end_px);
 
   delete[] prev_px;
   *out_byte = write_px.size ();
@@ -83,19 +81,18 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   read_px += HEADER_SIZE;
   // read params
   memcpy (param, read_px, sizeof (image_param));
+  unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
-  // check param validity
-  if ((end_px - read_px) < param->channel) throw "data is too small";
-
+  
   unsigned char *prev_px = new unsigned char[param->channel * 65]{};
-  unsigned char *out_px = new unsigned char[param->width * param->height * param->channel]{};
-  unsigned char *write_px = out_px, *end_out_px = out_px + param->width * param->height * param->channel;
+  unsigned char *out_px = new unsigned char[max_px]{};
+  unsigned char *write_px = out_px;
 
   // read byte
   unsigned char readed;
 
   // next pixel
-  while (read_px < end_px) {
+  do {
     readed = *(read_px++);
     switch (readed & IMGC_MASKFILTER) {
     case IMGC_RUNLENGTH:
@@ -119,7 +116,6 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
         write_px += param->channel;
-
         memmove (prev_px + param->channel, prev_px, param->channel * 64);
         memcpy (prev_px, read_px, param->channel);
         read_px += param->channel;
@@ -129,7 +125,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       }
       break;
     }
-  }
+  } while (read_px < end_px);
   delete[] prev_px;
   return out_px;
 }
