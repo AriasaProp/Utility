@@ -25,62 +25,51 @@ const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x4
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
 unsigned char *image_encode (const unsigned char *pixels, const image_param param, unsigned int *out_byte) {
   if (!pixels) throw "data pixels is null";
-  if (!(param.width * param.height * param.channel)) throw "pixels parameters is 0";
-  const unsigned char *read_px = pixels, *end_px = pixels + param.width * param.height * param.channel;
+  const unsigned int max_px = param.width * param.height * param.channel;
+  if (!max_px) throw "pixels parameters is 0";
+  const unsigned char *read_px = pixels, *end_px = pixels + max_px;
 
   std::vector<unsigned char> write_px;
+  write_px.reserve(max_px);
   // write header 8 bytes
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
-  // write informations 12 bytes
+  // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned char *buff_px = new unsigned char[param.channel * 64]{};
-  unsigned char *prev_px = new unsigned char[param.channel]{};
-  unsigned char i, run = 0;
+  unsigned char *prev_px = new unsigned char[param.channel * 65]{};
+  unsigned char i, run = 0, px_cmp = 0;
 
-  while (read_px < end_px) {
-    // apply some filter encoding
-    // compare to previous pixel
-    int cmp_px = memcmp (prev_px, read_px, param.channel);
-
-    if (!cmp_px) {
-      // if equal, add run_length
-      if (++run > 63) {
-        // write down when pass the limit
-        write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-        run = 0;
-      }
-    } else {
-      if (run) {
-        // write down when run_length end
-        write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-        run = 0;
-      }
-      bool notfound = true;
-      for (i = 0; notfound && i < 64; ++i) {
-        notfound = memcmp (buff_px + (i * param.channel), read_px, param.channel);
-      }
-      if (!notfound) {
-        write_px.push_back (IMGC_LOOKBACK | i);
-      } else {
-        // write code for full channel
-        write_px.push_back (IMGC_FULLCHANNEL);
-        // write full channel for current pixel
-        write_px.insert (write_px.end (), read_px, read_px + param.channel);
-        // put previous pixel to buffer for look up
-        memmove (buff_px + param.channel, buff_px, param.channel * 63);
-        memcpy (buff_px, prev_px, param.channel);
-        // put current pixel to previous
-        memcpy (prev_px, read_px, param.channel);
-      }
-    }
-    read_px += param.channel;
-  }
+  for (;;) {
+  	for (px_cmp = 0; px_cmp < 65; ++px_cmp)
+			if (!memcmp(prev_px + (i * param.channel), read_px, param.channel)) break;
+		
+		// run length filtering
+		if (
+			((!px_cmp) && (
+				(++run > 63) ||
+				(read_px + param.channel >= end_px)
+			)) || // equal to prev_px && (run length over limit 64 - 1 or pixel read gonna end)
+			(px_cmp && run) || // not equal to prev_px && there is a run
+			) {
+			write_px.push_back(IMGC_RUNLENGTH | (run - 1))
+			run = 0;
+		}
+		
+		// lookback filtering
+		if (px_cmp < 65) { // there is lookup
+			write_px.push_back(IMGC_LOOKBACK | (px_cmp - 1));
+		} else {
+			// write full channel
+			write_px.push_back(IMGC_FULLCHANNEL);
+			write_px.insert (write_px.end (), read_px, read_px + param.channel);
+			memmove (prev_px + param.channel, prev_px, param.channel * 64);
+			memcpy (prev_px, read_px, param.channel);
+		}
+		
+		read_px += param.channel;
+  } while (read_px < end_px);
+  
+  
   delete[] prev_px;
-  delete[] buff_px;
-  // write down when pixel out
-  if (run)
-    write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-
   *out_byte = write_px.size ();
   unsigned char *out = new unsigned char[*out_byte];
   memcpy (out, write_px.data (), *out_byte);
@@ -100,8 +89,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // check param validity
   if ((end_px - read_px) < param->channel) throw "data is too small";
 
-  unsigned char *buff_px = new unsigned char[param->channel * 64]{};
-  unsigned char *prev_px = new unsigned char[param->channel]{};
+  unsigned char *prev_px = new unsigned char[param->channel * 65]{};
   unsigned char *out_px = new unsigned char[param->width * param->height * param->channel]{};
   unsigned char *write_px = out_px, *end_out_px = out_px + param->width * param->height * param->channel;
 
@@ -111,11 +99,10 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // next pixel
   while (read_px < end_px) {
     readed = *(read_px++);
-
     switch (readed & IMGC_MASKFILTER) {
     case IMGC_RUNLENGTH:
       readed &= IMGC_MASKVALUE;
-      readed++;
+      ++readed;
       do {
         memcpy (write_px, prev_px, param->channel);
         write_px += param->channel;
@@ -123,7 +110,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       break;
     case IMGC_LOOKBACK:
       readed &= IMGC_MASKVALUE;
-      memcpy (write_px, buff_px + (readed * param->channel), param->channel);
+      ++readed;
+      memcpy (write_px, prev_px + (readed * param->channel), param->channel);
       write_px += param->channel;
       break;
     case IMGC_V1:
@@ -134,9 +122,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         memcpy (write_px, read_px, param->channel);
         write_px += param->channel;
 
-        memmove (buff_px + param->channel, buff_px, param->channel * 63);
-        memcpy (buff_px, prev_px, param->channel);
-
+        memmove (prev_px + param->channel, prev_px, param->channel * 64);
         memcpy (prev_px, read_px, param->channel);
         read_px += param->channel;
         break;
@@ -147,7 +133,6 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     }
   }
   delete[] prev_px;
-  delete[] buff_px;
   return out_px;
 }
 
