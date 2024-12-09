@@ -16,7 +16,7 @@
 #define IMGC_V1 0x80 /* 10xxxxxx */
 
 #define IMGC_V2 0xc0          /* 11xxxxxx */
-#define IMGC_FULLCHANNEL 0xc0 /* 11111111 */
+#define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
 const unsigned int HEADER_SIZE = 8;
@@ -52,16 +52,17 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     }
 
     // lookback filtering
-    if (px_cmp < 65) { // there is lookup
-      write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
-    } else {
-      // write full channel
-      write_px.push_back (IMGC_FULLCHANNEL);
-      write_px.insert (write_px.end (), read_px, read_px + param.channel);
-      memmove (prev_px + param.channel, prev_px, param.channel * 64);
-      memcpy (prev_px, read_px, param.channel);
-    }
-
+    if (px_cmp) {
+	    if (px_cmp < 65) { // there is lookup
+	      write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
+	    } else {
+	      // write full channel
+	      write_px.push_back (IMGC_FULLCHANNEL);
+	      write_px.insert (write_px.end (), read_px, read_px + param.channel);
+	      memmove (prev_px + param.channel, prev_px, param.channel * 64);
+	      memcpy (prev_px, read_px, param.channel);
+	    }
+		}
     read_px += param.channel;
   } while (read_px < end_px);
 
@@ -83,7 +84,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
-
+  
   unsigned char *prev_px = new unsigned char[param->channel * 65]{};
   unsigned char *out_px = new unsigned char[max_px]{};
   unsigned char *write_px = out_px;
