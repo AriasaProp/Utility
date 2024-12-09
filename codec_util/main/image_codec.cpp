@@ -30,7 +30,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   const unsigned char *read_px = pixels, *end_px = pixels + max_px;
 
   std::vector<unsigned char> write_px;
-  write_px.reserve (max_px);
+  write_px.reserve(max_px);
   // write header 8 bytes
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 9 bytes
@@ -39,34 +39,36 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char i, run = 0, px_cmp = 0;
 
   for (;;) {
-    for (px_cmp = 0; px_cmp < 65; ++px_cmp)
-      if (!memcmp (prev_px + (i * param.channel), read_px, param.channel)) break;
-
-    // run length filtering
-    if (
-        ((!px_cmp) && ((++run > 63) || (read_px + param.channel >= end_px))) || // equal to prev_px && (run length over limit 64 - 1 or pixel read gonna end)
-        (px_cmp && run) ||                                                      // not equal to prev_px && there is a run
-    ) {
-      write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-      run = 0;
-    }
-
-    // lookback filtering
-    if (px_cmp < 65) { // there is lookup
-      write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
-    } else {
-      // write full channel
-      write_px.push_back (IMGC_FULLCHANNEL);
-      write_px.insert (write_px.end (), read_px, read_px + param.channel);
-      memmove (prev_px + param.channel, prev_px, param.channel * 64);
-      memcpy (prev_px, read_px, param.channel);
-    }
-
-    read_px += param.channel;
-  }
-  while (read_px < end_px)
-    ;
-
+  	for (px_cmp = 0; px_cmp < 65; ++px_cmp)
+			if (!memcmp(prev_px + (i * param.channel), read_px, param.channel)) break;
+		
+		// run length filtering
+		if (
+			((!px_cmp) && (
+				(++run > 63) ||
+				(read_px + param.channel >= end_px)
+			)) || // equal to prev_px && (run length over limit 64 - 1 or pixel read gonna end)
+			(px_cmp && run) // not equal to prev_px && there is a run
+			) {
+			write_px.push_back(IMGC_RUNLENGTH | (run - 1));
+			run = 0;
+		}
+		
+		// lookback filtering
+		if (px_cmp < 65) { // there is lookup
+			write_px.push_back(IMGC_LOOKBACK | (px_cmp - 1));
+		} else {
+			// write full channel
+			write_px.push_back(IMGC_FULLCHANNEL);
+			write_px.insert (write_px.end (), read_px, read_px + param.channel);
+			memmove (prev_px + param.channel, prev_px, param.channel * 64);
+			memcpy (prev_px, read_px, param.channel);
+		}
+		
+		read_px += param.channel;
+  } while (read_px < end_px);
+  
+  
   delete[] prev_px;
   *out_byte = write_px.size ();
   unsigned char *out = new unsigned char[*out_byte];
