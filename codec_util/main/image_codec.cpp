@@ -83,7 +83,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
-  
+
   unsigned char *prev_px = new unsigned char[param->channel * 65]{};
   unsigned char *out_px = new unsigned char[max_px]{};
   unsigned char *write_px = out_px;
