@@ -1,8 +1,8 @@
 #include "image_codec.hpp"
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <unordered_map>
 #include <vector>
 
