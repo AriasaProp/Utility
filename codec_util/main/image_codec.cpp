@@ -1,9 +1,9 @@
 #include "image_codec.hpp"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <cmath>
 #include <unordered_map>
 #include <vector>
 
