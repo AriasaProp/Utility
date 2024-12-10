@@ -112,7 +112,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     readed = *(read_px++);
     switch (readed & IMGC_MASKFILTER) {
     case IMGC_RUNLENGTH:
-      assert (write_px - out_px >= param->channel); // at least a pixel write
+      assert ((write_px - out_px) >= param->channel); // at least a pixel write
       readed &= IMGC_MASKVALUE;
       ++readed;
       do {
@@ -123,7 +123,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     case IMGC_LOOKBACK:
       readed &= IMGC_MASKVALUE;
       readed += 2;
-      assert (write_px - out_px >= readed * param->channel); // writed data should has this length
+      assert ((write_px - out_px) >= (readed * param->channel)); // writed data should has this length
       memcpy (write_px, write_px - (readed * param->channel), param->channel);
       write_px += param->channel;
       break;
