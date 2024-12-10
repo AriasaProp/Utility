@@ -1,6 +1,7 @@
 #include "image_codec.hpp"
 
 #include <cstdlib>
+#include <cstddef>
 #include <cstring>
 #include <unordered_map>
 #include <vector>
@@ -47,7 +48,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char run = 0, px_cmp = 0, hash_;
 
   do {
-    for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
+    for (px_cmp = 0; px_cmp < std::min(std::ptrdiff(read_px, pixels), 65); ++px_cmp) {
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
