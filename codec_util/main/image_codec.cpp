@@ -10,17 +10,25 @@
 #define IMGC_MASKVALUE 0x3f  /* 00111111 */
 
 // filter keys
+// equality
 #define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
 #define IMGC_LOOKBACK 0x40  /* 01xxxxxx */
-
-#define IMGC_V1 0x80 /* 10xxxxxx */
-
+#define IMGC_HASHINDEX 0x80 /* 10xxxxxx */
+// big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
+
+unsigned char hashing (unsigned char *in, unsigned char len) {
+	unsigned char r;
+	for (unsigned char i = len * 2 + 1; i < len; i -= 2 ) {
+		r += *(in++) * i;
+	}
+	return r & IMGC_MASKVALUE;
+}
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
 unsigned char *image_encode (const unsigned char *pixels, const image_param param, unsigned int *out_byte) {
@@ -35,39 +43,48 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned char *prev_px = new unsigned char[param.channel * 65]{};
-  unsigned char run = 0, px_cmp = 0;
+  unsigned char *hash_px = new unsigned char[param.channel * 64]{};
+  unsigned char run = 0, px_cmp = 0, hash_;
 
   do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
-      if (!memcmp (prev_px + (px_cmp * param.channel), read_px, param.channel)) break;
+      if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
-    // run length filtering
-    if (
-        ((!px_cmp) && ((++run > 63) || (read_px + param.channel >= end_px))) || // equal to prev_px && (run length over limit 64 - 1 or pixel read gonna end)
-        (px_cmp && run)                                                         // not equal to prev_px && there is a run
-    ) {
-      write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-      run = 0;
-    }
-
-    // lookback filtering
     if (px_cmp) {
+    	if (run) {
+    		// not equal to prev_px && there is a run
+    		write_px.push_back (IMGC_RUNLENGTH | (run - 1));
+      	run = 0;
+    	}
+    	// lookback filtering
       if (px_cmp < 65) { // there is lookup
         write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
       } else {
-        // write full channel
-        write_px.push_back (IMGC_FULLCHANNEL);
-        write_px.insert (write_px.end (), read_px, read_px + param.channel);
-        memmove (prev_px + param.channel, prev_px, param.channel * 64);
-        memcpy (prev_px, read_px, param.channel);
+      	hash_ = hashing(read_px, param.channel);
+      	if (!memcmp(hash_px + (hash_ * param.channel), read_px, param.channel)) {
+      		// write hash index
+	        write_px.push_back (IMGC_HASHINDEX | hash_);
+      	} else {
+	      	
+	        // write full channel
+	        write_px.push_back (IMGC_FULLCHANNEL);
+	        write_px.insert (write_px.end (), read_px, read_px + param.channel);
+	        
+	        // put new pixel to indexing hash
+	        memcpy(hash_px + (hash_ * param.channel), read_px, param.channel);
+      		
+      	}
+        
       }
+    } else if ((++run > 63) || (read_px + param.channel >= end_px)) {
+    	write_px.push_back (IMGC_RUNLENGTH | (run - 1));
+      run = 0;
     }
     read_px += param.channel;
   } while (read_px < end_px);
 
-  delete[] prev_px;
+  delete[] hash_px;
   *out_byte = write_px.size ();
   unsigned char *out = new unsigned char[*out_byte];
   memcpy (out, write_px.data (), *out_byte);
@@ -86,40 +103,46 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
 
-  unsigned char *prev_px = new unsigned char[param->channel * 65]{};
+  unsigned char *hash_px = new unsigned char[param->channel * 64]{};
   unsigned char *out_px = new unsigned char[max_px]{};
   unsigned char *write_px = out_px;
 
   // read byte
-  unsigned char readed;
+  unsigned char readed, hash_;
 
   // next pixel
   do {
     readed = *(read_px++);
     switch (readed & IMGC_MASKFILTER) {
     case IMGC_RUNLENGTH:
+    	assert (write_px - out_px >= param->channel); // at least a pixel write
       readed &= IMGC_MASKVALUE;
       ++readed;
       do {
-        memcpy (write_px, prev_px, param->channel);
+        memcpy (write_px, write_px - param->channel, param->channel);
         write_px += param->channel;
       } while (--readed);
       break;
     case IMGC_LOOKBACK:
       readed &= IMGC_MASKVALUE;
-      ++readed;
-      memcpy (write_px, prev_px + (readed * param->channel), param->channel);
+      readed += 2;
+    	assert (write_px - out_px >= readed * param->channel); // writed data should has this length
+      memcpy (write_px, write_px - (readed * param->channel), param->channel);
       write_px += param->channel;
       break;
-    case IMGC_V1:
-      throw "not yet";
+    case IMGC_HASHINDEX:
+      readed &= IMGC_MASKVALUE;
+      assert(*(hash_px + (readed * param->channel)));
+      memcpy (write_px, hash_px + (readed * param->channel), param->channel);
+      write_px += param->channel;
+      break;
     case IMGC_V2:
       switch (readed) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
+        hash_ = hashing(read_px, param->channel);
+        memcpy (hash_px + (hash_ * param.channel), read_px, param->channel);
         write_px += param->channel;
-        memmove (prev_px + param->channel, prev_px, param->channel * 64);
-        memcpy (prev_px, read_px, param->channel);
         read_px += param->channel;
         break;
       default:
@@ -128,7 +151,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       break;
     }
   } while (read_px < end_px);
-  delete[] prev_px;
+  delete[] hash_px;
   return out_px;
 }
 
