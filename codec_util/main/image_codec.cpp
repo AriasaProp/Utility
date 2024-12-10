@@ -48,7 +48,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char run = 0, px_cmp = 0, hash_;
 
   do {
-    for (px_cmp = 0; px_cmp < std::min (std::ptrdiff_t (read_px, pixels), 65); ++px_cmp) {
+  	int maks_ahead = std::min (std::ptrdiff_t (read_px, pixels), 65);
+    for (px_cmp = 0; px_cmp < maks_ahead; ++px_cmp) {
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
