@@ -48,7 +48,11 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char run = 0, px_cmp = 0, hash_;
 
   do {
+<<<<<<< HEAD
     for (px_cmp = 0; px_cmp < std::min (std::ptrdiff (read_px, pixels), 65); ++px_cmp) {
+=======
+    for (px_cmp = 0; px_cmp < std::min(std::ptrdiff_t(read_px, pixels), 65); ++px_cmp) {
+>>>>>>> 638a63e (has : 18:34:08 12/10/24)
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
