@@ -50,10 +50,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 
   do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
-    	if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
-    		px_cmp = 65;
-    		break;
-    	}
+      if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
+        px_cmp = 65;
+        break;
+      }
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
