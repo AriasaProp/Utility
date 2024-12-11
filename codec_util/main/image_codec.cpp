@@ -23,7 +23,7 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-const unsigned char primes[]{3,5,7,11,13,17, 19, 23};
+const unsigned char primes[]{3, 5, 7, 11, 13, 17, 19, 23};
 
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
@@ -141,7 +141,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         memcpy (write_px, read_px, param->channel);
         hash_ = hashing (read_px, param->channel);
         memcpy (hash_px + (hash_ * param->channel), read_px, param->channel);
-    		write_px += param->channel;
+        write_px += param->channel;
         read_px += param->channel;
         break;
       default:
