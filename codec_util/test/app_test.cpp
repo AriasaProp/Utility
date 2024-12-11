@@ -15,6 +15,7 @@
 int main (int argv, char *args[]) {
   std::cout << "Start Codec Test" << std::endl;
   try {
+  	bool scss = true;
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
     int stbix, stbiy, stbic;
@@ -40,6 +41,7 @@ int main (int argv, char *args[]) {
         std::cout << " Failure " << std::endl;
         std::cout << "A info x " << stbix << " y " << stbiy << " ch " << stbic << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
+        scss &= false;
       } else {
         long double ratio = outbytes;
         ratio /= (stbix * stbiy * stbic);
@@ -52,6 +54,7 @@ int main (int argv, char *args[]) {
       image_free (ic);
       image_free (is);
     }
+    if (!scss) throw "failed";
   } catch (const char *err) {
     std::cout << "Error : " << err << std::endl;
     return EXIT_FAILURE;

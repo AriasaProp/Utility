@@ -1,9 +1,9 @@
 #include "image_codec.hpp"
 
-#include <cmath>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 #include <unordered_map>
 #include <vector>
 
@@ -46,7 +46,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   unsigned char *hash_px = new unsigned char[param.channel * 64]{};
-  unsigned char run = 0, px_cmp = 0, hash_;
+  unsigned int run = 0, px_cmp = 0, hash_;
 
   do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
