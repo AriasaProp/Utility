@@ -49,10 +49,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 
   do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
-    	if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
-    		px_cmp = 65;
-    		break;
-    	}
+      if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
+        px_cmp = 65;
+        break;
+      }
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
@@ -66,16 +66,16 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       if (px_cmp < 65) { // there is lookup
         write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
       } else {
-      	hash_ = hashing(read_px, param.channel);
-      	if (!memcmp(read_px, hash_px + (hash_ * param.channel), param.channel)) {
-	        // write hash channel
-	        write_px.push_back (IMGC_HASHINDEX | hash_);
-      	} else {
-	        // write full channel
-	        write_px.push_back (IMGC_FULLCHANNEL);
-	        write_px.insert (write_px.end (), read_px, read_px + param.channel);
-	        memcpy(hash_px + (hash_ * param.channel), read_px, param.channel);
-      	}
+        hash_ = hashing (read_px, param.channel);
+        if (!memcmp (read_px, hash_px + (hash_ * param.channel), param.channel)) {
+          // write hash channel
+          write_px.push_back (IMGC_HASHINDEX | hash_);
+        } else {
+          // write full channel
+          write_px.push_back (IMGC_FULLCHANNEL);
+          write_px.insert (write_px.end (), read_px, read_px + param.channel);
+          memcpy (hash_px + (hash_ * param.channel), read_px, param.channel);
+        }
       }
     } else if ((++run > 63) || (read_px + param.channel >= end_px)) {
       write_px.push_back (IMGC_RUNLENGTH | (run - 1));
@@ -136,8 +136,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       switch (readed) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
-      	hash_ = hashing(read_px, param->channel);
-        memcpy (hash_px+(hash_* param->channel), read_px, param->channel);
+        hash_ = hashing (read_px, param->channel);
+        memcpy (hash_px + (hash_ * param->channel), read_px, param->channel);
         write_px += param->channel;
         read_px += param->channel;
         break;
