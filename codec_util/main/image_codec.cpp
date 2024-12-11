@@ -48,10 +48,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 
   do {
     for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
-    	if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
-    		px_cmp = 65;
-    		break;
-    	}
+      if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
+        px_cmp = 65;
+        break;
+      }
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
@@ -119,9 +119,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       write_px += param->channel;
       break;
     case IMGC_HASHINDEX:
-      throw "hash not yet"
-    case IMGC_V2:
-      switch (readed) {
+      throw "hash not yet" case IMGC_V2 : switch (readed) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
         write_px += param->channel;
