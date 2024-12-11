@@ -23,7 +23,7 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-const unsigned char primes[]{3,5,7,11,13,17};
+const unsigned char primes[]{3, 5, 7, 11, 13, 17};
 
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
