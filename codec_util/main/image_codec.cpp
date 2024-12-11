@@ -23,12 +23,12 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-const unsigned char primes[]{3, 5, 7, 11, 13, 17};
+const unsigned char primes[]{3,5,7,11,13,17, 19, 23};
 
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
   for (unsigned char i = 0; i < len; ++i) {
-    r += *(in + i) * primes[i % 6];
+    r += *(in + i) * primes[i % 8];
   }
   return r % 64;
 }
@@ -46,7 +46,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned char *hash_px = new unsigned char[0x40 * param.channel]{};
+  unsigned char *hash_px = new unsigned char[64 * param.channel]{};
   unsigned int run = 0, px_cmp = 0, hash_;
 
   do {
@@ -106,7 +106,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   read_px += sizeof (image_param);
 
   unsigned char *out_px = new unsigned char[max_px]{};
-  unsigned char *hash_px = new unsigned char[0x40 * param->channel]{};
+  unsigned char *hash_px = new unsigned char[64 * param->channel]{};
   unsigned char *write_px = out_px;
 
   // read byte
@@ -133,6 +133,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     case IMGC_HASHINDEX:
       readed &= IMGC_MASKVALUE;
       memcpy (write_px, hash_px + (readed * param->channel), param->channel);
+      write_px += param->channel;
       break;
     case IMGC_V2:
       switch (readed) {
@@ -140,7 +141,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         memcpy (write_px, read_px, param->channel);
         hash_ = hashing (read_px, param->channel);
         memcpy (hash_px + (hash_ * param->channel), read_px, param->channel);
-        write_px += param->channel;
+    		write_px += param->channel;
         read_px += param->channel;
         break;
       default:
