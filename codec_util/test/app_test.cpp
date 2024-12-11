@@ -15,7 +15,7 @@
 int main (int argv, char *args[]) {
   std::cout << "Start Codec Test" << std::endl;
   try {
-  	bool scss = true;
+    bool scss = true;
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
     int stbix, stbiy, stbic;
