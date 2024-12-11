@@ -23,12 +23,14 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
+const unsigned char primes[]{3,5,7,11,13,17};
+
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
-  for (unsigned char i = len * 2 + 1; i > 1; i -= 2) {
-    r += *(in++) * i;
+  for (unsigned char i = 0; i < len; ++i) {
+    r += *(in + i) * primes[i % 6];
   }
-  return r % 0x40;
+  return r % 64;
 }
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
