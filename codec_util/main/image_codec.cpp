@@ -26,7 +26,7 @@ const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x4
 
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
-  for (unsigned char i = len * 2 + 1; i < len; i -= 2) {
+  for (unsigned char i = len * 2 + 1; i >= 3; i -= 2) {
     r += *(in++) * i;
   }
   return r & IMGC_MASKVALUE;
@@ -49,8 +49,11 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char run = 0, px_cmp = 0, hash_;
 
   do {
-    int maks_ahead = std::min (std::ptrdiff_t (read_px - pixels), 65);
-    for (px_cmp = 0; px_cmp < maks_ahead; ++px_cmp) {
+    for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
+    	if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
+    		px_cmp = 65;
+    		break;
+    	}
       if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
     }
 
