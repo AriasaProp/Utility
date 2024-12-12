@@ -12,9 +12,9 @@
 
 // filter keys
 // equality
-#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
-#define IMGC_LOOKBACK 0x40  /* 01xxxxxx */
-#define IMGC_HASHINDEX 0x80 /* 10xxxxxx */
+#define IMGC_RUNLENGTH 0x00	/* 00xxxxxx */
+#define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
+#define IMGC_NOTYET    0x80 /* 10xxxxxx */
 // big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
@@ -46,31 +46,19 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   write_px.insert (write_px.end (), HEADER_ARRAY, HEADER_ARRAY + HEADER_SIZE);
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
-  unsigned int run = 0, px_cmp = 0, hash_;
+  // counting run length encoding
+  unsigned int run = 0;
 
   do {
-    for (px_cmp = 0; px_cmp < 65; ++px_cmp) {
-      if (read_px - ((px_cmp + 1) * param.channel) < pixels) {
-        px_cmp = 65;
-        break;
-      }
-      if (!memcmp (read_px - ((px_cmp + 1) * param.channel), read_px, param.channel)) break;
-    }
-
-    if (px_cmp) {
+    if (memcmp (read_px - param.channel, read_px, param.channel)) {
       if (run) {
         // not equal to prev_px && there is a run
         write_px.push_back (IMGC_RUNLENGTH | (run - 1));
         run = 0;
       }
-      // lookback filtering
-      if (px_cmp < 65) { // there is lookup
-        write_px.push_back (IMGC_LOOKBACK | (px_cmp - 1));
-      } else {
-        // write full channel
-        write_px.push_back (IMGC_FULLCHANNEL);
-        write_px.insert (write_px.end (), read_px, read_px + param.channel);
-      }
+      // write full channel
+      write_px.push_back (IMGC_FULLCHANNEL);
+      write_px.insert (write_px.end (), read_px, read_px + param.channel);
     } else if ((++run > 63) || (read_px + param.channel >= end_px)) {
       write_px.push_back (IMGC_RUNLENGTH | (run - 1));
       run = 0;
@@ -114,12 +102,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         write_px += param->channel;
       } while (--readed);
       break;
-    case IMGC_LOOKBACK:
-      readed &= IMGC_MASKVALUE;
-      readed += 2;
-      memcpy (write_px, write_px - (readed * param->channel), param->channel);
-      write_px += param->channel;
-      break;
+    case IMGC_NOTYET:
+      throw "not yet implemented.";
     case IMGC_HASHINDEX:
       throw "hash index not ready yet.";
     case IMGC_V2:
