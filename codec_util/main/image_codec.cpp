@@ -65,7 +65,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         // write full channel
         write_px.push_back (IMGC_FULLCHANNEL);
         write_px.insert (write_px.end (), read_px, read_px + param.channel);
-        memcpy (index + (h_ * param.channel), read_px, read_px + param.channel);
+        memcpy (index + (h_ * param.channel), read_px, param.channel);
       } else {
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
@@ -104,8 +104,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
-  // buffet for indexing pixels
-  unsigned char *index = new unsigned char[64 * param.channel]{};
+  // buffer for indexing pixels
+  unsigned char *index = new unsigned char[64 * param->channel]{};
 
   unsigned char *out_px = new unsigned char[max_px]{};
   unsigned char *write_px = out_px;
