@@ -15,7 +15,7 @@
 #define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
 
-#define IMGC_NOTYET 0x80    /* 10xxxxxx */
+#define IMGC_NOTYET 0x80 /* 10xxxxxx */
 // big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
@@ -68,7 +68,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         write_px.insert (write_px.end (), read_px, read_px + param.channel);
         memcpy (index + (h_ * param.channel), read_px, param.channel);
       } else {
-        
+
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
     } else {
