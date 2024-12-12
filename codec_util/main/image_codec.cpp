@@ -126,7 +126,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       switch (readed) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
-    		write_px += param->channel;
+        write_px += param->channel;
         read_px += param->channel;
         break;
       default:
