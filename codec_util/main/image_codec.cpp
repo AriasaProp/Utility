@@ -14,6 +14,7 @@
 // equality
 #define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
+
 #define IMGC_NOTYET 0x80    /* 10xxxxxx */
 // big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
@@ -23,10 +24,10 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-static const unsigned char primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
-unsigned char hashing (const unsigned char *in, unsigned char len) {
-  unsigned char r;
-  for (unsigned char i = 0; i < len; ++i) {
+static const unsigned int primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
+unsigned int hashing (const unsigned char *in, unsigned int len) {
+  unsigned int r;
+  for (unsigned int i = 0; i < len; ++i) {
     r += *(in + i) * primes[i % 12];
   }
   return r % 64;
@@ -67,6 +68,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         write_px.insert (write_px.end (), read_px, read_px + param.channel);
         memcpy (index + (h_ * param.channel), read_px, param.channel);
       } else {
+        
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
     } else {
@@ -126,13 +128,13 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         write_px += param->channel;
       } while (--readed);
       break;
-    case IMGC_NOTYET:
-      throw "not yet implemented.";
     case IMGC_HASHINDEX:
       readed &= IMGC_MASKVALUE;
       memcpy (write_px, index + (readed * param->channel), param->channel);
       write_px += param->channel;
       break;
+    case IMGC_NOTYET:
+      throw "not yet implemented.";
     case IMGC_V2:
       switch (readed) {
       case IMGC_FULLCHANNEL:
