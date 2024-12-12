@@ -12,9 +12,9 @@
 
 // filter keys
 // equality
-#define IMGC_RUNLENGTH 0x00	/* 00xxxxxx */
+#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
-#define IMGC_NOTYET    0x80 /* 10xxxxxx */
+#define IMGC_NOTYET 0x80    /* 10xxxxxx */
 // big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
@@ -23,7 +23,7 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-static const unsigned char primes[]{3,5,7,11,13,17,19,23,29,31,37,41};
+static const unsigned char primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
 unsigned char hashing (const unsigned char *in, unsigned char len) {
   unsigned char r;
   for (unsigned char i = 0; i < len; ++i) {
@@ -60,21 +60,21 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         run = 0;
       }
       // index compare
-      h_ = hashing(read_px, param.channel);
-      if (memcmp(index + (h_ * param.channel), read_px, param.channel)) {
-	      // write full channel
-	      write_px.push_back (IMGC_FULLCHANNEL);
-	      write_px.insert (write_px.end (), read_px, read_px + param.channel);
-      	memcpy (index + (h_ * param.channel), read_px, read_px + param.channel);
+      h_ = hashing (read_px, param.channel);
+      if (memcmp (index + (h_ * param.channel), read_px, param.channel)) {
+        // write full channel
+        write_px.push_back (IMGC_FULLCHANNEL);
+        write_px.insert (write_px.end (), read_px, read_px + param.channel);
+        memcpy (index + (h_ * param.channel), read_px, read_px + param.channel);
       } else {
-	      write_px.push_back (IMGC_HASHINDEX | h_);
+        write_px.push_back (IMGC_HASHINDEX | h_);
       }
     } else {
-    	++run;
-    	if (run > 63) {
-	      write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-	      run = 0;
-    	}
+      ++run;
+      if (run > 63) {
+        write_px.push_back (IMGC_RUNLENGTH | (run - 1));
+        run = 0;
+      }
     }
     read_px += param.channel;
     if (read_px >= end_px) break;
@@ -82,10 +82,9 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   }
   // run length remaining
   if (run) {
-		write_px.push_back (IMGC_RUNLENGTH | (run - 1));
+    write_px.push_back (IMGC_RUNLENGTH | (run - 1));
     run = 0;
-	}
-  
+  }
 
   delete[] index;
   *out_byte = write_px.size ();
@@ -105,12 +104,12 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
-    // buffet for indexing pixels
+  // buffet for indexing pixels
   unsigned char *index = new unsigned char[64 * param.channel]{};
-  
+
   unsigned char *out_px = new unsigned char[max_px]{};
   unsigned char *write_px = out_px;
-  //hashing temporary value
+  // hashing temporary value
   unsigned int h_;
   // read byte
   unsigned char readed;
@@ -144,13 +143,13 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         throw "not yet";
       }
       // all v2 data stored into index
-      h_ = hashing(write_px, param->channel);
+      h_ = hashing (write_px, param->channel);
       memcpy (index + (h_ * param->channel), write_px, param->channel);
       write_px += param->channel;
       break;
     }
   } while (read_px < end_px);
-  
+
   delete[] index;
   return out_px;
 }
