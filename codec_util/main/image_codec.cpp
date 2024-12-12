@@ -12,9 +12,9 @@
 
 // filter keys
 // equality
-#define IMGC_RUNLENGTH 0x00	/* 00xxxxxx */
+#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
-#define IMGC_NOTYET    0x80 /* 10xxxxxx */
+#define IMGC_NOTYET 0x80    /* 10xxxxxx */
 // big and full codec
 #define IMGC_V2 0xc0          /* 11xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
