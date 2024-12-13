@@ -53,7 +53,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       *index_view, run = 0, h_;
   // compare previous pixels
   int prev_cmp;
-  
+
   // write first pixel
   h_ = hashing (read_px, param.channel);
   write_px.insert (write_px.end (), read_px, read_px + param.channel);
@@ -120,7 +120,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           *write_px = out_px,
       // temporary read byte, hashing
       readed, h_;
-      
+
   // write first pixel
   memcpy (write_px, read_px, param->channel);
   read_px += param->channel;
