@@ -25,8 +25,8 @@ const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
 static const unsigned int primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
-unsigned int hashing (const unsigned char *in, unsigned int len) {
-  unsigned int r;
+unsigned char hashing (const unsigned char *in, unsigned int len) {
+  unsigned char r;
   for (unsigned int i = 0; i < len; ++i) {
     r += *(in + i) * primes[i % 12];
   }
@@ -47,9 +47,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   // buffet for indexing pixels
-  unsigned char *index = new unsigned char[64 * param.channel]{};
+  unsigned char 
+  *index = new unsigned char[64 * param.channel]{},
   // counting run length encoding, store temporary hash
-  unsigned int run = 0, h_;
+  *index_view, run = 0, h_;
   // compare previous pixels
   int prev_cmp = 1;
 
@@ -62,13 +63,13 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       }
       // index compare
       h_ = hashing (read_px, param.channel);
-      if (memcmp (index + (h_ * param.channel), read_px, param.channel)) {
+      index_view = index + (h_ * param.channel);
+      if (memcmp (index_view, read_px, param.channel)) {
         // write full channel
         write_px.push_back (IMGC_FULLCHANNEL);
         write_px.insert (write_px.end (), read_px, read_px + param.channel);
-        memcpy (index + (h_ * param.channel), read_px, param.channel);
+        memcpy (index_view, read_px, param.channel);
       } else {
-
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
     } else {
@@ -106,15 +107,15 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
+  unsigned char
   // buffer for indexing pixels
-  unsigned char *index = new unsigned char[64 * param->channel]{};
-
-  unsigned char *out_px = new unsigned char[max_px]{};
-  unsigned char *write_px = out_px;
-  // hashing temporary value
-  unsigned int h_;
-  // read byte
-  unsigned char readed;
+	  *index = new unsigned char[64 * param->channel]{},
+  // output
+	  *out_px = new unsigned char[max_px]{},
+  // write state
+	  *write_px = out_px,
+  // temporary read byte, hashing
+	  readed, h_;
 
   // next pixel
   do {
