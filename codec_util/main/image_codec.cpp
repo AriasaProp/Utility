@@ -47,10 +47,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   // buffet for indexing pixels
-  unsigned char 
-  *index = new unsigned char[64 * param.channel]{},
-  // counting run length encoding, store temporary hash
-  *index_view, run = 0, h_;
+  unsigned char
+      *index = new unsigned char[64 * param.channel]{},
+      // counting run length encoding, store temporary hash
+      *index_view, run = 0, h_;
   // compare previous pixels
   int prev_cmp = 1;
 
@@ -108,14 +108,14 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   unsigned int max_px = param->width * param->height * param->channel;
   read_px += sizeof (image_param);
   unsigned char
-  // buffer for indexing pixels
-	  *index = new unsigned char[64 * param->channel]{},
-  // output
-	  *out_px = new unsigned char[max_px]{},
-  // write state
-	  *write_px = out_px,
-  // temporary read byte, hashing
-	  readed, h_;
+      // buffer for indexing pixels
+      *index = new unsigned char[64 * param->channel]{},
+      // output
+      *out_px = new unsigned char[max_px]{},
+      // write state
+          *write_px = out_px,
+      // temporary read byte, hashing
+      readed, h_;
 
   // next pixel
   do {
