@@ -52,10 +52,16 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       // counting run length encoding, store temporary hash
       *index_view, run = 0, h_;
   // compare previous pixels
-  int prev_cmp = 1;
+  int prev_cmp;
+  
+  // write first pixel
+  h_ = hashing (read_px, param.channel);
+  write_px.insert (write_px.end (), read_px, read_px + param.channel);
+  memcpy (index + (h_ * param.channel), read_px, param.channel);
+  read_px += param.channel;
 
-  for (;;) {
-    if (prev_cmp) {
+  while (read_px < end_px) {
+    if (memcmp (read_px - param.channel, read_px, param.channel)) {
       if (run) {
         // not equal to prev_px && there is a run
         write_px.push_back (IMGC_RUNLENGTH | (run - 1));
@@ -80,8 +86,6 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       }
     }
     read_px += param.channel;
-    if (read_px >= end_px) break;
-    prev_cmp = memcmp (read_px - param.channel, read_px, param.channel);
   }
   // run length remaining
   if (run) {
@@ -116,6 +120,13 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           *write_px = out_px,
       // temporary read byte, hashing
       readed, h_;
+      
+  // write first pixel
+  memcpy (write_px, read_px, param->channel);
+  read_px += param->channel;
+  h_ = hashing (write_px, param->channel);
+  memcpy (index + (h_ * param->channel), write_px, param->channel);
+  write_px += param->channel;
 
   // next pixel
   do {
