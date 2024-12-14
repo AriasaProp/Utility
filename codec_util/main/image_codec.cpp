@@ -26,7 +26,7 @@ const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x4
 
 static const unsigned int primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
 unsigned char hashing (const unsigned char *in, unsigned int len) {
-  unsigned char r;
+  unsigned char r = 0;
   for (unsigned int i = 0; i < len; ++i) {
     r += *(in + i) * primes[i % 12];
   }
@@ -123,10 +123,10 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
 
   // write first pixel
   memcpy (write_px, read_px, param->channel);
-  read_px += param->channel;
-  h_ = hashing (write_px, param->channel);
-  memcpy (index + (h_ * param->channel), write_px, param->channel);
+  h_ = hashing (read_px, param->channel);
+  memcpy (index + (h_ * param->channel), read_px, param->channel);
   write_px += param->channel;
+  read_px += param->channel;
 
   // next pixel
   do {
@@ -151,15 +151,15 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       switch (readed) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
-        read_px += param->channel;
         break;
       default:
         throw "not yet";
       }
       // all v2 data stored into index
-      h_ = hashing (write_px, param->channel);
-      memcpy (index + (h_ * param->channel), write_px, param->channel);
+      h_ = hashing (read_px, param->channel);
+      memcpy (index + (h_ * param->channel), read_px, param->channel);
       write_px += param->channel;
+      read_px += param->channel;
       break;
     }
   } while (read_px < end_px);
