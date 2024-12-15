@@ -13,8 +13,8 @@
 // filter keys
 // equality
 #define IMGC_LOOKAHEAD 0x00 /* 00xxxxxx */
-#define IMGC_LA_V1		 0x30 /* 00110000 */
-#define IMGC_LA_V2		 0xf /* 00001111 */
+#define IMGC_LA_V1 0x30     /* 00110000 */
+#define IMGC_LA_V2 0xf      /* 00001111 */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
 
 #define IMGC_NOTYET 0x80 /* 10xxxxxx */
@@ -63,29 +63,29 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   read_px += param.channel;
 
   while (read_px < end_px) {
-  	
-  	for (current_lookahead = max_lookahead; current_lookahead; --current_lookahead) {
-    	if (!memcmp (read_px - (param.channel * current_lookahead), read_px, param.channel)) {
-    		length_lookahead = 0;
-    		while (++length_lookahead <= 0xf;) {
-    			if((read_px + (param.channel * length_lookahead) >= end_px) ||
-    				memcmp (read_px + (param.channel * (length_lookahead - current_lookahead)), read_px + (param.channel * length_lookahead), param.channel)) {
-    				--length_lookahead;
-    				break;
-    			}
-    		}
-    		if (saved_len_lookahead < length_lookahead) {
-    			saved_lookahead = current_lookahead;
-    			saved_len_lookahead = length_lookahead;
-    		}
-    	}
-  	}
-  	if (saved_lookahead > -1) {
+
+    for (current_lookahead = max_lookahead; current_lookahead; --current_lookahead) {
+      if (!memcmp (read_px - (param.channel * current_lookahead), read_px, param.channel)) {
+        length_lookahead = 0;
+        while (++length_lookahead <= 0xf;) {
+          if ((read_px + (param.channel * length_lookahead) >= end_px) ||
+              memcmp (read_px + (param.channel * (length_lookahead - current_lookahead)), read_px + (param.channel * length_lookahead), param.channel)) {
+            --length_lookahead;
+            break;
+          }
+        }
+        if (saved_len_lookahead < length_lookahead) {
+          saved_lookahead = current_lookahead;
+          saved_len_lookahead = length_lookahead;
+        }
+      }
+    }
+    if (saved_lookahead > -1) {
       write_px.push_back (IMGC_LOOKAHEAD | ((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
-  		read_px += param.channel * saved_len_lookahead;
-	  	saved_len_lookahead = -1;
-	  	saved_lookahead = -1;
-  	} else {
+      read_px += param.channel * saved_len_lookahead;
+      saved_len_lookahead = -1;
+      saved_lookahead = -1;
+    } else {
       // index compare
       h_ = hashing (read_px, param.channel);
       index_view = index + (h_ * param.channel);
@@ -97,7 +97,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       } else {
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
-    	read_px += param.channel;
+      read_px += param.channel;
     }
     max_lookahead += (max_lookahead < 3);
   }
