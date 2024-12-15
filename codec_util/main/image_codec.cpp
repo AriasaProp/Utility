@@ -67,7 +67,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     for (current_lookahead = max_lookahead; current_lookahead; --current_lookahead) {
       if (!memcmp (read_px - (param.channel * current_lookahead), read_px, param.channel)) {
         length_lookahead = 0;
-        while (++length_lookahead <= 0xf;) {
+        while (++length_lookahead <= 0xf) {
           if ((read_px + (param.channel * length_lookahead) >= end_px) ||
               memcmp (read_px + (param.channel * (length_lookahead - current_lookahead)), read_px + (param.channel * length_lookahead), param.channel)) {
             --length_lookahead;
@@ -80,8 +80,11 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         }
       }
     }
-    if (saved_lookahead > -1) {
-      write_px.push_back (IMGC_LOOKAHEAD | ((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
+    if (saved_lookahead > 0) {
+      write_px.push_back (
+      	IMGC_LOOKAHEAD | 
+      	(unsigned char)((saved_lookahead - 1) & 0x3) << 4) 
+      	| (unsigned char)(saved_len_lookahead & 0xf));
       read_px += param.channel * saved_len_lookahead;
       saved_len_lookahead = -1;
       saved_lookahead = -1;
