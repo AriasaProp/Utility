@@ -83,7 +83,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
     if (saved_lookahead > 0) {
       write_px.push_back (
       	IMGC_LOOKAHEAD | 
-      	(unsigned char)((saved_lookahead - 1) & 0x3) << 4) 
+      	(unsigned char)(((saved_lookahead - 1) & 0x3) << 4) 
       	| (unsigned char)(saved_len_lookahead & 0xf));
       read_px += param.channel * saved_len_lookahead;
       saved_len_lookahead = -1;
