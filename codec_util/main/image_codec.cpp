@@ -12,7 +12,9 @@
 
 // filter keys
 // equality
-#define IMGC_RUNLENGTH 0x00 /* 00xxxxxx */
+#define IMGC_LOOKAHEAD 0x00 /* 00xxxxxx */
+#define IMGC_LA_V1		 0x30 /* 00110000 */
+#define IMGC_LA_V2		 0xf /* 00001111 */
 #define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
 
 #define IMGC_NOTYET 0x80 /* 10xxxxxx */
@@ -51,8 +53,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       *index = new unsigned char[64 * param.channel]{},
       // counting run length encoding, store temporary hash
       *index_view, run = 0, h_;
-  // compare previous pixels
-  int prev_cmp;
+  // look ahead with compare most longer length
+  int max_lookahead = 1, current_lookahead, length_lookahead, saved_lookahead = -1, saved_len_lookahead = -1;
 
   // write first pixel
   h_ = hashing (read_px, param.channel);
@@ -61,12 +63,29 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   read_px += param.channel;
 
   while (read_px < end_px) {
-    if (memcmp (read_px - param.channel, read_px, param.channel)) {
-      if (run) {
-        // not equal to prev_px && there is a run
-        write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-        run = 0;
-      }
+  	
+  	for (current_lookahead = max_lookahead; current_lookahead; --current_lookahead) {
+    	if (!memcmp (read_px - (param.channel * current_lookahead), read_px, param.channel)) {
+    		length_lookahead = 0;
+    		while (++length_lookahead <= 0xf;) {
+    			if((read_px + (param.channel * length_lookahead) >= end_px) ||
+    				memcmp (read_px + (param.channel * (length_lookahead - current_lookahead)), read_px + (param.channel * length_lookahead), param.channel)) {
+    				--length_lookahead;
+    				break;
+    			}
+    		}
+    		if (saved_len_lookahead < length_lookahead) {
+    			saved_lookahead = current_lookahead;
+    			saved_len_lookahead = length_lookahead;
+    		}
+    	}
+  	}
+  	if (saved_lookahead > -1) {
+      write_px.push_back (IMGC_LOOKAHEAD | ((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
+  		read_px += param.channel * saved_len_lookahead;
+	  	saved_len_lookahead = -1;
+	  	saved_lookahead = -1;
+  	} else {
       // index compare
       h_ = hashing (read_px, param.channel);
       index_view = index + (h_ * param.channel);
@@ -78,21 +97,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       } else {
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
-    } else {
-      ++run;
-      if (run > 63) {
-        write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-        run = 0;
-      }
+    	read_px += param.channel;
     }
-    read_px += param.channel;
+    max_lookahead += (max_lookahead < 3);
   }
-  // run length remaining
-  if (run) {
-    write_px.push_back (IMGC_RUNLENGTH | (run - 1));
-    run = 0;
-  }
-
   delete[] index;
   *out_byte = write_px.size ();
   unsigned char *out = new unsigned char[*out_byte];
@@ -119,36 +127,38 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       // write state
           *write_px = out_px,
       // temporary read byte, hashing
-      readed, h_;
+      val1, val2;
 
   // write first pixel
   memcpy (write_px, read_px, param->channel);
-  h_ = hashing (read_px, param->channel);
-  memcpy (index + (h_ * param->channel), read_px, param->channel);
+  val2 = hashing (read_px, param->channel);
+  memcpy (index + (val2 * param->channel), read_px, param->channel);
   write_px += param->channel;
   read_px += param->channel;
 
   // next pixel
   do {
-    readed = *(read_px++);
-    switch (readed & IMGC_MASKFILTER) {
-    case IMGC_RUNLENGTH:
-      readed &= IMGC_MASKVALUE;
-      ++readed;
+    val1 = *(read_px++);
+    switch (val1 & IMGC_MASKFILTER) {
+    case IMGC_LOOKAHEAD:
+      val2 = (val1 & IMGC_LA_V1) >> 4;
+      val1 &= IMGC_LA_V2;
+      ++val1;
+      ++val2;
       do {
-        memcpy (write_px, write_px - param->channel, param->channel);
+        memcpy (write_px, write_px - (param->channel * val2), param->channel);
         write_px += param->channel;
-      } while (--readed);
+      } while (--val1);
       break;
     case IMGC_HASHINDEX:
-      readed &= IMGC_MASKVALUE;
-      memcpy (write_px, index + (readed * param->channel), param->channel);
+      val1 &= IMGC_MASKVALUE;
+      memcpy (write_px, index + (val1 * param->channel), param->channel);
       write_px += param->channel;
       break;
     case IMGC_NOTYET:
       throw "not yet implemented.";
     case IMGC_V2:
-      switch (readed) {
+      switch (val1) {
       case IMGC_FULLCHANNEL:
         memcpy (write_px, read_px, param->channel);
         break;
@@ -156,8 +166,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         throw "not yet";
       }
       // all v2 data stored into index
-      h_ = hashing (read_px, param->channel);
-      memcpy (index + (h_ * param->channel), read_px, param->channel);
+      val2 = hashing (read_px, param->channel);
+      memcpy (index + (val2 * param->channel), read_px, param->channel);
       write_px += param->channel;
       read_px += param->channel;
       break;
