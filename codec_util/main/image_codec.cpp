@@ -56,39 +56,39 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
 
-	// write first pixel
-	h_ = hashing(read_px, param.channel);
-	write_px.insert(write_px.end(), read_px, read_px + param.channel);
-	memcpy(index + (h_ * param.channel), read_px, param.channel);
-	read_px += param.channel;
+  // write first pixel
+  h_ = hashing (read_px, param.channel);
+  write_px.insert (write_px.end (), read_px, read_px + param.channel);
+  memcpy (index + (h_ * param.channel), read_px, param.channel);
+  read_px += param.channel;
 
-	while (read_px < end_px) {
-		for (const unsigned char *c = std::max(pixels, read_px - (4 * param.channel)); c < read_px; c += param.channel) {
-			if (!memcmp(c, read_px, param.channel)) {
-				const unsigned char *d = read_px;
-				const unsigned char *e = c;
-				const unsigned char *dend = std::min(end_px, read_px + (0xf * param.channel));
-				do {
-					d += param.channel, e += param.channel;
-				} while ((d < dend) && (!memcmp(d, e, param.channel)));
-				d -= param.channel;
-				e -= param.channel;
+  while (read_px < end_px) {
+    for (const unsigned char *c = std::max (pixels, read_px - (4 * param.channel)); c < read_px; c += param.channel) {
+      if (!memcmp (c, read_px, param.channel)) {
+        const unsigned char *d = read_px;
+        const unsigned char *e = c;
+        const unsigned char *dend = std::min (end_px, read_px + (0xf * param.channel));
+        do {
+          d += param.channel, e += param.channel;
+        } while ((d < dend) && (!memcmp (d, e, param.channel)));
+        d -= param.channel;
+        e -= param.channel;
 
-				int len = (e - c) / param.channel;
-				if (saved_len_lookahead < len) {
-					saved_lookahead = (read_px - c) / param.channel;
-					saved_len_lookahead = len;
-				}
-			}
-		}
-		if (saved_lookahead > 0) {
-			write_px.push_back(
-				IMGC_LOOKAHEAD |
-				(((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
-			read_px += param.channel * (saved_len_lookahead + 1);
-			saved_len_lookahead = -1;
-			saved_lookahead = -1;
-		} else {
+        int len = (e - c) / param.channel;
+        if (saved_len_lookahead < len) {
+          saved_lookahead = (read_px - c) / param.channel;
+          saved_len_lookahead = len;
+        }
+      }
+    }
+    if (saved_lookahead > 0) {
+      write_px.push_back (
+          IMGC_LOOKAHEAD |
+          (((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
+      read_px += param.channel * (saved_len_lookahead + 1);
+      saved_len_lookahead = -1;
+      saved_lookahead = -1;
+    } else {
       // index compare
       h_ = hashing (read_px, param.channel);
       index_view = index + (h_ * param.channel);
