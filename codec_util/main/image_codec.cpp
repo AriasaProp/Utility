@@ -56,7 +56,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   read_px += param.channel;
 
   while (read_px < end_px) {
-    for (const unsigned char *c = std::max (pixels, read_px - (8 * param.channel)); c < read_px; c += param.channel) {
+    for (const unsigned char *c = std::max (pixels, read_px - (0x8 * param.channel)); c < read_px; c += param.channel) {
       if (!memcmp (c, read_px, param.channel)) {
         const unsigned char *d = read_px;
         const unsigned char *e = c;
@@ -64,18 +64,16 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         do {
           d += param.channel, e += param.channel;
         } while ((d < dend) && (!memcmp (d, e, param.channel)));
-        d -= param.channel;
-        e -= param.channel;
 
-        int len = (e - c) / param.channel;
+        int len = (e - c) / param.channel - 1;
         if (saved_len_lookahead < len) {
-          saved_lookahead = (read_px - c) / param.channel;
+          saved_lookahead = (read_px - c) / param.channel - 1;
           saved_len_lookahead = len;
         }
       }
     }
     if (saved_lookahead > 0) {
-      write_px.push_back ((((saved_lookahead - 1) & 0x7) << 4) | (saved_len_lookahead & 0xf));
+      write_px.push_back (((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
       saved_len_lookahead = -1;
       saved_lookahead = -1;
@@ -124,9 +122,9 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
 
   // write first pixel
   memcpy (write_px, read_px, param->channel);
+  write_px += param->channel;
   val2 = hashing (read_px, param->channel);
   memcpy (index + (val2 * param->channel), read_px, param->channel);
-  write_px += param->channel;
   read_px += param->channel;
 
   // next pixel
