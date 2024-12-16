@@ -102,7 +102,6 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       }
       read_px += param.channel;
     }
-    max_lookahead += (max_lookahead < 3);
   }
   delete[] index;
   *out_byte = write_px.size ();
