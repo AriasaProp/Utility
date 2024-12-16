@@ -12,7 +12,7 @@
 
 // big and full codec
 #define IMGC_V1 0xc0          /* 1xxxxxxx */
-#define IMGC_HASHINDEX 0x40 	/* 10xxxxxx */
+#define IMGC_HASHINDEX 0x40   /* 10xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
@@ -133,30 +133,30 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   do {
     val1 = *(read_px++);
     if (val1 & 0x80) { /* 1000 0000 */
-    	// IMGC_V1
-    	if (val1 & 0x40) { /* 0100 0000 */
-				switch (val1) {
-		      case IMGC_FULLCHANNEL:
-		        memcpy (write_px, read_px, param->channel);
-		        break;
-		      default:
-		        throw "not yet";
-				}
-	      // all v1 data stored into index
-	      val2 = hashing (read_px, param->channel);
-	      memcpy (index + (val2 * param->channel), read_px, param->channel);
-	    	write_px += param->channel;
-	      read_px += param->channel;
+      // IMGC_V1
+      if (val1 & 0x40) { /* 0100 0000 */
+        switch (val1) {
+        case IMGC_FULLCHANNEL:
+          memcpy (write_px, read_px, param->channel);
+          break;
+        default:
+          throw "not yet";
+        }
+        // all v1 data stored into index
+        val2 = hashing (read_px, param->channel);
+        memcpy (index + (val2 * param->channel), read_px, param->channel);
+        write_px += param->channel;
+        read_px += param->channel;
       } else {
-	    	// IMGC_HASHINDEX
-	      val1 &= IMGC_MASKVALUE;
-	      memcpy (write_px, index + (val1 * param->channel), param->channel);
-      	write_px += param->channel;
+        // IMGC_HASHINDEX
+        val1 &= IMGC_MASKVALUE;
+        memcpy (write_px, index + (val1 * param->channel), param->channel);
+        write_px += param->channel;
       }
     } else {
-    	// IMGC_LOOKAHEAD
+      // IMGC_LOOKAHEAD
       val2 = (val1 & 0x70) >> 4; /* 0111 0000 */
-      val1 &= 0xf; /* 0000 1111 */
+      val1 &= 0xf;               /* 0000 1111 */
       ++val1;
       ++val2;
       do {
