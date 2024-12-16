@@ -6,20 +6,13 @@
 #include <unordered_map>
 #include <vector>
 
-// masking
-#define IMGC_MASKFILTER 0xc0 /* 11000000 */
-#define IMGC_MASKVALUE 0x3f  /* 00111111 */
-
 // filter keys
 // equality
-#define IMGC_LOOKAHEAD 0x00 /* 00xxxxxx */
-#define IMGC_LA_V1 0x30     /* 00110000 */
-#define IMGC_LA_V2 0xf      /* 00001111 */
-#define IMGC_HASHINDEX 0x40 /* 01xxxxxx */
+#define IMGC_LOOKAHEAD 0x00 /* 0xxxxxxx */
 
-#define IMGC_NOTYET 0x80 /* 10xxxxxx */
 // big and full codec
-#define IMGC_V2 0xc0          /* 11xxxxxx */
+#define IMGC_V1 0xc0          /* 1xxxxxxx */
+#define IMGC_HASHINDEX 0x40 	/* 10xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
@@ -63,7 +56,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   read_px += param.channel;
 
   while (read_px < end_px) {
-    for (const unsigned char *c = std::max (pixels, read_px - (4 * param.channel)); c < read_px; c += param.channel) {
+    for (const unsigned char *c = std::max (pixels, read_px - (8 * param.channel)); c < read_px; c += param.channel) {
       if (!memcmp (c, read_px, param.channel)) {
         const unsigned char *d = read_px;
         const unsigned char *e = c;
@@ -82,9 +75,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       }
     }
     if (saved_lookahead > 0) {
-      write_px.push_back (
-          IMGC_LOOKAHEAD |
-          (((saved_lookahead - 1) & 0x3) << 4) | (saved_len_lookahead & 0xf));
+      write_px.push_back ((((saved_lookahead - 1) & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
       saved_len_lookahead = -1;
       saved_lookahead = -1;
@@ -141,38 +132,37 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   // next pixel
   do {
     val1 = *(read_px++);
-    switch (val1 & IMGC_MASKFILTER) {
-    case IMGC_LOOKAHEAD:
-      val2 = (val1 & IMGC_LA_V1) >> 4;
-      val1 &= IMGC_LA_V2;
+    if (val1 & 0x80) { /* 1000 0000 */
+    	// IMGC_V1
+    	if (val1 & 0x40) { /* 0100 0000 */
+				switch (val1) {
+		      case IMGC_FULLCHANNEL:
+		        memcpy (write_px, read_px, param->channel);
+		        break;
+		      default:
+		        throw "not yet";
+				}
+	      // all v1 data stored into index
+	      val2 = hashing (read_px, param->channel);
+	      memcpy (index + (val2 * param->channel), read_px, param->channel);
+	    	write_px += param->channel;
+	      read_px += param->channel;
+      } else {
+	    	// IMGC_HASHINDEX
+	      val1 &= IMGC_MASKVALUE;
+	      memcpy (write_px, index + (val1 * param->channel), param->channel);
+      	write_px += param->channel;
+      }
+    } else {
+    	// IMGC_LOOKAHEAD
+      val2 = (val1 & 0x70) >> 4; /* 0111 0000 */
+      val1 &= 0xf; /* 0000 1111 */
       ++val1;
       ++val2;
       do {
         memcpy (write_px, write_px - (param->channel * val2), param->channel);
         write_px += param->channel;
       } while (--val1);
-      break;
-    case IMGC_HASHINDEX:
-      val1 &= IMGC_MASKVALUE;
-      memcpy (write_px, index + (val1 * param->channel), param->channel);
-      write_px += param->channel;
-      break;
-    case IMGC_NOTYET:
-      throw "not yet implemented.";
-    case IMGC_V2:
-      switch (val1) {
-      case IMGC_FULLCHANNEL:
-        memcpy (write_px, read_px, param->channel);
-        break;
-      default:
-        throw "not yet";
-      }
-      // all v2 data stored into index
-      val2 = hashing (read_px, param->channel);
-      memcpy (index + (val2 * param->channel), read_px, param->channel);
-      write_px += param->channel;
-      read_px += param->channel;
-      break;
     }
   } while (read_px < end_px);
 
