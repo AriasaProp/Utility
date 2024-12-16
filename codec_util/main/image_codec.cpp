@@ -45,7 +45,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char
       *index = new unsigned char[64 * param.channel]{},
       // counting run length encoding, store temporary hash
-      *index_view, run = 0, h_;
+      *index_view, h_;
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
 
@@ -149,7 +149,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         read_px += param->channel;
       } else {
         // IMGC_HASHINDEX
-        val1 &= IMGC_MASKVALUE;
+        val1 &= 0x3f; /* 01xx xxxx */
         memcpy (write_px, index + (val1 * param->channel), param->channel);
         write_px += param->channel;
       }
