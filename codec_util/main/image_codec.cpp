@@ -166,14 +166,15 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
             *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
             ++write_px;
           }
-          h_ = param->channel & 1;
-          while (h_ < param->channel) {
+          val2 = param->channel & 1;
+          while (val2 < param->channel) {
             val1 = *(read_px++);
             *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
             ++write_px;
             val1 >>= 4;
             *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
             ++write_px;
+            val2 += 2;
           }
           break;
         default:
