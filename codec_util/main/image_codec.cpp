@@ -47,8 +47,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   unsigned char
       // buffer for indexing pixels
       *index = new unsigned char[64 * param.channel]{},
-  // counting run length encoding, store temporary hash
-  *index_view, h_, temp1;
+      // counting run length encoding, store temporary hash
+      *index_view, h_, temp1;
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
 
