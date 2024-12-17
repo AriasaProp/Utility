@@ -11,8 +11,8 @@
 #define IMGC_LOOKAHEAD 0x00 /* 0xxxxxxx */
 
 // big and full codec
-#define IMGC_V1 0xc0          /* 1xxxxxxx */
-#define IMGC_HASHINDEX 0x40   /* 10xxxxxx */
+#define IMGC_V1 0x80          /* 1xxxxxxx */
+#define IMGC_HASHINDEX 0x80   /* 10xxxxxx */
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
