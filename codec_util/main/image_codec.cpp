@@ -155,9 +155,6 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         switch ((val1 & 0x30) >> 4) { /* 0011 0000 */
         case 0:                       // IMGC_DIFF
           val1 &= 0xf;
-          // even == false, odd == true
-          if (((param->channel & 1) == 1) ^ (val1 != 0))
-            throw "impossible";
           if (param->channel & 1) {
             *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
             ++write_px;
