@@ -142,18 +142,12 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       // write state
           *write_px = out_px,
       // temporary read byte, hashing
-      val1, val2;
+      val1 = IMGC_FULLCHANNEL, val2;
 
   // write first pixel
-  memcpy (write_px, read_px, param->channel);
-  write_px += param->channel;
-  val2 = hashing (read_px, param->channel);
-  memcpy (index + (val2 * param->channel), read_px, param->channel);
-  read_px += param->channel;
 
   // next pixel
   do {
-    val1 = *(read_px++);
     if (val1 & 0x80) { /* 1000 0000 */
       // IMGC_V1
       if (val1 & 0x40) {              /* 0100 0000 */
@@ -188,12 +182,13 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
             throw "not yet";
           }
           break;
+          write_px += param->channel;
+        	read_px += param->channel;
         }
         // all v1 data stored into index
-        val2 = hashing (read_px, param->channel);
-        memcpy (index + (val2 * param->channel), read_px, param->channel);
-        write_px += param->channel;
-        read_px += param->channel;
+        val2 = hashing (write_px - param->channel, param->channel);
+        memcpy (index + (val2 * param->channel), write_px - param->channel, param->channel);
+        
       } else {
         // IMGC_HASHINDEX
         val1 &= 0x3f; /* 01xx xxxx */
@@ -211,7 +206,8 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         write_px += param->channel;
       } while (--val1);
     }
-  } while (read_px < end_px);
+    val1 = *(read_px++);
+  } while (read_px <= end_px);
 
   delete[] index;
   return out_px;
