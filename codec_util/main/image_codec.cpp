@@ -76,7 +76,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         }
       }
     }
-    if (saved_lookahead > 0) {
+    if (saved_lookahead > -1) {
       write_px.push_back (((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
       saved_len_lookahead = -1;
@@ -183,12 +183,12 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           }
           break;
           write_px += param->channel;
-          read_px += param->channel;
+        	read_px += param->channel;
         }
         // all v1 data stored into index
         val2 = hashing (write_px - param->channel, param->channel);
         memcpy (index + (val2 * param->channel), write_px - param->channel, param->channel);
-
+        
       } else {
         // IMGC_HASHINDEX
         val1 &= 0x3f; /* 01xx xxxx */
