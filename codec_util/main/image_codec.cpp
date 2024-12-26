@@ -84,7 +84,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       saved_lookahead = -1;
     } else {
       // index compare
-      int v = h_ = hashing (read_px, param.channel);
+      h_ = hashing (read_px, param.channel);
       index_view = index + (h_ * param.channel);
       if (memcmp (index_view, read_px, param.channel)) {
         bool diff = true;
@@ -159,16 +159,16 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           if (((param->channel & 1) == 1) ^ (val1 != 0))
             throw "impossible";
           if (param->channel & 1) {
-            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
+            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
             ++write_px;
           }
           val2 = param->channel & 1;
           while (val2 < param->channel) {
             val1 = *(read_px++);
-            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
+            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
             ++write_px;
             val1 >>= 4;
-            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) * -1);
+            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
             ++write_px;
             val2 += 2;
           }
