@@ -20,11 +20,11 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-unsigned char hashing(const unsigned char *in, unsigned int len) {
-	unsigned char r = 0;
-	for (unsigned int i = 0; i < len; ++i)
-		r ^= (in[i] & 63) ^ (in[i] >> 6);
-	return r;
+unsigned char hashing (const unsigned char *in, unsigned int len) {
+  unsigned char r = 0;
+  for (unsigned int i = 0; i < len; ++i)
+    r ^= (in[i] & 63) ^ (in[i] >> 6);
+  return r;
 }
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
