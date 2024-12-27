@@ -20,13 +20,11 @@
 const unsigned int HEADER_SIZE = 8;
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
 
-static const unsigned int primes[]{3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
-unsigned char hashing (const unsigned char *in, unsigned int len) {
-  unsigned char r = 0;
-  for (unsigned int i = 0; i < len; ++i) {
-    r += *(in + i) * primes[i % 12];
-  }
-  return r % 64;
+unsigned char hashing(const unsigned char *in, unsigned int len) {
+	unsigned char r = 0;
+	for (unsigned int i = 0; i < len; ++i)
+		r ^= (in[i] & 63) ^ (in[i] >> 6);
+	return r;
 }
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
@@ -157,20 +155,15 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           val1 &= 0xf;
           if (param->channel & 1) {
             *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
-            ++write_px;
           }
           val2 = param->channel & 1;
           while (val2 < param->channel) {
             val1 = *(read_px++);
-            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
-            ++write_px;
-            val1 >>= 4;
-            *write_px = *(write_px - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
-            ++write_px;
-            val2 += 2;
+            *(write_px + val2) = *(write_px + val2 - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
+            val1 >>= 4, ++val2;
+            *(write_px + val2) = *(write_px + val2 - param->channel) + (val1 & 7) * (((val1 & 8) != 8) ? -1 : 1);
+            ++val2;
           }
-          write_px -= param->channel;
-
           break;
         default:
           throw "not yet imgc diff";
@@ -178,7 +171,6 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           switch (val1) {
           case IMGC_FULLCHANNEL:
             memcpy (write_px, read_px, param->channel);
-
             break;
           default:
             throw "not yet full channel";
