@@ -51,7 +51,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       // buffer for indexing pixels
       *index = (unsigned char *)calloc (64, param.channel),
       // counting run length encoding, store temporary hash
-      *index_view, *hs__, h_, temp1;
+      *index_view, h_, temp1;
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
   bool hashed = false;
@@ -156,7 +156,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   do {
     {
       // hashing index
-      unsigned char *hs__ = write_px - (9 * param.channel);
+      unsigned char *hs__ = write_px - (9 * param->channel);
       bool hashed = out_px <= hs__;
       for (unsigned char *c = std::max (out_px, write_px - (8 * param->channel)); (c < write_px) && hashed; c += param->channel) {
         hashed &= memcmp (c, hs__, param->channel);
