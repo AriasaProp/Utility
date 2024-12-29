@@ -46,10 +46,10 @@ int main (int argv, char *args[]) {
             if (memcmp (s + (i * stbic), is + (i * stbic), stbic)) {
               for (j = (i < 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
                 std::cout << std::hex << *(int *)(s + (j * stbic));
-                if (j==i) 
-                	std::cout << " : " << std::hex << *(int *)(is + (j * stbic)) << std::endl;
+                if (j == i)
+                  std::cout << " : " << std::hex << *(int *)(is + (j * stbic)) << std::endl;
                 else
-                	std::cout << " ," << std::endl;
+                  std::cout << " ," << std::endl;
               }
               break;
             }
