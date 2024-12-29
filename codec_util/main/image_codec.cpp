@@ -160,24 +160,24 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         case 0:                        // IMGC_DIFF
           temp1 &= 0xf;
           itemp = temp1 & 7;
-          itemp *= (temp1 & 8) ? -1 : 1;
+          itemp *= (temp1 & 8) ? 1 : -1;
           *write_px = *(write_px - param->channel) + itemp;
           temp2 = 1;
           while ((temp2 + 2) <= param->channel) {
             temp1 = *(read_px++);
             itemp = temp1 & 7;
-            itemp *= (temp1 & 8) ? -1 : 1;
+            itemp *= (temp1 & 8) ? 1 : -1;
             *(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
             temp1 >>= 4, ++temp2;
             itemp = temp1 & 7;
-            itemp *= (temp1 & 8) ? -1 : 1;
+            itemp *= (temp1 & 8) ? 1 : -1;
             *(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
             ++temp2;
           }
           if (!(param->channel & 1)) {
             temp1 = *(read_px++);
             itemp = temp1 & 127;
-            itemp *= (temp1 & 128) ? -1 : 1;
+            itemp *= (temp1 & 128) ? 1 : -1;
             *(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
           }
           break;
