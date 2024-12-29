@@ -91,9 +91,9 @@ static bool sub_word (wstack &a, const wstack &b) {
 }
 
 /**********************************
- * 
+ *
  * Initialize BigInteger functions
- * 
+ *
  **********************************/
 
 /** Constructors **/
@@ -999,7 +999,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = (char *) malloc(texN + 1);
+    char *text = (char *)malloc (texN + 1);
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
