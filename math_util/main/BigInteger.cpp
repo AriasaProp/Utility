@@ -143,13 +143,7 @@ BigInteger::operator bool () const {
   return words.size () > 0;
 }
 BigInteger::operator int () const {
-  if (words.size ()) {
-    if (neg)
-      return -(int (words[0]));
-    else
-      return int (words[0]);
-  }
-  return 0;
+  return (words.size() > 0) * ((!neg * words[0]) + (neg * ~words[0] + 1));
 }
 
 char *BigInteger::to_chars () const {
@@ -698,26 +692,20 @@ BigInteger &operator>>= (BigInteger &a, size_t n_bits) {
   return a;
 }
 BigInteger &operator<<= (BigInteger &a, size_t bits) {
-  if (bits) {
-    size_t n = bits % WORD_BITS;
-    if (n) {
-      const size_t l_shift = WORD_BITS - n;
-      wstack::reverse_iterator carried = a.words.rbegin ();
-      wstack::reverse_iterator endCarried = a.words.rend () - 1;
-      word lo = *carried >> l_shift;
-      while (carried != endCarried) {
-        *carried <<= n;
-        *carried |= *(carried + 1) >> l_shift;
-        carried++;
-      }
-      *carried <<= n;
-      if (lo)
-        a.words.push_back (lo);
-    }
-    n = bits / WORD_BITS;
-    if (n)
-      a.words.insert (a.words.begin (), n, 0);
+  size_t n = bits % WORD_BITS;
+  const size_t l_shift = WORD_BITS - n;
+  wstack::reverse_iterator carried = a.words.rbegin ();
+  wstack::reverse_iterator endCarried = a.words.rend () - 1;
+  word lo = *carried >> l_shift;
+  while (carried != endCarried) {
+    *carried <<= n;
+    *carried |= *(carried + 1) >> l_shift;
+    carried++;
   }
+  *carried <<= n;
+  if (lo)
+    a.words.push_back (lo);
+  a.words.insert (a.words.begin (), bits / WORD_BITS, 0);
   return a;
 }
 BigInteger &operator&= (BigInteger &a, const BigInteger b) {
