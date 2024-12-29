@@ -25,7 +25,6 @@ public:
   operator bool () const;
   explicit operator int () const;
   // operator double() const;
-  char *to_chars () const;
   /** math operational function **/
   BigInteger sqrt () const;
   BigInteger pow (size_t) const;

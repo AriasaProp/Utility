@@ -91,9 +91,9 @@ static bool sub_word (wstack &a, const wstack &b) {
 }
 
 /**********************************
- *
+ * 
  * Initialize BigInteger functions
- *
+ * 
  **********************************/
 
 /** Constructors **/
@@ -143,59 +143,7 @@ BigInteger::operator bool () const {
   return words.size () > 0;
 }
 BigInteger::operator int () const {
-  return (words.size () > 0) * ((!neg * words[0]) + (neg * ~words[0] + 1));
-}
-
-char *BigInteger::to_chars () const {
-  if (words.empty ())
-    return new char[1]{'0'};
-
-  size_t texN = neg ? 1 : 0;
-  word rmr, current;
-  // grt decimal count
-  wstack A = words;
-  do {
-    rmr = 0;
-    for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
-      current = *cur;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current >> WORD_HALF_BITS;
-      *cur = rmr / 10;
-      rmr %= 10;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current & WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= rmr / 10;
-      rmr %= 10;
-    }
-    ++texN;
-    if (!A.back ())
-      A.pop_back ();
-  } while (!A.empty ());
-
-  A = words;
-  char *text = new char[texN];
-  if (neg) *text = '-';
-  char *tcr = text + texN;
-  while (!A.empty ()) {
-    rmr = 0;
-    for (wstack::reverse_iterator cur = A.rbegin (); cur != A.rend (); ++cur) {
-      current = *cur;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current >> WORD_HALF_BITS;
-      *cur = rmr / 10;
-      rmr %= 10;
-      rmr <<= WORD_HALF_BITS;
-      rmr |= current & WORD_HALF_MASK;
-      *cur <<= WORD_HALF_BITS;
-      *cur |= rmr / 10;
-      rmr %= 10;
-    }
-    *(--tcr) = '0' + char (rmr);
-    if (!A.back ())
-      A.pop_back ();
-  }
-  return text;
+  return (words.size() > 0) * ((!neg * words[0]) + (neg * ~words[0] + 1));
 }
 
 /** math operational **/
@@ -666,28 +614,24 @@ BigInteger &BigInteger::operator%= (const BigInteger b) {
 }
 /** safe bitwise operand **/
 BigInteger &operator>>= (BigInteger &a, size_t n_bits) {
-  if (n_bits && a.words.size ()) {
-    size_t j = n_bits / WORD_BITS;
-    if (j < a.words.size ()) {
-      wstack::iterator carried = a.words.begin ();
-      a.words.erase (carried, carried + j);
-      n_bits %= WORD_BITS;
-      if (n_bits) {
-        wstack::iterator endCarried = a.words.end () - 1;
-        const size_t r_shift = WORD_BITS - n_bits;
-        *carried >>= n_bits;
-        while (carried != endCarried) {
-          *carried |= *(carried + 1) << r_shift;
-          carried++;
-          *carried >>= n_bits;
-        }
-        if (*endCarried == 0)
-          a.words.pop_back ();
-      }
-    } else {
-      a.neg = false;
-      a.words.clear ();
+  size_t j = n_bits / WORD_BITS;
+  if (j < a.words.size ()) {
+    wstack::iterator carried = a.words.begin ();
+    a.words.erase (carried, carried + j);
+    n_bits %= WORD_BITS;
+    wstack::iterator endCarried = a.words.end () - 1;
+    const size_t r_shift = WORD_BITS - n_bits;
+    *carried >>= n_bits;
+    while (carried != endCarried) {
+      *carried |= *(carried + 1) << r_shift;
+      carried++;
+      *carried >>= n_bits;
     }
+    while (a.words.size() && !a.words.back())
+      a.words.pop_back ();
+  } else {
+    a.neg = false;
+    a.words.clear ();
   }
   return a;
 }
@@ -1039,7 +983,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = (char *)malloc (texN + 1);
+    char *text = (char *) malloc(texN + 1);
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
