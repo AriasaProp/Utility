@@ -91,9 +91,9 @@ static bool sub_word (wstack &a, const wstack &b) {
 }
 
 /**********************************
- * 
+ *
  * Initialize BigInteger functions
- * 
+ *
  **********************************/
 
 /** Constructors **/
@@ -143,7 +143,7 @@ BigInteger::operator bool () const {
   return words.size () > 0;
 }
 BigInteger::operator int () const {
-  return (words.size() > 0) * ((!neg * words[0]) + (neg * ~words[0] + 1));
+  return (words.size () > 0) * ((!neg * words[0]) + (neg * ~words[0] + 1));
 }
 
 /** math operational **/
@@ -627,7 +627,7 @@ BigInteger &operator>>= (BigInteger &a, size_t n_bits) {
       carried++;
       *carried >>= n_bits;
     }
-    while (a.words.size() && !a.words.back())
+    while (a.words.size () && !a.words.back ())
       a.words.pop_back ();
   } else {
     a.neg = false;
@@ -983,7 +983,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = (char *) malloc(texN + 1);
+    char *text = (char *)malloc (texN + 1);
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
