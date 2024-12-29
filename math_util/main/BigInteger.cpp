@@ -91,7 +91,9 @@ static bool sub_word (wstack &a, const wstack &b) {
 }
 
 /**********************************
- * initialize BigInteger functions
+ * 
+ * Initialize BigInteger functions
+ * 
  **********************************/
 
 /** Constructors **/
@@ -739,24 +741,10 @@ BigInteger &operator|= (BigInteger &a, const BigInteger b) {
 }
 /** compare operator **/
 bool operator== (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return false;
-  if (a.words.size () != 1)
-    return false;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return false;
-  return true;
+  return (a.neg == (b < 0)) && (a.words.size () == 1) && (a.words[0] == std::abs (b));
 }
 bool operator!= (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return true;
-  if (a.words.size () != 1)
-    return true;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return true;
-  return false;
+  return (a.neg != (b < 0)) || (a.words.size () != 1) || (a.words[0] != std::abs (b));
 }
 bool operator<= (const BigInteger &a, const signed b) {
   if (a.neg != (b < 0))
@@ -1063,7 +1051,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
     } while (!A.empty ());
 
     A = num.words;
-    char *text = new char[texN + 1];
+    char *text = (char *) malloc(texN + 1);
     text[texN] = '\0';
     char *tcr = text + texN;
     do {
@@ -1084,8 +1072,9 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
       if (!A.back ())
         A.pop_back ();
     } while (!A.empty ());
+    while (tcr > text) *(--tcr) = ' ';
     out << text;
-    delete[] text;
+    free (text);
   }
   return out;
 }
