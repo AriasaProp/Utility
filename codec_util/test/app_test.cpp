@@ -42,10 +42,14 @@ int main (int argv, char *args[]) {
         std::cout << "A info x " << stbix << " y " << stbiy << " ch " << stbic << std::endl;
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
         if ((stbix == img_p.width) && (stbiy == img_p.height) && (stbic == img_p.channel)) {
-          for (unsigned int i = 0; i < outbytes; ++i) {
+          for (unsigned int i = 0, j, k; i < outbytes; ++i) {
             if (memcmp (s + (i * stbic), is + (i * stbic), stbic)) {
-              for (unsigned int j = (i < 16 ? 0 : i - 25), k = j + 25; j <= k; ++j) {
-                std::cout << std::hex << *(int *)(s + (j * stbic)) << " : " << std::hex << *(int *)(is + (j * stbic)) << std::endl;
+              for (j = (i < 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
+                std::cout << std::hex << *(int *)(s + (j * stbic));
+                if (j==i) 
+                	std::cout << " : " << std::hex << *(int *)(is + (j * stbic)) << std::endl;
+                else
+                	std::cout << " ," << std::endl;
               }
               break;
             }
