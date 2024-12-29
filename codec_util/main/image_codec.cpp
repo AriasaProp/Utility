@@ -79,7 +79,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         }
       }
     }
-      
+
     if (saved_lookahead > -1) {
       write_px.push_back (((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
