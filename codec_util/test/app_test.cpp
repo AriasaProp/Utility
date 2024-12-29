@@ -32,7 +32,6 @@ int main (int argv, char *args[]) {
       img_p.channel = stbic;
       ic = image_encode (s, img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
-
       if (
           (stbix != img_p.width) ||
           (stbiy != img_p.height) ||
@@ -43,14 +42,14 @@ int main (int argv, char *args[]) {
         std::cout << "B info x " << img_p.width << " y " << img_p.height << " ch " << (int)img_p.channel << std::endl;
         if ((stbix == img_p.width) && (stbiy == img_p.height) && (stbic == img_p.channel)) {
           for (unsigned int i = 0, j, k; i < outbytes; ++i) {
-            if (memcmp (s + (i * stbic), is + (i * stbic), stbic)) {
-              for (j = (i < 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
-                std::cout << std::hex << *(int *)(s + (j * stbic));
-                if (j == i)
-                  std::cout << " : " << std::hex << *(int *)(is + (j * stbic)) << std::endl;
-                else
-                  std::cout << " ," << std::endl;
+            if (memcmp (s + i * stbic, is + i * stbic, stbic)) {
+              for (j = (i <= 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
+                std::cout << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(s + j * stbic);
+                if (i == j)
+                	std::cout << "(" << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(is + j * stbic) << ")";
+                std::cout << ", ";
               }
+            	std::cout << std::endl;
               break;
             }
           }
@@ -60,7 +59,7 @@ int main (int argv, char *args[]) {
         long double ratio = outbytes;
         ratio /= (stbix * stbiy * stbic);
         ratio *= 100;
-        std::cout << " √ " << ratio << " \% origin";
+        std::cout << " √ " << ratio << " \% from origin, file size " << (outbytes/1024.0) << "kBytes";
       }
       std::cout << std::endl;
 

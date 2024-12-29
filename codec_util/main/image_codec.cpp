@@ -11,37 +11,23 @@
 // equality
 #define IMGC_LOOKAHEAD 0x00 /* 0xxxxxxx */
 
-#define IMGC_V1 0x80 /* 1xxxxxxx */
+#define IMGC_V1 0x80          /* 1xxxxxxx */
 // equality from previous
-#define IMGC_HASHINDEX 0x80 /* 10xxxxxx */
-#define IMGC_DIFF 0xc0      /* 1100xxxx */
+#define IMGC_HASHINDEX 0x80   /* 10xxxxxx */
+#define IMGC_DIFF 0xc0        /* 1100xxxx */
 
 // big and full codec
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
 const unsigned char HEADER_ARRAY[]{0x49, 0x4d, 0x47, 0x43, 0x4f, 0x44, 0x45, 0x43};
-const size_t HEADER_SIZE = sizeof (HEADER_ARRAY);
+const size_t HEADER_SIZE = sizeof(HEADER_ARRAY);
 
 unsigned char hashing (const unsigned char *in, unsigned int len) {
   unsigned char r = 0;
   for (unsigned int i = 0; i < len; ++i)
     r ^= (in[i] & 63) ^ (in[i] >> 6);
   return r;
-}
-unsigned char *mem (size_t l) {
-  void *r = nullptr;
-  do {
-    r = malloc (l);
-  } while (!r);
-  return (unsigned char *)r;
-}
-unsigned char *mem0 (size_t l) {
-  void *r = nullptr;
-  do {
-    r = calloc (1, l);
-  } while (!r);
-  return (unsigned char *)r;
 }
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
@@ -60,24 +46,22 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   // buffer for caching pixels difference
-  int *db = (int *)mem0 (param.channel);
+  int *db = (int *) calloc(1, param.channel);
   unsigned char
       // buffer for indexing pixels
-      *index = mem0 (64 * param.channel),
+      *index = (unsigned char *) calloc(64, param.channel),
       // counting run length encoding, store temporary hash
       *index_view, h_, temp1;
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
-  bool hashed = false;
   // write first pixel
+  h_ = hashing (read_px, param.channel);
   write_px.insert (write_px.end (), read_px, read_px + param.channel);
+  memcpy (index + (h_ * param.channel), read_px, param.channel);
   read_px += param.channel;
 
   while (read_px < end_px) {
-    const unsigned char *hs__ = read_px - (9 * param.channel);
-    hashed = pixels <= hs__;
-    for (const unsigned char *c = std::max (pixels, read_px - (8 * param.channel)); c < read_px; c += param.channel) {
-      hashed &= memcmp (c, hs__, param.channel);
+    for (const unsigned char *c = std::max (pixels, read_px - (0x8 * param.channel)); c < read_px; c += param.channel) {
       if (!memcmp (c, read_px, param.channel)) {
         const unsigned char
             *d = read_px,
@@ -86,6 +70,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         do {
           d += param.channel, e += param.channel;
         } while ((d < dend) && (!memcmp (d, e, param.channel)));
+
         int len = (e - c) / param.channel - 1;
         if (saved_len_lookahead < len) {
           saved_lookahead = (read_px - c) / param.channel - 1;
@@ -93,7 +78,6 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         }
       }
     }
-
     if (saved_lookahead > -1) {
       write_px.push_back (((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
@@ -133,10 +117,10 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       read_px += param.channel;
     }
   }
-  free (db);
-  free (index);
+  free(db);
+  free(index);
   *out_byte = write_px.size ();
-  unsigned char *out = mem (*out_byte);
+  unsigned char *out = (unsigned char *) malloc(*out_byte);
   memcpy (out, write_px.data (), *out_byte);
   return out;
 }
@@ -157,9 +141,9 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
   read_px += sizeof (image_param);
   unsigned char
       // buffer for indexing pixels
-      *index = mem0 (64 * param->channel),
+      *index = (unsigned char *) calloc(64, param->channel),
       // output
-      *out_px = mem (max_px),
+      *out_px = (unsigned char *) malloc(max_px),
       // write state
           *write_px = out_px,
       // temporary read byte, hashing
@@ -184,8 +168,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
             ++val2;
           }
           break;
-        case 1:
-        case 2:
+        default:
           throw "not yet imgc diff";
         case 3:
           switch (val1) {
@@ -198,7 +181,9 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           read_px += param->channel;
           break;
         }
-        memcpy (index + (hashing (write_px, param->channel) * param->channel), write_px, param->channel);
+        // all v1 data stored into index
+        val2 = hashing (write_px, param->channel);
+        memcpy (index + (val2 * param->channel), write_px, param->channel);
         write_px += param->channel;
       } else {
         // IMGC_HASHINDEX
@@ -220,10 +205,10 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     val1 = *(read_px++);
   } while (read_px <= end_px);
 
-  free (index);
+  free(index);
   return out_px;
 }
 // void release memory
 void image_free (unsigned char *f) {
-  free ((void *)f);
+  free((void*)f);
 }
