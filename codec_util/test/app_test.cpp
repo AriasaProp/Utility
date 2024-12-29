@@ -44,7 +44,7 @@ int main (int argv, char *args[]) {
         if ((stbix == img_p.width) && (stbiy == img_p.height) && (stbic == img_p.channel)) {
           for (int i = 0; i < outbytes; ++i) {
             if (memcmp (s + (i * stbic), is + (i * stbic), stbic)) {
-              for (int j = std::max (i - 15, 0), k = j + 16; j < k; ++j) {
+              for (int j = std::max (i - 16, 0), k = j + 16; j < k; ++j) {
                 std::cout << std::hex << *(int *)(s + j * stbic) << " : " << std::hex << *(int *)(is + j * stbic) << std::endl;
               }
               break;
