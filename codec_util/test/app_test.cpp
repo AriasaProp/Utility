@@ -46,10 +46,10 @@ int main (int argv, char *args[]) {
               for (j = (i <= 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
                 std::cout << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(s + j * stbic);
                 if (i == j)
-                	std::cout << "(" << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(is + j * stbic) << ")";
+                  std::cout << "(" << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(is + j * stbic) << ")";
                 std::cout << ", ";
               }
-            	std::cout << std::endl;
+              std::cout << std::endl;
               break;
             }
           }
@@ -59,7 +59,7 @@ int main (int argv, char *args[]) {
         long double ratio = outbytes;
         ratio /= (stbix * stbiy * stbic);
         ratio *= 100;
-        std::cout << " √ " << ratio << " \% from origin, file size " << (outbytes/1024.0) << "kBytes";
+        std::cout << " √ " << ratio << " \% from origin, file size " << (outbytes / 1024.0) << "kBytes";
       }
       std::cout << std::endl;
 
