@@ -46,7 +46,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
   // write informations 9 bytes
   write_px.insert (write_px.end (), reinterpret_cast<const unsigned char *> (&param), reinterpret_cast<const unsigned char *> (&param) + sizeof (image_param));
   // buffer for caching pixels difference
-  int *db = (int *)calloc (sizeof(int), param.channel);
+  int *db = (int *)calloc (sizeof (int), param.channel);
   unsigned char
       // buffer for indexing pixels
       *index = (unsigned char *)calloc (64, param.channel),
@@ -108,7 +108,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
           }
           if (!(param.channel & 1))
             write_px.push_back ((std::abs (db[temp2]) | (128 * (db[temp2] < 0))) & 0x7f);
-          
+
         } else {
           // write full channel
           write_px.push_back (IMGC_FULLCHANNEL);
@@ -158,7 +158,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       // IMGC_V1
       if (temp1 & 0x40) {              /* 0100 0000 */
         switch ((temp1 & 0x30) >> 4) { /* 0011 0000 */
-        case 0:                       // IMGC_DIFF
+        case 0:                        // IMGC_DIFF
           temp1 &= 0xf;
           *write_px = *(write_px - param->channel) + (temp1 & 7) * (((temp1 & 8) != 8) ? -1 : 1);
           temp2 = 1;
@@ -199,7 +199,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
     } else {
       // IMGC_LOOKAHEAD
       temp2 = (temp1 & 0x70) >> 4; /* 0111 0000 */
-      temp1 &= 0xf;               /* 0000 1111 */
+      temp1 &= 0xf;                /* 0000 1111 */
       ++temp1;
       ++temp2;
       do {
