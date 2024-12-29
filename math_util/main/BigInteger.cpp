@@ -143,7 +143,7 @@ BigInteger::operator bool () const {
   return words.size () > 0;
 }
 BigInteger::operator int () const {
-  return (words.size () > 0) * int ((!neg * words[0]) + (neg * ~words[0] + 1);
+  return (words.size () > 0) * int ((!neg * words[0]) + (neg * ~words[0] + 1));
 }
 
 /** math operational **/
