@@ -97,18 +97,17 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         // write difference
         if (diff) {
           temp2 = 0;
-          write_px.push_back (IMGC_DIFF | (std::abs (db[temp2]) | (8 * (db[temp2] < 0))));
-          ++temp2;
-          while ((temp2 + 2) <= param.channel) {
-            temp1 = (std::abs (db[temp2]) | (8 * (db[temp2] < 0))) & 0xf;
-            ++temp2;
-            temp1 |= ((std::abs (db[temp2]) | (8 * (db[temp2] < 0))) & 0xf) << 4;
-            ++temp2;
-            write_px.push_back (temp1);
-          }
-          if (!(param.channel & 1))
-            write_px.push_back ((std::abs (db[temp2]) | (128 * (db[temp2] < 0))) & 0x7f);
-
+					write_px.push_back(IMGC_DIFF | std::abs(db[temp2]) | (8 * (db[temp2] < 0)));
+					++temp2;
+					while ((temp2 + 2) <= param.channel) {
+						temp1 = std::abs(db[temp2]) | (8 * (db[temp2] < 0));
+						++temp2;
+						temp1 |= (std::abs(db[temp2]) | (8 * (db[temp2] < 0))) << 4;
+						++temp2;
+						write_px.push_back(temp1);
+					}
+					if (!(param.channel & 1))
+						write_px.push_back(std::abs(db[temp2]) | (128 * (db[temp2] < 0)));
         } else {
           // write full channel
           write_px.push_back (IMGC_FULLCHANNEL);
@@ -152,7 +151,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           *write_px = out_px,
       // temporary read byte, hashing
       temp1 = IMGC_FULLCHANNEL, temp2;
-  // next pixel
+  int itemp;
   do {
     if (temp1 & 0x80) { /* 1000 0000 */
       // IMGC_V1
@@ -160,18 +159,28 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
         switch ((temp1 & 0x30) >> 4) { /* 0011 0000 */
         case 0:                        // IMGC_DIFF
           temp1 &= 0xf;
-          *write_px = *(write_px - param->channel) + (temp1 & 7) * (((temp1 & 8) != 8) ? -1 : 1);
-          temp2 = 1;
-          while ((temp2 + 2) <= param->channel) {
-            temp1 = *(read_px++);
-            *(write_px + temp2) = *(write_px + temp2 - param->channel) + (temp1 & 7) * (((temp1 & 8) != 8) ? -1 : 1);
-            temp1 >>= 4, ++temp2;
-            *(write_px + temp2) = *(write_px + temp2 - param->channel) + (temp1 & 7) * (((temp1 & 8) != 8) ? -1 : 1);
-            ++temp2;
-          }
-          if (!(param->channel & 1)) {
-            *(write_px + temp2) = *(write_px + temp2 - param->channel) + (temp1 & 127) * (((temp1 & 128) != 128) ? -1 : 1);
-          }
+          itemp = temp1 & 7;
+          itemp *= (temp1 & 8) ? -1 : 1;
+					*write_px = *(write_px - param->channel) + itemp;
+					temp2 = 1;
+					while ((temp2 + 2) <= param->channel)
+					{
+						temp1 = *(read_px++);
+						itemp = temp1 & 7;
+						itemp *= (temp1 & 8) ? -1 : 1;
+						*(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
+						temp1 >>= 4, ++temp2;
+						itemp = temp1 & 7;
+						itemp *= (temp1 & 8) ? -1 : 1;
+						*(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
+						++temp2;
+					}
+					if (!(param->channel & 1)) {
+						temp1 = *(read_px++);
+						itemp = temp1 & 127;
+						itemp *= (temp1 & 128) ? -1 : 1;
+						*(write_px + temp2) = *(write_px + temp2 - param->channel) + itemp;
+					}
           break;
         default:
           throw "not yet imgc diff";
