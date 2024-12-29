@@ -79,10 +79,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
         }
       }
     }
-    // hash index put
-    if (hashed)
-      memcpy (index + (hashing (hs__, param.channel) * param.channel), hs__, param.channel);
-
+      
     if (saved_lookahead > -1) {
       write_px.push_back (((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf));
       read_px += param.channel * (saved_len_lookahead + 1);
@@ -115,6 +112,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
           write_px.push_back (IMGC_FULLCHANNEL);
           write_px.insert (write_px.end (), read_px, read_px + param.channel);
         }
+        memcpy (index_view, read_px, param.channel);
       } else {
         write_px.push_back (IMGC_HASHINDEX | h_);
       }
@@ -154,18 +152,6 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
       val1 = IMGC_FULLCHANNEL, val2;
   // next pixel
   do {
-    {
-      // hashing index
-      unsigned char *hs__ = write_px - (9 * param->channel);
-      bool hashed = out_px <= hs__;
-      for (unsigned char *c = std::max (out_px, write_px - (8 * param->channel)); (c < write_px) && hashed; c += param->channel) {
-        hashed &= memcmp (c, hs__, param->channel);
-      }
-      // hash index put
-      if (hashed) {
-        memcpy (index + (hashing (hs__, param->channel) * param->channel), hs__, param->channel);
-      }
-    }
     if (val1 & 0x80) { /* 1000 0000 */
       // IMGC_V1
       if (val1 & 0x40) {              /* 0100 0000 */
@@ -198,6 +184,7 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           read_px += param->channel;
           break;
         }
+        memcpy (index + (hashing (write_px, param.channel) * param.channel), write_px, param.channel);
         write_px += param->channel;
       } else {
         // IMGC_HASHINDEX
