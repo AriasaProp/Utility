@@ -140,10 +140,10 @@ BigInteger::~BigInteger () {
 }
 /** operator casting **/
 BigInteger::operator bool () const {
-  return words.size () > 0;
+  return !words.empty ();
 }
 BigInteger::operator int () const {
-  return (!words.empty ()) * int ((!neg * words[0]) + (neg * ~words[0] + 1));
+  return (!words.empty ()) * (neg ? -int(words[0]) : int(words[0]));
 }
 
 /** math operational **/
