@@ -143,10 +143,10 @@ BigInteger::operator bool () const {
   return !words.empty ();
 }
 BigInteger::operator int () const {
-	if (!words.empty ())
-		return (neg) ? -int (words[0]) : int (words[0]);
-	return 0;
-  //return (!words.empty ()) * (neg ? -int (words[0]) : int (words[0]));
+  if (!words.empty ())
+    return (neg) ? -int (words[0]) : int (words[0]);
+  return 0;
+  // return (!words.empty ()) * (neg ? -int (words[0]) : int (words[0]));
 }
 
 /** math operational **/
@@ -899,7 +899,7 @@ BigInteger operator>> (const BigInteger &A, size_t n_bits) {
         carried++;
         *carried >>= n_bits;
       }
-      while (a.words.size() && !a.words.back())
+      while (a.words.size () && !a.words.back ())
         a.words.pop_back ();
     }
   } else {
@@ -993,7 +993,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger num) {
         rmr %= 10;
       }
       *(--tcr) = '0' + char (rmr);
-      if (A.size() && !A.back ())
+      if (A.size () && !A.back ())
         A.pop_back ();
     } while (!A.empty ());
     while (tcr > text) *(--tcr) = ' ';
