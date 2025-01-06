@@ -915,7 +915,7 @@ BigInteger operator<< (const BigInteger &A, size_t bits) {
   wstack::reverse_iterator carried = a.words.rbegin ();
   wstack::reverse_iterator endCarried = a.words.rend () - 1;
   word lo = *carried >> l_shift;
-  while (carried != endCarried) {
+  while (carried < endCarried) {
     *carried <<= n;
     *carried |= *(carried + 1) >> l_shift;
     carried++;
