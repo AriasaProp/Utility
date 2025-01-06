@@ -1,8 +1,8 @@
 #include "BigInteger.hpp"
 
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
-#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -39,7 +39,7 @@ public:
     safe_time = std::chrono::high_resolution_clock::now ();
   }
   time_md end () {
-    unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now () - safe_time).count();
+    unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now () - safe_time).count ();
     return time_md (tm);
   }
 };
@@ -243,7 +243,7 @@ bool BigInteger_test1 () {
 
   } catch (const char *msg) {
     std::cout << "Error has occure " << msg << std::endl;
-  	return false;
+    return false;
   }
   return true;
 }
