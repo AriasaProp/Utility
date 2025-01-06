@@ -63,7 +63,7 @@ std::ostream &operator<< (std::ostream &o, const time_md &t) {
   return o;
 }
 
-bool BigInteger_test1 () {
+bool BigInteger_test () {
   std::cout << "BigInteger Test report\n";
 
   bool result = true;
