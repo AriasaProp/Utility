@@ -1,8 +1,8 @@
 #include "BigInteger.hpp"
 
-#include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -32,15 +32,14 @@ struct time_md {
 
 struct timing {
 private:
-  std::chrono::time_point<std::chrono::high_resolution_clock> safe_time, temp_time;
+  std::chrono::time_point<std::chrono::high_resolution_clock> safe_time;
 
 public:
   void start () {
     safe_time = std::chrono::high_resolution_clock::now ();
   }
   time_md end () {
-    temp_time = std::chrono::high_resolution_clock::now ();
-    unsigned long tm = std::chrono::duration_cast<unsigned long, std::chrono::microseconds> (temp_time - safe_time);
+    unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now () - safe_time).count();
     return time_md (tm);
   }
 };
@@ -209,17 +208,17 @@ bool BigInteger_test1 () {
 
     ct.start ();
     a = BigInteger ("1152921504606846976000000000000000000\0"), b = BigInteger ("1000000000000000000\0");
-    result = ((b << 60) == a);
+    result = ((b << (size_t)60) == a);
     a = BigInteger ("1152921504606846976000000000000000000\0"), b = BigInteger ("1000000000000000000\0");
-    result &= ((b <<= 60) == a);
+    result &= ((b <<= (size_t)60) == a);
     std::cout << "||       -       |\n|  •  <<      ||" << std::setw (24) << std::setfill (' ') << ct.end ();
     std::cout << result ? "||       -       " : "|| result wrong! ";
 
     ct.start ();
     a = BigInteger ("1152921504606846976000000000000000000\0"), b = BigInteger ("1000000000000000000\0");
-    result = ((a >> 60) == b);
+    result = ((a >> (size_t)60) == b);
     a = BigInteger ("1152921504606846976000000000000000000\0"), b = BigInteger ("1000000000000000000\0");
-    result &= ((a >>= 60) == b);
+    result &= ((a >>= (size_t)60) == b);
     std::cout << "|\n|  •  >>      ||" << std::setw (24) << std::setfill (' ') << ct.end ();
     std::cout << result ? "||       -       " : "|| result wrong! ";
 
@@ -244,7 +243,7 @@ bool BigInteger_test1 () {
 
   } catch (const char *msg) {
     std::cout << "Error has occure " << msg << std::endl;
-    return false;
+  	return false;
   }
   return true;
 }
