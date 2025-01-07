@@ -14,19 +14,19 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   double td = t.t * 1.0 / CLOCKS_PER_SEC;
   bool non = true;
   std::stringstream ss;
-  unsigned int t = static_cast<unsigned int> (td / 60.0);
-  if (t) ss << t << " M", non = false;
+  unsigned int r = static_cast<unsigned int> (td / 60.0);
+  if (r) ss << r << " M", non = false;
   td -= t * 60;
   t = static_cast<unsigned int> (td);
-  if (t) ss << (non ? "" : ", ") << t << " s", non = false;
+  if (r) ss << (non ? "" : ", ") << r << " s", non = false;
   td -= t;
   td *= 1000.0;
   t = static_cast<unsigned int> (td);
-  if (t) ss << (non ? "" : ", ") << t << " ms", non = false;
+  if (r) ss << (non ? "" : ", ") << r << " ms", non = false;
   td -= t;
   td *= 1000.0;
   t = static_cast<unsigned int> (td);
-  if (t || non) ss << (non ? "" : ", ") << t << " us";
+  if (r || non) ss << (non ? "" : ", ") << r << " us";
   o << ss.str ();
   return o;
 }
