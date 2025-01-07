@@ -1,5 +1,5 @@
 #include "BigInteger.hpp"
-//#include "clock_adjustment.hpp"
+#include "simple_clock.hpp"
 
 #include <cerrno>
 #include <chrono>
@@ -150,8 +150,7 @@ bool extraction_test (const char *d) {
   char result;
   unsigned long long generated;
   // time proof
-  long double elapsed_time;
-  std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
+  simple_timer_t counter_time;
   for (base_ex *algo : algos) {
     std::cout << "| " << algo->lbl () << " || ";
     generated = 0;
@@ -162,7 +161,7 @@ bool extraction_test (const char *d) {
       FILE *file_digits = fopen (buff, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";
-      start_timed = std::chrono::high_resolution_clock::now ();
+      counter_time.start();
       do {
         if (digit_index >= digit_readed) {
           digit_index = 0;
@@ -176,18 +175,16 @@ bool extraction_test (const char *d) {
         result = algo->extract () + '0';
         if (result != buff[digit_index++]) throw "wrong result";
         ++generated;
+      } while (
 #ifndef TIME
-      } while (true);
-      now_timed = std::chrono::high_resolution_clock::now ();
-      elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
+      	true
 #else
-        now_timed = std::chrono::high_resolution_clock::now ();
-        elapsed_time = std::chrono::duration<double> (now_timed - start_timed).count ();
-      } while (elapsed_time < TIME);
+      	counter_time.end().to_sec() < TIME
 #endif
+      	);
       // print result profiling
       std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
+      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counter_time.end().to_sec()) << " || ";
       std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {

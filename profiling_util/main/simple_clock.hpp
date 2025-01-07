@@ -7,6 +7,7 @@
 struct simple_time_t {
   std::clock_t t;
 
+  double to_sec();
   friend std::ostream &operator<< (std::ostream &, const simple_time_t &);
 };
 

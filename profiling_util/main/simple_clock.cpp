@@ -1,6 +1,9 @@
 #include "simple_clock.hpp"
 
 #include <sstream>
+double simple_time_t::to_sec() {
+	return t * 1.0 / CLOCKS_PER_SEC;
+}
 
 void simple_timer_t::start () {
   safe_time = clock ();
@@ -10,23 +13,21 @@ simple_time_t simple_timer_t::end () {
 }
 
 std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
-  static const char *unit[]{"m", "s", "ms", "us"};
-  double td = t.t * 1.0 / CLOCKS_PER_SEC;
-  bool non = true;
   std::stringstream ss;
-  unsigned int r = static_cast<unsigned int> (td / 60.0);
-  if (r) ss << r << " M", non = false;
-  td -= r * 60;
-  r = static_cast<unsigned int> (td);
-  if (r) ss << (non ? "" : ", ") << r << " s", non = false;
+  double td = t.t * 1.0 / CLOCKS_PER_SEC;
+  unsigned int writed = 0;
+  unsigned int r = static_cast<unsigned int> (td);
+  if (r) ss << (writed ? "" : ", ") << r << " s", ++writed;
+  if (writed > 1) return o; 
   td -= r;
   td *= 1000.0;
   r = static_cast<unsigned int> (td);
-  if (r) ss << (non ? "" : ", ") << r << " ms", non = false;
+  if (r) ss << (writed ? "" : ", ") << std::setw(3) << std::setfill('0') << r << " ms", ++writed;
+  if (writed > 1) return o; 
   td -= r;
   td *= 1000.0;
   r = static_cast<unsigned int> (td);
-  if (r || non) ss << (non ? "" : ", ") << r << " us";
+  if (r || (writed==0)) ss << (writed ? "" : ", ") << std::setw(3) << std::setfill('0') << r << " us";
   o << ss.str ();
   return o;
 }
