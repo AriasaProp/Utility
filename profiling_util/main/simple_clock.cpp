@@ -41,7 +41,6 @@ simple_time_t simple_timer_t::end () {
   return simple_time_t (tm);
 }
 
-
 std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   static const char *unit[]{"us", "ns", "ms", "s", "m", "h", "D", "Week", "M"};
   static const int td[]{1000, 1000, 1000, 60, 60, 24, 7, 30 / 7, 12};
