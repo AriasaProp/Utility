@@ -1,4 +1,5 @@
 #include "BigInteger.hpp"
+#include "simple_clock.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -11,64 +12,12 @@
 #include <string>
 #include <vector>
 
-struct time_md {
-  unsigned long t;
-  time_md (){};
-  time_md (signed a) : t (a){};
-  time_md (unsigned long a) : t (a){};
-  time_md &operator= (signed a) {
-    t = a;
-    return *this;
-  }
-  time_md &operator+= (signed a) {
-    t += a;
-    return *this;
-  }
-  time_md &operator+= (time_md &a) {
-    t += a.t;
-    return *this;
-  }
-};
-
-struct timing {
-private:
-  std::chrono::time_point<std::chrono::high_resolution_clock> safe_time;
-
-public:
-  void start () {
-    safe_time = std::chrono::high_resolution_clock::now ();
-  }
-  time_md end () {
-    unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now () - safe_time).count ();
-    return time_md (tm);
-  }
-};
-
-std::ostream &operator<< (std::ostream &o, const time_md &t) {
-  static const char *unit[]{"us", "ns", "ms", "s", "m", "h", "D", "Week", "M"};
-  static const int td[]{1000, 1000, 1000, 60, 60, 24, 7, 30 / 7, 12};
-  unsigned long l = t.t, i = 0;
-  std::vector<unsigned long> arr;
-  do {
-    if (i > 9)
-      break;
-    arr.push_back (l % td[i]);
-  } while ((l /= td[i++]) != 0);
-  std::stringstream ss;
-  for (auto x = arr.rbegin (), y = std::min (x + 3, arr.rend ()); x < y; ++x) {
-    ss << " " << *x << " " << unit[--i];
-  }
-  o << ss.str ();
-
-  return o;
-}
-
 bool BigInteger_test () {
   std::cout << "BigInteger Test report\n";
 
   bool result = true;
-  time_md report[16];
-  timing ct, cta;
+  simple_time_t report[16];
+  simple_timer_t ct, cta;
 
   std::cout << "\n|   action   ||          time          ||     error     |\n|------------||------------------------||---------------|\n| Creation   ||";
   // do calculation
