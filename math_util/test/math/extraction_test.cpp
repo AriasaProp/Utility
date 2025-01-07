@@ -162,7 +162,7 @@ bool extraction_test (const char *d) {
       FILE *file_digits = fopen (buff, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";
-      counter_time.start();
+      counter_time.start ();
       do {
         if (digit_index >= digit_readed) {
           digit_index = 0;
@@ -177,14 +177,14 @@ bool extraction_test (const char *d) {
         if (result != buff[digit_index++]) throw "wrong result";
         ++generated;
 #ifdef TIME
-      } while ((counted_time = counter_time.end()).to_sec() < TIME);
+      } while ((counted_time = counter_time.end ()).to_sec () < TIME);
 #else
       } while (true);
-      counted_time = counter_time.end();
+      counted_time = counter_time.end ();
 #endif
       // print result profiling
       std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec()) << " || ";
+      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
       std::cout << std::setfill (' ') << std::setw (16) << std::right << counted_time << " || ";
       std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
