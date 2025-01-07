@@ -27,7 +27,7 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   td -= arr[3];
   td *= 1000.0;
   arr[4] = static_cast<unsigned short> (td);
-	
+
   std::stringstream ss;
   for (unsigned int i = 0; i < 5; ++i) {
     if (arr[i])
