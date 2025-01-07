@@ -211,7 +211,7 @@ bool BigInteger_test () {
     result = ((b << (size_t)60) == a);
     a = BigInteger ("1152921504606846976000000000000000000\0"), b = BigInteger ("1000000000000000000\0");
     result &= ((b <<= (size_t)60) == a);
-    std::cout << "||       -       |\n|  •  <<      ||" << std::setw (24) << std::setfill (' ') << ct.end ();
+    std::cout << "||       -       |\n|  •  <<     ||" << std::setw (24) << std::setfill (' ') << ct.end ();
     std::cout << (result ? "||       -       " : "|| result wrong! ");
 
     ct.start ();
