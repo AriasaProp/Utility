@@ -4,7 +4,8 @@
 #include <ctime>
 #include <iostream>
 
-std::ostream &operator<< (std::ostream &, const simple_time_t &);
+
+std::ostream &operator<< (std::ostream &, const std::clock_t &);
 
 struct simple_timer_t {
 private:
