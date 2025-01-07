@@ -59,7 +59,7 @@ public:
     n /= t;
     return result;
   }
-  const char *lbl () override { return "  π "; }
+  const char *lbl () override { return " π"; }
   const char *testFile () override { return "piDigits.txt"; }
   size_t size () {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
@@ -92,7 +92,7 @@ public:
     a *= 10;
     return result;
   }
-  const char *lbl () override { return "  e "; }
+  const char *lbl () override { return " e"; }
   const char *testFile () override { return "eDigits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
@@ -129,41 +129,39 @@ public:
     b >>= 1;
     return result;
   }
-  const char *lbl () override { return " √2 "; }
+  const char *lbl () override { return "√2"; }
   const char *testFile () override { return "√2Digits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
   ~root2_algo () {}
 };
 
 bool extraction_test (const char *d) {
-  std::cout << "Start Extraction Test Generator" << std::endl;
+  // Draw table header
+  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||   memory(byte)   |\n|----||------------||------------------||------------------|\n";
+
   bool passed = true;
   base_ex *algos[]{
       new pi_algo (),
       new e_algo (),
       new root2_algo ()};
-  // Draw table header
-  std::cout << "    ||    digits    || rate(digits/sec) ||   memory(byte)   |\n";
-  std::cout << "----||--------------||------------------||------------------|\n";
-
   // pi proof
   char buff[BUFFER_BYTE_SIZE];
   size_t digit_index, digit_readed;
   char result;
-  unsigned long long generated = 0;
+  unsigned long long generated;
   // time proof
   long double elapsed_time;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_timed, now_timed;
   for (base_ex *algo : algos) {
-    std::cout << algo->lbl () << "||";
+    std::cout << "| " << algo->lbl () << " || ";
+    generated = 0;
+    digit_index = 0;
+    digit_readed = 0;
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *file_digits = fopen (buff, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";
-      generated = 0;
-      digit_index = 0;
-      digit_readed = 0;
       start_timed = std::chrono::high_resolution_clock::now ();
       do {
         if (digit_index >= digit_readed) {
@@ -188,9 +186,9 @@ bool extraction_test (const char *d) {
       } while (elapsed_time < TIME);
 #endif
       // print result profiling
-      std::cout << std::setfill ('0') << std::setw (12) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
-      std::cout << std::setfill ('0') << std::setw (16) << algo->size ();
+      std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
+      std::cout << std::setfill ('0') << std::setw (14) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
+      std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
       std::cout << std::setfill (' ') << std::setw (43) << "Error: " << e << " digits: " << generated;

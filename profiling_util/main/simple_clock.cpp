@@ -3,58 +3,36 @@
 #include <sstream>
 #include <vector>
 
-simple_time_t::simple_time_t (){};
-simple_time_t::simple_time_t (signed a) : t (a){};
-simple_time_t::simple_time_t (unsigned long a) : t (a){};
-simple_time_t::simple_time_t (simple_time_t &a) : t (a.t){};
-
-simple_time_t &simple_time_t::operator= (signed a) {
-  t = a;
-  return *this;
-}
-simple_time_t &simple_time_t::operator= (unsigned long a) {
-  t = a;
-  return *this;
-}
-simple_time_t &simple_time_t::operator= (simple_time_t &a) {
-  t = a.t;
-  return *this;
-}
-
-simple_time_t &simple_time_t::operator+= (signed a) {
-  t += a;
-  return *this;
-}
-simple_time_t &simple_time_t::operator+= (unsigned long a) {
-  t += a;
-  return *this;
-}
-simple_time_t &simple_time_t::operator+= (simple_time_t &a) {
-  t += a.t;
-  return *this;
-}
+static const long double CLOCK_TO_MILISEC = CLOCK_PER_SEC / 1000.00;
 
 void simple_timer_t::start () {
-  safe_time = time_type::now ();
+  safe_time = clock ();
 }
-simple_time_t simple_timer_t::end () {
-  unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (time_type::now () - safe_time).count ();
-  return simple_time_t (tm);
+std::clock_t simple_timer_t::end () {
+	return clock() - safe_time;
 }
 
-std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
-  static const char *unit[]{"us", "ns", "ms", "s", "m", "h", "D", "Week", "M"};
-  static const int td[]{1000, 1000, 1000, 60, 60, 24, 7, 30 / 7, 12};
-  unsigned long l = t.t, i = 0;
-  std::vector<unsigned long> arr;
-  do {
-    if (i > 9)
-      break;
-    arr.push_back (l % td[i]);
-  } while ((l /= td[i++]) != 0);
+std::ostream &operator<< (std::ostream &o, const std::clock_t &t) {
+  static const char *unit[]{"m", "s", "ms", "ns", "us"};
+  unsigned short arr[5];
+  long double td = t / CLOCKS_PER_SEC;
+	arr[0] = static_cast<unsigned short>(td * 0.05 / 3.0);
+	td -= arr[0] * 60;
+	arr[1] = static_cast<unsigned short>(td);
+	td -= arr[1];
+	td *= 1000.0;
+	arr[2] = static_cast<unsigned short>(td);
+	td -= arr[2];
+	td *= 1000.0;
+	arr[3] = static_cast<unsigned short>(td);
+	td -= arr[3];
+	td *= 1000.0;
+	arr[4] = static_cast<unsigned short>(td);
+	
   std::stringstream ss;
-  for (auto x = arr.rbegin (), y = std::min (x + 3, arr.rend ()); x < y; ++x) {
-    ss << " " << *x << " " << unit[--i];
+  for (unsigned int i = 0; i < 5; ++i) {
+    if (arr[i])
+    	ss << " " << arr[i] << " " << unit[i];
   }
   o << ss.str ();
 
