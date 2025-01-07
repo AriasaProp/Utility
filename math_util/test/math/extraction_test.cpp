@@ -137,7 +137,7 @@ public:
 
 bool extraction_test (const char *d) {
   // Draw table header
-  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||  memory(byte)  |\n|----||------------||------------------||----------------|\n";
+  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||        time        ||  memory(byte)  |\n|----||------------||------------------||------------------||----------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
@@ -151,6 +151,7 @@ bool extraction_test (const char *d) {
   unsigned long long generated;
   // time proof
   simple_timer_t counter_time;
+  simple_time_t counted_time;
   for (base_ex *algo : algos) {
     std::cout << "| " << algo->lbl () << " || ";
     generated = 0;
@@ -161,7 +162,7 @@ bool extraction_test (const char *d) {
       FILE *file_digits = fopen (buff, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";
-      counter_time.start ();
+      counter_time.start();
       do {
         if (digit_index >= digit_readed) {
           digit_index = 0;
@@ -175,16 +176,16 @@ bool extraction_test (const char *d) {
         result = algo->extract () + '0';
         if (result != buff[digit_index++]) throw "wrong result";
         ++generated;
-      } while (
-#ifndef TIME
-          true
+#ifdef TIME
+      } while ((counted_time = counter_time.end()).to_sec() < TIME);
 #else
-          counter_time.end ().to_sec () < TIME
+      } while (true);
+      counted_time = counter_time.end();
 #endif
-      );
       // print result profiling
       std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counter_time.end ().to_sec ()) << " || ";
+      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec()) << " || ";
+      std::cout << std::setfill (' ') << std::setw (16) << std::right << counted_time << " || ";
       std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {

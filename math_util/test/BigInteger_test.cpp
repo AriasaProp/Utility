@@ -13,12 +13,11 @@
 #include <vector>
 
 bool BigInteger_test () {
-  std::cout << "BigInteger Test report\n";
+  std::cout << "BigInteger Test report\n|   action   ||          time          ||     error     |\n|------------||------------------------||---------------|\n| Creation   ||";
 
   bool result = true;
   simple_timer_t ct, cta;
 
-  std::cout << "\n|   action   ||          time          ||     error     |\n|------------||------------------------||---------------|\n| Creation   ||";
   // do calculation
   try {
     ct.start ();
