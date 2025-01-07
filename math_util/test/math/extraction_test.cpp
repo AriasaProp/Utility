@@ -137,7 +137,7 @@ public:
 
 bool extraction_test (const char *d) {
   // Draw table header
-  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||   memory(byte)   |\n|----||------------||------------------||------------------|\n";
+  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||  memory(byte)  |\n|----||------------||------------------||----------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
@@ -187,7 +187,7 @@ bool extraction_test (const char *d) {
 #endif
       // print result profiling
       std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
-      std::cout << std::setfill ('0') << std::setw (14) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
+      std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << ((long double)generated / elapsed_time) << " || ";
       std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
