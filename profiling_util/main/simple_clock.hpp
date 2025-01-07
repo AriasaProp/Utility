@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace time_type = std::chrono::steady_clock;
+typedef std::chrono::steady_clock time_type;
 
 struct simple_time_t {
 private:

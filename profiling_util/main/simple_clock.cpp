@@ -1,6 +1,7 @@
 #include "simple_clock.hpp"
 
 #include <vector>
+#include <sstream>
 
 simple_time_t::simple_time_t (){};
 simple_time_t::simple_time_t (signed a) : t (a){};
@@ -40,6 +41,7 @@ simple_time_t simple_timer_t::end () {
   unsigned long tm = std::chrono::duration_cast<std::chrono::microseconds> (time_type::now () - safe_time).count ();
   return simple_time_t (tm);
 }
+
 
 std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   static const char *unit[]{"us", "ns", "ms", "s", "m", "h", "D", "Week", "M"};
