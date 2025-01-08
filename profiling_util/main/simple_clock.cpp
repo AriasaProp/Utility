@@ -1,10 +1,10 @@
 #include "simple_clock.hpp"
 
-#include <iomanip>
 #include <sstream>
+#include <iomanip>
 
-double simple_time_t::to_sec () {
-  return t * 1.0 / CLOCKS_PER_SEC;
+double simple_time_t::to_sec() {
+	return t * 1.0 / CLOCKS_PER_SEC;
 }
 
 void simple_timer_t::start () {
@@ -16,25 +16,24 @@ simple_time_t simple_timer_t::end () {
 
 std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   std::stringstream ss;
-  double td = t.t * 1.0 / CLOCKS_PER_SEC;
+  long td = t.t;
+  static const int CLOCKS_PER_MS = CLOCKS_PER_SEC / 1000;
+  static const int CLOCKS_PER_US = CLOCKS_PER_MS / 1000;
   unsigned int writed = 0;
-  unsigned int r = static_cast<unsigned int> (td);
-  if (r) ss << r << " s", ++writed;
-  td -= r;
-  td *= 1000.0;
-  r = static_cast<unsigned int> (td);
-  if (r) {
-    if (writed) ss << ", ";
-    ss << std::setw (3) << std::setfill ('0') << r << " ms";
-    ++writed;
+  if (td > CLOCKS_PER_SEC) {
+  	ss << (td / CLOCKS_PER_SEC) << " s";
+  	td %= CLOCKS_PER_SEC;
+  	++writed;
   }
-  if (writed > 1) return o;
-  td -= r;
-  td *= 1000.0;
-  r = static_cast<unsigned int> (td);
-  if (r || !writed) {
-    if (writed) ss << ", ";
-    ss << std::setw (3) << std::setfill ('0') << r << " us";
+  if (td > CLOCKS_PER_MS) {
+  	if (writed) ss << ", ";
+  	ss << std::setw(3) << std::setfill('0') << (td / CLOCKS_PER_MS) << " ms";
+	  td %= CLOCKS_PER_MS;
+  	++writed;
+  }
+  if ((writed <= 1) && (td || !writed)) {
+  	if (writed) ss << ", ";
+  	ss << std::setw(3) << std::setfill('0') << (td / CLOCKS_PER_US) << " us";
   }
   o << ss.str ();
   return o;
