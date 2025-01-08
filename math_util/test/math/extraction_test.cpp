@@ -2,14 +2,12 @@
 #include "simple_clock.hpp"
 
 #include <cerrno>
-#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <sstream>
 
 // undef TIME to reach limit of file digits
 #define TIME 10.0
@@ -137,7 +135,7 @@ public:
 
 bool extraction_test (const char *d) {
   // Draw table header
-  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||--------------||----------------|\n";
+  std::cout << "Start Extraction Test Generator\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
@@ -185,7 +183,7 @@ bool extraction_test (const char *d) {
       // print result profiling
       std::cout << std::setfill ('0') << std::setw (10) << generated << " || ";
       std::cout << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
-      std::cout << std::setfill (' ') << std::setw (14) << std::right << counted_time << " || ";
+      std::cout << std::setfill (' ') << std::setw (12) << std::right << counted_time << " || ";
       std::cout << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
