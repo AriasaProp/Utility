@@ -158,7 +158,8 @@ bool extraction_test (const char *d) {
     try {
       sprintf (buff, "%s/%s", d, algo->testFile ());
       FILE *file_digits = fopen (buff, "r");
-      if (!file_digits) [[unlikely]] throw "file not found";
+      if (!file_digits) [[unlikely]]
+        throw "file not found";
       counter_time.start ();
       do {
         if (digit_index >= digit_readed) {
