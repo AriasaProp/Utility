@@ -17,6 +17,7 @@ jobs:
     outputs:
       math: ${{ steps.files.outputs.math_util }}
       codec: ${{ steps.files.outputs.codec_util }}
+      hash: ${{ steps.files.outputs.hash_util }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
@@ -78,3 +79,4 @@ jobs:
       - uses: actions/checkout@v4.1.1
       - uses: gradle/actions/setup-gradle@v3
       - run: gradle :codec_util:test
+
