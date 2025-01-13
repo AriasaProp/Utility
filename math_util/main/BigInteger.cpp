@@ -711,7 +711,7 @@ bool operator>= (const BigInteger &a, const signed b) {
     return (a.words[0] > B) ^ a.neg;
   return true;
 }
-bool operator<(const BigInteger &a, const signed b) {
+bool operator< (const BigInteger &a, const signed b) {
   if (a.neg != (b < 0))
     return a.neg;
   if (a.words.size () != 1)
@@ -759,7 +759,7 @@ bool operator>= (const BigInteger &a, const BigInteger &b) {
       return (a.words[i] > b.words[i]) ^ a.neg;
   return true;
 }
-bool operator<(const BigInteger &a, const BigInteger &b) {
+bool operator< (const BigInteger &a, const BigInteger &b) {
   if (a.neg != b.neg)
     return a.neg;
   size_t i = a.words.size (), j = b.words.size ();
