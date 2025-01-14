@@ -52,13 +52,13 @@ void sha256 (const char *input, size_t bytelength, uint32_t *outputlocation) {
   size_t wordlength = bytelength / 4 + 1;
   uint32_t message[10000]{};
 
-  memcpy(message, input, bytelength);
+  memcpy (message, input, bytelength);
 
-  if((bytelength * 8) % 32 != 0)
+  if ((bytelength * 8) % 32 != 0)
     message[bytelength / 4] = message[bytelength / 4] | (1 << (32 - 1 - (bytelength * 8) % 32));
   else
     message[bytelength / 4] = 1 << 31;
-    
+
   uint32_t rounds;
 
   // Assuming our data isn't bigger than 2^32 bits long... which it won't be for a block hash.
