@@ -49,7 +49,7 @@ void sha256 (const char *input, size_t bytelength, uint32_t *outputlocation) {
   size_t wordlength = bytelength / 4 + 1;
   uint32_t message[10000]{};
 
-  memcpy(message, input, bytelength);
+  memcpy (message, input, bytelength);
   message[bytelength] = 0x80;
 
   uint32_t rounds;
