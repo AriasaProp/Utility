@@ -1,6 +1,7 @@
 #include "hash.hpp"
 
 #include <cstdlib>
+#include <cstring>
 
 uint32_t rotateInt (uint32_t inputWord, int numberOfBitsToRotate) {
   int bitWidth = sizeof (inputWord) * 8;
