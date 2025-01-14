@@ -3,6 +3,6 @@
 
 #include <cstdint>
 
-void sha256 (uint32_t *input, int bitlength, uint32_t *outputlocation);
+void sha256 (uint32_t *, int, uint32_t *);
 
 #endif // _HASH_FUNCTION
