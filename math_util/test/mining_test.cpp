@@ -147,14 +147,14 @@ bool Mining_test () {
   char nbits[] = "FFFF001D";
 
   uint32_t result[8];
-  uint32_t nonce = mineblock (2083236890, version, prevhash, merkle_root, time, nbits);
-  // uint32_t nonce = mineblock (10, version, prevhash, merkle_root, time, nbits);
+  uint32_t nonce = mineblock(2083236890, version, prevhash, merkle_root, time, nbits);
+  //uint32_t nonce = mineblock (10, version, prevhash, merkle_root, time, nbits);
 
   std::cout << "Block solved ! Nonce: " << nonce << std::endl;
   std::cout << "Block hash:" << std::endl;
 
-  hashblock ((uint32_t)2083236893, result);
-  // hashblock (nonce, version, prevhash, merkle_root, time, nbits, result);
+  // hashblock((uint32_t)2083236893, result);
+  hashblock (nonce, version, prevhash, merkle_root, time, nbits, result);
 
   for (int i = 0; i < 8; i++)
     result[i] = Reverse32 (result[i]);
