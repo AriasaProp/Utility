@@ -3,15 +3,14 @@
 #include <cstdlib>
 #include <cstring>
 
-std::ostream &operator<<(std::ostream &o, const hash256 h) {
-	for (const char &i : h.b)
-	{
-		char i1 = i & 0xf;
-		o << char((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
-		i1 = (i >> 4) & 0xf;
-		o << char((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
-	}
-	return o;
+std::ostream &operator<< (std::ostream &o, const hash256 h) {
+  for (const char &i : h.b) {
+    char i1 = i & 0xf;
+    o << char ((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
+    i1 = (i >> 4) & 0xf;
+    o << char ((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
+  }
+  return o;
 }
 
 uint32_t _rot (uint32_t inputWord, size_t numberOfBitsToRotate) {
@@ -55,13 +54,13 @@ hash256 sha256 (const char *input, size_t bytelength) {
   size_t wordlength = bytelength / 4 + 1;
   uint32_t message[10000]{};
 
-  memcpy(message, input, bytelength);
+  memcpy (message, input, bytelength);
 
-  if((bytelength * 8) % 32 != 0)
+  if ((bytelength * 8) % 32 != 0)
     message[bytelength / 4] = message[bytelength / 4] | (1 << (32 - 1 - (bytelength * 8) % 32));
   else
     message[bytelength / 4] = 1 << 31;
-    
+
   uint32_t rounds;
 
   // Assuming our data isn't bigger than 2^32 bits long... which it won't be for a block hash.
@@ -106,10 +105,10 @@ hash256 sha256 (const char *input, size_t bytelength) {
       if (j < 16) {
         W[j] = M[i - 1][j];
       } else {
-      	// sigma 1
+        // sigma 1
         W[j] = _rot (W[j - 2], 17) ^ _rot (W[j - 2], 19) ^ (W[j - 2] >> 10);
         W[j] += W[j - 7];
-      	// sigma 0
+        // sigma 0
         W[j] += _rot (W[j - 15], 7) ^ _rot (W[j - 15], 18) ^ (W[j - 15] >> 3);
         W[j] += W[j - 16];
       }
