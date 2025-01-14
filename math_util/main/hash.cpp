@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <cstring>
 
-uint32_t rotateInt (uint32_t inputWord, int numberOfBitsToRotate) {
-  int bitWidth = sizeof (inputWord) * 8;
+uint32_t _rot (uint32_t inputWord, size_t numberOfBitsToRotate) {
+  size_t bitWidth = sizeof (inputWord) * 8;
   // Rotating 32 bits on a 32-bit integer is the same as rotating 0 bits;
   //   33 bits -> 1 bit; etc.
   numberOfBitsToRotate = numberOfBitsToRotate % bitWidth;
@@ -20,28 +20,28 @@ uint32_t rotateInt (uint32_t inputWord, int numberOfBitsToRotate) {
   return inputWord | tempWord;
 }
 
-int Ch (int x, int y, int z) {
+uint32_t Ch (uint32_t x, uint32_t y, uint32_t z) {
   return ((x & y) ^ (~x & z));
 }
 
-int Maj (int x, int y, int z) {
+uint32_t Maj (uint32_t x, uint32_t y, uint32_t z) {
   return ((x & y) ^ (x & z) ^ (y & z));
 }
 
-int Sig0f (int x) {
-  return (rotateInt (x, 2) ^ rotateInt (x, 13) ^ rotateInt (x, 22));
+uint32_t Sig0f (uint32_t x) {
+  return (_rot (x, 2) ^ _rot (x, 13) ^ _rot (x, 22));
 }
 
-int Sig1f (int x) {
-  return (rotateInt (x, 6) ^ rotateInt (x, 11) ^ rotateInt (x, 25));
+uint32_t Sig1f (uint32_t x) {
+  return (_rot (x, 6) ^ _rot (x, 11) ^ _rot (x, 25));
 }
 
 uint32_t sig0 (uint32_t x) {
-  return (rotateInt (x, 7) ^ rotateInt (x, 18) ^ (x >> 3));
+  return (_rot (x, 7) ^ _rot (x, 18) ^ (x >> 3));
 }
 
 uint32_t sig1 (uint32_t x) {
-  return (rotateInt (x, 17) ^ rotateInt (x, 19) ^ (x >> 10));
+  return (_rot (x, 17) ^ _rot (x, 19) ^ (x >> 10));
 }
 
 void sha256 (const char *input, size_t bytelength, uint32_t *outputlocation) {
