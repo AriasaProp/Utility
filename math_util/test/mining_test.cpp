@@ -9,7 +9,7 @@
 // util
 void print_bytes (const unsigned char *data, size_t dataLen, bool format = true) {
   for (size_t i = 0; i < dataLen; ++i) {
-    std::cout << std::hex << std::setfill('0') << std::setw (2) << (int)data[i];
+    std::cout << std::hex << std::setfill ('0') << std::setw (2) << (int)data[i];
     if (format) {
       std::cout << (((i + 1) % 16 == 0) ? "\n" : " ");
     }
@@ -90,7 +90,7 @@ hash256 hashblock (uint32_t nonce, char *version, char *prevhash, char *merkle_r
   for (int i = 0; i < 20; i++)
     blockheader[i] = Reverse32 (blockheader[i]);
 
-  hash256 r0 = sha256 ((char*)blockheader, 80);
+  hash256 r0 = sha256 ((char *)blockheader, 80);
 
   return sha256 (r0.b, 32);
 
@@ -107,7 +107,7 @@ uint32_t mineblock (uint32_t noncestart, char *version, char *prevhash, char *me
   bits_to_difficulty (*bits, difficulty);
 
   char solved = 0;
-  
+
   uint32_t nonce = noncestart - 1;
 
   std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now ();
@@ -146,10 +146,10 @@ bool Mining_test () {
   char time[] = "29AB5F49";
   char nbits[] = "FFFF001D";
 
-  uint32_t nonce = mineblock(2083236890, version, prevhash, merkle_root, time, nbits);
-  //uint32_t nonce = mineblock (10, version, prevhash, merkle_root, time, nbits);
+  uint32_t nonce = mineblock (2083236890, version, prevhash, merkle_root, time, nbits);
+  // uint32_t nonce = mineblock (10, version, prevhash, merkle_root, time, nbits);
 
-  std::cout << "Nonce: " << (nonce==2083236893?"Correct!":"False") << std::endl;
+  std::cout << "Nonce: " << (nonce == 2083236893 ? "Correct!" : "False") << std::endl;
 
   // hashblock((uint32_t)2083236893, result);
   hash256 result = hashblock (nonce, version, prevhash, merkle_root, time, nbits);
@@ -159,17 +159,16 @@ bool Mining_test () {
 
   print_bytes_reversed ((unsigned char *)result.b, 32);
 
-	// test sha256
-	const char *input[2][2]{
-		{"abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
-		{"Hello World!", "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"}
-	};
-	for (auto &i : input) {
-		hash256 o = sha256 (i[0], strlen(i[0]));
-		std::cout << "ex : " << i[1] << std::endl;
-		std::cout << "rs : " << o << std::endl;
-	}
-	std::cout << "sha256 hash is good!" << std::endl;
+  // test sha256
+  const char *input[2][2]{
+      {"abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
+      {"Hello World!", "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"}};
+  for (auto &i : input) {
+    hash256 o = sha256 (i[0], strlen (i[0]));
+    std::cout << "ex : " << i[1] << std::endl;
+    std::cout << "rs : " << o << std::endl;
+  }
+  std::cout << "sha256 hash is good!" << std::endl;
 
   return true;
 }
