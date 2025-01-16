@@ -1,142 +1,118 @@
 #include "hash.hpp"
 
-#include <cstdlib>
+#include <iomanip>
 #include <cstring>
+#include <cmath>
 
-std::ostream &operator<< (std::ostream &o, const hash256 h) {
-  for (const char &i : h.b) {
-    char i1 = i & 0xf;
-    o << char ((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
-    i1 = (i >> 4) & 0xf;
-    o << char ((i1 > 9) ? (i1 - 10) + 'a' : i1 + '0');
-  }
-  return o;
+
+std::ostream &operator<<(std::ostream &o, const hash256 h)
+{
+	for (const int &i : h.i)
+	{
+		o << std::hex << std::setfill('0') << std::setw(8) << i;
+	}
+	return o;
 }
-
-uint32_t _rot (uint32_t inputWord, size_t numberOfBitsToRotate) {
-  size_t bitWidth = sizeof (inputWord) * 8;
-  // Rotating 32 bits on a 32-bit integer is the same as rotating 0 bits;
-  //   33 bits -> 1 bit; etc.
-  numberOfBitsToRotate = numberOfBitsToRotate % bitWidth;
-
-  uint32_t tempWord = inputWord;
-
-  // Rotate input to the right
-  inputWord = inputWord >> numberOfBitsToRotate;
-
-  // Build mask for carried over bits
-  tempWord = tempWord << (bitWidth - numberOfBitsToRotate);
-
-  return inputWord | tempWord;
+static inline uint32_t _rot(uint32_t a, size_t x)
+{
+	return (a >> x) | (a << (32 - x));
 }
+hash256 sha256(const char *input, uint64_t l)
+{
+	static const uint32_t H_0[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+	static const uint32_t K[64] = {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+								   0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+								   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+								   0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+								   0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+								   0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+								   0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+								   0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+								   0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+								   0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+								   0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+								   0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+								   0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+								   0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+								   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+								   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
-uint32_t Ch (uint32_t x, uint32_t y, uint32_t z) {
-  return ((x & y) ^ (~x & z));
-}
+	uint32_t W[64]{};
+	uint32_t State[10];
+	hash256 out;
+	memcpy(out.i, H_0, 32);
+	const char *A = input;
 
-uint32_t Maj (uint32_t x, uint32_t y, uint32_t z) {
-  return ((x & y) ^ (x & z) ^ (y & z));
-}
+	size_t x, y;
+	size_t i, j, k = l;
+	bool addedLastBit = false, addedLength = false;
+	do
+	{
+		// reset state
+		memcpy(State, H_0, 32);
+		// put input to chunk W
+		memset(W, 0, 64);
+		j = std::min(k, (size_t)64);
+		k -= j;
+		for (i = 0, y = 0; i < j; ++y)
+			for (x = 4; x && i < j; ++i)
+				reinterpret_cast<char *>(W + y)[--x] = A[i];
 
-uint32_t Sig0f (uint32_t x) {
-  return (_rot (x, 2) ^ _rot (x, 13) ^ _rot (x, 22));
-}
+		if (j < 64)
+		{ // add last 1 bit
+			reinterpret_cast<char *>(W + (j / 4))[3 - (j % 4)] = 0x80;
+			++j;
+			addedLastBit = true;
+		}
+		if (j < 56)
+		{
+			// put 64 bit length in reverse
+			W[15] = l << 3;
+			W[14] = l >> 29;
+			addedLength = true;
+		}
+		// Calculate
+		for (i = 0; i < 54; ++i)
+		{
+			uint32_t &C = W[16 + i];
+			// Sigma 0
+			C = _rot(W[1 + i], 7);
+			C ^= _rot(W[1 + i], 18);
+			C ^= (W[1 + i] >> 3);
 
-uint32_t Sig1f (uint32_t x) {
-  return (_rot (x, 6) ^ _rot (x, 11) ^ _rot (x, 25));
-}
+			C += W[i];
+			// Sigma 1
+			C += _rot(W[14 + i], 17) ^ _rot(W[14 + i], 19) ^ (W[14 + i] >> 10);
+			C += W[9 + i];
+		}
 
-hash256 sha256 (const char *input, size_t bytelength) {
-  static const uint32_t H_0[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+		for (i = 0; i < 64; ++i)
+		{
+			State[8] = State[7];
+			// Sigma1
+			State[8] += _rot(State[4], 6) ^ _rot(State[4], 11) ^ _rot(State[4], 25);
+			// Choice
+			State[8] += (State[4] & State[5]) ^ ((~State[4]) & State[6]);
+			State[8] += K[i];
+			State[8] += W[i];
+			//Sigma0
+			State[9] = _rot(State[0], 2) ^ _rot(State[0], 13) ^ _rot(State[0], 22);
+			State[9] += (State[0] & State[1]) ^ (State[0] & State[2]) ^ (State[1] & State[2]);
+			State[7] = State[6];
+			State[6] = State[5];
+			State[5] = State[4];
+			State[4] = State[3] + State[8];
+			State[3] = State[2];
+			State[2] = State[1];
+			State[1] = State[0];
+			State[0] = State[8] + State[9];
+		}
 
-  static const uint32_t K[64] = {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
+		for (i = 0; i < 8; ++i)
+			out.i[i] += State[i];
 
-  size_t wordlength = bytelength / 4 + 1;
-  uint32_t message[10000]{};
+		A += 64;
+	} while (!addedLastBit || !addedLength);
 
-  memcpy (message, input, bytelength);
-
-  if ((bytelength * 8) % 32 != 0)
-    message[bytelength / 4] = message[bytelength / 4] | (1 << (32 - 1 - (bytelength * 8) % 32));
-  else
-    message[bytelength / 4] = 1 << 31;
-
-  uint32_t rounds;
-
-  // Assuming our data isn't bigger than 2^32 bits long... which it won't be for a block hash.
-  if (wordlength % 16 == 0 || wordlength % 16 == 15) {
-    message[wordlength + 15 + 16 - wordlength % 16] = bytelength * 8;
-    rounds = wordlength / 16 + 2;
-  } else {
-    message[wordlength + 15 - wordlength % 16] = bytelength * 8;
-    rounds = wordlength / 16 + 1;
-  }
-
-  uint32_t M[32][16];
-
-  for (int i = 0; i < 16; i++)
-    for (int j = 0; j <= rounds; j++)
-      M[j][i] = message[i + j * 16];
-
-  uint32_t H[32][8];
-
-  for (int i = 0; i < 8; i++)
-    H[0][i] = H_0[i];
-
-  // Here our hash function rounds actually start.
-  for (int i = 1; i <= rounds; i++) {
-    uint32_t a = H[i - 1][0];
-    uint32_t b = H[i - 1][1];
-    uint32_t c = H[i - 1][2];
-    uint32_t d = H[i - 1][3];
-    uint32_t e = H[i - 1][4];
-    uint32_t f = H[i - 1][5];
-    uint32_t g = H[i - 1][6];
-    uint32_t h = H[i - 1][7];
-
-    uint32_t W[64];
-
-    for (int j = 0; j < 64; j++) {
-      uint32_t ch = Ch (e, f, g);
-      uint32_t maj = Maj (a, b, c);
-      uint32_t Sig0 = Sig0f (a);
-      uint32_t Sig1 = Sig1f (e);
-
-      if (j < 16) {
-        W[j] = M[i - 1][j];
-      } else {
-        // sigma 1
-        W[j] = _rot (W[j - 2], 17) ^ _rot (W[j - 2], 19) ^ (W[j - 2] >> 10);
-        W[j] += W[j - 7];
-        // sigma 0
-        W[j] += _rot (W[j - 15], 7) ^ _rot (W[j - 15], 18) ^ (W[j - 15] >> 3);
-        W[j] += W[j - 16];
-      }
-
-      uint32_t T1 = h + Sig1 + ch + K[j] + W[j];
-      uint32_t T2 = Sig0 + maj;
-      h = g;
-      g = f;
-      f = e;
-      e = d + T1;
-      d = c;
-      c = b;
-      b = a;
-      a = T1 + T2;
-    }
-
-    H[i][0] = a + H[i - 1][0];
-    H[i][1] = b + H[i - 1][1];
-    H[i][2] = c + H[i - 1][2];
-    H[i][3] = d + H[i - 1][3];
-    H[i][4] = e + H[i - 1][4];
-    H[i][5] = f + H[i - 1][5];
-    H[i][6] = g + H[i - 1][6];
-    H[i][7] = h + H[i - 1][7];
-  }
-  hash256 o;
-
-  for (int i = 0; i < 8; i++)
-    o.i[i] = H[rounds][i];
-  return o;
+	return out;
 }
