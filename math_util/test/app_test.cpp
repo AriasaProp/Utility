@@ -1,5 +1,5 @@
-#include <fstream>
 #include <cstring>
+#include <fstream>
 
 extern bool BigInteger_test (std::ofstream &);
 extern bool matrix_test (std::ofstream &);
@@ -18,10 +18,9 @@ int main (int argv, char *args[]) {
   std::ofstream o (buff);
 
   if (!(BigInteger_test (o) &&
-      matrix_test (o) &&
-      ComplexNumber_test (o) &&
-      hash_test (o, args[1]))) return 1;
-  
+        matrix_test (o) &&
+        ComplexNumber_test (o) &&
+        hash_test (o, args[1]))) return 1;
 
   if (!extraction_test (o, args[1])) return 1;
 
