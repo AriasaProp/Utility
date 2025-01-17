@@ -1,21 +1,29 @@
-extern bool BigInteger_test ();
-[[maybe_unused]] extern bool matrix_test ();
-[[maybe_unused]] extern bool ComplexNumber_test ();
+extern bool BigInteger_test (std::ostream&);
+extern bool matrix_test (std::ostream&);
+extern bool ComplexNumber_test (std::ostream&);
+extern bool hash_test (std::ostream&, const char*);
 
-extern bool Math_test (const char *);
-
-extern bool Mining_test ();
+extern bool extraction_test (std::ostream&, const char *);
+extern bool Mining_test (std::ostream&);
 
 int main (int argv, char *args[]) {
+	bool passed;
+	
+	char buff[2048];
+	strcpy(buff, args[1]);
+	strcpy(buff, "/test_report.txt");
+	
+	std::ofstream o(buff);
 
-  if (!BigInteger_test ()) return 1;
-  /*
-    passed &= matrix_test ();
-    passed &= ComplexNumber_test ();
-  */
-  if (!Math_test (args[1])) return 1;
+  passed = BigInteger_test (o) &&
+    			 matrix_test (o) &&
+    			 ComplexNumber_test (o) &&
+    			 hash_test (o);
+  
+  if (!extraction_test (o, args[1])) return 1;
 
-  if (!Mining_test ()) return 1;
-
+  if (!Mining_test (o)) return 1;
+	
+	outfile.close();
   return 0;
 }

@@ -137,7 +137,7 @@ uint32_t mineblock (uint32_t noncestart, char *version, char *prevhash, char *me
   }
 }
 
-bool Mining_test () {
+bool Mining_test (std::ostream &o) {
 
   // Genesis Block info
   char version[] = "01000000";
@@ -158,17 +158,6 @@ bool Mining_test () {
     result.i[i] = Reverse32 (result.i[i]);
 
   print_bytes_reversed ((unsigned char *)result.b, 32);
-
-  // test sha256
-  const char *input[2][2]{
-      {"abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
-      {"Hello World!", "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"}};
-  for (auto &i : input) {
-    hash256 o = sha256 (i[0], strlen (i[0]));
-    std::cout << "ex : " << i[1] << std::endl;
-    std::cout << "rs : " << o << std::endl;
-  }
-  std::cout << "sha256 hash is good!" << std::endl;
 
   return true;
 }

@@ -70,6 +70,10 @@ jobs:
       - uses: actions/checkout@v4.1.1
       - uses: gradle/actions/setup-gradle@v3
       - run: gradle :math_util:test
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: Test_Report
+          path: ${{ github.workspace }}/math_util/test_report.txt 
 
   test-codec:
     needs: test-profiling
