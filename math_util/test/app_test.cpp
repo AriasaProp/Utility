@@ -17,17 +17,17 @@ int main (int argv, char *args[]) {
 
   std::ofstream o (buff);
 
-  if (!(
+  if (
   	// basic class test
-		BigInteger_test (o) &&
-    matrix_test (o) &&
-    ComplexNumber_test (o) &&
-    hash_test (o, args[1]) &&
+		!BigInteger_test (o) ||
+    !matrix_test (o) ||
+    !ComplexNumber_test (o) ||
+    !hash_test (o, args[1]) ||
     // performance function test
-    extraction_test (o, args[1]) &&
-		Mining_test (o)
+    !extraction_test (o, args[1]) ||
+		!Mining_test (o)
 		// others ...
-  ) return 1;
+  )) return 1;
 
   o.close ();
   return 0;
