@@ -27,7 +27,7 @@ int main (int argv, char *args[]) {
       !extraction_test (o, args[1]) ||
       !Mining_test (o)
       // others ...
-  )) return 1;
+  ) return 1;
 
   o.close ();
   return 0;
