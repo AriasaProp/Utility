@@ -1,13 +1,13 @@
-#include "clock_adjustment.hpp"
+#include "simple_clock.hpp"
 #include "matrix.hpp"
 
 #include <fstream>
 
 bool matrix_test (std::ofstream &o) {
   o << "Matrix code test" << std::endl;
-  bool result = true;
   try {
-    profiling::clock_adjustment _clock ("Matrix Operator Test");
+    simple_timer_t cl, cls;
+    
     matrix2D ma (2, 2, {1.0f, 2.0f, 3.0f, 4.0f});
     ma.print ();
 
@@ -21,33 +21,35 @@ bool matrix_test (std::ofstream &o) {
     md.print ();
 
     matrix2D mA = ma;
+    matrix2D mB;
+    mB.identity ();
 
-    o << "Object Initialize : " << _clock.get_clock (profiling::clock_adjustment::period::microseconds) << " us " << std::endl;
+    o << "Object Initialize : " << cl.end() << std::endl;
 
     // math  operator
-    result &= (ma + ma) == (mA += ma);
-    if (!result) throw ("Addition of Matrix was error!");
-    o << "Addition : " << _clock.get_clock (profiling::clock_adjustment::period::microseconds) << " us " << std::endl;
-
-    result &= (mA - ma) == ma;
-    result &= (mA -= ma) == ma;
-    if (!result) throw ("Subtract of Matrix was error!");
-    o << "Subtract : " << _clock.get_clock (profiling::clock_adjustment::period::microseconds) << " us " << std::endl;
-
-    result &= (ma * ma) == (mA *= ma);
-    if (!result) throw ("Multiply of Matrix was error!");
-    o << "Multiply : " << _clock.get_clock (profiling::clock_adjustment::period::microseconds) << " us " << std::endl;
-    {
-      matrix2D mb = ma;
-      mb.identity ();
-      result &= (ma / ma) == mb;
-    }
-    result &= (mA /= ma) == ma;
-    if (!result) throw ("Division of Matrix was error!");
-    o << "Division : " << _clock.get_clock (profiling::clock_adjustment::period::microseconds) << " us " << std::endl;
+    cl.start();
+    if ((ma + ma) != (mA += ma)) throw "Addition of Matrix was error!";
+    o << "Addition : " << cl.end() << std::endl;
+    
+    cl.start();
+    if (
+    	((mA - ma) != ma) ||
+    	((mA -= ma) != ma)
+    ) throw "Subtract of Matrix was error!";
+    o << "Subtract : " << cl.end() << std::endl;
+    cl.start();
+    if ((ma * ma) != (mA *= ma)) throw "Multiply of Matrix was error!";
+    o << "Multiply : " << cl.end() << std::endl;
+    cl.start();
+    if (
+    	((ma / ma) != mB) ||
+    	((mA /= ma) == ma)
+  	) throw "Division of Matrix was error!";
+    o << "Division : " << cl.end() << std::endl;
+    o << "Matrix operation : " << cls.end() << std::endl;
   } catch (const char *e) {
     o << "error: " << e << std::endl;
     return false;
   }
-  return result;
+  return true;
 }

@@ -16,6 +16,7 @@ private:
   std::clock_t safe_time;
 
 public:
+	simple_timer_t();
   void start ();
   simple_time_t end ();
 };

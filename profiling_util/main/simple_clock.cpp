@@ -7,6 +7,9 @@ double simple_time_t::to_sec () {
   return t * 1.0 / CLOCKS_PER_SEC;
 }
 
+simple_timer_t::simple_timer_t () {
+  safe_time = clock ();
+}
 void simple_timer_t::start () {
   safe_time = clock ();
 }
