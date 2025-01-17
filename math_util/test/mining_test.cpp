@@ -137,7 +137,7 @@ uint32_t mineblock (uint32_t noncestart, char *version, char *prevhash, char *me
   }
 }
 
-bool Mining_test (std::ostream &o) {
+bool Mining_test (std::ofstream &o) {
 
   // Genesis Block info
   char version[] = "01000000";

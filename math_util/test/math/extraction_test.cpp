@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
-#include <iostream>
+#include <fstream>
 #include <memory>
 
 // undef TIME to reach limit of file digits
@@ -133,7 +133,7 @@ public:
   ~root2_algo () {}
 };
 
-bool extraction_test (std::ostream &o, const char *d) {
+bool extraction_test (std::ofstream &o, const char *d) {
   // Draw table header
   o << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
 
