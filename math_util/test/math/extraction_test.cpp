@@ -5,8 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iomanip>
 #include <fstream>
+#include <iomanip>
 #include <memory>
 
 // undef TIME to reach limit of file digits
