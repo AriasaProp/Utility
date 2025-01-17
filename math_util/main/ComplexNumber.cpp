@@ -83,11 +83,7 @@ void ComplexNumber::CalculateArgument () {
   }
 }
 
-void ComplexNumber::PrintCartesianForm () const {
-  std::cout << Real << std::showpos << Imaginary << std::noshowpos << "i " << std::endl;
-}
-
-void ComplexNumber::PrintPolarForm (int angleType) const {
+void ComplexNumber::PrintPolarForm (std::ostream &os, int angleType) const {
   float arg = 0.0;
   std::string str = "";
   if (angleType == DEGREES) {
@@ -98,7 +94,7 @@ void ComplexNumber::PrintPolarForm (int angleType) const {
     str = "radians";
   }
 
-  std::cout << Magnitude << ", " << arg << " " << str << std::endl;
+  os << Magnitude << ", " << arg << " " << str << std::endl;
 }
 
 std::ostream &operator<< (std::ostream &os, const ComplexNumber &rhs) {

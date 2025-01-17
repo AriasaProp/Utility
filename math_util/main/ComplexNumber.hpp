@@ -43,8 +43,7 @@ public:
   void CalculateMagnitude ();
   void CalculateArgument ();
 
-  void PrintCartesianForm () const;
-  void PrintPolarForm (int angleType = RADIANS) const;
+  void PrintPolarForm (std::ostream &os, int angleType = RADIANS) const;
 };
 
 std::ostream &operator<< (std::ostream &os, const ComplexNumber &rhs);
