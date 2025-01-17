@@ -1,4 +1,5 @@
 #include <fstream>
+#include <cstring>
 
 extern bool BigInteger_test (std::ofstream &);
 extern bool matrix_test (std::ofstream &);
@@ -9,7 +10,6 @@ extern bool extraction_test (std::ofstream &, const char *);
 extern bool Mining_test (std::ofstream &);
 
 int main (int argv, char *args[]) {
-  bool passed;
 
   char buff[2048];
   strcpy (buff, args[1]);
@@ -17,15 +17,16 @@ int main (int argv, char *args[]) {
 
   std::ofstream o (buff);
 
-  passed = BigInteger_test (o) &&
+  if (!(BigInteger_test (o) &&
       matrix_test (o) &&
       ComplexNumber_test (o) &&
-      hash_test (o);
+      hash_test (o, args[1]))) return 1;
+  
 
   if (!extraction_test (o, args[1])) return 1;
 
   if (!Mining_test (o)) return 1;
 
-  outfile.close ();
+  o.close ();
   return 0;
 }
