@@ -29,13 +29,13 @@ bool hash_test (std::ofstream &o, const char *data) {
       while (std::getline (file, line)) {
         std::istringstream ss (line);
         if (std::getline (ss, first, ',') && std::getline (ss, second, ',')) {
-          hash256 o = sha256 (second.c_str(), second.size());
+          hash256 o = sha256 (second.c_str (), second.size ());
           hash256 e;
           for (i = 0, k = 0; i < 8; ++i, ++k) {
-          	for (j = 0; j < 8; ++j) {
-          		e.i[i] <<= 4;
-          		e.i[i] = second[k] - (second[k] >= 'a'? 'a' : '0');
-          	}
+            for (j = 0; j < 8; ++j) {
+              e.i[i] <<= 4;
+              e.i[i] = second[k] - (second[k] >= 'a' ? 'a' : '0');
+            }
           }
           if (memcmp (o.b, e.b, 64)) throw "wrong sha256 hashing result";
         }
