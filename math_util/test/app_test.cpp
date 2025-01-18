@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-std::fstream output_file;
+std::ofstream output_file;
 char text_buffer[2048];
 
 extern bool BigInteger_test ();
@@ -18,13 +18,13 @@ int main (int argv, char *args[]) {
   strcpy (text_buffer, args[1]);
   strcpy (text_buffer, "/test_report.txt");
 
-  output_file.open (text_buffer, std::ios::trunc | std::ios::out);
-  if (!output_file.is_open ()) {
-    std::cerr << "File test output error" << text_buffer << std::endl;
+  output_file.open(text_buffer, std::ios::trunc|std::ios::out);
+	if (!output_file.is_open()) {
+		std::cerr << "File test output error" << text_buffer << std::endl;
     return 1;
-  }
+	}
 
-  bool TestFailed =
+  bool TestFailed = 
       // basic class test
       !BigInteger_test () ||
       !matrix_test () ||
@@ -35,8 +35,8 @@ int main (int argv, char *args[]) {
       !mining_test ()
       // others ...
       ;
-
-  if (TestFailed) std::cerr << "Test error" << std::endl;
+	
+	if (TestFailed) std::cerr << "Test error" << std::endl;
 
   output_file.close ();
   return TestFailed;

@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 
 bool BigInteger_test () {
   output_file << "BigInteger Test report\n|   action   ||        time        ||     error     |\n|------------||--------------------||---------------|\n| Creation   ||";

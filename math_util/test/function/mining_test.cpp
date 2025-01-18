@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <iostream>
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 
 // util
 void print_bytes (const unsigned char *data, size_t dataLen, bool format = true) {

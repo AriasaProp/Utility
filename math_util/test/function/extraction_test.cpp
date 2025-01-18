@@ -12,7 +12,7 @@
 // undef TIME to reach limit of file digits
 #define TIME 10.0
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 extern char text_buffer[2048];
 
 // algorithm list

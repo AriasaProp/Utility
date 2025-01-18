@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 extern char text_buffer[2048];
 
 bool hash_test (const char *data) {

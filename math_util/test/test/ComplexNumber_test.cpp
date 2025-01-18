@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 
 // test
 bool ComplexNumber_test () {

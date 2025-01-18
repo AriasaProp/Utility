@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-extern std::fstream output_file;
+extern std::ofstream output_file;
 
 bool matrix_test () {
   output_file << "Matrix code test" << std::endl;
