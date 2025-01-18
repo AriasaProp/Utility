@@ -9,19 +9,19 @@
 #include <string>
 #include <vector>
 
-#define BYTE_BUFFER_SIZE 2048
+extern std::fstream output_file;
+extern char text_buffer[2048];
 
-bool hash_test (std::ofstream &o, const char *data) {
-  o << "Hash Test" << std::endl;
-  char buff[2048];
+bool hash_test (const char *data) {
+  output_file << "Hash Test" << std::endl;
   bool passed = true;
   size_t i, j, k, l, m, n;
 
-  o << "SHA256: " << std::endl;
+  output_file << "SHA256: " << std::endl;
   try {
-    strcpy (buff, data);
-    strcat (buff, "/data/sha256.txt");
-    std::ifstream file (buff);
+    strcpy (text_buffer, data);
+    strcat (text_buffer, "/data/sha256.txt");
+    std::ifstream file (text_buffer);
     if (!file.is_open ()) [[unlikely]]
       throw "file data not found!";
     try {
@@ -47,12 +47,12 @@ bool hash_test (std::ofstream &o, const char *data) {
     file.close ();
   } catch (const char *err) {
     passed &= false;
-    o << err << std::endl;
+    output_file << err << std::endl;
   }
 
-  o << "RandomX: Not yet." << std::endl;
+  output_file << "RandomX: Not yet." << std::endl;
 
-  o << "Hash Test End" << std::endl;
+  output_file << "Hash Test End" << std::endl;
 
   return passed;
 }

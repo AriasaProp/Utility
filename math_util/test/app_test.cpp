@@ -1,34 +1,43 @@
 #include <cstring>
 #include <fstream>
+#include <iostream>
 
-extern bool BigInteger_test (std::ofstream &);
-extern bool matrix_test (std::ofstream &);
-extern bool ComplexNumber_test (std::ofstream &);
-extern bool hash_test (std::ofstream &, const char *);
+std::fstream output_file;
+char text_buffer[2048];
 
-extern bool extraction_test (std::ofstream &, const char *);
-extern bool Mining_test (std::ofstream &);
+extern bool BigInteger_test ();
+extern bool matrix_test ();
+extern bool ComplexNumber_test ();
+extern bool hash_test (const char *);
+
+extern bool extraction_test (const char *);
+extern bool mining_test ();
 
 int main (int argv, char *args[]) {
 
-  char buff[2048];
-  strcpy (buff, args[1]);
-  strcpy (buff, "/test_report.txt");
+  strcpy (text_buffer, args[1]);
+  strcpy (text_buffer, "/test_report.txt");
 
-  std::ofstream o (buff);
+  output_file.open(text_buffer, std::ios::trunc|std::ios::out);
+	if (!output_file.is_open()) {
+		std::cerr << "File test output error" << text_buffer << std::endl;
+    return 1;
+	}
 
-  if (
+  bool TestFailed = 
       // basic class test
-      !BigInteger_test (o) ||
-      !matrix_test (o) ||
-      !ComplexNumber_test (o) ||
-      !hash_test (o, args[1]) ||
+      !BigInteger_test () ||
+      !matrix_test () ||
+      !ComplexNumber_test () ||
+      !hash_test (args[1]) ||
       // performance function test
-      !extraction_test (o, args[1]) ||
-      !Mining_test (o)
+      !extraction_test (args[1]) ||
+      !mining_test ()
       // others ...
-      ) return 1;
+      ;
+	
+	if (TestFailed) std::cerr << "Test error" << std::endl;
 
-  o.close ();
-  return 0;
+  output_file.close ();
+  return TestFailed;
 }

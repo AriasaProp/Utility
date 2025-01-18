@@ -3,8 +3,10 @@
 
 #include <fstream>
 
-bool matrix_test (std::ofstream &o) {
-  o << "Matrix code test" << std::endl;
+extern std::fstream output_file;
+
+bool matrix_test () {
+  output_file << "Matrix code test" << std::endl;
   try {
     simple_timer_t cl, cls;
 
@@ -24,29 +26,29 @@ bool matrix_test (std::ofstream &o) {
     matrix2D mB;
     mB.identity ();
 
-    o << "Object Initialize : " << cl.end () << std::endl;
+    output_file << "Object Initialize : " << cl.end () << std::endl;
 
     // math  operator
     cl.start ();
     if ((ma + ma) != (mA += ma)) throw "Addition of Matrix was error!";
-    o << "Addition : " << cl.end () << std::endl;
+    output_file << "Addition : " << cl.end () << std::endl;
 
     cl.start ();
     if (
         ((mA - ma) != ma) ||
         ((mA -= ma) != ma)) throw "Subtract of Matrix was error!";
-    o << "Subtract : " << cl.end () << std::endl;
+    output_file << "Subtract : " << cl.end () << std::endl;
     cl.start ();
     if ((ma * ma) != (mA *= ma)) throw "Multiply of Matrix was error!";
-    o << "Multiply : " << cl.end () << std::endl;
+    output_file << "Multiply : " << cl.end () << std::endl;
     cl.start ();
     if (
         ((ma / ma) != mB) ||
         ((mA /= ma) == ma)) throw "Division of Matrix was error!";
-    o << "Division : " << cl.end () << std::endl;
-    o << "Matrix operation : " << cls.end () << std::endl;
+    output_file << "Division : " << cl.end () << std::endl;
+    output_file << "Matrix operation : " << cls.end () << std::endl;
   } catch (const char *e) {
-    o << "error: " << e << std::endl;
+    output_file << "error: " << e << std::endl;
     return false;
   }
   return true;

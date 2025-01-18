@@ -11,7 +11,9 @@
 
 // undef TIME to reach limit of file digits
 #define TIME 10.0
-#define BUFFER_BYTE_SIZE 4096
+
+extern std::fstream output_file;
+extern char text_buffer[2048];
 
 // algorithm list
 struct base_ex {
@@ -133,9 +135,9 @@ public:
   ~root2_algo () {}
 };
 
-bool extraction_test (std::ofstream &o, const char *d) {
+bool extraction_test (const char *d) {
   // Draw table header
-  o << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
+  output_file << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
@@ -143,7 +145,6 @@ bool extraction_test (std::ofstream &o, const char *d) {
       new e_algo (),
       new root2_algo ()};
   // pi proof
-  char buff[BUFFER_BYTE_SIZE];
   size_t digit_index, digit_readed;
   char result;
   unsigned long long generated;
@@ -151,20 +152,20 @@ bool extraction_test (std::ofstream &o, const char *d) {
   simple_timer_t counter_time;
   simple_time_t counted_time;
   for (base_ex *algo : algos) {
-    o << "| " << algo->lbl () << " || ";
+    output_file << "| " << algo->lbl () << " || ";
     generated = 0;
     digit_index = 0;
     digit_readed = 0;
     try {
-      sprintf (buff, "%s/data/%s", d, algo->testFile ());
-      FILE *file_digits = fopen (buff, "r");
+      sprintf (text_buffer, "%s/data/%s", d, algo->testFile ());
+      FILE *file_digits = fopen (text_buffer, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";
       counter_time.start ();
       do {
         if (digit_index >= digit_readed) {
           digit_index = 0;
-          digit_readed = fread (buff, 1, BUFFER_BYTE_SIZE, file_digits);
+          digit_readed = fread (text_buffer, 1, 2048, file_digits);
         }
         if (!digit_readed) [[unlikely]] {
           if (feof (file_digits)) throw "end of file";
@@ -172,7 +173,7 @@ bool extraction_test (std::ofstream &o, const char *d) {
           throw "cannot get digits from file";
         }
         result = algo->extract () + '0';
-        if (result != buff[digit_index++]) throw "wrong result";
+        if (result != text_buffer[digit_index++]) throw "wrong result";
         ++generated;
 #ifdef TIME
       } while ((counted_time = counter_time.end ()).to_sec () < TIME);
@@ -181,18 +182,18 @@ bool extraction_test (std::ofstream &o, const char *d) {
       counted_time = counter_time.end ();
 #endif
       // print result profiling
-      o << std::setfill ('0') << std::setw (10) << generated << " || ";
-      o << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
-      o << std::setfill (' ') << std::setw (13) << std::right << counted_time << " || ";
-      o << std::setfill ('0') << std::setw (14) << algo->size ();
+      output_file << std::setfill ('0') << std::setw (10) << generated << " || ";
+      output_file << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
+      output_file << std::setfill (' ') << std::setw (13) << std::right << counted_time << " || ";
+      output_file << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
-      o << std::setfill (' ') << std::setw (75) << "Error: " << e << " digits: " << generated;
+      output_file << std::setfill (' ') << std::setw (75) << "Error: " << e << " digits: " << generated;
       passed &= false;
     }
-    o << " |" << std::endl;
+    output_file << " |" << std::endl;
     delete algo;
   }
-  o << "Ended Test" << std::endl;
+  output_file << "Ended Test" << std::endl;
   return passed;
 }

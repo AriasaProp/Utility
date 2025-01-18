@@ -1,29 +1,31 @@
+#include "hash.hpp"
+
 #include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 
-#include "hash.hpp"
+extern std::fstream output_file;
 
 // util
 void print_bytes (const unsigned char *data, size_t dataLen, bool format = true) {
   for (size_t i = 0; i < dataLen; ++i) {
-    std::cout << std::hex << std::setfill ('0') << std::setw (2) << (int)data[i];
+    output_file << std::hex << std::setfill ('0') << std::setw (2) << (int)data[i];
     if (format) {
-      std::cout << (((i + 1) % 16 == 0) ? "\n" : " ");
+      output_file << (((i + 1) % 16 == 0) ? "\n" : " ");
     }
   }
-  std::cout << std::endl;
+  output_file << std::endl;
 }
 void print_bytes_reversed (const unsigned char *data, size_t dataLen, bool format = true) {
   for (size_t i = dataLen; i > 0; i--) {
-    std::cout << std::hex << std::setw (2) << (int)data[i - 1];
+    output_file << std::hex << std::setw (2) << (int)data[i - 1];
     if (format) {
-      std::cout << (((i - 1) % 16 == 0) ? "\n" : " ");
+      output_file << (((i - 1) % 16 == 0) ? "\n" : " ");
     }
   }
-  std::cout << std::endl;
+  output_file << std::endl;
 }
 uint32_t Reverse32 (uint32_t value) {
   return (((value & 0x000000FF) << 24) |
@@ -131,14 +133,14 @@ uint32_t mineblock (uint32_t noncestart, char *version, char *prevhash, char *me
       long duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count ();
 
       float hashrate = 10000000.0 / (float)duration;
-      std::cout << "Currently mining at " << hashrate << " hashes / second" << std::endl;
+      output_file << "Currently mining at " << hashrate << " hashes / second" << std::endl;
       start = std::chrono::steady_clock::now ();
     }
   }
 }
 
-bool Mining_test (std::ofstream &o) {
-
+bool mining_test () {
+  output_file << "Mining Test" << std::endl;
   // Genesis Block info
   char version[] = "01000000";
   char prevhash[] = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -149,7 +151,7 @@ bool Mining_test (std::ofstream &o) {
   uint32_t nonce = mineblock (2083236890, version, prevhash, merkle_root, time, nbits);
   // uint32_t nonce = mineblock (10, version, prevhash, merkle_root, time, nbits);
 
-  std::cout << "Nonce: " << (nonce == 2083236893 ? "Correct!" : "False") << std::endl;
+  output_file << "Nonce: " << (nonce == 2083236893 ? "Correct!" : "False") << std::endl;
 
   // hashblock((uint32_t)2083236893, result);
   hash256 result = hashblock (nonce, version, prevhash, merkle_root, time, nbits);
