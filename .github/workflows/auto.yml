@@ -54,12 +54,9 @@ jobs:
         continue-on-error: true
         run: |
           git add .
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
+          if (git commit -m "Reformatting Code Sources"); then
             git config --global user.email "ikomangwidiadaariasa12@gmail.com"
             git config --global user.name "AriasaProp"
-            git commit -m "changes of formating"
             git push
           fi
 
