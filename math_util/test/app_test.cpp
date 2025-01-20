@@ -16,7 +16,7 @@ extern bool mining_test ();
 
 int main (int argv, char *args[]) {
   strcpy (text_buffer, args[1]);
-  strcpy (text_buffer, "/test_report.txt");
+  strcat (text_buffer, "/test_report.txt");
   
   std::fstream f (text_buffer, std::fstream::trunc | std::fstream::out);
   if (!f.is_open ()) {
