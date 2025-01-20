@@ -201,27 +201,29 @@ matrix2D &matrix2D::operator/= (const matrix2D o) {
   return *this *= o.inverse ();
 }
 
-void matrix2D::print () const {
-  unsigned len_each_row[rows]{};
+/** stream operator **/
+std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
+  unsigned len_each_row[a.rows]{};
   // find length each vertical
-  for (unsigned i = 0, j = 0; i < rows; ++i) { // rows
+  for (unsigned i = 0, j = 0; i < a.rows; ++i) { // rows
     unsigned max_len{};
-    for (j = 0; j < cols; ++j) { // vertical
+    for (j = 0; j < a.cols; ++j) { // vertical
       std::ostringstream strs;
-      strs << this->data[j * rows + i];
+      strs << this->data[j * a.rows + i];
       unsigned num_length = strs.str ().size ();
       if (num_length > max_len) max_len = num_length;
     }
     len_each_row[i] = max_len;
   }
-  std::cout << "matrix (row_length:" << this->rows << ", col_length: " << this->cols << ")" << std::endl;
-  for (unsigned i = 0, j = 0; i < cols; ++i) {
-    std::cout << "|";
+  o << "matrix (row_length:" << a.rows << ", col_length: " << a.cols << ")" << std::endl;
+  for (unsigned i = 0, j = 0; i < a.cols; ++i) {
+    o << "|";
     for (j = 0; j < rows; ++j) {
-      std::cout << " " << std::setw (len_each_row[j]) << this->data[i * rows + j] << " ";
+      o << " " << std::setw (len_each_row[j]) << a.data[i * a.rows + j] << " ";
     }
-    std::cout << "|" << std::endl;
+    o << "|\n";
   }
+  return o;
 }
 
 unsigned matrix2D::size () const {

@@ -49,8 +49,9 @@ public:
   matrix2D &operator/= (const float &);
   matrix2D operator/ (const matrix2D &) const;
   matrix2D &operator/= (const matrix2D);
+  /** stream operator **/
+  friend std::ostream &operator<< (std::ostream &, const &matrix2D);
   // helper
-  void print () const;
   unsigned size () const;
 };
 
