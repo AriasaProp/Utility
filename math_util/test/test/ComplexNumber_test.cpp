@@ -1,8 +1,8 @@
 #include "ComplexNumber.hpp"
 
-#include <fstream>
+#include <ostream>
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 
 // test
 bool ComplexNumber_test () {

@@ -3,12 +3,12 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
-#include <fstream>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 extern char text_buffer[2048];
 
 bool hash_test (const char *data) {

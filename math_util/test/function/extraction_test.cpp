@@ -5,14 +5,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
+#include <ostream>
 #include <iomanip>
 #include <memory>
 
 // undef TIME to reach limit of file digits
 #define TIME 10.0
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 extern char text_buffer[2048];
 
 // algorithm list

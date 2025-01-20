@@ -4,7 +4,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
-#include <fstream>
+#include <ostream>
 #include <iomanip>
 #include <map>
 #include <memory>
@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 
 bool BigInteger_test () {
   output_file << "BigInteger Test report\n|   action   ||        time        ||     error     |\n|------------||--------------------||---------------|\n| Creation   ||";

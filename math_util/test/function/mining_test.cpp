@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <cstring>
 #include <iomanip>
-#include <iostream>
+#include <ostream>
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 
 // util
 void print_bytes (const unsigned char *data, size_t dataLen, bool format = true) {

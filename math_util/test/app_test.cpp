@@ -1,8 +1,9 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 
-std::ofstream output_file;
+std::ostream output_file;
 char text_buffer[2048];
 
 extern bool BigInteger_test ();
@@ -14,15 +15,15 @@ extern bool extraction_test (const char *);
 extern bool mining_test ();
 
 int main (int argv, char *args[]) {
-
   strcpy (text_buffer, args[1]);
   strcpy (text_buffer, "/test_report.txt");
-
-  output_file.open (text_buffer, std::ios::trunc | std::ios::out);
-  if (!output_file.is_open ()) {
+  
+  std::ofstream f (text_buffer);
+  if (!f.is_open ()) {
     std::cerr << "File test output error" << text_buffer << std::endl;
     return 1;
   }
+  output_file = f;
 
   bool TestFailed =
       // basic class test
@@ -38,7 +39,7 @@ int main (int argv, char *args[]) {
 
   if (TestFailed) std::cerr << "Test error" << std::endl;
 
-  output_file.close ();
+  f.close ();
 
   return TestFailed;
 }

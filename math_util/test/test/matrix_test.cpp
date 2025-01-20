@@ -1,9 +1,9 @@
 #include "matrix.hpp"
 #include "simple_clock.hpp"
 
-#include <fstream>
+#include <ostream>
 
-extern std::ofstream output_file;
+extern std::ostream output_file;
 
 bool matrix_test () {
   output_file << "Matrix code test" << std::endl;
