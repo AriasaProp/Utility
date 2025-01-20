@@ -203,9 +203,9 @@ matrix2D &matrix2D::operator/= (const matrix2D o) {
 /** stream operator **/
 std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
   o << "[" << a.rows << ", " << a.cols << "]{";
-  for (const float *i = a.data, j = a.data + a.size(); i < j; ++i) {
+  for (size_t i = 0, j = a.size(); i < j; ++i) {
     o << std::setprecision(2) << *i;
-    if (i != (j-1)) o << ",";
+    if (i < (j-1)) o << ",";
   }
   o << "}";
   return o;
