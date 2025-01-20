@@ -24,7 +24,7 @@ bool ComplexNumber_test () {
   ComplexNumber C4 (1, PI / 3, POLAR);
   ComplexNumber C5 (2, PI / 4, POLAR);
   ComplexNumber C6 = C4 + C5;
-  C5.PrintPolarForm (output_file, DEGREES);
+  C5.PrintPolarForm (*output_file, DEGREES);
 
   /* Taking natural log of complex numbers */
   ComplexNumber C7 (5, -3);
@@ -34,7 +34,7 @@ bool ComplexNumber_test () {
   // powC(X, Y)
   ComplexNumber C8 (-4, 6);
   ComplexNumber C9 (1, -2);
-  powC (C8, C9).PrintPolarForm (output_file, DEGREES);
+  powC (C8, C9).PrintPolarForm (*output_file, DEGREES);
 
   /* Taking complex root Y of a complex number X */
   // rootC(X, Y)
