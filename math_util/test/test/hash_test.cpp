@@ -34,7 +34,7 @@ bool hash_test (const char *data) {
           for (i = 0, k = 0; i < 8; ++i, ++k) {
             for (j = 0; j < 8; ++j) {
               e.i[i] <<= 4;
-              e.i[i] = second[k] - (second[k] >= 'a' ? 'a' : '0');
+              e.i[i] = second[k] - 48 + (second[k] >= 'a') * 39;
             }
           }
           if (memcmp (o.b, e.b, 64)) throw "wrong sha256 hashing result";
