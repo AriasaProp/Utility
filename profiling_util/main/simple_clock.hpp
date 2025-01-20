@@ -2,7 +2,7 @@
 #define SIMPLE_CLOCK_
 
 #include <ctime>
-#include <iostream>
+#include <ostream>
 
 struct simple_time_t {
   std::clock_t t;

@@ -51,5 +51,6 @@ bool matrix_test () {
     *output_file << "error: " << e << std::endl;
     return false;
   }
+  *output_file << std::endl;
   return true;
 }

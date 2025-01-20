@@ -202,26 +202,12 @@ matrix2D &matrix2D::operator/= (const matrix2D o) {
 
 /** stream operator **/
 std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
-  size_t len_each_row[a.rows]{};
-  // find length each vertical
-  for (size_t i = 0, j = 0; i < a.rows; ++i) { // rows
-    size_t max_len{};
-    for (j = 0; j < a.cols; ++j) { // vertical
-      std::ostringstream strs;
-      strs << a.data[j * a.rows + i];
-      size_t num_length = strs.str ().size ();
-      if (num_length > max_len) max_len = num_length;
-    }
-    len_each_row[i] = max_len;
+  o << "[" << a.rows << ", " << a.cols << "]{";
+  for (const float *i = a.data, j = a.data + a.size(); i < j; ++i) {
+    o << std::setprecision(2) << *i;
+    if (i != (j-1)) o << ",";
   }
-  o << "matrix (row_length:" << a.rows << ", col_length: " << a.cols << ")" << std::endl;
-  for (size_t i = 0, j = 0; i < a.cols; ++i) {
-    o << "|";
-    for (j = 0; j < a.rows; ++j) {
-      o << " " << std::setw (len_each_row[j]) << a.data[i * a.rows + j] << " ";
-    }
-    o << "|\n";
-  }
+  o << "}";
   return o;
 }
 
