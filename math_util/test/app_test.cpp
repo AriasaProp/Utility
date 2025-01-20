@@ -27,9 +27,9 @@ int main (int argv, char *args[]) {
   
   std::cout << "Nothing" << std::endl;
 
-  bool TestFailed = false; /*
+  bool TestFailed = false;
       // basic class test
-      !BigInteger_test () ||
+      !BigInteger_test () /* ||
       !matrix_test () ||
       !ComplexNumber_test () ||
       !hash_test (args[1]) ||
@@ -37,10 +37,9 @@ int main (int argv, char *args[]) {
       !extraction_test (args[1]) ||
       !mining_test ()
       // others ...
-      ;
-
-  if (TestFailed) std::cerr << "Test error" << std::endl;
 */
+      ;
+  if (TestFailed) std::cerr << "Test error" << std::endl;
   f.close ();
 
   return TestFailed;
