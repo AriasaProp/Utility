@@ -27,10 +27,10 @@ int main (int argv, char *args[]) {
   
   std::cout << "Nothing" << std::endl;
 
-  bool TestFailed = false;
+  bool TestFailed = 
       // basic class test
-      !BigInteger_test () /* ||
-      !matrix_test () ||
+      !BigInteger_test () ||
+      !matrix_test () /* ||
       !ComplexNumber_test () ||
       !hash_test (args[1]) ||
       // performance function test
