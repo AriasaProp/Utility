@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ostream>
 
-std::ostream output_file;
+std::ostream *output_file;
 char text_buffer[2048];
 
 extern bool BigInteger_test ();
@@ -23,7 +23,7 @@ int main (int argv, char *args[]) {
     std::cerr << "File test output error" << text_buffer << std::endl;
     return 1;
   }
-  output_file = (std::ostream)f;
+  output_file = (std::ostream *)&f;
 
   bool TestFailed =
       // basic class test

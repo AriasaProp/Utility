@@ -12,7 +12,7 @@
 // undef TIME to reach limit of file digits
 #define TIME 10.0
 
-extern std::ostream output_file;
+extern std::ostream *output_file;
 extern char text_buffer[2048];
 
 // algorithm list
@@ -137,7 +137,7 @@ public:
 
 bool extraction_test (const char *d) {
   // Draw table header
-  output_file << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
+  *output_file << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
@@ -152,7 +152,7 @@ bool extraction_test (const char *d) {
   simple_timer_t counter_time;
   simple_time_t counted_time;
   for (base_ex *algo : algos) {
-    output_file << "| " << algo->lbl () << " || ";
+    *output_file << "| " << algo->lbl () << " || ";
     generated = 0;
     digit_index = 0;
     digit_readed = 0;
@@ -182,18 +182,18 @@ bool extraction_test (const char *d) {
       counted_time = counter_time.end ();
 #endif
       // print result profiling
-      output_file << std::setfill ('0') << std::setw (10) << generated << " || ";
-      output_file << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
-      output_file << std::setfill (' ') << std::setw (13) << std::right << counted_time << " || ";
-      output_file << std::setfill ('0') << std::setw (14) << algo->size ();
+      *output_file << std::setfill ('0') << std::setw (10) << generated << " || ";
+      *output_file << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
+      *output_file << std::setfill (' ') << std::setw (13) << std::right << counted_time << " || ";
+      *output_file << std::setfill ('0') << std::setw (14) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
-      output_file << std::setfill (' ') << std::setw (75) << "Error: " << e << " digits: " << generated;
+      *output_file << std::setfill (' ') << std::setw (75) << "Error: " << e << " digits: " << generated;
       passed &= false;
     }
-    output_file << " |" << std::endl;
+    *output_file << " |" << std::endl;
     delete algo;
   }
-  output_file << "Ended Test" << std::endl;
+  *output_file << "Ended Test" << std::endl;
   return passed;
 }

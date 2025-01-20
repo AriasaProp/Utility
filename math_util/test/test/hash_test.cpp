@@ -5,22 +5,23 @@
 #include <cstring>
 #include <ostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <vector>
 
-extern std::ostream output_file;
+extern std::ostream *output_file;
 extern char text_buffer[2048];
 
 bool hash_test (const char *data) {
-  output_file << "Hash Test" << std::endl;
+  *output_file << "Hash Test" << std::endl;
   bool passed = true;
   size_t i, j, k, l, m, n;
 
-  output_file << "SHA256: " << std::endl;
+  *output_file << "SHA256: " << std::endl;
   try {
     strcpy (text_buffer, data);
     strcat (text_buffer, "/data/sha256.txt");
-    std::ifstream file (text_buffer);
+    std::ifstream file (text_buffer, std::ifstream::in);
     if (!file.is_open ()) [[unlikely]]
       throw "file data not found!";
     try {
@@ -46,12 +47,12 @@ bool hash_test (const char *data) {
     file.close ();
   } catch (const char *err) {
     passed &= false;
-    output_file << err << std::endl;
+    *output_file << err << std::endl;
   }
 
-  output_file << "RandomX: Not yet." << std::endl;
+  *output_file << "RandomX: Not yet." << std::endl;
 
-  output_file << "Hash Test End" << std::endl;
+  *output_file << "Hash Test End" << std::endl;
 
   return passed;
 }
