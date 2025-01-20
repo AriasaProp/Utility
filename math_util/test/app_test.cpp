@@ -25,17 +25,15 @@ int main (int argv, char *args[]) {
   }
   output_file = (std::ostream *)&f;
   
-  std::cout << "Nothing" << std::endl;
-
   bool TestFailed = 
       // basic class test
-      !BigInteger_test () ||
-      !matrix_test () /* ||
-      !ComplexNumber_test () ||
-      !hash_test (args[1]) ||
+      BigInteger_test () &&
+      ComplexNumber_test () /* &&
+      matrix_test () &&
+      hash_test (args[1]) &&
       // performance function test
-      !extraction_test (args[1]) ||
-      !mining_test ()
+      extraction_test (args[1]) &&
+      mining_test ()
       // others ...
 */
       ;

@@ -202,12 +202,17 @@ matrix2D &matrix2D::operator/= (const matrix2D o) {
 
 /** stream operator **/
 std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
-  o << "[" << a.rows << ", " << a.cols << "]{";
-  for (size_t i = 0, j = a.size(); i < j; ++i) {
-    o << std::setprecision(2) << *i;
-    if (i < (j-1)) o << ",";
-  }
-  o << "}";
+  o << "[";
+	if (a.size()) {
+	  o << a.rows << ", " << a.cols << "]{";
+	  for (size_t i = 0, j = a.size(); i < j; ++i) {
+	    o << std::setprecision(2) << *i;
+	    if (i < (j-1)) o << ",";
+	  }
+	  o << "}";
+	} else {
+		o << "0]";
+	}
   return o;
 }
 
