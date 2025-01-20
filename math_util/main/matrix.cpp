@@ -208,7 +208,7 @@ std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
     size_t max_len{};
     for (j = 0; j < a.cols; ++j) { // vertical
       std::ostringstream strs;
-      strs << this->data[j * a.rows + i];
+      strs << a.data[j * a.rows + i];
       size_t num_length = strs.str ().size ();
       if (num_length > max_len) max_len = num_length;
     }
@@ -217,7 +217,7 @@ std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
   o << "matrix (row_length:" << a.rows << ", col_length: " << a.cols << ")" << std::endl;
   for (size_t i = 0, j = 0; i < a.cols; ++i) {
     o << "|";
-    for (j = 0; j < rows; ++j) {
+    for (j = 0; j < a.rows; ++j) {
       o << " " << std::setw (len_each_row[j]) << a.data[i * a.rows + j] << " ";
     }
     o << "|\n";
