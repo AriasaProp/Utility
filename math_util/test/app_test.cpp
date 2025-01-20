@@ -18,12 +18,12 @@ int main (int argv, char *args[]) {
   strcpy (text_buffer, args[1]);
   strcpy (text_buffer, "/test_report.txt");
   
-  std::ofstream f (text_buffer);
+  std::fstream f (text_buffer, std::fstream::trunc | std::fstream::out);
   if (!f.is_open ()) {
     std::cerr << "File test output error" << text_buffer << std::endl;
     return 1;
   }
-  output_file = f;
+  output_file = (std::ostream)f;
 
   bool TestFailed =
       // basic class test
