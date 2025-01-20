@@ -2,6 +2,9 @@
 #define _MATRIX_INCLUDED_
 
 #include <initializer_list>
+#include <ostream>
+#include <cstdint>
+#include <cstdlib>
 
 /*
    Rows ->
@@ -15,15 +18,15 @@ Cols
 
 struct matrix2D {
 private:
-  unsigned cols, rows;
+  size_t cols, rows;
   float *data;
 
 public:
   // constructors
   matrix2D ();
   matrix2D (const matrix2D &);
-  matrix2D (unsigned, unsigned, const std::initializer_list<float>);
-  matrix2D (unsigned, unsigned, const float *);
+  matrix2D (size_t, size_t, const std::initializer_list<float>);
+  matrix2D (size_t, size_t, const float *);
   // destructors
   ~matrix2D ();
   // unique function
@@ -31,7 +34,7 @@ public:
   matrix2D inverse () const;
   float det () const;
   // operators function
-  float &operator() (unsigned, unsigned);
+  float &operator() (size_t, size_t);
   // operator compare
   bool operator== (const matrix2D &) const;
   bool operator!= (const matrix2D &) const;
@@ -50,9 +53,9 @@ public:
   matrix2D operator/ (const matrix2D &) const;
   matrix2D &operator/= (const matrix2D);
   /** stream operator **/
-  friend std::ostream &operator<< (std::ostream &, const &matrix2D);
+  friend std::ostream &operator<< (std::ostream &, const matrix2D&);
   // helper
-  unsigned size () const;
+  size_t size () const;
 };
 
 #endif //_MATRIX_INCLUDED_

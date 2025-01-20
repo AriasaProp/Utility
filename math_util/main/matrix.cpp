@@ -1,8 +1,7 @@
 #include "matrix.hpp"
-#include <cstdint>
+
 #include <cstring>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 
 #define MIN(x, y) (x < y ? x : y)
@@ -12,13 +11,13 @@ matrix2D::matrix2D (const matrix2D &other) : cols (other.cols), rows (other.rows
   this->data = new float[cols * rows]{};
   memcpy (this->data, other.data, cols * rows * sizeof (float));
 }
-matrix2D::matrix2D (unsigned c, unsigned r, const std::initializer_list<float> d) : cols (c), rows (r) {
+matrix2D::matrix2D (size_t c, size_t r, const std::initializer_list<float> d) : cols (c), rows (r) {
   if (!cols || !rows) throw ("matrix size cannot be 0");
   if (d.size () != cols * rows) throw ("array size is wrong");
   this->data = new float[cols * rows]{};
   memcpy (this->data, d.begin (), cols * rows * sizeof (float));
 }
-matrix2D::matrix2D (unsigned c, unsigned r, const float *d = nullptr) : cols (c), rows (r) {
+matrix2D::matrix2D (size_t c, size_t r, const float *d = nullptr) : cols (c), rows (r) {
   if (!cols || !rows) throw ("matrix size cannot be 0");
   this->data = new float[cols * rows]{};
   if (d) memcpy (this->data, d, cols * rows * sizeof (float));
@@ -30,7 +29,7 @@ matrix2D::~matrix2D () {
 matrix2D &matrix2D::identity () {
   if (this->cols != this->rows) throw ("cannot find identity for non-square matrix");
   memset (this->data, 0, sizeof (float) * this->cols * this->cols);
-  for (unsigned i = 0; i < this->cols; ++i)
+  for (size_t i = 0; i < this->cols; ++i)
     this->data[this->cols * i + i] = 1;
 }
 matrix2D matrix2D::inverse () const {
@@ -41,7 +40,7 @@ matrix2D matrix2D::inverse () const {
   float *m1 = new float[this->cols * this->cols];
   memcpy (m1, this->data, sizeof (float) * this->cols * this->cols);
 
-  unsigned i, j, k;
+  size_t i, j, k;
   float selector;
   for (i = 0; i < this->cols; ++i) {
     selector = m1[this->cols * i + i];
@@ -62,7 +61,7 @@ matrix2D matrix2D::inverse () const {
   delete[] m1;
   return res;
 }
-static float detPart (float *matrix, unsigned n) {
+static float detPart (float *matrix, size_t n) {
   switch (n) {
   case 1:
     return 0;
@@ -70,13 +69,13 @@ static float detPart (float *matrix, unsigned n) {
     return matrix[0] * matrix[3] - matrix[1] * matrix[2];
   default:
     float d = 0;
-    unsigned minorSize = n - 1;
+    size_t minorSize = n - 1;
     float minorMatrix[minorSize * minorSize];
-    for (unsigned i = 0; i < n; ++i) {
-      unsigned minorRow = 0;
-      for (unsigned row = 1; row < n; ++row) {
-        unsigned minorCol = 0;
-        for (unsigned col = 0; col < n; ++col) {
+    for (size_t i = 0; i < n; ++i) {
+      size_t minorRow = 0;
+      for (size_t row = 1; row < n; ++row) {
+        size_t minorCol = 0;
+        for (size_t col = 0; col < n; ++col) {
           if (col != i) {
             minorMatrix[minorRow * minorSize + minorCol] = matrix[row * n + col];
             minorCol++;
@@ -99,7 +98,7 @@ float matrix2D::det () const {
 }
 
 // operator function
-float &matrix2D::operator() (unsigned c, unsigned r) {
+float &matrix2D::operator() (size_t c, size_t r) {
   return this->data[MIN (c, cols) * this->rows + MIN (r, rows)];
 }
 
@@ -127,7 +126,7 @@ matrix2D matrix2D::operator+ (const matrix2D &o) const {
 }
 matrix2D &matrix2D::operator+= (const matrix2D o) {
   if ((this->rows != o.rows) || (this->cols != o.cols)) throw ("cannot doing addition on different matrix dimension");
-  for (unsigned i = 0, j = cols * rows; i < j; ++i) {
+  for (size_t i = 0, j = cols * rows; i < j; ++i) {
     this->data[i] += o.data[i];
   }
   return *this;
@@ -138,20 +137,20 @@ matrix2D matrix2D::operator- (const matrix2D &o) const {
 }
 matrix2D &matrix2D::operator-= (const matrix2D o) {
   if ((this->rows != o.rows) || (this->cols != o.cols)) throw ("cannot doing addition on different matrix dimension");
-  for (unsigned i = 0, j = cols * rows; i < j; ++i) {
+  for (size_t i = 0, j = cols * rows; i < j; ++i) {
     this->data[i] -= o.data[i];
   }
   return *this;
 }
 matrix2D matrix2D::operator* (const float &o) const {
   float *temp = new float[this->cols * this->rows]{};
-  for (unsigned i = 0, j = this->cols * this->rows; i < j; ++i) {
+  for (size_t i = 0, j = this->cols * this->rows; i < j; ++i) {
     temp[i] = this->data[i] * o;
   }
   return matrix2D (this->cols, this->rows, temp);
 }
 matrix2D &matrix2D::operator*= (const float &o) {
-  for (unsigned i = 0, j = this->cols * this->rows; i < j; ++i) {
+  for (size_t i = 0, j = this->cols * this->rows; i < j; ++i) {
     this->data[i] *= o;
   }
   return *this;
@@ -159,8 +158,8 @@ matrix2D &matrix2D::operator*= (const float &o) {
 matrix2D matrix2D::operator* (const matrix2D &o) const {
   if (this->rows != o.cols) throw ("cannot doing multiplication matrix cause dimension is not fit");
   float *temp = new float[this->cols * o.rows]{};
-  for (unsigned i = 0, I = this->cols * o.rows; i < I; ++i) {
-    for (unsigned j = 0, J = this->rows; j < J; ++j) {
+  for (size_t i = 0, I = this->cols * o.rows; i < I; ++i) {
+    for (size_t j = 0, J = this->rows; j < J; ++j) {
       temp[i] += this->data[(i / this->rows) * this->rows + j] * o.data[(i % this->rows) + j * o.rows];
     }
   }
@@ -169,8 +168,8 @@ matrix2D matrix2D::operator* (const matrix2D &o) const {
 matrix2D &matrix2D::operator*= (const matrix2D o) {
   if (this->rows != o.cols) throw ("cannot doing multiplication matrix cause dimension is not fit");
   float *temp = new float[this->cols * o.rows]{};
-  for (unsigned i = 0, I = this->cols * o.rows; i < I; ++i) {
-    for (unsigned j = 0, J = this->rows; j < J; ++j) {
+  for (size_t i = 0, I = this->cols * o.rows; i < I; ++i) {
+    for (size_t j = 0, J = this->rows; j < J; ++j) {
       temp[i] += this->data[(i / this->rows) * this->rows + j] * o.data[(i % this->rows) + j * o.rows];
     }
   }
@@ -181,13 +180,13 @@ matrix2D &matrix2D::operator*= (const matrix2D o) {
 }
 matrix2D matrix2D::operator/ (const float &o) const {
   float *temp = new float[this->cols * this->rows]{};
-  for (unsigned i = 0, j = this->cols * this->rows; i < j; ++i) {
+  for (size_t i = 0, j = this->cols * this->rows; i < j; ++i) {
     temp[i] = this->data[i] / o;
   }
   return matrix2D (this->cols, this->rows, temp);
 }
 matrix2D &matrix2D::operator/= (const float &o) {
-  for (unsigned i = 0, j = this->cols * this->rows; i < j; ++i) {
+  for (size_t i = 0, j = this->cols * this->rows; i < j; ++i) {
     this->data[i] /= o;
   }
   return *this;
@@ -203,20 +202,20 @@ matrix2D &matrix2D::operator/= (const matrix2D o) {
 
 /** stream operator **/
 std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
-  unsigned len_each_row[a.rows]{};
+  size_t len_each_row[a.rows]{};
   // find length each vertical
-  for (unsigned i = 0, j = 0; i < a.rows; ++i) { // rows
-    unsigned max_len{};
+  for (size_t i = 0, j = 0; i < a.rows; ++i) { // rows
+    size_t max_len{};
     for (j = 0; j < a.cols; ++j) { // vertical
       std::ostringstream strs;
       strs << this->data[j * a.rows + i];
-      unsigned num_length = strs.str ().size ();
+      size_t num_length = strs.str ().size ();
       if (num_length > max_len) max_len = num_length;
     }
     len_each_row[i] = max_len;
   }
   o << "matrix (row_length:" << a.rows << ", col_length: " << a.cols << ")" << std::endl;
-  for (unsigned i = 0, j = 0; i < a.cols; ++i) {
+  for (size_t i = 0, j = 0; i < a.cols; ++i) {
     o << "|";
     for (j = 0; j < rows; ++j) {
       o << " " << std::setw (len_each_row[j]) << a.data[i * a.rows + j] << " ";
@@ -226,6 +225,6 @@ std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
   return o;
 }
 
-unsigned matrix2D::size () const {
+size_t matrix2D::size () const {
   return cols * rows;
 }
