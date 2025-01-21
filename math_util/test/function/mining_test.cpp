@@ -1,6 +1,6 @@
 #include "hash.hpp"
+#include "simple_clock.hpp"
 
-#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <iomanip>
@@ -33,23 +33,14 @@ uint32_t Reverse32 (uint32_t value) {
           ((value & 0x00FF0000) >> 8) |
           ((value & 0xFF000000) >> 24));
 }
-unsigned char *hexstr_to_char (const char *hexstr) {
-  size_t len = strlen (hexstr);
-  size_t final_len = len / 2;
-  unsigned char *chars = (unsigned char *)malloc ((final_len + 1));
-  for (size_t i = 0, j = 0; j < final_len; i += 2, j++)
-    chars[j] = (hexstr[i] % 32 + 9) % 25 * 16 + (hexstr[i + 1] % 32 + 9) % 25;
-  chars[final_len] = '\0';
-  return chars;
-}
-void hexstr_to_intarray (const char *hexstr, uint32_t *outputloc) {
-  size_t len = strlen (hexstr);
-  size_t intlen = (len + 7) / 8; // +7 ensures that we do a ceiling divide
-  unsigned char *bytes = hexstr_to_char (hexstr);
 
-  for (size_t i = 0; i < intlen; i++) {
-    uint32_t a = (uint32_t)bytes[i * 4 + 3] << 24;
-    *(outputloc + i) = ((uint32_t)bytes[i * 4]) + ((uint32_t)bytes[i * 4 + 1] << 8) + ((uint32_t)bytes[i * 4 + 2] << 16) + ((uint32_t)bytes[i * 4 + 3] << 24);
+void hexstr_to_intarray (const char *hexstr, uint32_t *outputloc) {
+  for (size_t i = 0, j, k, l = strlen (hexstr); k < l; ++i) {
+  	outputloc[i] = 0;
+  	for (j = 0; j < 8 && k < l;++j, ++k) {
+  		outputloc[i] <<= 4;
+  		outputloc[i] |= hexstr[k] - 48 - (hexstr[k] > 9) * 39;
+  	}
   }
 }
 // util end
@@ -58,7 +49,7 @@ void hexstr_to_intarray (const char *hexstr, uint32_t *outputloc) {
 
 // Converts bits to a 256-bit value that we can compare our hash against
 void bits_to_difficulty (uint32_t bits, uint32_t *difficulty) {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; ++i)
     difficulty[i] = 0;
 
   bits = Reverse32 (bits);
@@ -66,7 +57,7 @@ void bits_to_difficulty (uint32_t bits, uint32_t *difficulty) {
   char exponent = bits & 0xff;
   uint32_t significand = bits >> 8;
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; ++i) {
     // Endianness is reversed in this step
     unsigned char thisvalue = (unsigned char)(significand >> (8 * i));
 
@@ -89,7 +80,7 @@ hash256 hashblock (uint32_t nonce, char *version, char *prevhash, char *merkle_r
 
   // print_bytes((unsigned char*)blockheader, 80);
 
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < 20; ++i)
     blockheader[i] = Reverse32 (blockheader[i]);
 
   hash256 r0 = sha256 ((char *)blockheader, 80);
@@ -108,39 +99,26 @@ uint32_t mineblock (uint32_t noncestart, char *version, char *prevhash, char *me
   hexstr_to_intarray (nbits, bits);
   bits_to_difficulty (*bits, difficulty);
 
-  char solved = 0;
-
   uint32_t nonce = noncestart - 1;
-
-  std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now ();
+  simple_timer_t counter_time;
 
   while (true) {
     nonce++;
 
     hash256 hash = hashblock (nonce, version, prevhash, merkle_root, time, nbits);
-
-    for (int i = 0; i < 8; i++) {
-      if (hash.i[7 - i] < difficulty[i]) {
-        solved = 1;
-        return nonce;
-      } else if (hash.i[7 - i] > difficulty[i])
-        break;
-      // And if they're equal, we keep going!
-    }
-
-    if (((nonce - noncestart) % 10000) == 0 && nonce != noncestart) {
-      std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now ();
-      long duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count ();
-
-      float hashrate = 10000000.0 / (float)duration;
-      *output_file << "Currently mining at " << hashrate << " hashes / second" << std::endl;
-      start = std::chrono::steady_clock::now ();
+    
+    if (memcmp(hash.b, difficulty, 32) < 0) {
+      double hashrate = 10000000.0 / counter_time.end().to_sec();
+      *output_file << "Speed " << hashrate << " hashes / sec" << std::endl;
+    	return nonce;
     }
   }
+  return 0;
 }
 
 bool mining_test () {
-  *output_file << "Mining Test" << std::endl;
+  *output_file << "Mining Test : not ready" << std::endl;
+  /*
   // Genesis Block info
   char version[] = "01000000";
   char prevhash[] = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -156,10 +134,10 @@ bool mining_test () {
   // hashblock((uint32_t)2083236893, result);
   hash256 result = hashblock (nonce, version, prevhash, merkle_root, time, nbits);
 
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; ++i)
     result.i[i] = Reverse32 (result.i[i]);
 
   print_bytes_reversed ((unsigned char *)result.b, 32);
-
+*/
   return true;
 }

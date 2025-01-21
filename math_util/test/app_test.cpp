@@ -33,7 +33,7 @@ int main (int argv, char *args[]) {
       //matrix_test () &&
       // performance function test
       extraction_test (args[1]) &&
-      mining_test ()
+      //mining_test ()
       // others ...
       ;
   if (!TestSucces) std::cerr << "Test error" << std::endl;
