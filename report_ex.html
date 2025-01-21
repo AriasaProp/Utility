@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report</title>
+    <style>
+        body {
+            margin: 20px;
+            padding: 0;
+        }
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        li {
+            margin: 0;
+            cursor: pointer;
+        }
+        ul li ul {
+            display: none;
+        }
+        .active > ul {
+            display: block;
+        }
+        h1 {
+            text-align: center;
+        }
+        a.pass {
+        		color: green;
+        }
+        a.fail {
+        		color: red;
+        }
+        #list-report li input:checked ~ .sublist-report{
+				  display: block;
+				}
+				.sublist-report, input, .hide {
+					display: none;
+				}
+    </style>
+</head>
+<body>
+    <h1>Test Report</h1>
+    <ul id="list-report">
+    	<li>
+    		<input type="checkbox" id="#0"></input>
+    		<label for="#0">BigInteger Test</label>
+    		<ul class="sublist-report">
+    			<li>Case 1 <a class="pass">&check;</a></li>
+    			<li>Case 1 <a class="fail">&cross;</a></li>
+    		</ul>
+    	</li>
+    </ul>
+</body>
+</html>

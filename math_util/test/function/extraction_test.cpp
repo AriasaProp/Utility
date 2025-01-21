@@ -14,6 +14,7 @@
 
 extern std::ostream *output_file;
 extern char text_buffer[2048];
+extern char *data_address;
 
 // algorithm list
 struct base_ex {
@@ -135,7 +136,7 @@ public:
   ~root2_algo () {}
 };
 
-bool extraction_test (const char *d) {
+bool extraction_test () {
   // Draw table header
   *output_file << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
 
@@ -157,7 +158,7 @@ bool extraction_test (const char *d) {
     digit_index = 0;
     digit_readed = 0;
     try {
-      sprintf (text_buffer, "%s/data/%s", d, algo->testFile ());
+      sprintf (text_buffer, "%s/%s", data_address, algo->testFile ());
       FILE *file_digits = fopen (text_buffer, "r");
       if (!file_digits) [[unlikely]]
         throw "file not found";

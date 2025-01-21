@@ -8,16 +8,17 @@
 
 extern std::ostream *output_file;
 extern char text_buffer[2048];
+extern char *data_address;
 
-bool hash_test (const char *data) {
+bool hash_test () {
   *output_file << "Hash Test" << std::endl;
   bool passed = true;
   size_t i, j, k, l, m, n;
 
   *output_file << "SHA256: " << std::endl;
   try {
-    strcpy (text_buffer, data);
-    strcat (text_buffer, "/data/sha256.txt");
+    strcpy (text_buffer, data_address);
+    strcat (text_buffer, "/sha256.txt");
     FILE *file = fopen (text_buffer, "r");
     if (!file) [[unlikely]]
       throw "file data not found!";
