@@ -37,8 +37,8 @@ int main (int argv, char *args[]) {
       // others ...
 */
       ;
-  if (TestFailed) std::cerr << "Test error" << std::endl;
+  if (!TestSucces) std::cerr << "Test error" << std::endl;
   f.close ();
 
-  return TestFailed;
+  return !TestSucces;
 }
