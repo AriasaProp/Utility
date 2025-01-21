@@ -25,12 +25,12 @@ int main (int argv, char *args[]) {
   }
   output_file = (std::ostream *)&f;
   
-  bool TestFailed = 
+  bool TestSucces = 
       // basic class test
       BigInteger_test () &&
-      ComplexNumber_test () /* &&
+      ComplexNumber_test () &&
       matrix_test () &&
-      hash_test (args[1]) &&
+      hash_test (args[1]) /* &&
       // performance function test
       extraction_test (args[1]) &&
       mining_test ()

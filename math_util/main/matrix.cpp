@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <iomanip>
-#include <sstream>
 
 #define MIN(x, y) (x < y ? x : y)
 
@@ -31,6 +30,7 @@ matrix2D &matrix2D::identity () {
   memset (this->data, 0, sizeof (float) * this->cols * this->cols);
   for (size_t i = 0; i < this->cols; ++i)
     this->data[this->cols * i + i] = 1;
+  return *this;
 }
 matrix2D matrix2D::inverse () const {
   if (this->cols != this->rows) throw ("cannot find inverse for non-square matrix");
@@ -206,7 +206,7 @@ std::ostream &operator<< (std::ostream &o, const matrix2D &a) {
 	if (a.size()) {
 	  o << a.rows << ", " << a.cols << "]{";
 	  for (size_t i = 0, j = a.size(); i < j; ++i) {
-	    o << std::setprecision(2) << *i;
+	    o << std::setprecision(2) << a.data[i];
 	    if (i < (j-1)) o << ",";
 	  }
 	  o << "}";
