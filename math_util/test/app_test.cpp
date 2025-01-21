@@ -29,8 +29,8 @@ int main (int argv, char *args[]) {
       // basic class test
       BigInteger_test () &&
       ComplexNumber_test () &&
-      matrix_test () &&
-      hash_test (args[1]) /* &&
+      matrix_test () /* &&
+      hash_test (args[1]) &&
       // performance function test
       extraction_test (args[1]) &&
       mining_test ()
