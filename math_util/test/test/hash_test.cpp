@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 #include <ostream>
+#include <iostream>
 
 extern std::ostream *output_file;
 extern char text_buffer[2048];
@@ -41,7 +42,7 @@ bool hash_test (const char *data) {
 	  }
   } catch (const char *err) {
     passed &= false;
-    *output_file << err << std::endl;
+    std::cerr << err << std::endl;
   }
 
   *output_file << "RandomX: Not yet." << std::endl;
