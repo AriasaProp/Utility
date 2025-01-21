@@ -27,7 +27,7 @@ bool hash_test (const char *data) {
 	      hash256 o = sha256 (text_buffer, tok - text_buffer);
 	      hash256 e;
       	std::cout << o << std::endl; 
-      	std::cout << *(tok+1) << std::endl; 
+      	std::cout << (tok+1) << std::endl; 
 	      for (i = 0; i < 8; ++i) {
 	        for (j = 0; j < 8; ++j) {
 	          e.i[i] <<= 4;
