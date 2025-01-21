@@ -32,7 +32,7 @@ bool hash_test (const char *data) {
 	        for (j = 0; j < 8; ++j) {
 	          e.i[i] <<= 4;
 	        	++tok;
-	          e.i[i] = *tok - 48 + (*tok >= 'a') * 39;
+	          e.i[i] = *tok - 48 - (*tok >= 'a') * 39;
 	        }
 	      }
       	std::cout << e << std::endl; 
