@@ -26,8 +26,6 @@ bool hash_test (const char *data) {
 	      char *tok = strchr(text_buffer, ',');
 	      hash256 o = sha256 (text_buffer, tok - text_buffer);
 	      hash256 e{0};
-      	std::cout << o << std::endl; 
-      	std::cout << (tok+1) << std::endl; 
 	      for (i = 0; i < 8; ++i) {
 	        for (j = 0; j < 8; ++j) {
 	          e.i[i] <<= 4;
@@ -35,8 +33,7 @@ bool hash_test (const char *data) {
 	          e.i[i] |= *tok - 48 - (*tok >= 'a') * 39;
 	        }
 	      }
-      	std::cout << e << std::endl; 
-	      if (memcmp (o.b, e.b, 64)) throw "hash result wrong!";
+	      if (memcmp (o.b, e.b, 32)) throw "hash result wrong!";
 	    }
     	fclose(file);
 	  } catch (const char *err) {
