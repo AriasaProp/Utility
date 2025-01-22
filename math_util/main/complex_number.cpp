@@ -1,6 +1,15 @@
 #include "complex_number.hpp"
 
 #include <cmath>
+#include <cstring>
+#include <iomanip>
+
+static inline float _cos(float in) {
+	return static_cast<float>(cos(in));
+}
+static inline float _sin(float in) {
+	return static_cast<float>(sin(in));
+}
 
 complex_number::complex_number(): real(0.0f), imaginary(0.0f) {}
 complex_number::complex_number(float r): real(r), imaginary(0.0f) {}
@@ -45,7 +54,7 @@ complex_number operator^(const complex_number a, const complex_number b) {
 	float argA = atan(a.imaginary / a.real);
 	float mag = pow (magA, b.real) / exp (b.imaginary * argA);
 	float arg = b.imaginary * log (magA) + b.real * argA;
-	return complex_number{mag * cos (arg), mag * sin (arg)};
+	return complex_number{mag * _cos (arg), mag * _sin (arg)};
 }
 
 // safe
@@ -81,8 +90,8 @@ complex_number &operator^=(complex_number &a, const complex_number b) {
 	float argA = atan(a.imaginary / a.real);
 	float mag = pow (magA, b.real) / exp (b.imaginary * argA);
 	float arg = b.imaginary * log (magA) + b.real * argA;
-	a.real = mag * cos (arg);
-	a.imaginary = mag * sin (arg);
+	a.real = mag * _cos (arg);
+	a.imaginary = mag * _sin (arg);
 	return a;
 }
 // output console
