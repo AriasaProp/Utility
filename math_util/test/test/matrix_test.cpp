@@ -48,9 +48,8 @@ bool matrix_test () {
     *output_file << "Division : " << cl.end () << std::endl;
     *output_file << "Matrix operation : " << cls.end () << std::endl;
   } catch (const char *e) {
-    *output_file << "error: " << e << std::endl;
+    std::cerr << "Matrix code error: " << e << std::endl;
     return false;
   }
-  *output_file << std::endl;
   return true;
 }
