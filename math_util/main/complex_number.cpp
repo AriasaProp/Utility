@@ -5,7 +5,6 @@
 complex_number::complex_number(): real(0.0f), imaginary(0.0f) {}
 complex_number::complex_number(float r): real(r), imaginary(0.0f) {}
 complex_number::complex_number(float r, float i): real(r), imaginary(i) {}
-complex_number::complex_number(const std::initializer_list<float> a): real(r), imaginary(i) {}
 
 // reinitialize
 complex_number &operator=(complex_number &a, const complex_number b) {

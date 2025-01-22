@@ -9,7 +9,6 @@ struct complex_number {
 	complex_number();
 	complex_number(float);
 	complex_number(float,float);
-	complex_number(const std::initializer_list<float>));
 };
 
 // reinitialize
