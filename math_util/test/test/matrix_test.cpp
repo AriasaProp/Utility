@@ -2,6 +2,7 @@
 #include "simple_clock.hpp"
 
 #include <ostream>
+#include <iostream>
 
 extern std::ostream *output_file;
 
