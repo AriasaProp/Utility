@@ -11,7 +11,7 @@ char *data_address;
 
 extern bool BigInteger_test ();
 extern bool matrix_test ();
-extern bool ComplexNumber_test ();
+extern bool complex_number_test ();
 extern bool hash_test ();
 
 extern bool extraction_test ();
@@ -35,7 +35,7 @@ int main (int argv, char *args[]) {
       // basic class test
       BigInteger_test () &&
       hash_test () &&
-      ComplexNumber_test () &&
+      complex_number_test () &&
       matrix_test () &&
       // performance function test
       extraction_test () &&

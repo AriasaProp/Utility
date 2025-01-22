@@ -35,17 +35,15 @@ bool matrix_test () {
     *output_file << "Addition : " << cl.end () << std::endl;
 
     cl.start ();
-    if (
-        ((mA - ma) != ma) ||
-        ((mA -= ma) != ma)) throw "Subtract of Matrix was error!";
+    if (((mA - ma) != ma) || ((mA -= ma) != ma))
+    	throw "Subtract of Matrix was error!";
     *output_file << "Subtract : " << cl.end () << std::endl;
     cl.start ();
     if ((ma * ma) != (mA *= ma)) throw "Multiply of Matrix was error!";
     *output_file << "Multiply : " << cl.end () << std::endl;
     cl.start ();
-    if (
-        ((ma / ma) != mB) ||
-        ((mA /= ma) != ma)) throw "Division of Matrix was error!";
+    if (((ma / ma) != mB) || ((mA /= ma) != ma))
+    	throw "Division of Matrix was error!";
     *output_file << "Division : " << cl.end () << std::endl;
     *output_file << "Matrix operation : " << cls.end () << std::endl;
   } catch (const char *e) {
