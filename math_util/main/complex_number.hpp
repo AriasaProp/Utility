@@ -9,11 +9,11 @@ struct complex_number {
 	complex_number();
 	complex_number(float);
 	complex_number(float,float);
+	// reinitialize
+	complex_number &operator=(const complex_number);
+	complex_number &operator=(const float);
 };
 
-// reinitialize
-complex_number &operator=(complex_number&, const complex_number);
-complex_number &operator=(complex_number&, const float);
 
 //compare
 bool operator==(const complex_number, const complex_number);

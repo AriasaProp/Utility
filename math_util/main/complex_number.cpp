@@ -7,15 +7,15 @@ complex_number::complex_number(float r): real(r), imaginary(0.0f) {}
 complex_number::complex_number(float r, float i): real(r), imaginary(i) {}
 
 // reinitialize
-complex_number &operator=(complex_number &a, const complex_number b) {
-	a.real = b.real;
-	a.imaginary = b.imaginary;
-	return a;
+complex_number &complex_number::operator=(const complex_number b) {
+	real = b.real;
+	imaginary = b.imaginary;
+	return *this;
 }
-complex_number &operator=(complex_number &a, const float b) {
-	a.real = b;
-	a.imaginary = 0.0f;
-	return a;
+complex_number &complex_number::operator=(const float b) {
+	real = b;
+	imaginary = 0.0f;
+	return *this;
 }
 
 //compare
