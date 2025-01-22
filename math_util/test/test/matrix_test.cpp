@@ -45,7 +45,7 @@ bool matrix_test () {
     cl.start ();
     if (
         ((ma / ma) != mB) ||
-        ((mA /= ma) == ma)) throw "Division of Matrix was error!";
+        ((mA /= ma) != ma)) throw "Division of Matrix was error!";
     *output_file << "Division : " << cl.end () << std::endl;
     *output_file << "Matrix operation : " << cls.end () << std::endl;
   } catch (const char *e) {
