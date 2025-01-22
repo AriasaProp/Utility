@@ -15,7 +15,7 @@ bool hash_test () {
   bool passed = true;
   size_t i, j, k, l, m, n;
 
-  *output_file << "SHA256: " << std::endl;
+  *output_file << "SHA256: ";
   try {
     strcpy (text_buffer, data_address);
     strcat (text_buffer, "/sha256.txt");
@@ -37,6 +37,7 @@ bool hash_test () {
 	      if (memcmp (o.b, e.b, 32)) throw "hash result wrong!";
 	    }
     	fclose(file);
+  		*output_file << "Success";
 	  } catch (const char *err) {
 	    fclose(file);
 	    throw err;

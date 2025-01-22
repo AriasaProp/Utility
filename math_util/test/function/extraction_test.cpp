@@ -195,6 +195,6 @@ bool extraction_test () {
     *output_file << " |" << std::endl;
     delete algo;
   }
-  *output_file << "Ended Test" << std::endl;
+  *output_file << std::endl;
   return passed;
 }

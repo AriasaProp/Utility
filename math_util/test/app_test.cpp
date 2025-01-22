@@ -35,11 +35,11 @@ int main (int argv, char *args[]) {
       // basic class test
       BigInteger_test () &&
       hash_test () &&
-      //ComplexNumber_test () &&
-      //matrix_test () &&
+      ComplexNumber_test () &&
+      matrix_test () &&
       // performance function test
-      extraction_test () // &&
-      //mining_test ()
+      extraction_test () &&
+      mining_test ()
       // others ...
       ;
   if (!TestSucces) std::cerr << "Test error" << std::endl;
