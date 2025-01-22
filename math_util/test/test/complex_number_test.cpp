@@ -15,7 +15,7 @@ bool complex_number_test () {
 	  	throw "complex addition wrong";
 	  if (complex_number (-13, 9) != (complex_number (-6, 8) - complex_number (7, -1)))
 	  	throw "complex subtract wrong";
-	  if (complex_number (8, 12) != (complex_number (-1, 2) * complex_number (4, -4)))
+	  if (complex_number (4, 12) != (complex_number (-1, 2) * complex_number (4, -4)))
 	  	throw "complex multiply wrong";
 	  if (7 != (complex_number (7, 14) / complex_number (1, 2)))
 	  	throw "complex division wrong";
