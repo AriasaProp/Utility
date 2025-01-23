@@ -4,11 +4,41 @@
 #include <cstring>
 #include <iomanip>
 
-static inline float _cos(float in) {
-	return static_cast<float>(cos(in));
+#define DEPTH_LOOP 8.0f
+
+static const float M_PI2 = 2 * M_PI;
+static float _sin(float a) {
+	float x = fmod(a, M_PI2), x2 = x * x,
+		  result = 1, iter = 1,
+		  ex = DEPTH_LOOP;
+	do {
+		iter = (ex * 2) * (ex * 2 + 1);
+		result = iter - x2 * result;
+		result /= iter;
+		ex -= 1.0f;
+	} while (ex > 0.0);
+	return x * result;
 }
-static inline float _sin(float in) {
-	return static_cast<float>(sin(in));
+static float _cos(float a) {
+	float x = fmod(a, M_PI2), x2 = x * x,
+		  result = 1, iter = 1,
+		  ex = DEPTH_LOOP;
+	do {
+		iter = (ex * 2) * (ex * 2 - 1);
+		result = iter - x2 * result;
+		result /= iter;
+		ex -= 1.0f;
+	} while (ex > 0.0);
+	return result;
+}
+static float _exp(float a) {
+	float result = 1, ex = 1, iter = DEPTH_LOOP * 2 + 1;
+	do {
+		result = iter + a * result;
+		result /= iter;
+		iter -= 1.0f;
+	} while(iter > 0.0);
+	return result;
 }
 
 complex_number::complex_number(): real(0.0f), imaginary(0.0f) {}
@@ -29,10 +59,10 @@ complex_number &complex_number::operator=(const float b) {
 
 //compare
 bool operator==(const complex_number a, const complex_number b) {
-	return !memcmp(&a, &b, sizeof(complex_number));
+	return fabs(a.real - b.real) < 1e-5f && fabs(a.imaginary - b.imaginary) < 1e-5f;
 }
 bool operator!=(const complex_number a, const complex_number b) {
-	return memcmp(&a, &b, sizeof(complex_number));
+	return fabs(a.real - b.real) >= 1e-5f || fabs(a.imaginary - b.imaginary) >= 1e-5f;
 }
 
 // unsafe
@@ -52,7 +82,7 @@ complex_number operator/(const complex_number a, const complex_number b) {
 complex_number operator^(const complex_number a, const complex_number b) {
 	float magA = sqrt(a.real * a.real + a.imaginary * a.imaginary);
 	float argA = atan(a.imaginary / a.real);
-	float mag = pow (magA, b.real) / exp (b.imaginary * argA);
+	float mag = pow (magA, b.real) / _exp (b.imaginary * argA);
 	float arg = b.imaginary * log (magA) + b.real * argA;
 	return complex_number{mag * _cos (arg), mag * _sin (arg)};
 }
@@ -88,7 +118,7 @@ complex_number &operator/=(complex_number &a, const complex_number b) {
 complex_number &operator^=(complex_number &a, const complex_number b) {
 	float magA = sqrt(a.real * a.real + a.imaginary * a.imaginary);
 	float argA = atan(a.imaginary / a.real);
-	float mag = pow (magA, b.real) / exp (b.imaginary * argA);
+	float mag = pow (magA, b.real) / _exp (b.imaginary * argA);
 	float arg = b.imaginary * log (magA) + b.real * argA;
 	a.real = mag * _cos (arg);
 	a.imaginary = mag * _sin (arg);
@@ -96,6 +126,6 @@ complex_number &operator^=(complex_number &a, const complex_number b) {
 }
 // output console
 std::ostream &operator<<(std::ostream &o, const complex_number a) {
-	o << "( " << std::setprecision(2) << a.real << " + " << std::setprecision(2) << a.imaginary << " )";
+	o << "( " << std::fixed << std::setprecision(2) << a.real << " + " << std::fixed << std::setprecision(2) << a.imaginary << " )";
 	return o;
 }

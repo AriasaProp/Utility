@@ -7,7 +7,7 @@
 
 std::ostream *output_file;
 char text_buffer[2048];
-char *data_address;
+const char *data_address;
 
 extern bool BigInteger_test ();
 extern bool matrix_test ();
@@ -27,9 +27,11 @@ int main (int argv, char *args[]) {
     return 1;
   }
   output_file = (std::ostream *)&f;
-  data_address = (char*) malloc(strlen(args[1]) + 6);
-  strcpy(data_address, args[1]);
-  strcat(data_address, "/data");
+  char *addr = (char*) malloc(strlen(args[1]) + 6);
+  strcpy(addr, args[1]);
+  strcat(addr, "/data");
+  data_address = const_cast<const char*>(addr);
+  
   
   bool TestSucces = 
       // basic class test
@@ -44,7 +46,7 @@ int main (int argv, char *args[]) {
       ;
   if (!TestSucces) std::cerr << "Test error" << std::endl;
   f.close ();
-  free(data_address);
+  free(addr);
 
   return !TestSucces;
 }

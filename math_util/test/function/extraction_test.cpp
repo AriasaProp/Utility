@@ -14,7 +14,7 @@
 
 extern std::ostream *output_file;
 extern char text_buffer[2048];
-extern char *data_address;
+extern const char *data_address;
 
 // algorithm list
 struct base_ex {
