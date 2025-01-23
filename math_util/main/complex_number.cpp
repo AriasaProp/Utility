@@ -8,10 +8,9 @@
 
 static const float M_PI2 = 2 * M_PI;
 static float _sin(float a) {
-	float x2 = fmod(a, M_PI2),
+	float x = fmod(a, M_PI2), x2 = x * x,
 		  result = 1, iter = 1,
 		  ex = DEPTH_LOOP * 2.0f;
-	x2 *= x2;
 	do {
 		iter = ex * (ex + 1);
 		result = iter - x2 * result;
