@@ -22,7 +22,7 @@ bool complex_number_test () {
 	  if (complex_number (-3, 6) != (-3 + 6 * complex_number (0, 1)))
 	  	throw "complex operate with number is wrong";
 		std::cerr << "cpx: " <<  (complex_number (2, 3) ^ 5) << std::endl;
-	  if (complex_number (122, -597) != (complex_number (2, 3) ^ 5))
+	  if (complex_number (122.0f, -597.0f) != (complex_number (2, 3) ^ 5))
 	  	throw "complex powerOf wrong";
 	} catch (const char *err) {
 		std::cerr << "Error: " << err << std::endl;

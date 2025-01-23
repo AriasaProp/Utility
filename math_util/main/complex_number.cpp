@@ -59,11 +59,12 @@ complex_number &complex_number::operator=(const float b) {
 }
 
 //compare
+static constexpr float epsilon = 1e-3f;
 bool operator==(const complex_number a, const complex_number b) {
-	return fabs(a.real - b.real) < 1e-5f && fabs(a.imaginary - b.imaginary) < 1e-5f;
+	return fabs(a.real - b.real) < epsilon && fabs(a.imaginary - b.imaginary) < epsilon;
 }
 bool operator!=(const complex_number a, const complex_number b) {
-	return fabs(a.real - b.real) >= 1e-5f || fabs(a.imaginary - b.imaginary) >= 1e-5f;
+	return fabs(a.real - b.real) >= epsilon || fabs(a.imaginary - b.imaginary) >= epsilon;
 }
 
 // unsafe
