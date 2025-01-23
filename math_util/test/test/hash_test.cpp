@@ -9,7 +9,7 @@
 extern std::ostream *output_file;
 extern char text_buffer[2048];
 extern const char *data_address;
-
+extern void sha256d(unsigned char *, const unsigned char *, int);
 bool hash_test () {
   *output_file << "Hash Test" << std::endl;
   bool passed = true;
@@ -35,6 +35,8 @@ bool hash_test () {
 	        }
 	      }
 	      if (memcmp (o.b, e.b, 32)) throw "hash result wrong!";
+	      sha256d(o.b, text_buffer, tok - text_buffer);
+  			*output_file << o << std::endl;
 	    }
     	fclose(file);
   		*output_file << "Success";
