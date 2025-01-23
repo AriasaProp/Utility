@@ -4,30 +4,32 @@
 #include <cstring>
 #include <iomanip>
 
-#define DEPTH_LOOP 8.0f
+#define DEPTH_LOOP 12.0f
 
 static const float M_PI2 = 2 * M_PI;
 static float _sin(float a) {
-	float x = fmod(a, M_PI2), x2 = x * x,
+	float x2 = fmod(a, M_PI2),
 		  result = 1, iter = 1,
-		  ex = DEPTH_LOOP;
+		  ex = DEPTH_LOOP * 2.0f;
+	x2 *= x2;
 	do {
-		iter = (ex * 2) * (ex * 2 + 1);
+		iter = ex * (ex + 1);
 		result = iter - x2 * result;
 		result /= iter;
-		ex -= 1.0f;
+		ex -= 2.0f;
 	} while (ex > 0.0);
 	return x * result;
 }
 static float _cos(float a) {
-	float x = fmod(a, M_PI2), x2 = x * x,
+	float x2 = fmod(a, M_PI2),
 		  result = 1, iter = 1,
-		  ex = DEPTH_LOOP;
+		  ex = DEPTH_LOOP * 2.0f;
+	x2 *= x2;
 	do {
-		iter = (ex * 2) * (ex * 2 - 1);
+		iter = ex * (ex - 1);
 		result = iter - x2 * result;
 		result /= iter;
-		ex -= 1.0f;
+		ex -= 2.0f;
 	} while (ex > 0.0);
 	return result;
 }
