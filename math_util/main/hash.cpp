@@ -30,7 +30,7 @@ hash512 hash512FromString(const char *src) {
 std::ostream &operator<< (std::ostream &o, const hash256 h) {
 	char y;
   for (const char &i : h.b) {
-  	y = i >> 4;
+  	y = (i >> 4) & 0xf;
 		o << char(48 + y + (y > 9) * 39);
   	y = i & 0xf;
 		o << char(48 + y + (y > 9) * 39);
@@ -40,7 +40,7 @@ std::ostream &operator<< (std::ostream &o, const hash256 h) {
 std::ostream &operator<< (std::ostream &o, const hash512 h) {
   char y;
   for (const char &i : h.b) {
-  	y = i >> 4;
+  	y = (i >> 4) & 0xf;
 		o << char(48 + y + (y > 9) * 39);
   	y = i & 0xf;
 		o << char(48 + y + (y > 9) * 39);
