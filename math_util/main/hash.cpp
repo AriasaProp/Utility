@@ -1,7 +1,7 @@
-#include "hash.h"
+#include "hash.hpp"
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 
 hash256 hash256FromString(const char *src) {
 	hash256 r{};
