@@ -35,8 +35,6 @@ jobs:
             src:
               - added|modified: '**/*.cpp'
               - added|modified: '**/*.hpp'
-              - added|modified: '**/*.c'
-              - added|modified: '**/*.h'
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
