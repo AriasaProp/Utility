@@ -1,8 +1,5 @@
-#include "cpuminer-config.h"
-#include "miner.h"
-
-#include <string.h>
-#include <inttypes.h>
+#include <cstring>
+#include <cinttypes>
 
 static const uint32_t sha256_h[8] = {
 	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
