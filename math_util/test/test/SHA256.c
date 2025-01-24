@@ -176,7 +176,7 @@ static void sha256d_80_swap(uint32_t *hash, const uint32_t *data) {
 		hash[i] = swab32(hash[i]);
 }
 
-void sha256d(unsigned char *hash, const unsigned char *data, int len)
+void sha256d(char *hash, const char *data, int len)
 {
 	uint32_t S[16], T[16];
 	int i, r;
@@ -187,7 +187,7 @@ void sha256d(unsigned char *hash, const unsigned char *data, int len)
 			memset(T, 0, 64);
 		memcpy(T, data + len - r, r > 64 ? 64 : (r < 0 ? 0 : r));
 		if (r >= 0 && r < 64)
-			((unsigned char *)T)[r] = 0x80;
+			((char *)T)[r] = 0x80;
 		for (i = 0; i < 16; i++)
 			T[i] = be32dec(T + i);
 		if (r < 56)
