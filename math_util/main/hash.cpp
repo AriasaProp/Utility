@@ -3,6 +3,30 @@
 #include <cmath>
 #include <cstring>
 
+
+hash256 fromString(const char *src) {
+	hash256 r{};
+	for (i = 0; i < 8; ++i) {
+    for (j = 0; j < 8; ++j) {
+      r.i[i] <<= 4;
+    	++src;
+      r.i[i] |= *src - 48 - (*src >= 'a') * 39;
+    }
+  }
+  return r;
+}
+hash512 fromString(const char *src) {
+	hash256 r{};
+	for (i = 0; i < 16; ++i) {
+    for (j = 0; j < 8; ++j) {
+      r.i[i] <<= 4;
+    	++src;
+      r.i[i] |= *src - 48 - (*src >= 'a') * 39;
+    }
+  }
+  return r;
+}
+
 std::ostream &operator<< (std::ostream &o, const hash256 h) {
   uint32_t x, y;
   for (const uint32_t &i : h.i) {

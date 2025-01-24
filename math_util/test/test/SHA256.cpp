@@ -1,11 +1,11 @@
 #include <cstring>
 #include <cinttypes>
 
-static inline uint32_t swab32(uint32_t v) {
+static inline uint32_t swab32(uint32_t x) {
 #if ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
-	return __builtin_bswap32(v);
+	return __builtin_bswap32(x);
 #else
-	return ((((x) << 24) & 0xff000000u) | (((x) << 8) & 0x00ff0000u) | (((x) >> 8) & 0x0000ff00u) | (((x) >> 24) & 0x000000ffu));
+	return ((x & 0xff) << 24) | ((x & 0xff00u) << 8) | ((x >> 8) & 0xff00u) | ((x >> 24) & 0xff);
 #endif
 }
 

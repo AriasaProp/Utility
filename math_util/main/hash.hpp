@@ -13,6 +13,8 @@ union hash512 {
   char b[64];
   uint32_t i[16];
 };
+hash256 fromString(const char *);
+hash512 fromString(const char *);
 std::ostream &operator<< (std::ostream &, const hash256);
 std::ostream &operator<< (std::ostream &, const hash512);
 
