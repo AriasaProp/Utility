@@ -3,10 +3,9 @@
 #include <cmath>
 #include <cstring>
 
-
-hash256 fromString(const char *src) {
+hash256 hash256FromString(const char *src) {
 	hash256 r{};
-	for (i = 0; i < 8; ++i) {
+	for (size_t i = 0, j; i < 8; ++i) {
     for (j = 0; j < 8; ++j) {
       r.i[i] <<= 4;
     	++src;
@@ -15,9 +14,9 @@ hash256 fromString(const char *src) {
   }
   return r;
 }
-hash512 fromString(const char *src) {
-	hash256 r{};
-	for (i = 0; i < 16; ++i) {
+hash512 hash512FromString(const char *src) {
+	hash512 r{};
+	for (size_t i = 0, j; i < 16; ++i) {
     for (j = 0; j < 8; ++j) {
       r.i[i] <<= 4;
     	++src;
