@@ -26,14 +26,7 @@ bool hash_test () {
 	    while (fgets(text_buffer, 2048, file)) {
 	      char *tok = strchr(text_buffer, ',');
 	      hash256 o = sha256 (text_buffer, tok - text_buffer);
-	      hash256 e{0};
-	      for (i = 0; i < 8; ++i) {
-	        for (j = 0; j < 8; ++j) {
-	          e.i[i] <<= 4;
-	        	++tok;
-	          e.i[i] |= *tok - 48 - (*tok >= 'a') * 39;
-	        }
-	      }
+	      hash256 e = hash256FromString(tok + 1);
 	      if (memcmp (o.b, e.b, 32)) throw "hash result wrong!";
 	      sha256d(o.b, text_buffer, tok - text_buffer);
   			*output_file << o << std::endl;
