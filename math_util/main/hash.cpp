@@ -84,7 +84,7 @@ hash256 sha256 (const char *input, uint64_t l) {
       addedFlag |= 1;
     }
     for (uint32_t &w : W)
-    	_swap(w);
+    	SHA::_swap(w);
     
     if (j < 56) {
       // put 64 bit length in reverse
@@ -149,7 +149,7 @@ hash256 sha256 (const char *input, uint64_t l) {
     A += 64;
   } while (!addedFlag);
   for (i = 0; i < 8; ++i)
-  	_swap(out.i[i]);
+  	SHA::_swap(out.i[i]);
   return out;
 }
 
