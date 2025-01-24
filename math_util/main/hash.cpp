@@ -5,46 +5,45 @@
 
 hash256 hash256FromString(const char *src) {
 	hash256 r{};
-	for (size_t i = 0, j; i < 8; ++i) {
-    for (j = 0; j < 8; ++j) {
-      r.i[i] <<= 4;
-      r.i[i] |= *src - 48 - (*src >= 'a') * 39;
-    	++src;
-    }
+	char y;
+  for (const char &i : r.b) {
+    i |= *src - 48 - (*src >= 'a') * 39;
+    i << 4;
+  	++src;
+    i |= *src - 48 - (*src >= 'a') * 39;
+  	++src;
   }
   return r;
 }
 hash512 hash512FromString(const char *src) {
 	hash512 r{};
-	for (size_t i = 0, j; i < 16; ++i) {
-    for (j = 0; j < 8; ++j) {
-      r.i[i] <<= 4;
-      r.i[i] |= *src - 48 - (*src >= 'a') * 39;
-    	++src;
-    }
+	char y;
+  for (const char &i : r.b) {
+    i |= *src - 48 - (*src >= 'a') * 39;
+    i << 4;
+  	++src;
+    i |= *src - 48 - (*src >= 'a') * 39;
+  	++src;
   }
   return r;
 }
-
 std::ostream &operator<< (std::ostream &o, const hash256 h) {
-  uint32_t x, y;
-  for (const uint32_t &i : h.i) {
-		for (x = 32; x;) {
-			x -= 4;
-			y = (i >> x) & 0xf;
-			o << char(48 + y + (y > 9) * 39);
-		}
+	char y;
+  for (const char &i : h.b) {
+  	y = i >> 4;
+		o << char(48 + y + (y > 9) * 39);
+  	y = i & 0xf;
+		o << char(48 + y + (y > 9) * 39);
 	}
 	return o;
 }
 std::ostream &operator<< (std::ostream &o, const hash512 h) {
-  uint32_t x, y;
-  for (const uint32_t &i : h.i) {
-		for (x = 32; x;) {
-			x -= 4;
-			y = (i >> x) & 0xf;
-			o << char(48 + y + (y > 9) * 39);
-		}
+  char y;
+  for (const char &i : h.b) {
+  	y = i >> 4;
+		o << char(48 + y + (y > 9) * 39);
+  	y = i & 0xf;
+		o << char(48 + y + (y > 9) * 39);
 	}
 	return o;
 }
