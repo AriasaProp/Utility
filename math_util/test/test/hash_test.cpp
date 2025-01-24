@@ -1,4 +1,4 @@
-#include "hash.hpp"
+#include "hash.h"
 
 #include <cerrno>
 #include <cstdio>
@@ -15,7 +15,7 @@ bool hash_test () {
   bool passed = true;
   size_t i, j, k, l, m, n;
 
-  *output_file << "SHA256: ";
+  *output_file << "SHA256: \n";
   try {
     strcpy (text_buffer, data_address);
     strcat (text_buffer, "/sha256.txt");
