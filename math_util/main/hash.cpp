@@ -8,8 +8,8 @@ hash256 hash256FromString(const char *src) {
 	for (size_t i = 0, j; i < 8; ++i) {
     for (j = 0; j < 8; ++j) {
       r.i[i] <<= 4;
-    	++src;
       r.i[i] |= *src - 48 - (*src >= 'a') * 39;
+    	++src;
     }
   }
   return r;
@@ -19,8 +19,8 @@ hash512 hash512FromString(const char *src) {
 	for (size_t i = 0, j; i < 16; ++i) {
     for (j = 0; j < 8; ++j) {
       r.i[i] <<= 4;
-    	++src;
       r.i[i] |= *src - 48 - (*src >= 'a') * 39;
+    	++src;
     }
   }
   return r;
