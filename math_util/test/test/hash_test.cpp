@@ -9,7 +9,7 @@
 extern std::ostream *output_file;
 extern char text_buffer[2048];
 extern const char *data_address;
-extern void sha256d(unsigned char *, const unsigned char *, int);
+extern void sha256d(char *, const char *, int);
 bool hash_test () {
   *output_file << "Hash Test" << std::endl;
   bool passed = true;
