@@ -48,7 +48,7 @@ complex_number operator^(const complex_number a, const complex_number b) {
 	float argA = atan(a.imaginary / a.real);
 	float mag = pow (magA, b.real) / exp (b.imaginary * argA);
 	float arg = b.imaginary * log (magA) + b.real * argA;
-	return complex_number{mag * cos (arg), mag * sin (arg)};
+	return complex_number{mag * (float)cos (arg), mag * (float)sin (arg)};
 }
 
 // safe
