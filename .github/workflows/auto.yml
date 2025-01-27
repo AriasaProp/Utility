@@ -60,8 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: gradle/actions/setup-gradle@v3
-        run: |
+      - run: |
           cd math_util
           mkdir build
           cmake -S . -B build
@@ -78,8 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: gradle/actions/setup-gradle@v3
-        run: |
+      - run: |
           cd codec_util
           mkdir build
           cmake -S . -B build
