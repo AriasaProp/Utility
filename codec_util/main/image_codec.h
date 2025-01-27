@@ -6,6 +6,7 @@ typedef struct {
   unsigned int width, height;
   unsigned char channel;
 } image_param;
+char err_msg[2048];
 #ifdef __cplusplus
 extern "C" {
 #endif

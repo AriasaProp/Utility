@@ -21,7 +21,7 @@
 
 // utf8 : IMGCODEC
 const char *HEADER_ARRAY = "IMGCODEC";
-const size_t HEADER_SIZE = strlen (HEADER_ARRAY);
+const size_t HEADER_SIZE = (const size_t)strlen (HEADER_ARRAY);
 
 unsigned char hashing (const unsigned char *in, unsigned int len) {
   unsigned char r = 0;
@@ -29,102 +29,101 @@ unsigned char hashing (const unsigned char *in, unsigned int len) {
     r ^= (in[i] & 63) ^ (in[i] >> 6);
   return r;
 }
-char err_msg[2048];
-#define THROW(x) memcpy(err_msg, x, strlen(x)), return NULL
+#define THROW(x) memcpy(err_msg, x, strlen(x)); return NULL
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
-unsigned char *image_encode (const unsigned char *pixels, const image_param param, unsigned int *out_byte) {
+unsigned char *image_encode (const unsigned char *pixels, const image_param *param, unsigned int *out_byte) {
   if (!pixels)
     THROW("data pixels is null");
-  const size_t max_px = param.width * param.height * param.channel;
+  const size_t max_px = param->width * param->height * param->channel;
   if (!max_px)
     THROW("pixels parameters is 0");
   const unsigned char *read_px = pixels, *end_px = pixels + max_px;
 
   // buffer for caching pixels difference
-  int *db = (int *)calloc (sizeof (int), param.channel);
+  int *db = (int *)calloc (sizeof (int), param->channel);
   unsigned char
       // buffer for write pixels
   		*write_px = (unsigned char *)malloc(max_px + 17),
       // buffer for indexing pixels
-      *index = (unsigned char *)calloc (64, param.channel),
+      *index = (unsigned char *)calloc (64, param->channel),
       // counting run length encoding, store temporary hash
       *index_view, temp1, *cw = write_px;
   // write header 8 bytes
   memcpy(cw, HEADER_ARRAY, HEADER_SIZE);
   cw += HEADER_SIZE;
   // write informations 9 bytes
-  memcpy(cw, reinterpret_cast<const unsigned char *> (&param), sizeof (image_param));
+  memcpy(cw, param, sizeof (image_param));
   cw += sizeof (image_param);
   // look ahead with compare most longer length
   int saved_lookahead = -1, saved_len_lookahead = -1;
   // write first pixel
-  temp1 = hashing (read_px, param.channel);
-  memcpy (cw, read_px, param.channel);
-  cw += param.channel;
-  memcpy (index + (temp1 * param.channel), read_px, param.channel);
-  read_px += param.channel;
+  temp1 = hashing (read_px, param->channel);
+  memcpy (cw, read_px, param->channel);
+  cw += param->channel;
+  memcpy (index + (temp1 * param->channel), read_px, param->channel);
+  read_px += param->channel;
 
   while (read_px < end_px) {
-    for (const unsigned char *c = std::max (pixels, read_px - (0x8 * param.channel)); c < read_px; c += param.channel) {
-      if (!memcmp (c, read_px, param.channel)) {
+    for (const unsigned char *c = (pixels > read_px - (0x8 * param->channel) ? pixels : read_px - (0x8 * param->channel)); c < read_px; c += param->channel) {
+      if (!memcmp (c, read_px, param->channel)) {
         const unsigned char
             *d = read_px,
             *e = c,
-            *dend = std::min (end_px, read_px + (0xf * param.channel));
+            *dend = (end_px < read_px + (0xf * param->channel) ? end_px : read_px + (0xf * param->channel));
         do {
-          d += param.channel, e += param.channel;
-        } while ((d < dend) && (!memcmp (d, e, param.channel)));
+          d += param->channel, e += param->channel;
+        } while ((d < dend) && (!memcmp (d, e, param->channel)));
 
-        int len = (e - c) / param.channel - 1;
+        int len = (e - c) / param->channel - 1;
         if (saved_len_lookahead < len) {
-          saved_lookahead = (read_px - c) / param.channel - 1;
+          saved_lookahead = (read_px - c) / param->channel - 1;
           saved_len_lookahead = len;
         }
       }
     }
     if (saved_lookahead > -1) {
       *(cw++) = ((saved_lookahead & 0x7) << 4) | (saved_len_lookahead & 0xf);
-      read_px += param.channel * (saved_len_lookahead + 1);
+      read_px += param->channel * (saved_len_lookahead + 1);
       saved_len_lookahead = -1;
       saved_lookahead = -1;
     } else {
       // index compare
-      temp1 = hashing (read_px, param.channel);
-      index_view = index + (temp1 * param.channel);
-      if (memcmp (index_view, read_px, param.channel)) {
+      temp1 = hashing (read_px, param->channel);
+      index_view = index + (temp1 * param->channel);
+      if (memcmp (index_view, read_px, param->channel)) {
         int diff = 1;
         // find difference
-        for (temp1 = 0; (temp1 < param.channel) && diff; ++temp1) {
-          db[temp1] = *(read_px + temp1 - param.channel) - *(read_px + temp1);
-          diff = ((!(param.channel & 1) && (param.channel == (temp1 + 1))) ? 128 : 8) > std::abs (db[temp1]);
+        for (temp1 = 0; (temp1 < param->channel) && diff; ++temp1) {
+          db[temp1] = *(read_px + temp1 - param->channel) - *(read_px + temp1);
+          diff = ((!(param->channel & 1) && (param->channel == (temp1 + 1))) ? 128 : 8) > abs (db[temp1]);
         }
         // write difference
         if (diff) {
           temp1 = 0;
-          *(cw++) = IMGC_DIFF | std::abs (db[temp1]) | (8 * (db[temp1] < 0));
+          *(cw++) = IMGC_DIFF | abs (db[temp1]) | (8 * (db[temp1] < 0));
           
           ++temp1;
-          while ((temp1 + 2) <= param.channel) {
-            *cw = std::abs (db[temp1]) | (8 * (db[temp1] < 0));
+          while ((temp1 + 2) <= param->channel) {
+            *cw = abs (db[temp1]) | (8 * (db[temp1] < 0));
             ++temp1;
-            *cw |= (std::abs (db[temp1]) | (8 * (db[temp1] < 0))) << 4;
+            *cw |= (abs (db[temp1]) | (8 * (db[temp1] < 0))) << 4;
             ++temp1;
             ++cw;
           }
-          if (!(param.channel & 1))
-            *(cw++) = std::abs (db[temp1]) | (128 * (db[temp1] < 0));
+          if (!(param->channel & 1))
+            *(cw++) = abs (db[temp1]) | (128 * (db[temp1] < 0));
         } else {
           // write full channel
           *(cw++) = IMGC_FULLCHANNEL;
-          memcpy (cw, read_px, param.channel);
-          cw += param.channel;
+          memcpy (cw, read_px, param->channel);
+          cw += param->channel;
         }
-        memcpy (index_view, read_px, param.channel);
+        memcpy (index_view, read_px, param->channel);
       } else {
         *(cw++) = IMGC_HASHINDEX | temp1;
       }
-      read_px += param.channel;
+      read_px += param->channel;
     }
   }
   free (db);

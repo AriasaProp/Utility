@@ -30,7 +30,7 @@ int main (int argv, char *args[]) {
       img_p.width = stbix;
       img_p.height = stbiy;
       img_p.channel = stbic;
-      ic = image_encode (s, img_p, &outbytes);
+      ic = image_encode (s, &img_p, &outbytes);
       is = image_decode (ic, outbytes, &img_p);
       if (
           (stbix != img_p.width) ||
