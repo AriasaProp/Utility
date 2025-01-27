@@ -2,7 +2,9 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 // filter keys
 
@@ -27,14 +29,16 @@ unsigned char hashing (const unsigned char *in, unsigned int len) {
     r ^= (in[i] & 63) ^ (in[i] >> 6);
   return r;
 }
+char err_msg[2048];
+#define THROW(x) memcpy(err_msg, x, strlen(x)), return NULL
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
 unsigned char *image_encode (const unsigned char *pixels, const image_param param, unsigned int *out_byte) {
   if (!pixels)
-    throw "data pixels is null";
+    THROW("data pixels is null");
   const size_t max_px = param.width * param.height * param.channel;
   if (!max_px)
-    throw "pixels parameters is 0";
+    THROW("pixels parameters is 0");
   const unsigned char *read_px = pixels, *end_px = pixels + max_px;
 
   // buffer for caching pixels difference
@@ -89,7 +93,7 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
       temp1 = hashing (read_px, param.channel);
       index_view = index + (temp1 * param.channel);
       if (memcmp (index_view, read_px, param.channel)) {
-        bool diff = true;
+        int diff = 1;
         // find difference
         for (temp1 = 0; (temp1 < param.channel) && diff; ++temp1) {
           db[temp1] = *(read_px + temp1 - param.channel) - *(read_px + temp1);
@@ -134,13 +138,13 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param para
 // input: data, data length in byte
 unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte_len, image_param *param) {
   if (!bytes)
-    throw "data memory is null";
+    THROW("data memory is null");
   if (byte_len < (HEADER_SIZE + sizeof (image_param)))
-    throw "byte length is to small";
+    THROW("byte length is to small");
   const unsigned char *read_px = bytes, *end_px = bytes + byte_len;
   // read header
   if (memcmp (read_px, HEADER_ARRAY, HEADER_SIZE))
-    throw "header is wrong";
+    THROW("header is wrong");
   read_px += HEADER_SIZE;
   // read params
   memcpy (param, read_px, sizeof (image_param));
@@ -186,14 +190,14 @@ unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte
           }
           break;
         default:
-          throw "not yet imgc diff";
+          THROW("not yet imgc diff");
         case 3:
           switch (temp1) {
           case IMGC_FULLCHANNEL:
             memcpy (write_px, read_px, param->channel);
             break;
           default:
-            throw "not yet full channel";
+            THROW("not yet full channel");
           }
           read_px += param->channel;
           break;
