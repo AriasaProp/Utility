@@ -35,20 +35,14 @@ jobs:
             src:
               - added|modified: '**/*.cpp'
               - added|modified: '**/*.hpp'
+              - added|modified: '**/*.c'
+              - added|modified: '**/*.h'
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
         run: |
           sudo apt-get install -y clang-format
           echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
-
-      - uses: actions/setup-java@v4.2.1
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'gradle'
- 
-      - uses: gradle/actions/setup-gradle@v3
 
       - name: Push Change
         continue-on-error: true
@@ -60,9 +54,6 @@ jobs:
             git push
           fi
 
-      - if: steps.files.outputs.profiling_util == 'true'
-        run: gradle :profiling_util:test
-
   test-math:
     needs: test-profiling
     if: needs.test-profiling.outputs.math == 'true'
@@ -70,11 +61,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: gradle/actions/setup-gradle@v3
-      - run: gradle :math_util:test
+        run: |
+          cd math_util
+          mkdir build
+          cmake -S . -B build
+          cmake --build build
+          ctest --test-dir build/test
       - uses: actions/upload-artifact@v4.3.3
         with:
           name: Test_Report
-          path: ${{ github.workspace }}/math_util/test_report.txt 
+          path: ${{ github.workspace }}/math_util/build/test/test_report.txt 
 
   test-codec:
     needs: test-profiling
@@ -83,5 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: gradle/actions/setup-gradle@v3
-      - run: gradle :codec_util:test
+        run: |
+          cd codec_util
+          mkdir build
+          cmake -S . -B build
+          cmake --build build
+          ctest --test-dir build/test
 

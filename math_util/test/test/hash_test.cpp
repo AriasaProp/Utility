@@ -28,8 +28,6 @@ bool hash_test () {
 	      hash256 o = sha256 (text_buffer, tok - text_buffer);
 	      hash256 e = hash256FromString(tok + 1);
 	      if (memcmp (o.b, e.b, 32)) throw "hash result wrong!";
-	      sha256d(o.b, text_buffer, tok - text_buffer);
-  			*output_file << o << std::endl;
 	    }
     	fclose(file);
   		*output_file << "Success";
