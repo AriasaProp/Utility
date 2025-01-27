@@ -53,33 +53,8 @@ jobs:
             git config --global user.name "AriasaProp"
             git push
           fi
-
-  test-math:
-    needs: test-profiling
-    # if: needs.test-profiling.outputs.math == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - run: |
-          cd math_util
-          mkdir build
-          cmake -S . -B build --target
-          cmake --build build
-          ctest --test-dir build
-      - uses: actions/upload-artifact@v4.3.3
-        with:
-          name: Test_Report
-          path: ${{ github.workspace }}/math_util/build/test_report.txt 
-
-  test-codec:
-    needs: test-profiling
-    # if: needs.test-profiling.outputs.codec == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - run: |
-          cd codec_util
-          mkdir build
+      - name: CMake Build
+        run: |
           cmake -S . -B build
           cmake --build build
           ctest --test-dir build

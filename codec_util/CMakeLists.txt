@@ -1,32 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
-project(CodecUtil)
-
-# Flags
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory(../profiling_util ../profiling_util/build)
-
-enable_testing()
+project(codec_util)
 
 # Menambahkan main source ke library
-set(LIBRARY_SRC_DIR ${CMAKE_SOURCE_DIR}/main)
-file(GLOB_RECURSE Main_Src "${LIBRARY_SRC_DIR}/*.cpp" "${LIBRARY_SRC_DIR}/*.c")
-add_library(codec_util STATIC ${Main_Src})
-target_include_directories(codec_util PUBLIC ${LIBRARY_SRC_DIR})
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/main)
+file(GLOB_RECURSE Main_Src "${SRC}/*.cpp" "${SRC}/*.c")
+add_library(${PROJECT_NAME} STATIC ${Main_Src})
+target_include_directories(${PROJECT_NAME} PUBLIC ${SRC})
 
-# Menambahkan tests
-set(TEST_SRC_DIR ${CMAKE_SOURCE_DIR}/test)
+# Menambahkan codec_tests
+set(TEST_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 file(GLOB_RECURSE Test_Src "${TEST_SRC_DIR}/*.cpp" "${TEST_SRC_DIR}/*.c")
-target_include_directories(tests PRIVATE
-		${TEST_SRC_DIR}
-		../profiling_util/main
-)
-add_executable(tests ${Test_Src})
+add_executable(${PROJECT_NAME}_tests ${Test_Src})
+target_include_directories(${PROJECT_NAME}_tests PRIVATE ${TEST_SRC_DIR})
 
-target_link_libraries(tests PRIVATE codec_util profiling_util)
+target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME} profiling_util)
 
-add_test(run_tests
-		COMMAND tests ${CMAKE_SOURCE_DIR}/data
-    DEPENDS tests
-)
+add_test(run_${PROJECT_NAME}_tests ${PROJECT_NAME}_tests "${CMAKE_CURRENT_SOURCE_DIR}/data")

@@ -6,12 +6,12 @@ typedef struct {
   unsigned int width, height;
   unsigned char channel;
 } image_param;
-char err_msg[2048];
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 // input: data, image param in, out len in bytes
-unsigned char *image_encode (const unsigned char *, const image_param, unsigned int *);
+unsigned char *image_encode (const unsigned char *, const image_param*, unsigned int *);
 // input: data, data length in byte, image params out
 unsigned char *image_decode (const unsigned char *, const unsigned int, image_param *);
 // void release memory

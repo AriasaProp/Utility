@@ -22,7 +22,7 @@ matrix2D::matrix2D (size_t c, size_t r, const float *d = nullptr) : cols (c), ro
   if (d) memcpy (this->data, d, cols * rows * sizeof (float));
 }
 matrix2D::~matrix2D () {
-  delete[] this->data;
+  delete this->data;
 }
 // unique function
 matrix2D &matrix2D::identity () {
@@ -114,7 +114,7 @@ matrix2D &matrix2D::operator= (const matrix2D &o) {
   if ((this->cols != o.cols) || (this->rows != o.rows)) {
     this->cols = o.cols;
     this->rows = o.rows;
-    delete[] this->data;
+    delete this->data;
     this->data = new float[cols * rows];
   }
   memcpy (this->data, o.data, cols * rows * sizeof (float));
@@ -173,7 +173,7 @@ matrix2D &matrix2D::operator*= (const matrix2D o) {
       temp[i] += this->data[(i / this->rows) * this->rows + j] * o.data[(i % this->rows) + j * o.rows];
     }
   }
-  delete[] this->data;
+  delete this->data;
   this->data = temp;
   this->rows = o.rows;
   return *this;

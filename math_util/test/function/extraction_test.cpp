@@ -19,10 +19,10 @@ extern const char *data_address;
 // algorithm list
 struct base_ex {
   base_ex () {}
-  virtual char extract () { return -1; }
-  virtual const char *lbl () = 0;
-  virtual const char *testFile () = 0;
-  virtual size_t size () {
+  char extract () { return -1; }
+  const char *lbl () { return nullptr; }
+  const char *testFile () { return "\0"; }
+  size_t size () {
     return sizeof (base_ex);
   }
   ~base_ex () {}
@@ -38,7 +38,7 @@ private:
 
 public:
   pi_algo () {}
-  char extract () override {
+  char extract () {
     // do math
     while (q * 4 + r - t >= t * n) {
       t *= l;
@@ -60,8 +60,8 @@ public:
     n /= t;
     return result;
   }
-  const char *lbl () override { return " π"; }
-  const char *testFile () override { return "piDigits.txt"; }
+  const char *lbl () { return " π"; }
+  const char *testFile () { return "piDigits.txt"; }
   size_t size () {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
@@ -81,7 +81,7 @@ private:
 
 public:
   e_algo () {}
-  char extract () override {
+  char extract () {
     while ((d * 10000) > (b * c)) {
       a *= c;
       a += d;
@@ -93,8 +93,8 @@ public:
     a *= 10;
     return result;
   }
-  const char *lbl () override { return " e"; }
-  const char *testFile () override { return "eDigits.txt"; }
+  const char *lbl () { return " e"; }
+  const char *testFile () { return "eDigits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
   ~e_algo () {}
 };
@@ -114,7 +114,7 @@ private:
 
 public:
   root2_algo () {}
-  char extract () override {
+  char extract () {
     while ((b * c) < (e * d * 10000)) {
       e *= d;
       a *= c;
@@ -130,8 +130,8 @@ public:
     b >>= 1;
     return result;
   }
-  const char *lbl () override { return "√2"; }
-  const char *testFile () override { return "√2Digits.txt"; }
+  const char *lbl () { return "√2"; }
+  const char *testFile () { return "√2Digits.txt"; }
   size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
   ~root2_algo () {}
 };

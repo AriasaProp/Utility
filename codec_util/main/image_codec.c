@@ -21,7 +21,6 @@
 
 // utf8 : IMGCODEC
 const char *HEADER_ARRAY = "IMGCODEC";
-const size_t HEADER_SIZE = (const size_t)strlen (HEADER_ARRAY);
 
 unsigned char hashing (const unsigned char *in, unsigned int len) {
   unsigned char r = 0;
@@ -29,6 +28,7 @@ unsigned char hashing (const unsigned char *in, unsigned int len) {
     r ^= (in[i] & 63) ^ (in[i] >> 6);
   return r;
 }
+char err_msg[2048];
 #define THROW(x) memcpy(err_msg, x, strlen(x)); return NULL
 
 // input: data, width pixel, height pixel, channel per pixels ? 3 or 4
@@ -50,8 +50,8 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param *par
       // counting run length encoding, store temporary hash
       *index_view, temp1, *cw = write_px;
   // write header 8 bytes
-  memcpy(cw, HEADER_ARRAY, HEADER_SIZE);
-  cw += HEADER_SIZE;
+  memcpy(cw, HEADER_ARRAY, strlen (HEADER_ARRAY));
+  cw += strlen (HEADER_ARRAY);
   // write informations 9 bytes
   memcpy(cw, param, sizeof (image_param));
   cw += sizeof (image_param);
@@ -138,13 +138,13 @@ unsigned char *image_encode (const unsigned char *pixels, const image_param *par
 unsigned char *image_decode (const unsigned char *bytes, const unsigned int byte_len, image_param *param) {
   if (!bytes)
     THROW("data memory is null");
-  if (byte_len < (HEADER_SIZE + sizeof (image_param)))
+  if (byte_len < (strlen (HEADER_ARRAY) + sizeof (image_param)))
     THROW("byte length is to small");
   const unsigned char *read_px = bytes, *end_px = bytes + byte_len;
   // read header
-  if (memcmp (read_px, HEADER_ARRAY, HEADER_SIZE))
+  if (memcmp (read_px, HEADER_ARRAY, strlen (HEADER_ARRAY)))
     THROW("header is wrong");
-  read_px += HEADER_SIZE;
+  read_px += strlen (HEADER_ARRAY);
   // read params
   memcpy (param, read_px, sizeof (image_param));
   unsigned int max_px = param->width * param->height * param->channel;
