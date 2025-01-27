@@ -63,13 +63,13 @@ jobs:
       - run: |
           cd math_util
           mkdir build
-          cmake -S . -B build
+          cmake -S . -B build --target
           cmake --build build
-          ctest --test-dir build/test
+          ctest --test-dir build
       - uses: actions/upload-artifact@v4.3.3
         with:
           name: Test_Report
-          path: ${{ github.workspace }}/math_util/build/test/test_report.txt 
+          path: ${{ github.workspace }}/math_util/build/test_report.txt 
 
   test-codec:
     needs: test-profiling
@@ -82,5 +82,5 @@ jobs:
           mkdir build
           cmake -S . -B build
           cmake --build build
-          ctest --test-dir build/test
+          ctest --test-dir build
 

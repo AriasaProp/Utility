@@ -5,3 +5,4 @@ file(GLOB_RECURSE Main_Src "${CMAKE_SOURCE_DIR}/main/*.cpp" "${CMAKE_SOURCE_DIR}
 add_library(${PROJECT_NAME} ${Main_Src})
 
 target_include_directories(${PROJECT_NAME} PUBLIC {CMAKE_SOURCE_DIR}/main)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX C)

@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.15)
 project(CodecUtil)
 
+# Flags
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(../profiling_util ../profiling_util/build)
+
+enable_testing()
+
 # Menambahkan main source ke library
 set(LIBRARY_SRC_DIR ${CMAKE_SOURCE_DIR}/main)
 file(GLOB_RECURSE Main_Src "${LIBRARY_SRC_DIR}/*.cpp" "${LIBRARY_SRC_DIR}/*.c")
@@ -17,8 +25,6 @@ target_include_directories(tests PRIVATE
 add_executable(tests ${Test_Src})
 
 target_link_libraries(tests PRIVATE codec_util profiling_util)
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX C)
-
 
 add_test(run_tests
 		COMMAND tests ${CMAKE_SOURCE_DIR}/data

@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.15)
 project(math_util)
 
+# Flags
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(../profiling_util ../profiling_util/build)
+
+enable_testing()
+
 # Menambahkan main source ke library
 set(LIBRARY_SRC_DIR ${CMAKE_SOURCE_DIR}/main)
 file(GLOB_RECURSE Main_Src "${LIBRARY_SRC_DIR}/*.cpp" "${LIBRARY_SRC_DIR}/*.c")
@@ -17,7 +25,6 @@ target_include_directories(tests PRIVATE
 )
 
 target_link_libraries(tests PRIVATE ${PROJECT_NAME} profiling_util)
-set_target_properties(tests PROPERTIES LINKER_LANGUAGE CXX C)
 
 add_test(run_tests
 		COMMAND tests ${CMAKE_SOURCE_DIR}
