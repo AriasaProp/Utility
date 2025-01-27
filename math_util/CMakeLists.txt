@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Menambahkan main source ke library
 set(LIBRARY_SRC_DIR ${CMAKE_SOURCE_DIR}/main)
-file(GLOB_RECURSE Main_Src "${LIBRARY_SRC_DIR}/*.cpp ${LIBRARY_SRC_DIR}/*.c")
+file(GLOB_RECURSE Main_Src "${LIBRARY_SRC_DIR}/*.cpp" "${LIBRARY_SRC_DIR}/*.c")
 add_library(math_util STATIC ${Main_Src})
 target_include_directories(math_util PUBLIC ${LIBRARY_SRC_DIR})
 
 # Menambahkan tests
 set(TEST_SRC_DIR ${CMAKE_SOURCE_DIR}/test)
-file(GLOB_RECURSE Test_Src "${TEST_SRC_DIR}/*.cpp ${TEST_SRC_DIR}/*.c")
+file(GLOB_RECURSE Test_Src "${TEST_SRC_DIR}/*.cpp" "${TEST_SRC_DIR}/*.c")
 add_executable(tests ${Test_Src})
 target_include_directories(tests PRIVATE ${TEST_SRC_DIR})
 
