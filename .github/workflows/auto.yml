@@ -56,7 +56,7 @@ jobs:
 
   test-math:
     needs: test-profiling
-    if: needs.test-profiling.outputs.math == 'true'
+    # if: needs.test-profiling.outputs.math == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
@@ -73,7 +73,7 @@ jobs:
 
   test-codec:
     needs: test-profiling
-    if: needs.test-profiling.outputs.codec == 'true'
+    # if: needs.test-profiling.outputs.codec == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
