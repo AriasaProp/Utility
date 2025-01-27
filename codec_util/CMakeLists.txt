@@ -15,7 +15,10 @@ target_include_directories(codec_util PUBLIC ${LIBRARY_SRC_DIR})
 set(TEST_SRC_DIR ${CMAKE_SOURCE_DIR}/test)
 file(GLOB_RECURSE Test_Src "${TEST_SRC_DIR}/*.cpp" "${TEST_SRC_DIR}/*.c")
 add_executable(tests ${Test_Src})
-target_include_directories(tests PRIVATE ${TEST_SRC_DIR})
+target_include_directories(tests PRIVATE
+		${TEST_SRC_DIR}
+		../profiling_util/main
+)
 
 add_subdirectory("../profiling_util" bin/profiling_util)
 
