@@ -20,8 +20,8 @@
 #define IMGC_FULLCHANNEL 0xff /* 11111111 */
 
 // utf8 : IMGCODEC
-constexpr char *HEADER_ARRAY = "IMGCODEC";
-constexpr size_t HEADER_SIZE = strlen (HEADER_ARRAY);
+const char *HEADER_ARRAY = "IMGCODEC";
+const size_t HEADER_SIZE = strlen (HEADER_ARRAY);
 
 unsigned char hashing (const unsigned char *in, unsigned int len) {
   unsigned char r = 0;

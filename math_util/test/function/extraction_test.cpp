@@ -1,5 +1,5 @@
 #include "BigInteger.hpp"
-#include "../simple_clock.hpp"
+#include "simple_clock.hpp"
 
 #include <cerrno>
 #include <cstdio>

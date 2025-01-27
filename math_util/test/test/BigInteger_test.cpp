@@ -1,16 +1,13 @@
 #include "BigInteger.hpp"
 #include "simple_clock.hpp"
 
-#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <ostream>
 #include <iomanip>
-#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 extern std::ostream *output_file;
 
