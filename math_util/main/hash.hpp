@@ -20,6 +20,8 @@ std::ostream &operator<< (std::ostream &, const hash512);
 
 hash256 sha256 (const char *, uint64_t);
 
+hash256 scrypt (const char *, uint64_t);
+
 hash256 randomX256 (const char *, uint64_t);
 hash512 randomX512 (const char *, uint64_t);
 

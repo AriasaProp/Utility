@@ -1,4 +1,4 @@
-#include "image_codec.hpp"
+#include "image_codec.h"
 #include "stbi/stbi_load.hpp"
 
 #include <chrono>
