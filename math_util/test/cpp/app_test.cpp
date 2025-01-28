@@ -18,15 +18,16 @@ extern bool extraction_test ();
 extern bool mining_test ();
 
 int main (int argv, char *args[]) {
-  strcpy (text_buffer, args[1]);
-  strcat (text_buffer, "/test_report.txt");
-  
+  //strcpy (text_buffer, args[1]);
+  //strcat (text_buffer, "/test_report.txt");
+  /*
   std::ofstream f (text_buffer, std::fstream::trunc | std::fstream::out);
   if (!f.is_open ()) {
     std::cerr << "File test output error" << text_buffer << std::endl;
     return 1;
   }
-  output_file = (std::ostream *)&f;
+  */
+  output_file = (std::ostream *)&std::cout;
   char *addr = (char*) malloc(strlen(args[1]) + 6);
   strcpy(addr, args[1]);
   strcat(addr, "/data");
@@ -45,7 +46,7 @@ int main (int argv, char *args[]) {
       // others ...
       ;
   if (!TestSucces) std::cerr << "Test error" << std::endl;
-  f.close ();
+  //f.close ();
   free(addr);
 
   return !TestSucces;

@@ -35,7 +35,7 @@ uint32_t Reverse32 (uint32_t value) {
 }
 
 void hexstr_to_intarray (const char *hexstr, uint32_t *outputloc) {
-  for (size_t i = 0, j, k, l = strlen (hexstr); k < l; ++i) {
+  for (size_t i = 0, j, k = 0, l = strlen (hexstr); k < l; ++i) {
   	outputloc[i] = 0;
   	for (j = 0; j < 8 && k < l;++j, ++k) {
   		outputloc[i] <<= 4;

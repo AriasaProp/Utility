@@ -1,5 +1,5 @@
 #include "image_codec.h"
-#include "stbi/stbi_load.hpp"
+#include "stbi_load.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -7,10 +7,10 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <random>
 #include <string>
 #include <utility>
-#include <vector>
+
+char buff[1024];
 
 int main (int argv, char *args[]) {
   std::cout << "Start Codec Test" << std::endl;
@@ -19,7 +19,6 @@ int main (int argv, char *args[]) {
     unsigned int outbytes;
     unsigned char *s, *ic, *is;
     int stbix, stbiy, stbic;
-    char buff[1024];
     image_param img_p;
     for (unsigned int f = 0; f <= 5; ++f) {
       sprintf (buff, "%s/%02d.png", args[1], f);
@@ -43,7 +42,8 @@ int main (int argv, char *args[]) {
         if ((stbix == img_p.width) && (stbiy == img_p.height) && (stbic == img_p.channel)) {
           for (unsigned int i = 0, j, k; i < outbytes; ++i) {
             if (memcmp (s + i * stbic, is + i * stbic, stbic)) {
-              for (j = (i <= 49 ? 0 : i - 49), k = j + 49; j <= k; ++j) {
+            	
+              for (j = (i < 49) * (i - 49), k = j + 49; j <= k; ++j) {
                 std::cout << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(s + j * stbic);
                 if (i == j)
                   std::cout << "(" << std::setfill ('0') << std::setw (8) << std::hex << *(int *)(is + j * stbic) << ")";

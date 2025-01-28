@@ -5,7 +5,6 @@
 
 hash256 hash256FromString(const char *src) {
 	hash256 r{};
-	char y;
   for (char &i : r.b) {
     i = *src - 48 - (*src >= 'a') * 39;
     i <<= 4;
@@ -17,7 +16,6 @@ hash256 hash256FromString(const char *src) {
 }
 hash512 hash512FromString(const char *src) {
 	hash512 r{};
-	char y;
   for (char &i : r.b) {
     i = *src - 48 - (*src >= 'a') * 39;
     i <<= 4;

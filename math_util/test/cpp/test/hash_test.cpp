@@ -13,7 +13,6 @@ extern void sha256d(char *, const char *, int);
 bool hash_test () {
   *output_file << "Hash Test" << std::endl;
   bool passed = true;
-  size_t i, j, k, l, m, n;
 
   *output_file << "SHA256: \n";
   try {

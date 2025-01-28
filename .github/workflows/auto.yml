@@ -20,8 +20,11 @@ jobs:
       hash: ${{ steps.files.outputs.hash_util }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: dorny/paths-filter@v3.0.1
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Filtering
+        uses: dorny/paths-filter@v3.0.1
         id: files
         with:
           list-files: shell
@@ -53,9 +56,12 @@ jobs:
             git config --global user.name "AriasaProp"
             git push
           fi
-      - name: CMake Build
-        run: |
-          cmake -S . -B build
-          cmake --build build
-          ctest --test-dir build
 
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+
+      - name: Run Test
+        run: |
+          build/math_util/math_test math_util
+          build/codec_util/codec_test codec_util/data
+          
