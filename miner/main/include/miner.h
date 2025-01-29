@@ -33,8 +33,6 @@ static inline uint32_t swab32(uint32_t x) {
 #endif
 }
 
-#include <sys/endian.h>
-
 static inline uint32_t be32dec(const void *pp)
 {
 	const uint8_t *p = (uint8_t const *)pp;
