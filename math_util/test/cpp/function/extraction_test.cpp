@@ -19,13 +19,11 @@ extern const char *data_address;
 // algorithm list
 struct base_ex {
   base_ex () {}
-  char extract () { return -1; }
-  const char *lbl () { return nullptr; }
-  const char *testFile () { return "\0"; }
-  size_t size () {
-    return sizeof (base_ex);
-  }
-  ~base_ex () {}
+  virtual char extract () = 0;
+  virtual const char *lbl () = 0;
+  virtual const char *testFile () = 0;
+  virtual size_t size () = 0;
+  virtual ~base_ex () {}
 };
 struct pi_algo : public base_ex {
 private:
@@ -38,7 +36,7 @@ private:
 
 public:
   pi_algo () {}
-  char extract () {
+  char extract () override {
     // do math
     while (q * 4 + r - t >= t * n) {
       t *= l;
@@ -60,12 +58,12 @@ public:
     n /= t;
     return result;
   }
-  const char *lbl () { return " π"; }
-  const char *testFile () { return "piDigits.txt"; }
-  size_t size () {
+  const char *lbl () override { return " π"; }
+  const char *testFile () override { return "piDigits.txt"; }
+  size_t size () override {
     return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
   }
-  ~pi_algo () {}
+  ~pi_algo () override {}
 };
 /*
            1
@@ -81,7 +79,7 @@ private:
 
 public:
   e_algo () {}
-  char extract () {
+  char extract () override {
     while ((d * 10000) > (b * c)) {
       a *= c;
       a += d;
@@ -93,10 +91,10 @@ public:
     a *= 10;
     return result;
   }
-  const char *lbl () { return " e"; }
-  const char *testFile () { return "eDigits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
-  ~e_algo () {}
+  const char *lbl () override { return " e"; }
+  const char *testFile () override { return "eDigits.txt"; }
+  size_t size () override { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
+  ~e_algo () override {}
 };
 /*
           (2x+1)!!
@@ -114,7 +112,7 @@ private:
 
 public:
   root2_algo () {}
-  char extract () {
+  char extract () override {
     while ((b * c) < (e * d * 10000)) {
       e *= d;
       a *= c;
@@ -130,25 +128,26 @@ public:
     b >>= 1;
     return result;
   }
-  const char *lbl () { return "√2"; }
-  const char *testFile () { return "√2Digits.txt"; }
-  size_t size () { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
-  ~root2_algo () {}
+  const char *lbl () override { return "√2"; }
+  const char *testFile () override { return "√2Digits.txt"; }
+  size_t size () override { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
+  ~root2_algo () override {}
 };
 
 bool extraction_test () {
   // Draw table header
-  *output_file << "Start Extraction Test\n| LB ||   digits   || rate(digits/sec) ||      time     ||  memory(byte)  |\n|----||------------||------------------||---------------||----------------|\n";
+  *output_file << "Start Extraction Test\n| LB ||  digits  ||rate(digits/sec)||    time    || memory(byte) |\n|----||----------||----------------||------------||--------------|\n";
 
   bool passed = true;
   base_ex *algos[]{
-      new pi_algo (),
-      new e_algo (),
-      new root2_algo ()};
+	  new pi_algo (),
+	  new e_algo (),
+	  new root2_algo ()
+  };
   // pi proof
   size_t digit_index, digit_readed;
   char result;
-  unsigned long long generated;
+  unsigned long generated;
   // time proof
   simple_timer_t counter_time;
   simple_time_t counted_time;
@@ -160,7 +159,7 @@ bool extraction_test () {
     try {
       sprintf (text_buffer, "%s/%s", data_address, algo->testFile ());
       FILE *file_digits = fopen (text_buffer, "r");
-      if (!file_digits) [[unlikely]]
+      if (!file_digits)
         throw "file not found";
       counter_time.start ();
       do {
@@ -168,7 +167,7 @@ bool extraction_test () {
           digit_index = 0;
           digit_readed = fread (text_buffer, 1, 2048, file_digits);
         }
-        if (!digit_readed) [[unlikely]] {
+        if (!digit_readed) {
           if (feof (file_digits)) throw "end of file";
           if (ferror (file_digits)) throw strerror (errno);
           throw "cannot get digits from file";
@@ -183,13 +182,13 @@ bool extraction_test () {
       counted_time = counter_time.end ();
 #endif
       // print result profiling
-      *output_file << std::setfill ('0') << std::setw (10) << generated << " || ";
-      *output_file << std::setfill ('0') << std::setw (16) << std::fixed << std::setprecision (5) << (1.0 * generated / counted_time.to_sec ()) << " || ";
-      *output_file << std::setfill (' ') << std::setw (13) << std::right << counted_time << " || ";
-      *output_file << std::setfill ('0') << std::setw (14) << algo->size ();
+      *output_file << std::setfill ('0') << std::setw (8) << generated << " || ";
+      *output_file << std::setfill ('0') << std::setw (14) << std::fixed << std::setprecision (4) << (1.0 * generated / counted_time.to_sec ()) << " || ";
+      *output_file << std::setfill (' ') << std::setw (11) << std::right << counted_time << "|| ";
+      *output_file << std::setfill ('0') << std::setw (12) << algo->size ();
       fclose (file_digits);
     } catch (const char *e) {
-      *output_file << std::setfill (' ') << std::setw (75) << "Error: " << e << " digits: " << generated;
+      *output_file << std::setfill (' ') << std::setw (66) << "Error: " << e << " digits: " << generated;
       passed &= false;
     }
     *output_file << " |" << std::endl;

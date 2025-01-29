@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.20)
+project(miner LANGUAGES C ASM)
+
+# Set variable
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/main)
+set(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")
+set(USE_ASM ON)
+
+find_package(CURL REQUIRED)
+
+file(GLOB_RECURSE Main_Src "${SRC}/c/*.c")
+# Architecture 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+		target_compile_definitions(${PROJECT_NAME} -DUSE_ASM)
+    file(GLOB_RECURSE ASM_Src "${SRC}/asm/x86_64/*.S")
+		list(APPEND All_Src ${Main_Src} ${ASM_Src})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86|i386")
+		target_compile_definitions(${PROJECT_NAME} -DUSE_ASM)
+    file(GLOB_RECURSE ASM_Src "${SRC}/asm/x86/*.S")
+		list(APPEND All_Src ${Main_Src} ${ASM_Src})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
+		target_compile_definitions(${PROJECT_NAME} -DUSE_ASM)
+    file(GLOB_RECURSE ASM_Src "${SRC}/asm/arm/x86/*.S")
+		list(APPEND All_Src ${Main_Src} ${ASM_Src})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "ppc64|ppc64le")
+		target_compile_definitions(${PROJECT_NAME} -DUSE_ASM)
+    file(GLOB_RECURSE ASM_Src "${SRC}/asm/ppc/*.S")
+		list(APPEND All_Src ${Main_Src} ${ASM_Src})
+# elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+# elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "riscv|riscv64")
+# elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "mips|mips64")
+# elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "sparc|sparc64")
+else()
+    set(USE_ASM OFF)
+		list(APPEND All_Src ${Main_Src})
+endif()
+
+# miner executable
+add_executable(${PROJECT_NAME} ${All_Src})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC}/include ${CURL_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${CURL_LIBRARIES})
+
+if(USE_ASM AND CMAKE_ASM_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -march=native)
+endif()

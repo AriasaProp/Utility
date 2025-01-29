@@ -24,19 +24,19 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   static const int CLOCKS_PER_US = CLOCKS_PER_MS / 1000;
   unsigned int writed = 0;
   if (td > CLOCKS_PER_SEC) {
-    ss << (td / CLOCKS_PER_SEC) << " s";
+    ss << (td / CLOCKS_PER_SEC) << "s";
     td %= CLOCKS_PER_SEC;
     ++writed;
   }
   if (td > CLOCKS_PER_MS) {
     if (writed) ss << ", ";
-    ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_MS) << " ms";
+    ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_MS) << "ms";
     td %= CLOCKS_PER_MS;
     ++writed;
   }
   if ((writed <= 1) && (td || !writed)) {
     if (writed) ss << ", ";
-    ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_US) << " us";
+    ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_US) << "us";
   }
   o << ss.str ();
   return o;

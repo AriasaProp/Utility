@@ -10,5 +10,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_subdirectory(profiling_util)
 add_subdirectory(math_util)
 add_subdirectory(codec_util)
+add_subdirectory(miner)
 
 include(CTest)
