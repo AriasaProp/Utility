@@ -14,5 +14,3 @@ add_executable(${PROJECT_NAME}_test ${Test_Src})
 target_include_directories(${PROJECT_NAME}_test PRIVATE ${TSRC}/include)
 
 target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME} profiling)
-
-add_test(run_${PROJECT_NAME}_test ${PROJECT_NAME}_test "${CMAKE_CURRENT_SOURCE_DIR}")

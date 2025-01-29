@@ -7,6 +7,7 @@ on:
       - 'profiling_util/**'
       - 'math_util/**'
       - 'codec_util/**'
+      - 'miner/**'
 
 permissions:
   actions: write
@@ -14,10 +15,6 @@ permissions:
 
 jobs:
   test-profiling:
-    outputs:
-      math: ${{ steps.files.outputs.math_util }}
-      codec: ${{ steps.files.outputs.codec_util }}
-      hash: ${{ steps.files.outputs.hash_util }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,17 +26,12 @@ jobs:
         with:
           list-files: shell
           filters: |
-            profiling_util:
-              - 'profiling_util/**'
-            math_util:
-              - 'math_util/**'
-            codec_util:
-              - 'codec_util/**'
             src:
               - added|modified: '**/*.cpp'
               - added|modified: '**/*.hpp'
               - added|modified: '**/*.c'
               - added|modified: '**/*.h'
+              - added|modified: '**/*.S'
 
       - name: Formating Src File
         if: steps.files.outputs.src == 'true'
@@ -57,11 +49,10 @@ jobs:
             git push
           fi
 
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-
-      - name: Run Test
+      - name: Build and Run Test
         run: |
+          cmake -S . -B build
+          cmake --build build
           build/math_util/math_test math_util
           build/codec_util/codec_test codec_util/data
           
