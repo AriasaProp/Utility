@@ -1,5 +1,3 @@
-#include "cpuminer-config.h"
-
 #if defined(USE_ASM) && defined(__arm__) && defined(__APCS_32__)
 
 #if defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) || \

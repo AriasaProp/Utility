@@ -1,4 +1,3 @@
-#include "cpuminer-config.h"
 #include "sha2.h"
 #include "miner.h"
 

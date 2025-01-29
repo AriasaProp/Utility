@@ -154,7 +154,7 @@ json_t *json_deep_copy(json_t *value);
 
 /* loading, printing */
 
-#define JSON_ERROR_TEXT_LENGTH  160
+#define JSON_ERROR_TEXT_LENGTH  512
 
 typedef struct {
     char text[JSON_ERROR_TEXT_LENGTH];

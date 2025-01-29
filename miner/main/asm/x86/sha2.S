@@ -1,14 +1,3 @@
-/*
- * Copyright 2012 pooler@litecoinpool.org
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.  See COPYING for more details.
- */
-
-#include "cpuminer-config.h"
-
 #if defined(__linux__) && defined(__ELF__)
 	.section .note.GNU-stack,"",%progbits
 #endif

@@ -1,7 +1,6 @@
 #ifndef __MINER_H__
 #define __MINER_H__
 
-#include "cpuminer-config.h"
 #include "jansson/jansson.h"
 
 #include <stdbool.h>
@@ -9,47 +8,11 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <curl/curl.h>
+#include <stdlib.h>
+#include <stddef.h>
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#else
-# ifdef HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
-#ifdef HAVE_ALLOCA_H
-# include <alloca.h>
-#elif !defined alloca
-# ifdef __GNUC__
-#  define alloca __builtin_alloca
-# elif defined _AIX
-#  define alloca __alloca
-# elif defined _MSC_VER
-#  include <malloc.h>
-#  define alloca _alloca
-# elif !defined HAVE_ALLOCA
-#  ifdef  __cplusplus
-extern "C"
-#  endif
-void *alloca (size_t);
-# endif
-#endif
-
-#ifdef HAVE_SYSLOG_H
 #include <syslog.h>
-#else
-enum {
-	LOG_ERR,
-	LOG_WARNING,
-	LOG_NOTICE,
-	LOG_INFO,
-	LOG_DEBUG,
-};
-#endif
 
-#undef unlikely
-#undef likely
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
 #define unlikely(expr) (__builtin_expect(!!(expr), 0))
 #define likely(expr) (__builtin_expect(!!(expr), 1))
@@ -62,45 +25,29 @@ enum {
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #endif
 
+static inline uint32_t swab32(uint32_t x) {
 #if ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
-#define WANT_BUILTIN_BSWAP
+	return __builtin_bswap32(x);
 #else
-#define bswap_32(x) ((((x) << 24) & 0xff000000u) | (((x) << 8) & 0x00ff0000u) \
-                   | (((x) >> 8) & 0x0000ff00u) | (((x) >> 24) & 0x000000ffu))
-#endif
-
-static inline uint32_t swab32(uint32_t v)
-{
-#ifdef WANT_BUILTIN_BSWAP
-	return __builtin_bswap32(v);
-#else
-	return bswap_32(v);
+	return ((x & 0xffu) << 24) | ((x & 0xff00u) << 8) | ((x >> 8) & 0xff00u) | ((x >> 24) & 0xffu);
 #endif
 }
 
-#ifdef HAVE_SYS_ENDIAN_H
 #include <sys/endian.h>
-#endif
 
-#if !HAVE_DECL_BE32DEC
 static inline uint32_t be32dec(const void *pp)
 {
 	const uint8_t *p = (uint8_t const *)pp;
 	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
 	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
 }
-#endif
 
-#if !HAVE_DECL_LE32DEC
 static inline uint32_t le32dec(const void *pp)
 {
 	const uint8_t *p = (uint8_t const *)pp;
 	return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
 	    ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
 }
-#endif
-
-#if !HAVE_DECL_BE32ENC
 static inline void be32enc(void *pp, uint32_t x)
 {
 	uint8_t *p = (uint8_t *)pp;
@@ -109,9 +56,6 @@ static inline void be32enc(void *pp, uint32_t x)
 	p[1] = (x >> 16) & 0xff;
 	p[0] = (x >> 24) & 0xff;
 }
-#endif
-
-#if !HAVE_DECL_LE32ENC
 static inline void le32enc(void *pp, uint32_t x)
 {
 	uint8_t *p = (uint8_t *)pp;
@@ -120,17 +64,11 @@ static inline void le32enc(void *pp, uint32_t x)
 	p[2] = (x >> 16) & 0xff;
 	p[3] = (x >> 24) & 0xff;
 }
-#endif
 
-#if JANSSON_MAJOR_VERSION >= 2
-#define JSON_LOADS(str, err_ptr) json_loads(str, 0, err_ptr)
-#define JSON_LOAD_FILE(path, err_ptr) json_load_file(path, 0, err_ptr)
-#else
 #define JSON_LOADS(str, err_ptr) json_loads(str, err_ptr)
 #define JSON_LOAD_FILE(path, err_ptr) json_load_file(path, err_ptr)
-#endif
 
-#define USER_AGENT PACKAGE_NAME "/" PACKAGE_VERSION
+#define USER_AGENT "Miner_Utility"
 
 void sha256_init(uint32_t *state);
 void sha256_transform(uint32_t *state, const uint32_t *block, int swap);

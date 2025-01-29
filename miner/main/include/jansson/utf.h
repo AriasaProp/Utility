@@ -1,21 +1,7 @@
-/*
- * Copyright (c) 2009, 2010 Petri Lehtinen <petri@digip.org>
- *
- * Jansson is free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
 #ifndef UTF_H
 #define UTF_H
 
-#include "jansson/config.h"
-
-#ifdef HAVE_INTTYPES_H
-/* inttypes.h includes stdint.h in a standard environment, so there's
-no need to include stdint.h separately. If inttypes.h doesn't define
-int32_t, it's defined in config.h. */
-#include <inttypes.h>
-#endif
+#include <stdint.h>
 
 int utf8_encode(int codepoint, char *buffer, int *size);
 

@@ -1,5 +1,4 @@
 #define _GNU_SOURCE
-#include "cpuminer-config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,7 +66,6 @@ void applog(int prio, const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-#ifdef HAVE_SYSLOG_H
 	if (use_syslog) {
 		va_list ap2;
 		char *buf;
@@ -80,9 +78,6 @@ void applog(int prio, const char *fmt, ...)
 		if (vsnprintf(buf, len, fmt, ap) >= 0)
 			syslog(prio, "%s", buf);
 	}
-#else
-	if (0) {}
-#endif
 	else {
 		char *f;
 		int len;

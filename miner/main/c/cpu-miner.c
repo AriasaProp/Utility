@@ -1,4 +1,3 @@
-#include "cpuminer-config.h"
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -30,7 +29,6 @@ static inline int setpriority(int which, int who, int prio) {
 #endif
 #endif
 #include <curl/curl.h>
-#include "jansson/jansson.h"
 #include "miner.h"
 
 #define PROGRAM_NAME		"miner"
@@ -1470,7 +1468,7 @@ out:
 
 static void show_version_and_exit(void)
 {
-	printf(PACKAGE_STRING "\n built on " __DATE__ "\n features:"
+	printf("Miner_Utility\n built on " __DATE__ "\n features:"
 #if defined(USE_ASM) && defined(__i386__)
 		" i386"
 #endif

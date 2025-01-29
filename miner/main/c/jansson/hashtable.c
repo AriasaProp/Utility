@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2009, 2010 Petri Lehtinen <petri@digip.org>
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "jansson/config.h"
-
 #include <stdlib.h>
 #include "jansson/hashtable.h"
 
