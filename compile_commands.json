@@ -1,0 +1,97 @@
+[
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/BigDecimal.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/math/BigDecimal.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/BigInteger.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/math/BigInteger.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/matrix.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/math/matrix.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/bubble_sort.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/bubble_sort.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/insertion_sort.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/insertion_sort.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/merge_sort.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/merge_sort.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/selection_sort.cpp",
+  "file": "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/selection_sort.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/sdl/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_sdl.dir/sdl/src/main.cpp.o -c /storage/emulated/0/prj/Utility/sdl/src/main.cpp",
+  "file": "/storage/emulated/0/prj/Utility/sdl/src/main.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/main.cpp.o -c /storage/emulated/0/prj/Utility/test/src/main.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/main.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/math_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/complex_number_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/test/complex_number_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/matrix_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/test/matrix_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c99 -fallow-void-main -std=gnu11 -o CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o -c /storage/emulated/0/prj/Utility/test/src/mining/mining_pool_test.c",
+  "file": "/storage/emulated/0/prj/Utility/test/src/mining/mining_pool_test.c"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMINING_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp"
+}
+]

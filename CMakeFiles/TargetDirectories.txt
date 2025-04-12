@@ -1,0 +1,5 @@
+/storage/emulated/0/prj/Utility/CMakeFiles/Utility_sdl.dir
+/storage/emulated/0/prj/Utility/CMakeFiles/rebuild_cache.dir
+/storage/emulated/0/prj/Utility/CMakeFiles/edit_cache.dir
+/storage/emulated/0/prj/Utility/CMakeFiles/Utility_test.dir
+/storage/emulated/0/prj/Utility/CMakeFiles/Utility.dir

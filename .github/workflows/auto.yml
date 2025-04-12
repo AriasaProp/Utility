@@ -4,10 +4,9 @@ on:
   push:
     paths:
       - '.github/workflows/auto.yml'
-      - 'profiling_util/**'
-      - 'math_util/**'
-      - 'codec_util/**'
-      - 'miner/**'
+      - 'main/**'
+      - 'test/**'
+      - 'sdl/**'
 
 permissions:
   actions: write
@@ -51,9 +50,6 @@ jobs:
 
       - name: Build and Run Test
         run: |
-          sudo apt-get install curl libcurl4-openssl-dev -y
-          cmake -S . -B build
-          cmake --build build
-          build/math_util/math_test math_util
-          build/codec_util/codec_test codec_util/data
+          cmake . 
+          ./Utility_test
           
