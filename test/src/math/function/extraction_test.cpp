@@ -10,7 +10,7 @@
 #include <memory>
 
 // undef TIME to reach limit of file digits
-#define TIME 10.0
+#define TIME 1.0
 
 extern std::ostream *output_file;
 extern char text_buffer[2048];

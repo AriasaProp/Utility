@@ -11,7 +11,7 @@ const char *data_address = "data/math";
 
 extern bool BigInteger_test ();
 extern bool matrix_test ();
-extern bool complex_number_test ();
+extern bool ComplexNumber_test ();
 
 extern bool extraction_test ();
 
@@ -30,7 +30,7 @@ void math_test () {
   bool TestSucces = 
       // basic class test
       BigInteger_test () &&
-      complex_number_test () &&
+      ComplexNumber_test () &&
       matrix_test () &&
       // performance function test
       extraction_test ()

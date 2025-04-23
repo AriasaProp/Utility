@@ -6,7 +6,6 @@ on:
       - '.github/workflows/auto.yml'
       - 'main/**'
       - 'test/**'
-      - 'sdl/**'
 
 permissions:
   actions: write
@@ -50,6 +49,7 @@ jobs:
 
       - name: Build and Run Test
         run: |
-          cmake . 
-          ./Utility_test
+          cmake -S . -B build
+          cmake --build build
+          buildl/Utility_test
           

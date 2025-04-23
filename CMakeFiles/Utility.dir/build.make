@@ -68,10 +68,24 @@ include CMakeFiles/Utility.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Utility.dir/flags.make
 
+CMakeFiles/Utility.dir/main/src/codec/json.cpp.o: CMakeFiles/Utility.dir/flags.make
+CMakeFiles/Utility.dir/main/src/codec/json.cpp.o: main/src/codec/json.cpp
+CMakeFiles/Utility.dir/main/src/codec/json.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Utility.dir/main/src/codec/json.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/codec/json.cpp.o -MF CMakeFiles/Utility.dir/main/src/codec/json.cpp.o.d -o CMakeFiles/Utility.dir/main/src/codec/json.cpp.o -c /storage/emulated/0/prj/Utility/main/src/codec/json.cpp
+
+CMakeFiles/Utility.dir/main/src/codec/json.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility.dir/main/src/codec/json.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/main/src/codec/json.cpp > CMakeFiles/Utility.dir/main/src/codec/json.cpp.i
+
+CMakeFiles/Utility.dir/main/src/codec/json.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/codec/json.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/codec/json.cpp -o CMakeFiles/Utility.dir/main/src/codec/json.cpp.s
+
 CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o: main/src/math/BigDecimal.cpp
 CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/BigDecimal.cpp
 
 CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.i: cmake_force
@@ -85,7 +99,7 @@ CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.s: cmake_force
 CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.cpp
 CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/BigInteger.cpp
 
 CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.i: cmake_force
@@ -96,38 +110,38 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/math/BigInteger.cpp -o CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.s
 
-CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o: CMakeFiles/Utility.dir/flags.make
-CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o: main/src/math/complex_number.cpp
-CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp
+CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o: CMakeFiles/Utility.dir/flags.make
+CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o: main/src/math/ComplexNumber.cpp
+CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/ComplexNumber.cpp
 
-CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp > CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.i
+CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/main/src/math/ComplexNumber.cpp > CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.i
 
-CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp -o CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.s
+CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/math/ComplexNumber.cpp -o CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.s
 
-CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o: CMakeFiles/Utility.dir/flags.make
-CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o: main/src/math/matrix.cpp
-CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/matrix.cpp
+CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o: CMakeFiles/Utility.dir/flags.make
+CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o: main/src/math/Matrix.cpp
+CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o -MF CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o.d -o CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o -c /storage/emulated/0/prj/Utility/main/src/math/Matrix.cpp
 
-CMakeFiles/Utility.dir/main/src/math/matrix.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility.dir/main/src/math/matrix.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/main/src/math/matrix.cpp > CMakeFiles/Utility.dir/main/src/math/matrix.cpp.i
+CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/main/src/math/Matrix.cpp > CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.i
 
-CMakeFiles/Utility.dir/main/src/math/matrix.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/math/matrix.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/math/matrix.cpp -o CMakeFiles/Utility.dir/main/src/math/matrix.cpp.s
+CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/main/src/math/Matrix.cpp -o CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.s
 
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o: main/src/sorting/algorithm/bubble_sort.cpp
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o -MF CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o.d -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/bubble_sort.cpp
 
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.i: cmake_force
@@ -141,7 +155,7 @@ CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.s: cmake_force
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o: main/src/sorting/algorithm/insertion_sort.cpp
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o -MF CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o.d -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/insertion_sort.cpp
 
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.i: cmake_force
@@ -155,7 +169,7 @@ CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.s: cmake_fo
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o: main/src/sorting/algorithm/merge_sort.cpp
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o -MF CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o.d -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/merge_sort.cpp
 
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.i: cmake_force
@@ -169,7 +183,7 @@ CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.s: cmake_force
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o: CMakeFiles/Utility.dir/flags.make
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o: main/src/sorting/algorithm/selection_sort.cpp
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o: CMakeFiles/Utility.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o -MF CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o.d -o CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o -c /storage/emulated/0/prj/Utility/main/src/sorting/algorithm/selection_sort.cpp
 
 CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.i: cmake_force
@@ -182,10 +196,11 @@ CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.s: cmake_fo
 
 # Object files for target Utility
 Utility_OBJECTS = \
+"CMakeFiles/Utility.dir/main/src/codec/json.cpp.o" \
 "CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o" \
 "CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o" \
-"CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o" \
-"CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o" \
+"CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o" \
+"CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o" \
 "CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o" \
 "CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o" \
 "CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o" \
@@ -194,17 +209,18 @@ Utility_OBJECTS = \
 # External object files for target Utility
 Utility_EXTERNAL_OBJECTS =
 
+libUtility.a: CMakeFiles/Utility.dir/main/src/codec/json.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o
-libUtility.a: CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o
-libUtility.a: CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o
+libUtility.a: CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o
+libUtility.a: CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.o
 libUtility.a: CMakeFiles/Utility.dir/build.make
 libUtility.a: CMakeFiles/Utility.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library libUtility.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library libUtility.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/Utility.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Utility.dir/link.txt --verbose=$(VERBOSE)
 

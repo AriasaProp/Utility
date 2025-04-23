@@ -1,4 +1,5 @@
 #include "math/BigInteger.hpp"
+#include "common.hpp"
 
 #include <algorithm>
 #include <climits>
@@ -11,28 +12,30 @@ constexpr size_t WORD_BITS_1 = WORD_BITS - 1;
 constexpr size_t WORD_HALF_BITS = WORD_BITS / 2;
 constexpr word WORD_HALF_MASK = ((word)-1) >> WORD_HALF_BITS;
 
-typedef std::vector<word> wstack;
+using wstack = std::deque<word>;
+using wit = std::deque<word>::iterator;
+using writ = std::deque<word>::reverse_iterator;
+using cwit = std::deque<word>::const_iterator;
+using cwrit = std::deque<word>::const_reverse_iterator;
 
 /** private function **/
 //  +1 mean a is greater, -1 mean a is less, 0 mean equal
-static int compare (const wstack &a, const wstack &b) {
+static int  compare_word      (const wstack &a, const wstack &b) {
   if (a == b) return 0;
   size_t as = a.size (), bs = b.size ();
-  if (as != bs)
-    return as > bs ? +1 : -1;
-  while (as--)
-    if (a[as] != b[as])
-      return a[as] > b[as] ? +1 : -1;
-  return 0;
+  int r = (as > bs) - (as < bs);
+  cwrit i = a.rbegin(), bi = b.rbegin(), j = a.rend();
+  while (!r && (i < j))
+    r = (*i > *bi) - (*i < *bi), ++i, ++bi;
+  return r;
 }
-static void add_a_word (wstack &a, word carry = 1) {
-  for (wstack::iterator i = a.begin (), j = a.end (); (i < j) && carry; ++i)
+static void add_a_word        (wstack &a, word carry = 1) {
+  for (wit i = a.begin (), j = a.end (); (i < j) && carry; ++i)
     carry = carry > (*i += carry);
   if (carry) a.push_back (carry);
 }
-// a should be greater or equal than carry
-static bool sub_a_word (wstack &a, word carry = 1) {
-  for (wstack::iterator i = a.begin (), j = a.end (); (i < j) && carry; ++i)
+static bool sub_a_word        (wstack &a, word carry = 1) {
+  for (wit i = a.begin (), j = a.end (); (i < j) && carry; ++i)
     carry = *i < (*i -= carry);
   if (carry) {
     for (word &w : a)
@@ -43,11 +46,10 @@ static bool sub_a_word (wstack &a, word carry = 1) {
     a.pop_back ();
   return false;
 }
-// params b shall be same memory as a
-static void add_word (wstack &a, const wstack &b) {
+static void add_word          (wstack &a, const wstack &b) {
   if (a.size () < b.size ())
     a.resize (b.size (), 0);
-  wstack::iterator i = a.begin ();
+  wit i = a.begin ();
   wstack::const_iterator jend = b.end (), j = b.begin ();
   word carry = 0, c;
   while (j < jend) {
@@ -62,11 +64,10 @@ static void add_word (wstack &a, const wstack &b) {
   if (carry)
     a.push_back (carry);
 }
-// params b shall be same memory as a but it always compare before operation
-static bool sub_word (wstack &a, const wstack &b) {
+static bool sub_word          (wstack &a, const wstack &b) {
   if (a.size () < b.size ())
     a.resize (b.size (), 0);
-  wstack::iterator i = a.begin ();
+  wit i = a.begin ();
   wstack::const_iterator jend = b.end (), j = b.begin ();
   word carry = 0, c;
   while (j < jend) {
@@ -88,6 +89,100 @@ static bool sub_word (wstack &a, const wstack &b) {
   while (a.size () && !a.back ())
     a.pop_back ();
   return false;
+}
+static void shift_left_word   (wstack &a, size_t i) {
+  size_t n = i % WORD_BITS;
+  if (n) {
+    const size_t r_shift = WORD_BITS - n;
+    wit ai = a.begin();
+    cwit aj = a.cend();
+    word b = 0, b0 = 0;
+    while (ai < aj) {
+      b = *ai >> r_shift;
+      *ai = (*ai << n) | b0;
+      b0 = b;
+      ++ai;
+    }
+    if (b0) a.push_back(b0);
+  }
+  a.insert (a.begin (), i / WORD_BITS, 0);
+}
+static void shift_right_word  (wstack &a, size_t i) {
+  a.erase (a.begin (), a.begin () + i / WORD_BITS);
+  size_t n = i % WORD_BITS;
+  if (n && a.size()) {
+    const size_t l_shift = WORD_BITS - n;
+    writ ai = a.rbegin();
+    writ aj = a.rend() - 1;
+    word b = 0, b0 = 0;
+    while (ai < aj) {
+      b = *ai << l_shift;
+      *ai = (*ai >> n) | b0;
+      b0 = b;
+      ++ai;
+    }
+    *ai = (*ai >> n) | b0;
+  }
+}
+static wstack mul_word        (const wstack &a, const wstack &b) {
+  wstack c;
+  const size_t na = a.size(), nb = b.size();
+  if (na && nb) {
+    c.resize(na + nb, 0);
+    word a_hi, b_hi, a_lo, b_lo, c0, c1;
+    size_t ia, ib, ic, nc, i;
+    for (ia = 0; ia < na; ++ia) {
+      a_hi = a[ia] >> WORD_HALF_BITS;
+      a_lo = a[ia] & WORD_HALF_MASK;
+      for (ib = 0; ib < nb; ++ib) {
+        b_hi = b[ib] >> WORD_HALF_BITS;
+        b_lo = b[ib] & WORD_HALF_MASK;
+        c0 = a[ia] * b[ib];
+        i = ia + ib;
+        for (ic = i, nc = c.size(); c0 && (ic < nc); ++ic)
+          c0 = (c[ic] += c0) < c0;
+        if (c0) c.push_back(c0);
+        c0 = ((a_lo * b_lo) >> WORD_HALF_BITS) + (a_hi * b_lo);
+        c1 = a_lo * b_hi;
+        c1 = (c0 += c1) < c1;
+        c0 = (c0 >> WORD_HALF_BITS) + (c1 << WORD_HALF_BITS);
+        ++i;
+        for (ic = i, nc = c.size(); c0 && (ic < nc); ++ic)
+          c0 = (c[ic] += c0) < c0;
+        if (c0) c.push_back(c0);
+        c0 = a_hi * b_hi;
+        for (ic = i, nc = c.size(); c0 && (ic < nc); ++ic)
+          c0 = (c[ic] += c0) < c0;
+        if (c0) c.push_back(c0);
+      }
+    }
+    while (!c.back() && c.size())
+      c.pop_back();
+  }
+  return c;
+}
+static wstack div_word        (wstack &a, wstack b) {
+  wstack c;
+  size_t na = a.size(), nb = b.size();
+  if (nb && na) {
+    size_t s = WORD_BITS * (na - nb);
+    word carry;
+    for (carry = a.back(); carry >>= 1; ++s) ;
+    for (carry = b.back(); carry >>= 1; --s) ;
+    shift_left_word(b, s);
+    c.push_back(0);
+    do {
+      shift_left_word(c, 1);
+      if (compare_word (a, b) >= 0) {
+        sub_word(a, b);
+        c.front() |= 1;
+      }
+      shift_right_word(b, 1);
+    } while (s--);
+    while (!c.back() && c.size())
+      c.pop_back();
+  }
+  return c;
 }
 
 /**********************************
@@ -183,7 +278,7 @@ BigInteger BigInteger::sqrt () const {
       if (carry)
         res.push_back (carry);
       // compare result test with remaining
-      if (compare (remaining, res) >= 0) {
+      if (compare_word (remaining, res) >= 0) {
         carry = 0;
         for (i = 0, j = res.size (); i < j; i++) {
           carry = remaining[i] < (remaining[i] -= carry);
@@ -295,54 +390,9 @@ BigInteger BigInteger::pow (size_t exponent) const {
 }
 // returning division result and this has remaining
 BigInteger BigInteger::div_mod (const BigInteger b) {
-  if (!b.words.size ())
-    throw ("Undefined number cause / 0 !");
-  BigInteger res;
-  wstack &r = res.words;
-  wstack div = b.words;
-  if (compare (words, div) >= 0) {
-    // shifting count
-    size_t i = div.size ();
-    size_t j = (words.size () - i) * WORD_BITS;
-    word carry = words.back ();
-    while (carry)
-      j++, carry >>= 1;
-    carry = div.back ();
-    while (carry)
-      j--, carry >>= 1;
-    size_t n = j % WORD_BITS;
-    if (n) {
-      const size_t l_shift = WORD_BITS - n;
-      carry = div.back () >> l_shift;
-      while (--i)
-        div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
-      div[i] <<= n;
-      if (carry)
-        div.push_back (carry);
-    }
-    n = j / WORD_BITS;
-    if (n)
-      div.insert (div.begin (), n, 0);
-    r.resize (n + 1, 0);
-    do {
-      if (compare (words, div) >= 0) {
-        r[j / WORD_BITS] |= word (1) << (j % WORD_BITS);
-        sub_word (words, div);
-        if (!words.size ())
-          break;
-      }
-      // reverse shift one by one
-      for (i = 0, n = div.size () - 1; i < n; i++)
-        div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
-      div[i] >>= 1;
-      if (!div.back ())
-        div.pop_back ();
-    } while (j--);
-    while (r.size () && !r.back ())
-      r.pop_back ();
-  }
-  res.neg = r.size () ? neg ^ b.neg : false;
-  return res;
+  BigInteger r(div_word(words, b.words), false);
+  r.neg *= (r.words.size () != 0);
+  return r;
 }
 /** re-initialize **/
 BigInteger &BigInteger::operator= (const signed a) {
@@ -387,13 +437,6 @@ BigInteger &BigInteger::operator+= (const signed b) {
     neg ^= sub_a_word (words, B);
   return *this;
 }
-BigInteger &BigInteger::operator+= (const BigInteger &b) {
-  if (neg == b.neg)
-    add_word (words, b.words);
-  else
-    neg ^= sub_word (words, b.words);
-  return *this;
-}
 BigInteger &BigInteger::operator-= (const signed b) {
   const word B = word (abs (b));
   if (neg != (b < 0))
@@ -402,547 +445,162 @@ BigInteger &BigInteger::operator-= (const signed b) {
     neg ^= sub_a_word (words, B);
   return *this;
 }
-BigInteger &BigInteger::operator-= (const BigInteger &b) {
+BigInteger &BigInteger::operator*= (const signed b) {
+  wstack B{(word)abs(b)};
+  words = mul_word(words, B);
+  neg = (words.size() != 0) & (neg ^ (b < 0));
+  return *this;
+}
+BigInteger &BigInteger::operator/= (const signed b) {
+  wstack B{(word)abs (b)};
+  words = div_word(words, B);
+  neg = (words.size() != 0) & (neg ^ (b < 0));
+  return *this;
+}
+BigInteger &BigInteger::operator%= (const signed b) {
+  wstack B{(word)abs(b)};
+  div_word(words, B);
+  neg &= words.size() != 0;
+  return *this;
+}
+BigInteger &BigInteger::operator+= (const BigInteger b) {
+  if (neg == b.neg)
+    add_word (words, b.words);
+  else
+    neg ^= sub_word (words, b.words);
+  return *this;
+}
+BigInteger &BigInteger::operator-= (const BigInteger b) {
   if (neg != b.neg)
     add_word (words, b.words);
   else
     neg ^= sub_word (words, b.words);
   return *this;
 }
-BigInteger &BigInteger::operator*= (const signed b) {
-  BigInteger r = *this * b;
-  words = std::move (r.words);
-  neg = r.neg;
-  return *this;
-}
 BigInteger &BigInteger::operator*= (const BigInteger b) {
-  BigInteger r = *this * b;
-  words = std::move (r.words);
-  neg = r.neg;
-  return *this;
-}
-BigInteger &BigInteger::operator/= (const signed b) {
-  if (!b) throw ("Undefined number cause / 0 !");
-  wstack rem = words, div{word (abs (b))};
-  words.clear ();
-  if (compare (rem, div) >= 0) {
-    // shifting count
-    size_t i = div.size ();
-    size_t j = (rem.size () - i) * WORD_BITS;
-    word carry0 = rem.back ();
-    while (carry0)
-      j++, carry0 >>= 1;
-    carry0 = div.back ();
-    while (carry0)
-      j--, carry0 >>= 1;
-    size_t n = j % WORD_BITS;
-    if (n) {
-      const size_t l_shift = WORD_BITS - n;
-      carry0 = div.back () >> l_shift;
-      while (--i)
-        div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
-      div[i] <<= n;
-      if (carry0)
-        div.push_back (carry0);
-    }
-    n = j / WORD_BITS;
-    if (n)
-      div.insert (div.begin (), n, 0);
-    words.resize (n + 1, 0);
-    do {
-      if (compare (rem, div) >= 0) {
-        words[j / WORD_BITS] |= word (1) << (j % WORD_BITS);
-        sub_word (rem, div);
-        if (!rem.size ()) break;
-      }
-      // reverse shift one by one
-      for (i = 0, n = div.size () - 1; i < n; i++)
-        div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
-      div[i] >>= 1;
-      while (!div.back ())
-        div.pop_back ();
-    } while (j--);
-    while (words.size () && !words.back ())
-      words.pop_back ();
-    neg ^= (b < 0);
-  } else
-    neg = false;
-  // return result
+  words = mul_word(words, b.words);
+  neg = (words.size() != 0) & (neg ^ b.neg);
   return *this;
 }
 BigInteger &BigInteger::operator/= (const BigInteger b) {
-  if (!b.words.size ())
-    throw ("Undefined number cause / 0 !");
-  wstack rem = words, div = b.words;
-  words.clear ();
-  if (compare (rem, div) >= 0) {
-    // shifting count
-    size_t i = div.size ();
-    size_t j = (rem.size () - i) * WORD_BITS;
-    word carry0 = rem.back ();
-    while (carry0)
-      j++, carry0 >>= 1;
-    carry0 = div.back ();
-    while (carry0)
-      j--, carry0 >>= 1;
-    size_t n = j % WORD_BITS;
-    if (n) {
-      const size_t l_shift = WORD_BITS - n;
-      carry0 = div.back () >> l_shift;
-      while (--i)
-        div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
-      div[i] <<= n;
-      if (carry0)
-        div.push_back (carry0);
-    }
-    n = j / WORD_BITS;
-    if (n)
-      div.insert (div.begin (), n, 0);
-    words.resize (n + 1, 0);
-    do {
-      if (compare (rem, div) >= 0) {
-        words[j / WORD_BITS] |= word (1) << (j % WORD_BITS);
-        sub_word (rem, div);
-        if (!rem.size ())
-          break;
-      }
-      // reverse shift one by one
-      for (i = 0, n = div.size () - 1; i < n; i++)
-        div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
-      div[i] >>= 1;
-      if (!div.back ())
-        div.pop_back ();
-    } while (j--);
-    while (words.size () && !words.back ())
-      words.pop_back ();
-    neg ^= b.neg;
-  } else {
-    neg = false;
-  }
-  return *this;
-}
-BigInteger &BigInteger::operator%= (const signed b) {
-  if (b != 0) {
-    wstack &rem = words, div{word (abs (b))};
-    int cmp = compare (rem, div);
-    if (cmp >= 0) {
-      // shifting count
-      size_t i = div.size ();
-      size_t j = (rem.size () - i) * WORD_BITS;
-      word carry0 = rem.back ();
-      while (carry0)
-        j++, carry0 >>= 1;
-      carry0 = div.back ();
-      while (carry0)
-        j--, carry0 >>= 1;
-      size_t n = j % WORD_BITS;
-      if (n) {
-        const size_t l_shift = WORD_BITS - n;
-        carry0 = div.back () >> l_shift;
-        while (--i)
-          div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
-        div[i] <<= n;
-        if (carry0)
-          div.push_back (carry0);
-      }
-      n = j / WORD_BITS;
-      if (n)
-        div.insert (div.begin (), n, 0);
-      do {
-        cmp = compare (rem, div);
-        if (cmp > 0)
-          sub_word (rem, div);
-        else if (cmp == 0) {
-          neg = false;
-          rem.clear ();
-          break;
-        }
-        // reverse shift one by one
-        for (i = 0, n = div.size () - 1; i < n; i++)
-          div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
-        div[i] >>= 1;
-        if (!div.back ())
-          div.pop_back ();
-      } while (j--);
-    }
-  }
+  words = div_word(words, b.words);
+  neg = (words.size() != 0) & (neg ^ b.neg);
   return *this;
 }
 BigInteger &BigInteger::operator%= (const BigInteger b) {
-  if (b.words.size ()) {
-    wstack &rem = words, div = b.words;
-    int cmp = compare (rem, div);
-    if (cmp >= 0) {
-      // shifting count
-      size_t i = div.size ();
-      size_t j = (rem.size () - i) * WORD_BITS;
-      word carry0 = rem.back ();
-      while (carry0)
-        j++, carry0 >>= 1;
-      carry0 = div.back ();
-      while (carry0)
-        j--, carry0 >>= 1;
-      size_t n = j % WORD_BITS;
-      if (n) {
-        const size_t l_shift = WORD_BITS - n;
-        carry0 = div.back () >> l_shift;
-        while (--i)
-          div[i] = (div[i] << n) | (div[i - 1] >> l_shift);
-        div[i] <<= n;
-        if (carry0)
-          div.push_back (carry0);
-      }
-      n = j / WORD_BITS;
-      if (n)
-        div.insert (div.begin (), n, 0);
-      do {
-        cmp = compare (rem, div);
-        if (cmp > 0)
-          sub_word (rem, div);
-        else if (cmp == 0) {
-          neg = false;
-          rem.clear ();
-          break;
-        }
-        // reverse shift one by one
-        for (i = 0, n = div.size () - 1; i < n; i++)
-          div[i] = (div[i] >> 1) | (div[i + 1] << WORD_BITS_1);
-        div[i] >>= 1;
-        if (!div.back ())
-          div.pop_back ();
-      } while (j--);
-    }
-  }
+  div_word(words, b.words);
+  neg &= words.size() != 0;
   return *this;
 }
 /** safe bitwise operand **/
-BigInteger &operator>>= (BigInteger &a, size_t n_bits) {
-  if (n_bits && a.words.size ()) {
-    size_t j = n_bits / WORD_BITS;
-    if (j < a.words.size ()) {
-      wstack::iterator carried = a.words.begin ();
-      a.words.erase (carried, carried + j);
-      n_bits %= WORD_BITS;
-      if (n_bits) {
-        wstack::iterator endCarried = a.words.end () - 1;
-        const size_t r_shift = WORD_BITS - n_bits;
-        *carried >>= n_bits;
-        while (carried != endCarried) {
-          *carried |= *(carried + 1) << r_shift;
-          carried++;
-          *carried >>= n_bits;
-        }
-        if (*endCarried == 0)
-          a.words.pop_back ();
-      }
-    } else {
-      a.neg = false;
-      a.words.clear ();
-    }
-  }
+BigInteger &operator>>= (BigInteger &a, size_t i) {
+  shift_right_word(a.words, i);
   return a;
 }
-BigInteger &operator<<= (BigInteger &a, size_t bits) {
-  if (bits) {
-    size_t n = bits % WORD_BITS;
-    if (n) {
-      const size_t l_shift = WORD_BITS - n;
-      wstack::reverse_iterator carried = a.words.rbegin ();
-      wstack::reverse_iterator endCarried = a.words.rend () - 1;
-      word lo = *carried >> l_shift;
-      while (carried != endCarried) {
-        *carried <<= n;
-        *carried |= *(carried + 1) >> l_shift;
-        carried++;
-      }
-      *carried <<= n;
-      if (lo)
-        a.words.push_back (lo);
-    }
-    n = bits / WORD_BITS;
-    if (n)
-      a.words.insert (a.words.begin (), n, 0);
-  }
-  return a;
-}
-BigInteger &operator&= (BigInteger &a, const BigInteger b) {
-  a.neg &= b.neg;
-  size_t lu = (a.words.size () < b.words.size ()) ? a.words.size () : b.words.size ();
-  a.words.resize (lu);
-  while (lu--)
-    a.words[lu] &= b.words[lu];
-  while (a.words.size () && !a.words.back ())
-    a.words.pop_back ();
-  return a;
-}
-BigInteger &operator|= (BigInteger &a, const BigInteger b) {
-  a.neg &= b.neg;
-  size_t la = a.words.size (), lb = b.words.size ();
-  size_t lu = (la > lb) ? la : lb;
-  a.words.resize (lu);
-  while (lb--)
-    a.words[lb] |= b.words[lb];
+BigInteger &operator<<= (BigInteger &a, size_t i) {
+  shift_left_word(a.words, i);
   return a;
 }
 /** compare operator **/
 bool operator== (const BigInteger &a, const signed b) {
-  return (a.neg == (b < 0)) && (a.words.size () == 1) && (a.words[0] == std::abs (b));
+  wstack B{(word)abs(b)};
+  return (a.neg == (b < 0)) && !compare_word(a.words, B);
 }
 bool operator!= (const BigInteger &a, const signed b) {
-  return (a.neg != (b < 0)) || (a.words.size () != 1) || (a.words[0] != std::abs (b));
+  wstack B{(word)abs(b)};
+  return (a.neg != (b < 0)) || compare_word(a.words, B);
 }
 bool operator<= (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return a.neg;
-  if (a.words.size () != 1)
-    return (a.words.size () < 1) ^ a.neg;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return (a.words[0] < B) ^ a.neg;
-  return true;
+  if (a.neg != (b < 0)) return a.neg;
+  wstack B{(word)abs(b)};
+  return (compare_word(a.words, B) <= 0) ^ a.neg;
 }
 bool operator>= (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return !a.neg;
-  if (a.words.size () != 1)
-    return (a.words.size () > 1) ^ a.neg;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return (a.words[0] > B) ^ a.neg;
-  return true;
+  if (a.neg != (b < 0)) return !a.neg;
+  wstack B{(word)abs(b)};
+  return (compare_word(a.words, B) >= 0) ^ a.neg;
 }
-bool operator< (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return a.neg;
-  if (a.words.size () != 1)
-    return (a.words.size () < 1) ^ a.neg;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return (a.words[0] < B) ^ a.neg;
-  return false;
+bool operator<  (const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0)) return a.neg;
+  wstack B{(word)abs(b)};
+  return (compare_word(a.words, B) < 0) ^ a.neg;
 }
-bool operator> (const BigInteger &a, const signed b) {
-  if (a.neg != (b < 0))
-    return !a.neg;
-  if (a.words.size () != 1)
-    return (a.words.size () > 1) ^ a.neg;
-  const signed B = std::abs (b);
-  if (a.words[0] != B)
-    return (a.words[0] > B) ^ a.neg;
-  return false;
+bool operator>  (const BigInteger &a, const signed b) {
+  if (a.neg != (b < 0)) return !a.neg;
+  wstack B{(word)abs(b)};
+  return (compare_word(a.words, B) > 0) ^ a.neg;
 }
-bool operator== (const BigInteger &a, const BigInteger &b) {
-  return (a.neg == b.neg) && (a.words == b.words);
+bool operator== (const BigInteger &a, const BigInteger b) {
+  return (a.neg == b.neg) && !compare_word(a.words, b.words);
 }
-bool operator!= (const BigInteger &a, const BigInteger &b) {
-  return (a.neg != b.neg) || (a.words != b.words);
+bool operator!= (const BigInteger &a, const BigInteger b) {
+  return (a.neg != b.neg) || compare_word(a.words, b.words);
 }
-bool operator<= (const BigInteger &a, const BigInteger &b) {
-  if (a.neg != b.neg)
-    return a.neg;
-  size_t i = a.words.size (), j = b.words.size ();
-  if (i != j)
-    return (i < j) ^ a.neg;
-  while (i--)
-    if (a.words[i] != b.words[i])
-      return (a.words[i] < b.words[i]) ^ a.neg;
-  return true;
+bool operator<= (const BigInteger &a, const BigInteger b) {
+  if (a.neg != b.neg) return a.neg;
+  return (compare_word(a.words, b.words) <= 0) ^ a.neg;
 }
-bool operator>= (const BigInteger &a, const BigInteger &b) {
-  if (a.neg != b.neg)
-    return b.neg;
-  size_t i = a.words.size (), j = b.words.size ();
-  if (i != j)
-    return (i > j) ^ a.neg;
-  while (i--)
-    if (a.words[i] != b.words[i])
-      return (a.words[i] > b.words[i]) ^ a.neg;
-  return true;
+bool operator>= (const BigInteger &a, const BigInteger b) {
+  if (a.neg != b.neg) return b.neg;
+  return (compare_word(a.words, b.words) >= 0) ^ a.neg;
 }
-bool operator< (const BigInteger &a, const BigInteger &b) {
-  if (a.neg != b.neg)
-    return a.neg;
-  size_t i = a.words.size (), j = b.words.size ();
-  if (i != j)
-    return (i < j) ^ a.neg;
-  while (i--)
-    if (a.words[i] != b.words[i])
-      return (a.words[i] < b.words[i]) ^ a.neg;
-  return false;
+bool operator<  (const BigInteger &a, const BigInteger b) {
+  if (a.neg != b.neg) return a.neg;
+  return (compare_word(a.words, b.words) < 0) ^ a.neg;
 }
-bool operator> (const BigInteger &a, const BigInteger &b) {
-  if (a.neg != b.neg)
-    return b.neg;
-  size_t i = a.words.size (), j = b.words.size ();
-  if (i != j)
-    return (i > j) ^ a.neg;
-  while (i--)
-    if (a.words[i] != b.words[i])
-      return (a.words[i] > b.words[i]) ^ a.neg;
-  return false;
+bool operator>  (const BigInteger &a, const BigInteger b) {
+  if (a.neg != b.neg) return b.neg;
+  return (compare_word(a.words, b.words) > 0) ^ a.neg;
 }
 /** new object generate, operator **/
 BigInteger BigInteger::operator+ (const signed b) const {
   return BigInteger (*this) += b;
 }
-BigInteger BigInteger::operator+ (const BigInteger b) const {
-  return BigInteger (*this) += b;
-}
 BigInteger BigInteger::operator- (const signed b) const {
   return BigInteger (*this) -= b;
+}
+BigInteger BigInteger::operator* (const signed b) const {
+  wstack B{(word)abs(b)};
+  BigInteger r(mul_word(r.words, B), false);
+  r.neg = (r.words.size() != 0) & (neg ^ (b < 0));
+  return r;
+}
+BigInteger BigInteger::operator/ (const signed b) const {
+  return BigInteger(*this) /= b;
+}
+BigInteger BigInteger::operator% (const signed b) const {
+  return BigInteger(*this) %= b;
+}
+BigInteger BigInteger::operator+ (const BigInteger b) const {
+  return BigInteger (*this) += b;
 }
 BigInteger BigInteger::operator- (const BigInteger b) const {
   return BigInteger (*this) -= b;
 }
-BigInteger BigInteger::operator* (const signed b) const {
-  BigInteger result;
-  if (b && words.size ()) {
-    result.neg = neg ^ (b < 0);
-    wstack &r = result.words;
-    r.resize (words.size ());
-    r.reserve (words.size () + 1);
-    const word B = word (abs (b));
-    const word b_hi = B >> WORD_HALF_BITS;
-    const word b_lo = B & WORD_HALF_MASK;
-    word a_hi, a_lo, carry = 0, carry0;
-    for (size_t i = 0; i < words.size (); ++i) {
-      const word &wA = words[i];
-      a_hi = wA >> WORD_HALF_BITS;
-      a_lo = wA & WORD_HALF_MASK;
-      r[i] = wA * B;
-      carry = (r[i] += carry) < carry;
-      carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
-      carry0 += a_hi * b_lo;
-      carry += carry0 >> WORD_HALF_BITS;
-      carry += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
-      carry += a_hi * b_hi;
-    }
-    if (carry)
-      r.push_back (carry);
-  }
-  return result;
-}
 BigInteger BigInteger::operator* (const BigInteger b) const {
-  BigInteger result;
-  const wstack &B = b.words;
-  const size_t na = words.size (), nb = B.size ();
-  if (na && nb) {
-    wstack &a = result.words;
-    a.resize (na + nb, 0);
-    a.reserve (na + nb + 1);
-    result.neg = neg ^ b.neg;
-    word a_hi, b_hi, a_lo, b_lo, carry, carry0;
-    size_t ia, ib, i, j;
-    for (ia = 0; ia < na; ia++) {
-      const word &Ar = words[ia];
-      a_hi = Ar >> WORD_HALF_BITS;
-      a_lo = Ar & WORD_HALF_MASK;
-      carry = 0;
-      for (ib = 0; ib < nb; ib++) {
-        i = ia + ib;
-        word &r = a[i];
-        carry = (r += carry) < carry;
-        const word &Br = B[ib];
-        b_hi = Br >> WORD_HALF_BITS;
-        b_lo = Br & WORD_HALF_MASK;
-        // part 1
-        carry0 = Ar * Br;
-        carry += (r += carry0) < carry0;
-        // part 2
-        carry0 = (a_lo * b_lo) >> WORD_HALF_BITS;
-        carry0 += a_hi * b_lo;
-        // TODO:  this may overflow, if you find error in multiplication check this
-        carry += carry0 >> WORD_HALF_BITS;
-        carry += (a_lo * b_hi + (carry0 & WORD_HALF_MASK)) >> WORD_HALF_BITS;
-        carry += a_hi * b_hi;
-      }
-      j = a.size ();
-      while (((++i) < j) && carry)
-        carry = (a[i] += carry) < carry;
-      if (carry)
-        a.push_back (carry);
-    }
-    while (a.size () && !a.back ())
-      a.pop_back ();
-  }
-  return result;
-}
-BigInteger BigInteger::operator/ (const signed b) const {
-  return BigInteger (*this) /= b;
+  BigInteger r(mul_word(words, b.words), neg ^ b.neg);
+  r.neg &= (r.words.size() != 0);
+  return r;
 }
 BigInteger BigInteger::operator/ (const BigInteger b) const {
-  return BigInteger (*this) /= b;
-}
-BigInteger BigInteger::operator% (const signed b) const {
-  return BigInteger (*this) %= b;
+  return BigInteger(*this) /= b;
 }
 BigInteger BigInteger::operator% (const BigInteger b) const {
-  return BigInteger (*this) %= b;
+  return BigInteger(*this) %= b;
 }
 BigInteger BigInteger::operator- () const {
   return BigInteger (words, !neg);
 }
 /** new object generate, bitwise operand **/
-BigInteger operator>> (const BigInteger &A, size_t n_bits) {
+BigInteger operator>> (const BigInteger &A, size_t i) {
   BigInteger a (A);
-  size_t j = n_bits / WORD_BITS;
-  if (j < a.words.size ()) {
-    wstack::iterator carried = a.words.begin ();
-    a.words.erase (carried, carried + j);
-    n_bits %= WORD_BITS;
-    if (n_bits) {
-      wstack::iterator endCarried = a.words.end () - 1;
-      const size_t r_shift = WORD_BITS - n_bits;
-      *carried >>= n_bits;
-      while (carried != endCarried) {
-        *carried |= *(carried + 1) << r_shift;
-        carried++;
-        *carried >>= n_bits;
-      }
-      while (a.words.size () && !a.words.back ())
-        a.words.pop_back ();
-    }
-  } else {
-    a.neg = false;
-    a.words.clear ();
-  }
+  shift_right_word(a.words, i);
   return a;
 }
-BigInteger operator<< (const BigInteger &A, size_t bits) {
+BigInteger operator<< (const BigInteger &A, size_t i) {
   BigInteger a (A);
-  size_t n = bits % WORD_BITS;
-  const size_t l_shift = WORD_BITS - n;
-  wstack::reverse_iterator carried = a.words.rbegin ();
-  wstack::reverse_iterator endCarried = a.words.rend () - 1;
-  word lo = *carried >> l_shift;
-  while (carried < endCarried) {
-    *carried <<= n;
-    *carried |= *(carried + 1) >> l_shift;
-    carried++;
-  }
-  *carried <<= n;
-  if (lo)
-    a.words.push_back (lo);
-  n = bits / WORD_BITS;
-  a.words.insert (a.words.begin (), n, 0);
+  shift_left_word(a.words, i);
   return a;
-}
-BigInteger operator& (const BigInteger a, const BigInteger b) {
-  size_t la = a.words.size (), lb = b.words.size ();
-  size_t lu = (la < lb) ? la : lb;
-  wstack r = a.words;
-  r.resize (lu);
-  while (lu--) r[lu] &= b.words[lu];
-  while (r.size () && !r.back ())
-    r.pop_back ();
-  return BigInteger (r, a.neg & b.neg);
-}
-BigInteger operator| (const BigInteger a, const BigInteger b) {
-  size_t la = a.words.size (), lb = b.words.size ();
-  wstack r = a.words;
-  r.resize ((la > lb) ? la : lb);
-  while (lb--) r[lb] |= b.words[lb];
-  return BigInteger (r, a.neg & b.neg);
 }
 
 std::ostream &operator<< (std::ostream &out, const BigInteger num) {

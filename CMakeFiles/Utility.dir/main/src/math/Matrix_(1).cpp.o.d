@@ -1,6 +1,7 @@
-CMakeFiles/Utility_test.dir/test/src/mining/mining_test.cpp.o: \
-  /storage/emulated/0/prj/Utility/test/src/mining/mining_test.cpp \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iostream \
+CMakeFiles/Utility.dir/main/src/math/Matrix_(1).cpp.o: \
+  /storage/emulated/0/prj/Utility/main/src/math/Matrix\ (1).cpp \
+  /storage/emulated/0/prj/Utility/main/include/math/Matrix.hpp \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -149,52 +150,15 @@ CMakeFiles/Utility_test.dir/test/src/mining/mining_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/support/android/locale_bionic.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/streambuf \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/istream \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/locale \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/cstdarg \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bsd_locale_fallbacks.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/bitset \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bit_reference \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/unistd.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/unistd.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/fcntl.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/getopt.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/ioctl.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/lockf.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/sysconf.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/legacy_unistd_inlines.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/swab.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/arpa/inet.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/netinet/in.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/endian.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/endian.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/netinet/in6.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/in6.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/libc-compat.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/socket.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/socket.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/fcntl.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/fcntl.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/flock64.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/flock.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/socket.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/socket.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/sockios.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/sockios.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/sockios.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/uio.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/sa_family_t.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/in.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/ip_msfilter.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/in_addr.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/ip_mreq_source.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/byteorder.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/byteorder/little_endian.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/swab.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/swab.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/swab.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/ipv6.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/netdb.h \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/thread \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iomanip
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/vector \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__split_buffer \
+  /storage/emulated/0/prj/Utility/main/include/common.hpp \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iomanip \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/istream \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/cmath \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/sstream

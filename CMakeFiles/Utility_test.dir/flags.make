@@ -3,13 +3,13 @@
 
 # compile C with /data/user/0/ru.iiec.cxxdroid/files/bin/clang
 # compile CXX with /data/user/0/ru.iiec.cxxdroid/files/bin/clang++
-C_DEFINES = -DMINING_TEST
+C_DEFINES = -DMATH_TEST
 
 C_INCLUDES = -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include
 
 C_FLAGS = -Wall -std=c99 -fallow-void-main -std=gnu11
 
-CXX_DEFINES = -DMINING_TEST
+CXX_DEFINES = -DMATH_TEST
 
 CXX_INCLUDES = -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include
 

@@ -8,10 +8,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/storage/emulated/0/prj/Utility/main/src/codec/json.cpp" "CMakeFiles/Utility.dir/main/src/codec/json.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/codec/json.cpp.o.d"
   "/storage/emulated/0/prj/Utility/main/src/math/BigDecimal.cpp" "CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o.d"
   "/storage/emulated/0/prj/Utility/main/src/math/BigInteger.cpp" "CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/main/src/math/complex_number.cpp" "CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/main/src/math/matrix.cpp" "CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o.d"
+  "/storage/emulated/0/prj/Utility/main/src/math/ComplexNumber.cpp" "CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o.d"
+  "/storage/emulated/0/prj/Utility/main/src/math/Matrix.cpp" "CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o.d"
   "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/bubble_sort.cpp" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/bubble_sort.cpp.o.d"
   "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/insertion_sort.cpp" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/insertion_sort.cpp.o.d"
   "/storage/emulated/0/prj/Utility/main/src/sorting/algorithm/merge_sort.cpp" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o" "gcc" "CMakeFiles/Utility.dir/main/src/sorting/algorithm/merge_sort.cpp.o.d"

@@ -161,7 +161,7 @@ CMakeFiles/Utility_test.dir/test/src/main.cpp.o: test/src/main.cpp \
 
 CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: test/src/math/function/extraction_test.cpp \
   main/include/math/BigInteger.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iostream \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -310,8 +310,6 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: test/s
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/support/android/locale_bionic.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/streambuf \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/locale \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstdarg \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bsd_locale_fallbacks.h \
@@ -319,8 +317,10 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: test/s
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bit_reference \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/vector \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__split_buffer \
+  main/include/unit.hpp \
   test/include/util/simple_clock.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iomanip
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iomanip \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream
 
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: test/src/math/math_test.cpp \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstring \
@@ -488,7 +488,7 @@ CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: test/src/math/math_te
 
 CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: test/src/math/test/BigInteger_test.cpp \
   main/include/math/BigInteger.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iostream \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -637,8 +637,6 @@ CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: test/src/m
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/support/android/locale_bionic.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/streambuf \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/locale \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstdarg \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bsd_locale_fallbacks.h \
@@ -646,13 +644,15 @@ CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: test/src/m
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bit_reference \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/vector \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__split_buffer \
+  main/include/unit.hpp \
   test/include/util/simple_clock.hpp \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cmath \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iomanip \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/sstream
 
-CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: test/src/math/test/complex_number_test.cpp \
-  main/include/math/complex_number.hpp \
+CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: test/src/math/test/Matrix_test.cpp \
+  main/include/math/Matrix.hpp \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
@@ -807,13 +807,14 @@ CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: test/s
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bsd_locale_fallbacks.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/bitset \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bit_reference \
-  test/include/util/simple_clock.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iostream \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/vector \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__split_buffer \
+  main/include/unit.hpp \
+  test/include/util/simple_clock.hpp
 
-CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o: test/src/math/test/matrix_test.cpp \
-  main/include/math/matrix.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/initializer_list \
+CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: test/src/math/test/complex_number_test.cpp \
+  main/include/math/ComplexNumber.hpp \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -822,12 +823,6 @@ CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o: test/src/math/
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/ndk-version.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/pthread.h \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstddef \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/version \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__nullptr \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ios \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iosfwd \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/wchar.h \
@@ -838,6 +833,9 @@ CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o: test/src/math/
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdio.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stddef.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__nullptr \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stdint.h \
   /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdint.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdint.h \
@@ -892,6 +890,9 @@ CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o: test/src/math/
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/string_view \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__string \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/algorithm \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/initializer_list \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstddef \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/version \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/type_traits \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstring \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/string.h \
@@ -1536,8 +1537,6 @@ main/include/sorting/sorter.hpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/fcntl.h:
 
-main/include/math/matrix.hpp:
-
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/endian.h:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/swab.h:
@@ -1565,6 +1564,10 @@ test/include/util/clock_adjustment.hpp:
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/posix_types.h:
 
 test/src/mining/mining_pool_test.c:
+
+/data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stddef.h:
+
+main/include/math/ComplexNumber.hpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/legacy_errno_inlines.h:
 
@@ -1608,6 +1611,8 @@ test/src/math/test/BigInteger_test.cpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h:
 
+main/include/math/Matrix.hpp:
+
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/lockf.h:
 
 /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cerrno:
@@ -1624,6 +1629,8 @@ test/src/math/test/BigInteger_test.cpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/wctype.h:
 
+main/include/unit.hpp:
+
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/ctype_inlines.h:
 
 /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cwchar:
@@ -1636,11 +1643,11 @@ test/src/math/test/BigInteger_test.cpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/sched.h:
 
-main/include/math/complex_number.hpp:
-
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/errno-base.h:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/errno.h:
+
+test/src/math/test/Matrix_test.cpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/errno.h:
 
@@ -1659,8 +1666,6 @@ main/include/math/complex_number.hpp:
 /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stdint.h:
 
 /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/chrono:
-
-test/src/math/test/matrix_test.cpp:
 
 /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__threading_support:
 
@@ -1893,8 +1898,6 @@ test/src/math/test/complex_number_test.cpp:
 /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/socket.h:
 
 /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h:
-
-/data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stddef.h:
 
 /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h:
 

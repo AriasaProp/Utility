@@ -1,6 +1,6 @@
 CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: \
   /storage/emulated/0/prj/Utility/test/src/math/test/complex_number_test.cpp \
-  /storage/emulated/0/prj/Utility/main/include/math/complex_number.hpp \
+  /storage/emulated/0/prj/Utility/main/include/math/ComplexNumber.hpp \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \

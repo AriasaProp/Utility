@@ -1,0 +1,7 @@
+A 2+3i 3+4i 5+7i #complex addition
+A 2.0+3.0i 3.0+4.0i 5.0+7.0i #complex addition
+A i i 2i #complex addition
+B -6+8i 7-i -13+9i #complex subtraction
+C -1+2i 4-4i 4+12i #complex multiplication
+D 7+14i 1+2i 7 #complex division
+E 2+3i 5 122-597i #complex power

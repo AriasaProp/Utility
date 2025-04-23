@@ -1,61 +1,59 @@
 #ifndef _MATRIX_INCLUDED_
 #define _MATRIX_INCLUDED_
 
-#include <initializer_list>
 #include <ostream>
-#include <cstdint>
-#include <cstdlib>
+#include <vector>
+
+#include "unit.hpp"
+
+typedef double vs; // value system
 
 /*
-   Rows ->
-Cols
- |       a    b    c    d ....
- v       aa   ab   ac   ad .....
-         ba   bb   bc   bd .....
-       .... ..... .... ... .....
-       ...a  ..b  ..c  ..d .....
+Matrix
+
+format M[cols rows]{<value>}
+
 */
 
-struct matrix2D {
+struct Matrix {
 private:
   size_t cols, rows;
-  float *data;
+  vs *data;
 
 public:
   // constructors
-  matrix2D ();
-  matrix2D (const matrix2D &);
-  matrix2D (size_t, size_t, const std::initializer_list<float>);
-  matrix2D (size_t, size_t, const float *);
+  Matrix ();
+  Matrix (size_t, size_t);
+  Matrix (size_t, size_t, vs*);
+  Matrix (const char *);
+  Matrix (const Matrix &);
   // destructors
-  ~matrix2D ();
-  // unique function
-  matrix2D &identity ();
-  matrix2D inverse () const;
-  float det () const;
+  ~Matrix ();
   // operators function
-  float &operator() (size_t, size_t);
+  double &operator[] (const size_t) const;
+  double &operator() (const size_t, const size_t) const;
+  // unique function
+  friend Matrix identity (const Matrix&);
+  friend Matrix inverse (const Matrix&);
   // operator compare
-  bool operator== (const matrix2D &) const;
-  bool operator!= (const matrix2D &) const;
+  friend bool operator== (const Matrix&, const Matrix&);
+  friend bool operator!= (const Matrix&, const Matrix&);
   // operators math
-  matrix2D &operator= (const matrix2D &);
-  matrix2D operator+ (const matrix2D &) const;
-  matrix2D &operator+= (const matrix2D);
-  matrix2D operator- (const matrix2D &) const;
-  matrix2D &operator-= (const matrix2D);
-  matrix2D operator* (const float &) const;
-  matrix2D &operator*= (const float &);
-  matrix2D operator* (const matrix2D &) const;
-  matrix2D &operator*= (const matrix2D);
-  matrix2D operator/ (const float &) const;
-  matrix2D &operator/= (const float &);
-  matrix2D operator/ (const matrix2D &) const;
-  matrix2D &operator/= (const matrix2D);
+  Matrix &operator= (const Matrix);
+  friend Matrix operator+ (const Matrix&, const Matrix);
+  friend Matrix &operator+= (Matrix&, const Matrix);
+  friend Matrix operator- (const Matrix&, const Matrix);
+  friend Matrix &operator-= (Matrix&, const Matrix);
+  friend Matrix operator* (const Matrix&, const double);
+  friend Matrix &operator*= (Matrix&, const double);
+  friend Matrix operator* (const Matrix&, const Matrix);
+  friend Matrix &operator*= (Matrix&, const Matrix);
+  friend Matrix operator/ (const Matrix&, const double);
+  friend Matrix &operator/= (Matrix&, const double);
+  friend Matrix operator/ (const Matrix&, const Matrix);
+  friend Matrix &operator/= (Matrix&, const Matrix);
   /** stream operator **/
-  friend std::ostream &operator<< (std::ostream &, const matrix2D&);
-  // helper
-  size_t size () const;
+  friend std::ostream &operator<< (std::ostream &, const Matrix&);
 };
 
 #endif //_MATRIX_INCLUDED_

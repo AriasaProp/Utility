@@ -116,19 +116,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named Utility_sdl
-
-# Build rule for target.
-Utility_sdl: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Utility_sdl
-.PHONY : Utility_sdl
-
-# fast build rule for target.
-Utility_sdl/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_sdl.dir/build.make CMakeFiles/Utility_sdl.dir/build
-.PHONY : Utility_sdl/fast
-
-#=============================================================================
 # Target rules for targets named Utility_test
 
 # Build rule for target.
@@ -153,6 +140,30 @@ Utility: cmake_check_build_system
 Utility/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/build
 .PHONY : Utility/fast
+
+main/src/codec/json.o: main/src/codec/json.cpp.o
+.PHONY : main/src/codec/json.o
+
+# target to build an object file
+main/src/codec/json.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/codec/json.cpp.o
+.PHONY : main/src/codec/json.cpp.o
+
+main/src/codec/json.i: main/src/codec/json.cpp.i
+.PHONY : main/src/codec/json.i
+
+# target to preprocess a source file
+main/src/codec/json.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/codec/json.cpp.i
+.PHONY : main/src/codec/json.cpp.i
+
+main/src/codec/json.s: main/src/codec/json.cpp.s
+.PHONY : main/src/codec/json.s
+
+# target to generate assembly for a file
+main/src/codec/json.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/codec/json.cpp.s
+.PHONY : main/src/codec/json.cpp.s
 
 main/src/math/BigDecimal.o: main/src/math/BigDecimal.cpp.o
 .PHONY : main/src/math/BigDecimal.o
@@ -202,53 +213,53 @@ main/src/math/BigInteger.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.s
 .PHONY : main/src/math/BigInteger.cpp.s
 
-main/src/math/complex_number.o: main/src/math/complex_number.cpp.o
-.PHONY : main/src/math/complex_number.o
+main/src/math/ComplexNumber.o: main/src/math/ComplexNumber.cpp.o
+.PHONY : main/src/math/ComplexNumber.o
 
 # target to build an object file
-main/src/math/complex_number.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.o
-.PHONY : main/src/math/complex_number.cpp.o
+main/src/math/ComplexNumber.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.o
+.PHONY : main/src/math/ComplexNumber.cpp.o
 
-main/src/math/complex_number.i: main/src/math/complex_number.cpp.i
-.PHONY : main/src/math/complex_number.i
+main/src/math/ComplexNumber.i: main/src/math/ComplexNumber.cpp.i
+.PHONY : main/src/math/ComplexNumber.i
 
 # target to preprocess a source file
-main/src/math/complex_number.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.i
-.PHONY : main/src/math/complex_number.cpp.i
+main/src/math/ComplexNumber.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.i
+.PHONY : main/src/math/ComplexNumber.cpp.i
 
-main/src/math/complex_number.s: main/src/math/complex_number.cpp.s
-.PHONY : main/src/math/complex_number.s
+main/src/math/ComplexNumber.s: main/src/math/ComplexNumber.cpp.s
+.PHONY : main/src/math/ComplexNumber.s
 
 # target to generate assembly for a file
-main/src/math/complex_number.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/complex_number.cpp.s
-.PHONY : main/src/math/complex_number.cpp.s
+main/src/math/ComplexNumber.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/ComplexNumber.cpp.s
+.PHONY : main/src/math/ComplexNumber.cpp.s
 
-main/src/math/matrix.o: main/src/math/matrix.cpp.o
-.PHONY : main/src/math/matrix.o
+main/src/math/Matrix.o: main/src/math/Matrix.cpp.o
+.PHONY : main/src/math/Matrix.o
 
 # target to build an object file
-main/src/math/matrix.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/matrix.cpp.o
-.PHONY : main/src/math/matrix.cpp.o
+main/src/math/Matrix.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.o
+.PHONY : main/src/math/Matrix.cpp.o
 
-main/src/math/matrix.i: main/src/math/matrix.cpp.i
-.PHONY : main/src/math/matrix.i
+main/src/math/Matrix.i: main/src/math/Matrix.cpp.i
+.PHONY : main/src/math/Matrix.i
 
 # target to preprocess a source file
-main/src/math/matrix.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/matrix.cpp.i
-.PHONY : main/src/math/matrix.cpp.i
+main/src/math/Matrix.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.i
+.PHONY : main/src/math/Matrix.cpp.i
 
-main/src/math/matrix.s: main/src/math/matrix.cpp.s
-.PHONY : main/src/math/matrix.s
+main/src/math/Matrix.s: main/src/math/Matrix.cpp.s
+.PHONY : main/src/math/Matrix.s
 
 # target to generate assembly for a file
-main/src/math/matrix.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/matrix.cpp.s
-.PHONY : main/src/math/matrix.cpp.s
+main/src/math/Matrix.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/math/Matrix.cpp.s
+.PHONY : main/src/math/Matrix.cpp.s
 
 main/src/sorting/algorithm/bubble_sort.o: main/src/sorting/algorithm/bubble_sort.cpp.o
 .PHONY : main/src/sorting/algorithm/bubble_sort.o
@@ -346,30 +357,6 @@ main/src/sorting/algorithm/selection_sort.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility.dir/build.make CMakeFiles/Utility.dir/main/src/sorting/algorithm/selection_sort.cpp.s
 .PHONY : main/src/sorting/algorithm/selection_sort.cpp.s
 
-sdl/src/main.o: sdl/src/main.cpp.o
-.PHONY : sdl/src/main.o
-
-# target to build an object file
-sdl/src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_sdl.dir/build.make CMakeFiles/Utility_sdl.dir/sdl/src/main.cpp.o
-.PHONY : sdl/src/main.cpp.o
-
-sdl/src/main.i: sdl/src/main.cpp.i
-.PHONY : sdl/src/main.i
-
-# target to preprocess a source file
-sdl/src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_sdl.dir/build.make CMakeFiles/Utility_sdl.dir/sdl/src/main.cpp.i
-.PHONY : sdl/src/main.cpp.i
-
-sdl/src/main.s: sdl/src/main.cpp.s
-.PHONY : sdl/src/main.s
-
-# target to generate assembly for a file
-sdl/src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_sdl.dir/build.make CMakeFiles/Utility_sdl.dir/sdl/src/main.cpp.s
-.PHONY : sdl/src/main.cpp.s
-
 test/src/main.o: test/src/main.cpp.o
 .PHONY : test/src/main.o
 
@@ -466,6 +453,30 @@ test/src/math/test/BigInteger_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.s
 .PHONY : test/src/math/test/BigInteger_test.cpp.s
 
+test/src/math/test/Matrix_test.o: test/src/math/test/Matrix_test.cpp.o
+.PHONY : test/src/math/test/Matrix_test.o
+
+# target to build an object file
+test/src/math/test/Matrix_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o
+.PHONY : test/src/math/test/Matrix_test.cpp.o
+
+test/src/math/test/Matrix_test.i: test/src/math/test/Matrix_test.cpp.i
+.PHONY : test/src/math/test/Matrix_test.i
+
+# target to preprocess a source file
+test/src/math/test/Matrix_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.i
+.PHONY : test/src/math/test/Matrix_test.cpp.i
+
+test/src/math/test/Matrix_test.s: test/src/math/test/Matrix_test.cpp.s
+.PHONY : test/src/math/test/Matrix_test.s
+
+# target to generate assembly for a file
+test/src/math/test/Matrix_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.s
+.PHONY : test/src/math/test/Matrix_test.cpp.s
+
 test/src/math/test/complex_number_test.o: test/src/math/test/complex_number_test.cpp.o
 .PHONY : test/src/math/test/complex_number_test.o
 
@@ -489,30 +500,6 @@ test/src/math/test/complex_number_test.s: test/src/math/test/complex_number_test
 test/src/math/test/complex_number_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.s
 .PHONY : test/src/math/test/complex_number_test.cpp.s
-
-test/src/math/test/matrix_test.o: test/src/math/test/matrix_test.cpp.o
-.PHONY : test/src/math/test/matrix_test.o
-
-# target to build an object file
-test/src/math/test/matrix_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.o
-.PHONY : test/src/math/test/matrix_test.cpp.o
-
-test/src/math/test/matrix_test.i: test/src/math/test/matrix_test.cpp.i
-.PHONY : test/src/math/test/matrix_test.i
-
-# target to preprocess a source file
-test/src/math/test/matrix_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.i
-.PHONY : test/src/math/test/matrix_test.cpp.i
-
-test/src/math/test/matrix_test.s: test/src/math/test/matrix_test.cpp.s
-.PHONY : test/src/math/test/matrix_test.s
-
-# target to generate assembly for a file
-test/src/math/test/matrix_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/matrix_test.cpp.s
-.PHONY : test/src/math/test/matrix_test.cpp.s
 
 test/src/mining/mining_pool_test.o: test/src/mining/mining_pool_test.c.o
 .PHONY : test/src/mining/mining_pool_test.o
@@ -619,20 +606,22 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Utility"
-	@echo "... Utility_sdl"
 	@echo "... Utility_test"
+	@echo "... main/src/codec/json.o"
+	@echo "... main/src/codec/json.i"
+	@echo "... main/src/codec/json.s"
 	@echo "... main/src/math/BigDecimal.o"
 	@echo "... main/src/math/BigDecimal.i"
 	@echo "... main/src/math/BigDecimal.s"
 	@echo "... main/src/math/BigInteger.o"
 	@echo "... main/src/math/BigInteger.i"
 	@echo "... main/src/math/BigInteger.s"
-	@echo "... main/src/math/complex_number.o"
-	@echo "... main/src/math/complex_number.i"
-	@echo "... main/src/math/complex_number.s"
-	@echo "... main/src/math/matrix.o"
-	@echo "... main/src/math/matrix.i"
-	@echo "... main/src/math/matrix.s"
+	@echo "... main/src/math/ComplexNumber.o"
+	@echo "... main/src/math/ComplexNumber.i"
+	@echo "... main/src/math/ComplexNumber.s"
+	@echo "... main/src/math/Matrix.o"
+	@echo "... main/src/math/Matrix.i"
+	@echo "... main/src/math/Matrix.s"
 	@echo "... main/src/sorting/algorithm/bubble_sort.o"
 	@echo "... main/src/sorting/algorithm/bubble_sort.i"
 	@echo "... main/src/sorting/algorithm/bubble_sort.s"
@@ -645,9 +634,6 @@ help:
 	@echo "... main/src/sorting/algorithm/selection_sort.o"
 	@echo "... main/src/sorting/algorithm/selection_sort.i"
 	@echo "... main/src/sorting/algorithm/selection_sort.s"
-	@echo "... sdl/src/main.o"
-	@echo "... sdl/src/main.i"
-	@echo "... sdl/src/main.s"
 	@echo "... test/src/main.o"
 	@echo "... test/src/main.i"
 	@echo "... test/src/main.s"
@@ -660,12 +646,12 @@ help:
 	@echo "... test/src/math/test/BigInteger_test.o"
 	@echo "... test/src/math/test/BigInteger_test.i"
 	@echo "... test/src/math/test/BigInteger_test.s"
+	@echo "... test/src/math/test/Matrix_test.o"
+	@echo "... test/src/math/test/Matrix_test.i"
+	@echo "... test/src/math/test/Matrix_test.s"
 	@echo "... test/src/math/test/complex_number_test.o"
 	@echo "... test/src/math/test/complex_number_test.i"
 	@echo "... test/src/math/test/complex_number_test.s"
-	@echo "... test/src/math/test/matrix_test.o"
-	@echo "... test/src/math/test/matrix_test.i"
-	@echo "... test/src/math/test/matrix_test.s"
 	@echo "... test/src/mining/mining_pool_test.o"
 	@echo "... test/src/mining/mining_pool_test.i"
 	@echo "... test/src/mining/mining_pool_test.s"
