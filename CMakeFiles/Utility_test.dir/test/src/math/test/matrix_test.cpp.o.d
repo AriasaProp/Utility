@@ -158,4 +158,4 @@ CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/vector \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__split_buffer \
   /storage/emulated/0/prj/Utility/main/include/unit.hpp \
-  /storage/emulated/0/prj/Utility/test/include/util/simple_clock.hpp
+  /storage/emulated/0/prj/Utility/test/include/simple_profiling.hpp

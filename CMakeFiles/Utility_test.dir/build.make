@@ -82,19 +82,19 @@ CMakeFiles/Utility_test.dir/test/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/main.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/main.cpp -o CMakeFiles/Utility_test.dir/test/src/main.cpp.s
 
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: test/src/math/function/extraction_test.cpp
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp
+CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
+CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o: test/src/math/BigInteger_test.cpp
+CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp
 
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp > CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.i
+CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp > CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.i
 
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.s
+CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s
 
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: test/src/math/math_test.cpp
@@ -110,24 +110,10 @@ CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s
 
-CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
-CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: test/src/math/test/BigInteger_test.cpp
-CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp
-
-CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp > CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.i
-
-CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.s
-
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: test/src/math/test/Matrix_test.cpp
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/Matrix_test.cpp
 
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.i: cmake_force
@@ -141,7 +127,7 @@ CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.s: cmake_force
 CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: test/src/math/test/complex_number_test.cpp
 CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/complex_number_test.cpp
 
 CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.i: cmake_force
@@ -155,7 +141,7 @@ CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.s: cmake_
 CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o: test/src/mining/mining_pool_test.c
 CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o -MF CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o.d -o CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o -c /storage/emulated/0/prj/Utility/test/src/mining/mining_pool_test.c
 
 CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.i: cmake_force
@@ -165,6 +151,20 @@ CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.i: cmake_force
 CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/mining/mining_pool_test.c -o CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.s
+
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o: CMakeFiles/Utility_test.dir/flags.make
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o: test/src/simple_profiling.cpp
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o -c /storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp
+
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp > CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.i
+
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp -o CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.s
 
 CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o: test/src/sorting/sorting_test.cpp
@@ -180,64 +180,32 @@ CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp -o CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.s
 
-CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o: CMakeFiles/Utility_test.dir/flags.make
-CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o: test/src/util/clock_adjustment.cpp
-CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp
-
-CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp > CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.i
-
-CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp -o CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.s
-
-CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o: CMakeFiles/Utility_test.dir/flags.make
-CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o: test/src/util/simple_clock.cpp
-CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp
-
-CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp > CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.i
-
-CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp -o CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.s
-
 # Object files for target Utility_test
 Utility_test_OBJECTS = \
 "CMakeFiles/Utility_test.dir/test/src/main.cpp.o" \
-"CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o" \
+"CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o" \
-"CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o" \
-"CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o" \
-"CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o" \
-"CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o"
+"CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o" \
+"CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o"
 
 # External object files for target Utility_test
 Utility_test_EXTERNAL_OBJECTS =
 
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/main.cpp.o
-build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o
+build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o
-build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o
+build/Utility_test: CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o
-build/Utility_test: CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o
-build/Utility_test: CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/build.make
 build/Utility_test: libUtility.a
 build/Utility_test: CMakeFiles/Utility_test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable build/Utility_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable build/Utility_test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Utility_test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

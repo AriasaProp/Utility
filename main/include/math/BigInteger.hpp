@@ -1,18 +1,19 @@
 #ifndef Included_Big_Integer
 #define Included_Big_Integer
 
-#include <ostream>
-#include <deque>
-
 #include "unit.hpp"
 
+#include <iostream>
+#include <vector>
+
 using word = unsigned int;
+using wstack = std::vector<word>;
 
 struct BigInteger {
 private:
   // values
   bool neg = false;
-  std::deque<word> words;
+  wstack words;
 
 public:
   /** Constructors **/
@@ -20,7 +21,7 @@ public:
   BigInteger (const BigInteger &);
   BigInteger (const signed);
   BigInteger (const char *);
-  BigInteger (const std::deque<word>, bool);
+  BigInteger (const wstack&, bool);
   /** Destructor **/
   ~BigInteger ();
   /** operator casting **/
@@ -29,12 +30,12 @@ public:
   // operator double() const;
   /** math operational function **/
   BigInteger sqrt () const;
-  BigInteger pow (size_t) const;
+  BigInteger pow (word) const;
   // returning division result and this has remaining
   BigInteger div_mod (const BigInteger);
   /** re-initialize operational function **/
   BigInteger &operator= (const signed);
-  BigInteger &operator= (const BigInteger);
+  BigInteger &operator= (const BigInteger &);
   /** compare operator function **/
   friend bool operator== (const BigInteger &, const signed);
   friend bool operator!= (const BigInteger &, const signed);
@@ -61,10 +62,8 @@ public:
   BigInteger &operator*= (const BigInteger);
   BigInteger &operator/= (const BigInteger);
   BigInteger &operator%= (const BigInteger);
-  /** safe bitwise operand **/
-  friend BigInteger &operator>>= (BigInteger &, size_t);
-  friend BigInteger &operator<<= (BigInteger &, size_t);
   /** new object generate, operator function **/
+  BigInteger operator- () const;
   BigInteger operator+ (const signed) const;
   BigInteger operator- (const signed) const;
   BigInteger operator* (const signed) const;
@@ -75,10 +74,6 @@ public:
   BigInteger operator* (const BigInteger) const;
   BigInteger operator/ (const BigInteger) const;
   BigInteger operator% (const BigInteger) const;
-  BigInteger operator- () const;
-  /** new object generate, bitwise operand **/
-  friend BigInteger operator>> (const BigInteger &, size_t);
-  friend BigInteger operator<< (const BigInteger &, size_t);
   /** stream operator **/
   friend std::ostream &operator<< (std::ostream &, const BigInteger);
 };

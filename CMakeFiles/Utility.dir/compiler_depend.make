@@ -229,7 +229,8 @@ CMakeFiles/Utility.dir/main/src/math/BigDecimal.cpp.o: main/src/math/BigDecimal.
 
 CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.cpp \
   main/include/math/BigInteger.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
+  main/include/unit.hpp \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstdint \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -238,6 +239,15 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/ndk-version.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/pthread.h \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stdint.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdint.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdint.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/wchar_limits.h \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stddef.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__nullptr \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ios \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/iosfwd \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/wchar.h \
@@ -247,14 +257,6 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/stdio.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdio.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/types.h \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stddef.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__nullptr \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/stdint.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdint.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdint.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/wchar_limits.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/types.h \
@@ -316,7 +318,6 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/strings.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/utility \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__tuple \
-  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstdint \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__debug \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/memory \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/typeinfo \
@@ -378,6 +379,8 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/support/android/locale_bionic.h \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/streambuf \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/istream \
+  /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/locale \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cstdarg \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bsd_locale_fallbacks.h \
@@ -385,7 +388,6 @@ CMakeFiles/Utility.dir/main/src/math/BigInteger.cpp.o: main/src/math/BigInteger.
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__bit_reference \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/vector \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/__split_buffer \
-  main/include/unit.hpp \
   main/include/common.hpp \
   /data/user/0/ru.iiec.cxxdroid/files/include/c++/4.9.x/cmath
 

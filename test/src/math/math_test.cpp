@@ -10,10 +10,11 @@ char text_buffer[2048];
 const char *data_address = "data/math";
 
 extern bool BigInteger_test ();
-extern bool matrix_test ();
-extern bool ComplexNumber_test ();
-
 extern bool extraction_test ();
+
+extern bool ComplexNumber_test ();
+extern bool Matrix_test ();
+
 
 void math_test () {
   //strcpy (text_buffer, args[1]);
@@ -28,12 +29,10 @@ void math_test () {
   output_file = (std::ostream *)&std::cout;
   
   bool TestSucces = 
-      // basic class test
       BigInteger_test () &&
+      
       ComplexNumber_test () &&
-      matrix_test () &&
-      // performance function test
-      extraction_test ()
+      Matrix_test ()
       // others ...
       ;
   if (!TestSucces) std::cerr << "Test error" << std::endl;

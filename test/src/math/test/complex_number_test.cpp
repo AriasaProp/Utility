@@ -1,5 +1,5 @@
 #include "math/ComplexNumber.hpp"
-#include "util/simple_clock.hpp"
+#include "simple_profiling.hpp"
 
 #include <ostream>
 #include <iostream>

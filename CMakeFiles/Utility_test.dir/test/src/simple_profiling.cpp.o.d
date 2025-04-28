@@ -1,8 +1,7 @@
-CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
-  /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp \
-  /storage/emulated/0/prj/Utility/main/include/math/BigInteger.hpp \
-  /storage/emulated/0/prj/Utility/main/include/unit.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/cstdint \
+CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o: \
+  /storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp \
+  /storage/emulated/0/prj/Utility/test/include/simple_profiling.hpp \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ctime \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__config \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/features.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/cdefs.h \
@@ -11,24 +10,17 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/ndk-version.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/pthread.h \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/stdint.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdint.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdint.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/wchar_limits.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/time.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/time.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/stddef.h \
   /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stddef.h \
   /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/__stddef_max_align_t.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__nullptr \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iostream \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ios \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iosfwd \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/wchar.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/wchar.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/wchar.h \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/stdio.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/stdio.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdio.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/types.h \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/stdint.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdint.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdint.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/wchar_limits.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/types.h \
@@ -42,11 +34,6 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/posix_types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/posix_types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/pthread_types.h \
-  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdarg.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/seek_constants.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/struct_file.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/time.h \
-  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/time.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/time.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/time_types.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/select.h \
@@ -72,6 +59,18 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/user.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/android/legacy_signal_inlines.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/xlocale.h \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ostream \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ios \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iosfwd \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/wchar.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/wchar.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/wchar.h \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/stdio.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/local/include/stdio.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/stdio.h \
+  /data/data/ru.iiec.cxxdroid/files/lib/clang/9.0.1/include/stdarg.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/seek_constants.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/struct_file.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/mbstate_t.h \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/bits/wctype.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__locale \
@@ -90,6 +89,7 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/strings.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/utility \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__tuple \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/cstdint \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__debug \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/memory \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/typeinfo \
@@ -116,7 +116,6 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/atomic \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__threading_support \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/chrono \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ctime \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ratio \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/climits \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/errno.h \
@@ -151,14 +150,15 @@ CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/locale.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/support/android/locale_bionic.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/streambuf \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/istream \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/ostream \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/locale \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/cstdarg \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bsd_locale_fallbacks.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/bitset \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bit_reference \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/vector \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__split_buffer \
-  /storage/emulated/0/prj/Utility/test/include/simple_profiling.hpp \
-  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iomanip
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/sys/resource.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/linux/resource.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/aarch64-linux-android/asm/resource.h \
+  /data/user/0/ru.iiec.cxxdroid/files/sysroot/usr/include/asm-generic/resource.h \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iomanip \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/istream \
+  /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/sstream

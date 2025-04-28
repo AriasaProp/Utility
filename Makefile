@@ -381,29 +381,29 @@ test/src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/main.cpp.s
 .PHONY : test/src/main.cpp.s
 
-test/src/math/function/extraction_test.o: test/src/math/function/extraction_test.cpp.o
-.PHONY : test/src/math/function/extraction_test.o
+test/src/math/BigInteger_test.o: test/src/math/BigInteger_test.cpp.o
+.PHONY : test/src/math/BigInteger_test.o
 
 # target to build an object file
-test/src/math/function/extraction_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o
-.PHONY : test/src/math/function/extraction_test.cpp.o
+test/src/math/BigInteger_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o
+.PHONY : test/src/math/BigInteger_test.cpp.o
 
-test/src/math/function/extraction_test.i: test/src/math/function/extraction_test.cpp.i
-.PHONY : test/src/math/function/extraction_test.i
+test/src/math/BigInteger_test.i: test/src/math/BigInteger_test.cpp.i
+.PHONY : test/src/math/BigInteger_test.i
 
 # target to preprocess a source file
-test/src/math/function/extraction_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.i
-.PHONY : test/src/math/function/extraction_test.cpp.i
+test/src/math/BigInteger_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.i
+.PHONY : test/src/math/BigInteger_test.cpp.i
 
-test/src/math/function/extraction_test.s: test/src/math/function/extraction_test.cpp.s
-.PHONY : test/src/math/function/extraction_test.s
+test/src/math/BigInteger_test.s: test/src/math/BigInteger_test.cpp.s
+.PHONY : test/src/math/BigInteger_test.s
 
 # target to generate assembly for a file
-test/src/math/function/extraction_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.s
-.PHONY : test/src/math/function/extraction_test.cpp.s
+test/src/math/BigInteger_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s
+.PHONY : test/src/math/BigInteger_test.cpp.s
 
 test/src/math/math_test.o: test/src/math/math_test.cpp.o
 .PHONY : test/src/math/math_test.o
@@ -428,30 +428,6 @@ test/src/math/math_test.s: test/src/math/math_test.cpp.s
 test/src/math/math_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s
 .PHONY : test/src/math/math_test.cpp.s
-
-test/src/math/test/BigInteger_test.o: test/src/math/test/BigInteger_test.cpp.o
-.PHONY : test/src/math/test/BigInteger_test.o
-
-# target to build an object file
-test/src/math/test/BigInteger_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o
-.PHONY : test/src/math/test/BigInteger_test.cpp.o
-
-test/src/math/test/BigInteger_test.i: test/src/math/test/BigInteger_test.cpp.i
-.PHONY : test/src/math/test/BigInteger_test.i
-
-# target to preprocess a source file
-test/src/math/test/BigInteger_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.i
-.PHONY : test/src/math/test/BigInteger_test.cpp.i
-
-test/src/math/test/BigInteger_test.s: test/src/math/test/BigInteger_test.cpp.s
-.PHONY : test/src/math/test/BigInteger_test.s
-
-# target to generate assembly for a file
-test/src/math/test/BigInteger_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.s
-.PHONY : test/src/math/test/BigInteger_test.cpp.s
 
 test/src/math/test/Matrix_test.o: test/src/math/test/Matrix_test.cpp.o
 .PHONY : test/src/math/test/Matrix_test.o
@@ -525,6 +501,30 @@ test/src/mining/mining_pool_test.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.s
 .PHONY : test/src/mining/mining_pool_test.c.s
 
+test/src/simple_profiling.o: test/src/simple_profiling.cpp.o
+.PHONY : test/src/simple_profiling.o
+
+# target to build an object file
+test/src/simple_profiling.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o
+.PHONY : test/src/simple_profiling.cpp.o
+
+test/src/simple_profiling.i: test/src/simple_profiling.cpp.i
+.PHONY : test/src/simple_profiling.i
+
+# target to preprocess a source file
+test/src/simple_profiling.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.i
+.PHONY : test/src/simple_profiling.cpp.i
+
+test/src/simple_profiling.s: test/src/simple_profiling.cpp.s
+.PHONY : test/src/simple_profiling.s
+
+# target to generate assembly for a file
+test/src/simple_profiling.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.s
+.PHONY : test/src/simple_profiling.cpp.s
+
 test/src/sorting/sorting_test.o: test/src/sorting/sorting_test.cpp.o
 .PHONY : test/src/sorting/sorting_test.o
 
@@ -548,54 +548,6 @@ test/src/sorting/sorting_test.s: test/src/sorting/sorting_test.cpp.s
 test/src/sorting/sorting_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.s
 .PHONY : test/src/sorting/sorting_test.cpp.s
-
-test/src/util/clock_adjustment.o: test/src/util/clock_adjustment.cpp.o
-.PHONY : test/src/util/clock_adjustment.o
-
-# target to build an object file
-test/src/util/clock_adjustment.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o
-.PHONY : test/src/util/clock_adjustment.cpp.o
-
-test/src/util/clock_adjustment.i: test/src/util/clock_adjustment.cpp.i
-.PHONY : test/src/util/clock_adjustment.i
-
-# target to preprocess a source file
-test/src/util/clock_adjustment.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.i
-.PHONY : test/src/util/clock_adjustment.cpp.i
-
-test/src/util/clock_adjustment.s: test/src/util/clock_adjustment.cpp.s
-.PHONY : test/src/util/clock_adjustment.s
-
-# target to generate assembly for a file
-test/src/util/clock_adjustment.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.s
-.PHONY : test/src/util/clock_adjustment.cpp.s
-
-test/src/util/simple_clock.o: test/src/util/simple_clock.cpp.o
-.PHONY : test/src/util/simple_clock.o
-
-# target to build an object file
-test/src/util/simple_clock.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o
-.PHONY : test/src/util/simple_clock.cpp.o
-
-test/src/util/simple_clock.i: test/src/util/simple_clock.cpp.i
-.PHONY : test/src/util/simple_clock.i
-
-# target to preprocess a source file
-test/src/util/simple_clock.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.i
-.PHONY : test/src/util/simple_clock.cpp.i
-
-test/src/util/simple_clock.s: test/src/util/simple_clock.cpp.s
-.PHONY : test/src/util/simple_clock.s
-
-# target to generate assembly for a file
-test/src/util/simple_clock.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.s
-.PHONY : test/src/util/simple_clock.cpp.s
 
 # Help Target
 help:
@@ -637,15 +589,12 @@ help:
 	@echo "... test/src/main.o"
 	@echo "... test/src/main.i"
 	@echo "... test/src/main.s"
-	@echo "... test/src/math/function/extraction_test.o"
-	@echo "... test/src/math/function/extraction_test.i"
-	@echo "... test/src/math/function/extraction_test.s"
+	@echo "... test/src/math/BigInteger_test.o"
+	@echo "... test/src/math/BigInteger_test.i"
+	@echo "... test/src/math/BigInteger_test.s"
 	@echo "... test/src/math/math_test.o"
 	@echo "... test/src/math/math_test.i"
 	@echo "... test/src/math/math_test.s"
-	@echo "... test/src/math/test/BigInteger_test.o"
-	@echo "... test/src/math/test/BigInteger_test.i"
-	@echo "... test/src/math/test/BigInteger_test.s"
 	@echo "... test/src/math/test/Matrix_test.o"
 	@echo "... test/src/math/test/Matrix_test.i"
 	@echo "... test/src/math/test/Matrix_test.s"
@@ -655,15 +604,12 @@ help:
 	@echo "... test/src/mining/mining_pool_test.o"
 	@echo "... test/src/mining/mining_pool_test.i"
 	@echo "... test/src/mining/mining_pool_test.s"
+	@echo "... test/src/simple_profiling.o"
+	@echo "... test/src/simple_profiling.i"
+	@echo "... test/src/simple_profiling.s"
 	@echo "... test/src/sorting/sorting_test.o"
 	@echo "... test/src/sorting/sorting_test.i"
 	@echo "... test/src/sorting/sorting_test.s"
-	@echo "... test/src/util/clock_adjustment.o"
-	@echo "... test/src/util/clock_adjustment.i"
-	@echo "... test/src/util/clock_adjustment.s"
-	@echo "... test/src/util/simple_clock.o"
-	@echo "... test/src/util/simple_clock.i"
-	@echo "... test/src/util/simple_clock.s"
 .PHONY : help
 
 

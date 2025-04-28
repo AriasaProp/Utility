@@ -1,0 +1,47 @@
+BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
+
+  char extract () override {
+    // do math
+    while (q * 4 + r - t >= t * n) {
+      t *= l;
+      n = k;
+      n *= 7;
+      n += 2;
+      n *= q;
+      n += r * l;
+      n /= t;
+      r += q * 2;
+      r *= l;
+      q *= k;
+      ++k;
+      l += 2;
+    }
+    char result = static_cast<char> ((int)n);
+    q *= 10;
+    r -= t * n;
+    r *= 10;
+    n = q;
+    n *= 3;
+    n += r;
+    n /= t;
+    return result;
+  }
+
+q = 1 r = 6 t = 3 k = 2 l = 5 n = 3
+
+check (q * 4 + r - t >= t * n)
+check (1 * 4 + 6 - 3 >= 3 * 3)
+check (7 >= 9) x
+
+out n, 3
+q = 10 r = -30 n = 0
+check (7 >= 0) √
+t = 15;
+n = (q * (k * 7 + 2) + (r * l)) / t;
+n = 3;
+
+r += q * 2;
+r *= l;
+q *= k;
+++k;
+l += 2;

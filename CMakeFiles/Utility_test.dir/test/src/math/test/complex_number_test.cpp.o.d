@@ -155,6 +155,6 @@ CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o: \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bsd_locale_fallbacks.h \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/bitset \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/__bit_reference \
-  /storage/emulated/0/prj/Utility/test/include/util/simple_clock.hpp \
+  /storage/emulated/0/prj/Utility/test/include/simple_profiling.hpp \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/iostream \
   /data/user/0/ru.iiec.cxxdroid/files/bin/../lib/gcc/aarch64-linux-android/4.9.x/../../../../include/c++/4.9.x/istream

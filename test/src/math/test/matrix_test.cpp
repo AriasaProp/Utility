@@ -1,12 +1,12 @@
 #include "math/Matrix.hpp"
-#include "util/simple_clock.hpp"
+#include "simple_profiling.hpp"
 
 #include <ostream>
 #include <cstdio>
 
 extern std::ostream *output_file;
 
-bool matrix_test () {
+bool Matrix_test () {
   bool passed = true;
   *output_file << "Matrix: ";
   FILE *file = fopen("data/math/MatrixTest.txt", "r");

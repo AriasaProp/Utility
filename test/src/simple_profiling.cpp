@@ -1,5 +1,6 @@
-#include "util/simple_clock.hpp"
+#include "simple_profiling.hpp"
 
+#include <sys/resource.h>
 #include <iomanip>
 #include <sstream>
 
@@ -39,5 +40,13 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
     ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_US) << "us";
   }
   o << ss.str ();
+  return o;
+}
+
+
+std::ostream &operator<< (std::ostream &o, mem_t &) {
+  static rusage r;
+  getrusage(RUSAGE_SELF, &r);
+  o << "Memory -> max " << r.ru_maxrss << "kB, fail " << r.ru_minflt << "x " << r.ru_majflt << "x"; 
   return o;
 }

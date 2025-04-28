@@ -51,18 +51,13 @@
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp"
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp"
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
   "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp",
   "file": "/storage/emulated/0/prj/Utility/test/src/math/math_test.cpp"
-},
-{
-  "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp"
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
@@ -81,17 +76,12 @@
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o -c /storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp"
+},
+{
+  "directory": "/storage/emulated/0/prj/Utility",
   "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp",
   "file": "/storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp"
-},
-{
-  "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp"
-},
-{
-  "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include -Wall -std=c++17 -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o -c /storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp"
 }
 ]

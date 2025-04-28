@@ -1,5 +1,5 @@
-#ifndef SIMPLE_CLOCK_
-#define SIMPLE_CLOCK_
+#ifndef SIMPLE_PROFILING_
+#define SIMPLE_PROFILING_
 
 #include <ctime>
 #include <ostream>
@@ -21,4 +21,7 @@ public:
   simple_time_t end ();
 };
 
-#endif // SIMPLE_CLOCK_
+static struct mem_t {} mem_a;
+std::ostream &operator<< (std::ostream &, mem_t &);
+
+#endif // SIMPLE_PROFILING_

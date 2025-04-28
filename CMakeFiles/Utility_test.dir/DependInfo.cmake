@@ -10,14 +10,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/storage/emulated/0/prj/Utility/test/src/mining/mining_pool_test.c" "CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o.d"
   "/storage/emulated/0/prj/Utility/test/src/main.cpp" "CMakeFiles/Utility_test.dir/test/src/main.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/main.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/test/src/math/function/extraction_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/function/extraction_test.cpp.o.d"
+  "/storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o.d"
   "/storage/emulated/0/prj/Utility/test/src/math/math_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/test/src/math/test/BigInteger_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/test/BigInteger_test.cpp.o.d"
   "/storage/emulated/0/prj/Utility/test/src/math/test/Matrix_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o.d"
   "/storage/emulated/0/prj/Utility/test/src/math/test/complex_number_test.cpp" "CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/math/test/complex_number_test.cpp.o.d"
+  "/storage/emulated/0/prj/Utility/test/src/simple_profiling.cpp" "CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o.d"
   "/storage/emulated/0/prj/Utility/test/src/sorting/sorting_test.cpp" "CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/sorting/sorting_test.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/test/src/util/clock_adjustment.cpp" "CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/util/clock_adjustment.cpp.o.d"
-  "/storage/emulated/0/prj/Utility/test/src/util/simple_clock.cpp" "CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o" "gcc" "CMakeFiles/Utility_test.dir/test/src/util/simple_clock.cpp.o.d"
   )
 
 # Targets to which this target links.
