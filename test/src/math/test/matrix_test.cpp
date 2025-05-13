@@ -5,16 +5,17 @@
 #include <cstdio>
 
 extern std::ostream *output_file;
+extern char *text_buffer;
+extern const char *data_address;
 
-bool Matrix_test () {
-  bool passed = true;
+void Matrix_test () {
   *output_file << "Matrix: ";
-  FILE *file = fopen("data/math/MatrixTest.txt", "r");
+  sprintf (text_buffer, "%s/MatrixTest.txt", data_address);
+  FILE *file = fopen(text_buffer, "r");
   if (file) {
     size_t counter = 0;
     unsigned int c, r, j, i;
     int ch;
-    char *src = (char*)malloc(4096);
     try {
 #define EXTRACT(N) \
   if (fscanf(file, "[%u %u]", &c, &r) < 2) \
@@ -69,14 +70,10 @@ bool Matrix_test () {
       *output_file << ct.end();
     } catch (const char *e) {
       *output_file << "Err " << counter << " -> " << e;
-      passed = false;
     }
     fclose(file);
-    free(src);
   } else {
-    *output_file << "file I/O error!";
-    passed = false;
+    *output_file << "file I/O error! with " << text_buffer;
   }
   *output_file << std::endl;
-  return passed;
 }

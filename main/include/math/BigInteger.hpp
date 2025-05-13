@@ -30,25 +30,24 @@ public:
   // operator double() const;
   /** math operational function **/
   BigInteger sqrt () const;
-  BigInteger pow (word) const;
   // returning division result and this has remaining
   BigInteger div_mod (const BigInteger);
   /** re-initialize operational function **/
   BigInteger &operator= (const signed);
   BigInteger &operator= (const BigInteger &);
   /** compare operator function **/
-  friend bool operator== (const BigInteger &, const signed);
-  friend bool operator!= (const BigInteger &, const signed);
-  friend bool operator<= (const BigInteger &, const signed);
-  friend bool operator>= (const BigInteger &, const signed);
-  friend bool operator<  (const BigInteger &, const signed);
-  friend bool operator>  (const BigInteger &, const signed);
-  friend bool operator== (const BigInteger &, const BigInteger);
-  friend bool operator!= (const BigInteger &, const BigInteger);
-  friend bool operator<= (const BigInteger &, const BigInteger);
-  friend bool operator>= (const BigInteger &, const BigInteger);
-  friend bool operator<  (const BigInteger &, const BigInteger);
-  friend bool operator>  (const BigInteger &, const BigInteger);
+  bool operator== (const signed) const;
+  bool operator!= (const signed) const;
+  bool operator<= (const signed) const;
+  bool operator>= (const signed) const;
+  bool operator<  (const signed) const;
+  bool operator>  (const signed) const;
+  bool operator== (const BigInteger) const;
+  bool operator!= (const BigInteger) const;
+  bool operator<= (const BigInteger) const;
+  bool operator>= (const BigInteger) const;
+  bool operator<  (const BigInteger) const;
+  bool operator>  (const BigInteger) const;
   /** safe operator math function **/
   BigInteger &operator-- ();
   BigInteger &operator++ ();
@@ -62,6 +61,9 @@ public:
   BigInteger &operator*= (const BigInteger);
   BigInteger &operator/= (const BigInteger);
   BigInteger &operator%= (const BigInteger);
+  BigInteger &operator^= (const size_t);
+  BigInteger &operator<<=(const size_t);
+  BigInteger &operator>>=(const size_t);
   /** new object generate, operator function **/
   BigInteger operator- () const;
   BigInteger operator+ (const signed) const;
@@ -74,6 +76,9 @@ public:
   BigInteger operator* (const BigInteger) const;
   BigInteger operator/ (const BigInteger) const;
   BigInteger operator% (const BigInteger) const;
+  BigInteger operator^ (const size_t) const;
+  BigInteger operator<<(const size_t) const;
+  BigInteger operator>>(const size_t) const;
   /** stream operator **/
   friend std::ostream &operator<< (std::ostream &, const BigInteger);
 };

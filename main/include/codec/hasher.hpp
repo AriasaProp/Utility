@@ -1,6 +1,9 @@
 #ifndef _HASH_FUNCTION
 #define _HASH_FUNCTION
 
+#include "common.hpp"
+#include "unit.hpp"
+
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>

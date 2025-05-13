@@ -14,18 +14,20 @@
 #include <cstring>
 
 // undef TIME to reach limit of file digits
-#define TIME 1.0
+#define TIME 20.0
 
 extern std::ostream *output_file;
-extern char text_buffer[2048];
+extern char *text_buffer;
 extern const char *data_address;
 
-static bool basic_test(){
-  *output_file << "basic -> ";
-  bool passed = true;
+
+void BigInteger_test () {
+  *output_file << "BigInteger Test:\n";
+  // basic operation test
+  *output_file << "  - basic: ";
   simple_timer_t ct;
   
-  // do calculation
+  bool passed = true;
   sprintf(text_buffer, "%s/BigIntegerTest.txt", data_address);
   FILE *file = fopen(text_buffer, "r");
   if (file) {
@@ -116,8 +118,8 @@ static bool basic_test(){
       		  if (!fscanf(file, " %s", text_buffer))
       	      throw "format test wrong!";
       	    BigInteger A(text_buffer);
-      	    int B;
-      	    if (!fscanf(file, " %d", &B))
+      	    size_t B;
+      	    if (!fscanf(file, " %zd", &B))
       	      throw "format test wrong!";
       	    if (!fscanf(file, " %s", text_buffer))
       	      throw "format test wrong!";
@@ -125,7 +127,7 @@ static bool basic_test(){
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A.pow(B) != C) {
+  			  	if ((A^B) != C) {
   			  	  *output_file << "result: " << (A^B) << " should be " << C;
   			  		throw text_buffer;
       		  }
@@ -191,11 +193,11 @@ static bool basic_test(){
       	}
       }
       *output_file << ct.end();
-    } catch (const std::exception *msg) {
-      *output_file << "Error " << cnt << " -> " << msg->what();
-      passed = false;
     } catch (const char *msg) {
       *output_file << "Error " << cnt << " -> " << msg;
+      passed = false;
+    } catch (...) {
+      *output_file << "Error unknown!";
       passed = false;
     }
     fclose(file);
@@ -204,153 +206,92 @@ static bool basic_test(){
     passed = false;
   }
   *output_file << "\n";
-  return passed;
-}
+  if (!passed) return;
+  
+  
+  // extraction transcendent number
+  *output_file << "  - extraction transcendent number\n| LB || digits ||   rate   ||     time    || memory(byte) |\n|----||--------||----------||-------------||--------------|\n";
 
-// algorithm list
-struct base_ex {
-  base_ex () {}
-  virtual char extract () = 0;
-  virtual const char *lbl () = 0;
-  virtual const char *testFile () = 0;
-  virtual size_t size () = 0;
-  virtual ~base_ex () {}
-};
-
-struct pi_algo : public base_ex {
-private:
-  BigInteger q = 1, r = 6, t = 3, k = 2, l = 5, n = 3;
-
-public:
-  pi_algo () {}
-  char extract () override {
-    // do math
-    while (q * 4 + r - t >= t * n) {
-      t *= l;
-      n = k;
-      n *= 7;
-      n += 2;
-      n *= q;
-      n += r * l;
-      n /= t;
-      r += q * 2;
-      r *= l;
-      q *= k;
-      ++k;
-      l += 2;
-    }
-    char result = static_cast<char> ((int)n);
-    q *= 10;
-    r -= t * n;
-    r *= 10;
-    n = q;
-    n *= 3;
-    n += r;
-    n /= t;
-    return result;
-  }
-  const char *lbl () override { return " π"; }
-  const char *testFile () override { return "piDigits.txt"; }
-  size_t size () override {
-    return sizeof (q) + sizeof (r) + sizeof (t) + sizeof (k) + sizeof (l) + sizeof (n);
-  }
-  ~pi_algo () override {}
-};
-/*
-           1
-e = £     ------
-   x=0      x!
-*/
-struct e_algo : public base_ex {
-private:
-  BigInteger a = 1, // nominator
-      b = 1,        // denominator
-      c = 1,        // counter
-      d = 1;        // base digit
-
-public:
-  e_algo () {}
-  char extract () override {
-    while (d >= (b * c)) {
-      a *= c;
-      a += d;
-      b *= c;
-      ++c;
-    }
-    char result = (char)int (a.div_mod (b));
-    a *= 10;
-    d *= 10;
-    return result;
-  }
-  const char *lbl () override { return " e"; }
-  const char *testFile () override { return "eDigits.txt"; }
-  size_t size () override { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d); }
-  ~e_algo () override {}
-};
-/*
-          (2x+1)!!
-√2 = £     --------
-   x=0     x!2^(2x+1)
-*/
-struct root2_algo : public base_ex {
-private:
-  BigInteger a = 1, // nominator
-      b = 2,        // denominator
-
-      c = 4, // counter 4x
-      d = 3, // counter odd
-      e = 1; // factorial
-
-public:
-  root2_algo () {}
-  char extract () override {
-    while ((b * c) < (e * d)) {
-      e *= d;
-      a *= c;
-      a += e;
-      b *= c;
-
-      c += 4;
-      d += 2;
-    }
-    char result = (char)int (a.div_mod (b));
-    a *= 5;
-    e *= 5;
-    b /= 2;
-    return result;
-  }
-  const char *lbl () override { return "√2"; }
-  const char *testFile () override { return "√2Digits.txt"; }
-  size_t size () override { return sizeof (a) + sizeof (b) + sizeof (c) + sizeof (d) + sizeof (e); }
-  ~root2_algo () override {}
-};
-
-static bool extraction_test () {
-  // Draw table header
-  *output_file << "exercise\n| LB ||  digits  ||rate(digits/sec)||    time    || memory(byte) |\n|----||----------||----------------||------------||--------------|\n";
-
-  bool passed = true;
-  base_ex *algos[]{
-	  new pi_algo (),
-	  new e_algo (),
-	  new root2_algo ()
+  struct algo {
+    const char *lb;
+    const char *file;
+    BigInteger *data;
+    char (*extract)(BigInteger *);
+  };
+  std::vector<algo> algos {
+    {"√2", "√2Digits.txt", new BigInteger[5]{1,2,4, 3, 1}, [](BigInteger *s) -> char {
+      // a, b, c , d, e
+      while (s[1] * s[2] < s[4] * s[3] * 10000) {
+        s[4] *= s[3];
+        s[0] *= s[2];
+        s[0] += s[4];
+        s[1] *= s[2];
+  
+        s[2] += 4;
+        s[3] += 2;
+      }
+      char r = (char)int (s[0].div_mod (s[1]));
+      s[0] *= 5;
+      s[4] *= 5;
+      s[1] >>= 1;
+      return r;
+    }},// √2
+    {" e", "eDigits.txt", new BigInteger[4]{1,1,1,1}, [](BigInteger *s) -> char {
+      // a, b, c, d
+      while ((s[1] * s[2]) < (s[3] * 10000)) {
+        s[0] *= s[2];
+        s[0] += s[3];
+        s[1] *= s[2];
+        ++s[2];
+      }
+      char r = (char)int (s[0].div_mod (s[1]));
+      s[0] *= 10;
+      s[3] *= 10;
+      return r;
+    }},// e
+    {" π", "piDigits.txt", new BigInteger[6]{1,6,3,2,5,3}, [](BigInteger *s) -> char {
+      // q, r, t, k, l, n
+     // do math
+      while (s[0] * 4 + s[1] - s[2] >= s[2] * s[5]) {
+        s[2] *= s[4];
+        s[5] = s[3];
+        s[5] *= 7;
+        s[5] += 2;
+        s[5] *= s[0];
+        s[5] += s[1] * s[4];
+        s[5] /= s[2];
+        s[1] += s[0] * 2;
+        s[1] *= s[4];
+        s[0] *= s[3];
+        ++s[3];
+        s[4] += 2;
+      }
+      char r = static_cast<char> ((int)s[5]);
+      s[0] *= 10;
+      s[1] -= s[2] * s[5];
+      s[1] *= 10;
+      s[5] = s[0] * 3;
+      s[5] += s[1];
+      s[5] /= s[2];
+      return r;
+    }},// pi
   };
   // pi proof
   size_t digit_index, digit_readed;
   char result;
   unsigned long generated;
   // time proof
-  simple_timer_t counter_time;
   simple_time_t counted_time;
-  for (base_ex *algo : algos) {
+  while (!algos.empty()) {
+    algo A = algos.back();
     generated = 0;
     digit_index = 0;
     digit_readed = 0;
-    sprintf (text_buffer, "%s/%s", data_address, algo->testFile ());
+    sprintf (text_buffer, "%s/%s", data_address, A.file);
     FILE *file_digits = fopen (text_buffer, "r");
     if (file_digits) {
-      counter_time.start ();
       try {
+        ct.start ();
         do {
           if (digit_index >= digit_readed) {
             digit_index = 0;
@@ -361,42 +302,33 @@ static bool extraction_test () {
             if (ferror (file_digits)) throw strerror (errno);
             throw "cannot get digits from file";
           }
-          result = algo->extract () + '0';
+          result = A.extract (A.data) + '0';
           if (result != text_buffer[digit_index++]) throw "wrong result";
           ++generated;
           // print result profiling
-          *output_file << std::flush << "\r| " << algo->lbl () << " || ";
-          *output_file << std::setfill ('0') << std::setw ( 8) << generated << " || ";
-          *output_file << std::setfill ('0') << std::setw (14) << std::fixed << std::setprecision (4) << (1.0 * generated / counted_time.to_sec ()) << " || ";
-          *output_file << std::setfill (' ') << std::setw (11) << std::right << (counted_time = counter_time.end()) << "|| ";
-          *output_file << std::setfill ('0') << std::setw (12) << algo->size ();
+          *output_file << std::flush << "\r| " << A.lb << " || ";
+          *output_file << std::setfill ('0') << std::setw ( 6) << generated << " || ";
+          *output_file << std::setfill ('0') << std::setw ( 8) << std::fixed << std::setprecision (3) << ((double)generated / (double)counted_time.to_sec ()) << " || ";
+          *output_file << std::setfill (' ') << std::setw (12) << std::right << (counted_time = ct.end()) << "|| ";
+          *output_file << std::setfill ('0') << std::setw (12) << 99999;
         } while (
-  #ifdef TIME
+#ifdef TIME
           counted_time.to_sec () < TIME
-  #else
+#else
           true
-  #endif
+#endif
           );
-      } catch (const std::exception &e) {
-        *output_file << std::flush << "\r  Err: " << std::setfill (' ') << std::setw (20) << e.what() << " digits: " << generated;
-        passed = false;
       } catch (const char *e) {
         *output_file << std::flush << "\r  Err: " << std::setfill (' ') << std::setw (20) << e << " digits: " << generated;
-        passed = false;
+      } catch (...) {
+        *output_file << std::flush << "\r  Err: " << std::setfill (' ') << std::setw (20) << "unknown in digits: " << generated;
       }
       fclose (file_digits);
     } else {
-      *output_file << "  Err file I/O error";
+      *output_file << "  Err: file I/O error";
     }
     *output_file << " |\n";
-    delete algo;
+    delete[] A.data;
+    algos.pop_back();
   }
-  return passed;
-}
-
-bool BigInteger_test () {
-  *output_file << "BigInteger Test:\n";
-  bool r = basic_test() && extraction_test();
-  *output_file << "\n" << mem_a << std::endl;
-  return r;
 }

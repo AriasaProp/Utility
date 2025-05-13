@@ -5,7 +5,7 @@
 #include <sstream>
 
 double simple_time_t::to_sec () {
-  return t * 1.0 / CLOCKS_PER_SEC;
+  return (double)t / CLOCKS_PER_SEC;
 }
 
 simple_timer_t::simple_timer_t () {
@@ -43,10 +43,31 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   return o;
 }
 
-
-std::ostream &operator<< (std::ostream &o, mem_t &) {
-  static rusage r;
-  getrusage(RUSAGE_SELF, &r);
-  o << "Memory -> max " << r.ru_maxrss << "kB, fail " << r.ru_minflt << "x " << r.ru_majflt << "x"; 
-  return o;
+void print_resources (std::ostream &o) {
+  static struct rusage usage;
+  o << "Resource Usage for Current Process:\n-----------------------------------\n";
+  if (getrusage(RUSAGE_SELF, &usage) >= 0) {
+#define PU(A, B) if (B) o << A << ": " << B << "\n"
+    
+    o << "User CPU time used: " << usage.ru_utime.tv_sec << "." << usage.ru_utime.tv_usec << " sec\n";
+    o << "System CPU time used: " << usage.ru_stime.tv_sec << "." << usage.ru_stime.tv_usec << " sec\n";
+    PU("Maximum resident set size (kilobytes)", usage.ru_maxrss);
+    PU("Integral shared memory size (kilobytes)", usage.ru_ixrss);
+    PU("Integral unshared data size (kilobytes)", usage.ru_idrss);
+    PU("Integral unshared stack size (kilobytes)", usage.ru_isrss);
+    PU("Page reclaims (soft page faults)", usage.ru_minflt);
+    PU("Page faults (hard page faults)", usage.ru_majflt);
+    PU("Swaps", usage.ru_nswap);
+    PU("Block input operations", usage.ru_inblock);
+    PU("Block output operations", usage.ru_oublock);
+    PU("IPC messages sent", usage.ru_msgsnd);
+    PU("IPC messages received", usage.ru_msgrcv);
+    PU("Signals received", usage.ru_nsignals);
+    PU("Voluntary context switches", usage.ru_nvcsw);
+    PU("Involuntary context switches", usage.ru_nivcsw);
+    
+#undef PU
+  } else
+    o << "Error getting resource usage: " << strerror(errno) << "\n";
 }
+

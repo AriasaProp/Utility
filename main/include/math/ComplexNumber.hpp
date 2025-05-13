@@ -6,8 +6,8 @@
 
 struct ComplexNumber {
 	float real, imaginary; // safed in cartesian form
-	//ComplexNumber(const char *);
 	ComplexNumber();
+	ComplexNumber(const char *);
 	ComplexNumber(float);
 	ComplexNumber(float,float);
 	// reinitialize
@@ -17,8 +17,8 @@ struct ComplexNumber {
 
 
 //compare
-bool operator==(const ComplexNumber, const ComplexNumber);
-bool operator!=(const ComplexNumber, const ComplexNumber);
+bool operator==(const ComplexNumber&, const ComplexNumber&);
+bool operator!=(const ComplexNumber&, const ComplexNumber&);
 
 //unsafe
 ComplexNumber operator+(const ComplexNumber, const ComplexNumber);

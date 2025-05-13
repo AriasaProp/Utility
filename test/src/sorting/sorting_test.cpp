@@ -21,7 +21,7 @@ static void generate_random_data(void *dat, size_t size) {
 
 
 void sorting_test() {
-	unsigned long data_size = 10;
+	unsigned long data_size = 1000;
 	void *data_r = malloc (data_size * sizeof(float));
 	generate_random_data(data_r, data_size);
 	printf(
