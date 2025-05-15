@@ -14,19 +14,13 @@ void Matrix_test () {
   FILE *file = fopen(text_buffer, "r");
   if (file) {
     size_t counter = 0;
-    unsigned int c, r, j, i;
     int ch;
     try {
-#define EXTRACT(N) \
-  if (fscanf(file, "[%u %u]", &c, &r) < 2) \
-    throw "error read text p"; \
-  j = c*r; \
-  double *data##N = (double*)malloc(sizeof(double)*c*r); \
-  for(i = 0; i < j; ++i) \
-    if (!fscanf(file, "%lf", data##N + i)) throw "error read text d"; \
-  fscanf(file, "}"); \
-  Matrix N (c,r, data##N)
       simple_timer_t ct;
+#define EXTRACT(N) \
+if (fscanf(file, " %[^,],",text_buffer) < 1) \
+  throw text_buffer; \
+Matrix N (text_buffer);
       while((ch = fgetc(file)) != EOF) {
         ++counter;
         switch (ch) {
@@ -34,42 +28,44 @@ void Matrix_test () {
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-    	      if (A+B != C)
-  			  		throw "+ operator";
+            fgetc(file);
+    	      if (A+B != C) throw "+ operator";
       			break;
           }
           case 'B': {
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-    	      if (A-B != C)
-  			  		throw "- operator";
+            fgetc(file);
+    	      if (A-B != C) throw "- operator";
       			break;
           }
           case 'C': {
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-    	      if (A*B != C)
-  			  		throw "* operator";
+            fgetc(file);
+    	      if (A*B != C) throw "* operator";
       			break;
           }
           case 'D': {
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-    	      if (A/B != C)
-  			  		throw "/ operator";
+            fgetc(file);
+    	      if (A/B != C) throw "/ operator";
       			break;
           }
           default:
       			throw "unexpected value";
         }
       }
-#undef EXTRACT
       *output_file << ct.end();
+#undef EXTRACT
     } catch (const char *e) {
-      *output_file << "Err " << counter << " -> " << e;
+      *output_file << "Err [" << counter << "] -> " << e;
+    } catch (...) {
+      *output_file << "Err [" << counter << "] -> unknown";
     }
     fclose(file);
   } else {

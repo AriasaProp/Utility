@@ -5,21 +5,17 @@
 #include <cstdlib>
 #include <ostream>
 #include <iomanip>
-#include <memory>
-#include <sstream>
 #include <cstdio>
-#include <stdexcept>
 #include <string>
 #include <cerrno>
 #include <cstring>
 
 // undef TIME to reach limit of file digits
-#define TIME 20.0
+#define TIME 0.5
 
 extern std::ostream *output_file;
 extern char *text_buffer;
 extern const char *data_address;
-
 
 void BigInteger_test () {
   *output_file << "BigInteger Test:\n";
@@ -31,161 +27,106 @@ void BigInteger_test () {
   sprintf(text_buffer, "%s/BigIntegerTest.txt", data_address);
   FILE *file = fopen(text_buffer, "r");
   if (file) {
-		size_t cnt= 0;
+	  size_t cnt= 0;
     try {
   		ct.start();
   		int ch = 0;
       while((ch = fgetc(file)) != EOF) {
         cnt++;
+#define EXTRACT(N) \
+if (!fscanf(file, " %s", text_buffer)) \
+  throw "format test wrong!"; \
+BigInteger N(text_buffer)
       	switch (ch) {
       		case 'A': {
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(A);
+      	    EXTRACT(B);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A+B != C) {
-  			  	  *output_file << "result: " << (A+B) << " should be " << C;
+  			  	if (A+B != C)
   			  		throw text_buffer;
-  			  	}
       			break;
       		}
       		case 'B': {
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(A);
+      	    EXTRACT(B);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A-B != C) {
-  			  	  *output_file << "result: " << (A-B) << " should be " << C;
+  			  	if (A-B != C)
   			  		throw text_buffer;
-      		  }
       			break;
       		}
       		case 'C': {
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(A);
+      	    EXTRACT(B);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if ((A*B) != C) {
-  			  	  *output_file << "result: " << (A*B) << " should be " << C;
+  			  	if ((A*B) != C)
     		  		throw text_buffer;
-      		  }
       			break;
       		}
       		case 'D': {
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(A);
+      	    EXTRACT(B);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A/B != C) {
-  			  	  *output_file << "result: " << (A/B) << " should be " << C;
+  			  	if (A/B != C)
   			  		throw text_buffer;
-      		  }
       			break;
       		}
       		case 'E': {
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
+      	    EXTRACT(A);
       	    size_t B;
       	    if (!fscanf(file, " %zd", &B))
       	      throw "format test wrong!";
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if ((A^B) != C) {
-  			  	  *output_file << "result: " << (A^B) << " should be " << C;
+  			  	if ((A^B) != C)
   			  		throw text_buffer;
-      		  }
       			break;
       		}
       		case 'F': {
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      	    EXTRACT(A);
+      	    EXTRACT(B);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A.sqrt() != C)
+  			  	if (A.sqrt() != B)
   			  		throw text_buffer;
       			break;
       		}
       		case 'G': {
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer);
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
+      		  EXTRACT(A);
+      	    EXTRACT(B);
+      	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A%B != C) {
-  			  	  *output_file << "result: " << (A%B) << " should be " << C;
+  			  	if (A%B != C)
   			  		throw text_buffer;
-  			  	}
       			break;
       		}
       		case 'H': {
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger A(text_buffer), A1 = A;
-      		  if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger B(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger C(text_buffer);
-      	    if (!fscanf(file, " %s", text_buffer))
-      	      throw "format test wrong!";
-      	    BigInteger D(text_buffer);
+      		  EXTRACT(A);
+      		  BigInteger A1 = A;
+      	    EXTRACT(B);
+      	    EXTRACT(C);
+      	    EXTRACT(D);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
       	    fgetc(file);
-  			  	if (A1.div_mod(B) != C || (A1 != D)) {
-  			  	  *output_file << "result: " << (A.div_mod(B)) << " should be " << C << " and " << A << " should be " << D;
+  			  	if (A1.div_mod(B) != C || (A1 != D))
   			  		throw text_buffer;
-  			  	}
       			break;
       		}
       		default:
@@ -210,7 +151,7 @@ void BigInteger_test () {
   
   
   // extraction transcendent number
-  *output_file << "  - extraction transcendent number\n| LB || digits ||   rate   ||     time    || memory(byte) |\n|----||--------||----------||-------------||--------------|\n";
+  *output_file << "  - extraction irrational number\n| LB ||  digits  || digits/sec ||     time    || memory(byte) |\n|----||----------||------------||-------------||--------------|\n";
 
   struct algo {
     const char *lb;
@@ -307,8 +248,8 @@ void BigInteger_test () {
           ++generated;
           // print result profiling
           *output_file << std::flush << "\r| " << A.lb << " || ";
-          *output_file << std::setfill ('0') << std::setw ( 6) << generated << " || ";
-          *output_file << std::setfill ('0') << std::setw ( 8) << std::fixed << std::setprecision (3) << ((double)generated / (double)counted_time.to_sec ()) << " || ";
+          *output_file << std::setfill ('0') << std::setw ( 8) << generated << " || ";
+          *output_file << std::setfill ('0') << std::setw (10) << std::fixed << std::setprecision (3) << ((double)generated / (double)counted_time.to_sec ()) << " || ";
           *output_file << std::setfill (' ') << std::setw (12) << std::right << (counted_time = ct.end()) << "|| ";
           *output_file << std::setfill ('0') << std::setw (12) << 99999;
         } while (

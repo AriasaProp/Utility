@@ -124,10 +124,24 @@ CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/BigInteger_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s
 
+CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
+CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o: test/src/math/ComplexNumber_test.cpp
+CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/ComplexNumber_test.cpp
+
+CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.i"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/math/ComplexNumber_test.cpp > CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.i
+
+CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.s"
+	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/ComplexNumber_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.s
+
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: test/src/math/math_test.cpp
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp
 
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.i: cmake_force
@@ -137,20 +151,6 @@ CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.i: cmake_force
 CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s"
 	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s
-
-CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
-CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o: test/src/math/test/ComplexNumber_test.cpp
-CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o: CMakeFiles/Utility_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/emulated/0/prj/Utility/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o -MF CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o.d -o CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/ComplexNumber_test.cpp
-
-CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.i"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/emulated/0/prj/Utility/test/src/math/test/ComplexNumber_test.cpp > CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.i
-
-CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.s"
-	/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/emulated/0/prj/Utility/test/src/math/test/ComplexNumber_test.cpp -o CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.s
 
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: CMakeFiles/Utility_test.dir/flags.make
 CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o: test/src/math/test/Matrix_test.cpp
@@ -214,8 +214,8 @@ Utility_test_OBJECTS = \
 "CMakeFiles/Utility_test.dir/test/src/codec/hasher_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/main.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o" \
+"CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o" \
-"CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o" \
 "CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o" \
 "CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o" \
@@ -228,8 +228,8 @@ build/Utility_test: CMakeFiles/Utility_test.dir/test/src/codec/codec_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/codec/hasher_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/main.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.o
+build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o
-build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/math/test/Matrix_test.cpp.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/mining/mining_pool_test.c.o
 build/Utility_test: CMakeFiles/Utility_test.dir/test/src/simple_profiling.cpp.o

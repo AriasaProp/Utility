@@ -71,13 +71,13 @@
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include  -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/math/math_test.cpp"
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include  -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/ComplexNumber_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/ComplexNumber_test.cpp"
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",
-  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include  -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/test/ComplexNumber_test.cpp",
-  "file": "/storage/emulated/0/prj/Utility/test/src/math/test/ComplexNumber_test.cpp"
+  "command": "/data/user/0/ru.iiec.cxxdroid/files/bin/clang++ -DMATH_TEST -I/storage/emulated/0/prj/Utility/test/include -I/storage/emulated/0/prj/Utility/main/include  -fallow-void-main -std=gnu++2a -o CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.o -c /storage/emulated/0/prj/Utility/test/src/math/math_test.cpp",
+  "file": "/storage/emulated/0/prj/Utility/test/src/math/math_test.cpp"
 },
 {
   "directory": "/storage/emulated/0/prj/Utility",

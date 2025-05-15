@@ -30,24 +30,53 @@ div logic -> B must square
 
 */
 
+#define THIS_MATRIX_SIZE (rows * cols)
+#define THIS_MATRIX_SIZE_BYTE (THIS_MATRIX_SIZE * sizeof(double))
+#define THIS_MATRIX_IS_SQUARE (rows == cols)
+#define THIS_MATRIX_DIMS_EQ(B) ((rows == B.rows) * (cols == B.cols))
+
 #define MATRIX_SIZE(A) (A.rows * A.cols)
+#define MATRIX_SIZE_BYTE(A) (MATRIX_SIZE(A) * sizeof(double))
 #define MATRIX_IS_SQUARE(A) (A.rows == A.cols)
 #define MATRIX_DIMS_EQ(A, B) (A.rows == B.rows) * (A.cols == B.cols)
-#define MATRIX_SIZE_BYTE(A) (A.rows * A.cols * sizeof(vs))
 
 // constructors
 Matrix::Matrix () {}
-Matrix::Matrix (size_t c, size_t r) : cols(c), rows(r){
-  data = (vs*) calloc(sizeof(vs), MATRIX_SIZE((*this)));
+Matrix::Matrix (const char *c) {
+  char *array = (char*)malloc(2048);
+  char *a=array;
+  if (sscanf(c, "[%zu %zu]{%[^}]}", &cols, &rows, array) < 3)
+    throw c;
+  data = (double*) malloc(THIS_MATRIX_SIZE_BYTE);
+  size_t i = 0, j = THIS_MATRIX_SIZE;
+  while (*a && (i < j)) {
+    switch (*a) {
+      case '-': case '0': case '1':
+      case '2': case '3': case '4':
+      case '5': case '6': case '7':
+      case '8': case '9': case '+':
+        data[i++] = strtod(a, &a);
+        break;
+      case ' ':
+        ++a;
+        break;
+      default:
+        throw *this;
+    }
+  }
+  free (array);
 }
-Matrix::Matrix (size_t c, size_t r, vs *d) : cols(c), rows(r){
-  size_t by = MATRIX_SIZE_BYTE((*this));
-  data = (vs*) malloc(by);
+Matrix::Matrix (size_t c, size_t r) : cols(c), rows(r){
+  data = (double*) calloc(sizeof(double), THIS_MATRIX_SIZE);
+}
+Matrix::Matrix (size_t c, size_t r, double *d) : cols(c), rows(r){
+  size_t by = THIS_MATRIX_SIZE_BYTE;
+  data = (double*) malloc(by);
   memcpy(data, d, by);
 }
 Matrix::Matrix (const Matrix &other) : cols(other.cols), rows(other.rows) {
-  size_t by = MATRIX_SIZE_BYTE((*this));
-  data = (vs*) malloc(by);
+  size_t by = THIS_MATRIX_SIZE_BYTE;
+  data = (double*) malloc(by);
   memcpy(data, other.data, by);
 }
 // destructors
@@ -62,23 +91,23 @@ double &Matrix::operator() (const size_t c, const size_t r) const {
   return data[MIN (r, rows) * cols + MIN (c, cols)];
 }
   // unique function
-Matrix identity (const Matrix &a) {
-  Matrix b(a.cols, a.rows);
+Matrix Matrix::identity () const {
+  Matrix b(cols, rows);
   size_t i, j = MATRIX_SIZE(b);
   for(i = 0; i < j; i += b.cols + 1)
     b[i] = 1.0;
   return b;
 }
-Matrix inverse (const Matrix &a) {
-  if (!MATRIX_IS_SQUARE(a)) throw "Matrix not square";
-  size_t n = a.cols, i, j, k;
+Matrix Matrix::inverse () const {
+  if (!THIS_MATRIX_IS_SQUARE) throw "Matrix not square";
+  size_t n = cols, i, j, k;
   Matrix b(n, n);
 #define EPSILON 1e-9
   double** augmented = (double**)malloc(n * sizeof(double*));
   for (i = 0; i < n; ++i) {
     augmented[i] = (double*)malloc(2 * n * sizeof(double));
     for (j = 0; j < n; ++j) {
-      augmented[i][j] = a(j, i);            // Kiri: matriks A
+      augmented[i][j] = (*this)(j, i);            // Kiri: matriks A
       augmented[i][j + n] = (i == j) ? 1.0 : 0.0;  // Kanan: identitas
     }
   }
@@ -122,100 +151,99 @@ Matrix inverse (const Matrix &a) {
   return b;
 }
   // operator compare
-bool operator== (const Matrix &a, const Matrix &b) {
-  return MATRIX_DIMS_EQ(a, b) * (0 == memcmp(a.data, b.data, MATRIX_SIZE_BYTE(a)));
+bool Matrix::operator== (const Matrix &b) const {
+  return THIS_MATRIX_DIMS_EQ(b) * (0 == memcmp(data, b.data, THIS_MATRIX_SIZE_BYTE));
 }
-bool operator!= (const Matrix &a, const Matrix &b) {
-  return !MATRIX_DIMS_EQ(a, b) * memcmp(a.data, b.data, MATRIX_SIZE_BYTE(a));
+bool Matrix::operator!= (const Matrix &b) const {
+  return !THIS_MATRIX_DIMS_EQ(b) * memcmp(data, b.data, THIS_MATRIX_SIZE_BYTE);
 }
   // operators math
 Matrix &Matrix::operator= (const Matrix b) {
   size_t by = MATRIX_SIZE_BYTE(b);
-  if (!MATRIX_DIMS_EQ((*this), b)) {
+  if (!THIS_MATRIX_DIMS_EQ(b)) {
     cols = b.cols;
     rows = b.rows;
-    free (data);
-    data = (vs*)malloc(by);
+    data = (double*) realloc (data, by);
   }
   memcpy(data, b.data, by);
   return *this;
 }
-Matrix operator+ (const Matrix &a, const Matrix b) {
-  if (!MATRIX_DIMS_EQ(a, b)) throw "cannot do Addition for different Matrix dimension";
-  Matrix c(a.cols, a.rows);
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    c[i] = a[i] + b[i];
+Matrix Matrix::operator+ (const Matrix b) const {
+  if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Addition for different Matrix dimension";
+  Matrix c(cols, rows);
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    c[i] = data[i] + b[i];
   return c;
 }
-Matrix &operator+= (Matrix &a, const Matrix b) {
-  if (!MATRIX_DIMS_EQ(a, b)) throw "cannot do Addition for different Matrix dimension";
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    a[i] += b[i];
-  return a;
-}
-Matrix operator- (const Matrix &a, const Matrix b) {
-  if (!MATRIX_DIMS_EQ(a, b)) throw "cannot do Subtraction for different Matrix dimension";
-  Matrix c(a.cols, a.rows);
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    c[i] = a[i] - b[i];
+Matrix Matrix::operator- (const Matrix b) const {
+  if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Subtraction for different Matrix dimension";
+  Matrix c(cols, rows);
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    c[i] = data[i] - b[i];
   return c;
 }
-Matrix &operator-= (Matrix &a, const Matrix b) {
-  if (!MATRIX_DIMS_EQ(a, b)) throw "cannot do Subtraction for different Matrix dimension";
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    a[i] -= b[i];
-  return a;
-}
-Matrix operator* (const Matrix &a, const double b) {
-  Matrix c(a.cols, a.rows);
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    c[i] = a[i] * b;
+Matrix Matrix::operator* (const double b) const {
+  Matrix c(cols, rows);
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    c[i] = data[i] * b;
   return c;
 }
-Matrix &operator*= (Matrix &a, const double b) {
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    a[i] *= b;
-  return a;
+Matrix Matrix::operator/ (const double b) const {
+  Matrix c(cols, rows);
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    c[i] = data[i] / b;
+  return c;
 }
-Matrix operator* (const Matrix &a, const Matrix b) {
-  if (a.cols != b.rows) throw "not match A cols and B rows to do multiplication";
-  Matrix c(b.cols, a.rows);
+Matrix Matrix::operator* (const Matrix b) const {
+  if (cols != b.rows) throw "not match A cols and B rows to do multiplication";
+  Matrix c(b.cols, rows);
   size_t i, j, k;
   for(i = 0; i < c.rows; ++i)
-    for(j = 0; j < a.cols; ++j)
+    for(j = 0; j < cols; ++j)
       for(k = 0; k < c.cols; ++k)
-        c(k, i) += a(j, i) * b(k, j);
+        c(k, i) += (*this)(j, i) * b(k, j);
   return c;
 }
-Matrix &operator*= (Matrix &a, const Matrix b) {
-  if (a.cols != b.rows) throw "not match A cols and B rows to do multiplication";
-  vs *c = (vs*) calloc(b.cols*a.rows, sizeof(vs));
+Matrix Matrix::operator/ (const Matrix b) const {
+  return (*this)*b.inverse();
+}
+Matrix &Matrix::operator+= (const Matrix b) {
+  if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Addition for different Matrix dimension";
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    data[i] += b[i];
+  return *this;
+}
+Matrix &Matrix::operator-= (const Matrix b) {
+  if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Subtraction for different Matrix dimension";
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    data[i] -= b[i];
+  return *this;
+}
+Matrix &Matrix::operator*= (const double b) {
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    data[i] *= b;
+  return *this;
+}
+Matrix &Matrix::operator/= (const double b) {
+  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+    data[i] /= b;
+  return *this;
+}
+Matrix &Matrix::operator*= (const Matrix b) {
+  if (cols != b.rows) throw "not match A cols and B rows to do multiplication";
+  double *c = (double*) calloc(b.cols*rows, sizeof(double));
   size_t i, j, k;
-  for(i = 0; i < a.rows; ++i)
-    for(j = 0; j < a.cols; ++j)
+  for(i = 0; i < rows; ++i)
+    for(j = 0; j < cols; ++j)
       for(k = 0; k < b.cols; ++k)
-        c[(i * b.cols) + k] += a(j, i) * b(k, j);
-  free(a.data);
-  a.cols = b.cols;
-  a.data = c;
-  return a;
+        c[(i * b.cols) + k] += (*this)(j, i) * b(k, j);
+  free(data);
+  cols = b.cols;
+  data = c;
+  return *this;
 }
-Matrix operator/ (const Matrix &a, const double b) {
-  Matrix c(a.cols, a.rows);
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    c[i] = a[i] / b;
-  return c;
-}
-Matrix &operator/= (Matrix &a, const double b) {
-  for (size_t i = 0; i < MATRIX_SIZE(a); ++i)
-    a[i] /= b;
-  return a;
-}
-Matrix operator/ (const Matrix &a, const Matrix b) {
-  return a*inverse(b);
-}
-Matrix &operator/= (Matrix &a, const Matrix b) {
-  return a*=inverse(b);
+Matrix &Matrix::operator/= (const Matrix b) {
+  return (*this)*=b.inverse();
 }
   /** stream operator **/
 std::ostream &operator<< (std::ostream &o, const Matrix &a) {

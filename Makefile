@@ -477,6 +477,30 @@ test/src/math/BigInteger_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/BigInteger_test.cpp.s
 .PHONY : test/src/math/BigInteger_test.cpp.s
 
+test/src/math/ComplexNumber_test.o: test/src/math/ComplexNumber_test.cpp.o
+.PHONY : test/src/math/ComplexNumber_test.o
+
+# target to build an object file
+test/src/math/ComplexNumber_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.o
+.PHONY : test/src/math/ComplexNumber_test.cpp.o
+
+test/src/math/ComplexNumber_test.i: test/src/math/ComplexNumber_test.cpp.i
+.PHONY : test/src/math/ComplexNumber_test.i
+
+# target to preprocess a source file
+test/src/math/ComplexNumber_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.i
+.PHONY : test/src/math/ComplexNumber_test.cpp.i
+
+test/src/math/ComplexNumber_test.s: test/src/math/ComplexNumber_test.cpp.s
+.PHONY : test/src/math/ComplexNumber_test.s
+
+# target to generate assembly for a file
+test/src/math/ComplexNumber_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/ComplexNumber_test.cpp.s
+.PHONY : test/src/math/ComplexNumber_test.cpp.s
+
 test/src/math/math_test.o: test/src/math/math_test.cpp.o
 .PHONY : test/src/math/math_test.o
 
@@ -500,30 +524,6 @@ test/src/math/math_test.s: test/src/math/math_test.cpp.s
 test/src/math/math_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/math_test.cpp.s
 .PHONY : test/src/math/math_test.cpp.s
-
-test/src/math/test/ComplexNumber_test.o: test/src/math/test/ComplexNumber_test.cpp.o
-.PHONY : test/src/math/test/ComplexNumber_test.o
-
-# target to build an object file
-test/src/math/test/ComplexNumber_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.o
-.PHONY : test/src/math/test/ComplexNumber_test.cpp.o
-
-test/src/math/test/ComplexNumber_test.i: test/src/math/test/ComplexNumber_test.cpp.i
-.PHONY : test/src/math/test/ComplexNumber_test.i
-
-# target to preprocess a source file
-test/src/math/test/ComplexNumber_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.i
-.PHONY : test/src/math/test/ComplexNumber_test.cpp.i
-
-test/src/math/test/ComplexNumber_test.s: test/src/math/test/ComplexNumber_test.cpp.s
-.PHONY : test/src/math/test/ComplexNumber_test.s
-
-# target to generate assembly for a file
-test/src/math/test/ComplexNumber_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Utility_test.dir/build.make CMakeFiles/Utility_test.dir/test/src/math/test/ComplexNumber_test.cpp.s
-.PHONY : test/src/math/test/ComplexNumber_test.cpp.s
 
 test/src/math/test/Matrix_test.o: test/src/math/test/Matrix_test.cpp.o
 .PHONY : test/src/math/test/Matrix_test.o
@@ -673,12 +673,12 @@ help:
 	@echo "... test/src/math/BigInteger_test.o"
 	@echo "... test/src/math/BigInteger_test.i"
 	@echo "... test/src/math/BigInteger_test.s"
+	@echo "... test/src/math/ComplexNumber_test.o"
+	@echo "... test/src/math/ComplexNumber_test.i"
+	@echo "... test/src/math/ComplexNumber_test.s"
 	@echo "... test/src/math/math_test.o"
 	@echo "... test/src/math/math_test.i"
 	@echo "... test/src/math/math_test.s"
-	@echo "... test/src/math/test/ComplexNumber_test.o"
-	@echo "... test/src/math/test/ComplexNumber_test.i"
-	@echo "... test/src/math/test/ComplexNumber_test.s"
 	@echo "... test/src/math/test/Matrix_test.o"
 	@echo "... test/src/math/test/Matrix_test.i"
 	@echo "... test/src/math/test/Matrix_test.s"

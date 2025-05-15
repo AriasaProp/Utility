@@ -6,8 +6,6 @@
 
 #include "unit.hpp"
 
-typedef double vs; // value system
-
 /*
 Matrix
 
@@ -18,14 +16,14 @@ format M[cols rows]{<value>}
 struct Matrix {
 private:
   size_t cols, rows;
-  vs *data;
+  double *data;
 
 public:
   // constructors
   Matrix ();
-  Matrix (size_t, size_t);
-  Matrix (size_t, size_t, vs*);
   Matrix (const char *);
+  Matrix (size_t, size_t);
+  Matrix (size_t, size_t, double*);
   Matrix (const Matrix &);
   // destructors
   ~Matrix ();
@@ -33,25 +31,25 @@ public:
   double &operator[] (const size_t) const;
   double &operator() (const size_t, const size_t) const;
   // unique function
-  friend Matrix identity (const Matrix&);
-  friend Matrix inverse (const Matrix&);
+  Matrix identity () const;
+  Matrix inverse () const;
   // operator compare
-  friend bool operator== (const Matrix&, const Matrix&);
-  friend bool operator!= (const Matrix&, const Matrix&);
+  bool operator== (const Matrix&) const;
+  bool operator!= (const Matrix&) const;
   // operators math
   Matrix &operator= (const Matrix);
-  friend Matrix operator+ (const Matrix&, const Matrix);
-  friend Matrix &operator+= (Matrix&, const Matrix);
-  friend Matrix operator- (const Matrix&, const Matrix);
-  friend Matrix &operator-= (Matrix&, const Matrix);
-  friend Matrix operator* (const Matrix&, const double);
-  friend Matrix &operator*= (Matrix&, const double);
-  friend Matrix operator* (const Matrix&, const Matrix);
-  friend Matrix &operator*= (Matrix&, const Matrix);
-  friend Matrix operator/ (const Matrix&, const double);
-  friend Matrix &operator/= (Matrix&, const double);
-  friend Matrix operator/ (const Matrix&, const Matrix);
-  friend Matrix &operator/= (Matrix&, const Matrix);
+  Matrix operator+ (const Matrix) const;
+  Matrix operator- (const Matrix) const;
+  Matrix operator* (const double) const;
+  Matrix operator/ (const double) const;
+  Matrix operator* (const Matrix) const;
+  Matrix operator/ (const Matrix) const;
+  Matrix &operator+= (const Matrix);
+  Matrix &operator-= (const Matrix);
+  Matrix &operator*= (const double);
+  Matrix &operator/= (const double);
+  Matrix &operator*= (const Matrix);
+  Matrix &operator/= (const Matrix);
   /** stream operator **/
   friend std::ostream &operator<< (std::ostream &, const Matrix&);
 };
