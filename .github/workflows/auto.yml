@@ -51,5 +51,5 @@ jobs:
         run: |
           cmake -S . -B build
           cmake --build build
-          buildl/Utility_test
+          ./build/Utility_test
           
