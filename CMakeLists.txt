@@ -26,5 +26,3 @@ file(GLOB_RECURSE Test_Src "${TSRC}/src/*.cpp" "${TSRC}/src/*.c")
 add_executable(${PROJECT_NAME}_test ${Test_Src})
 target_include_directories(${PROJECT_NAME}_test PRIVATE ${TSRC}/include)
 target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME})
-
-#Cxxdroid-binary: build/Utility_test
