@@ -1,4 +1,4 @@
+set -e
 cmake -S . -B build
-cmake --build build
-chmod +x build/Utility_test
+cmake --build build -t Utility_test --config Release --clean-first
 ./build/Utility_test

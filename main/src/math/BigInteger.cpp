@@ -7,15 +7,16 @@
 #include <cstdlib>
 #include <cstring>
 
-constexpr size_t WORD_BITS = sizeof (word) * CHAR_BIT;
-constexpr size_t WORD_BITS_1 = WORD_BITS - 1;
-constexpr size_t WORD_HALF_BITS = WORD_BITS / 2;
-constexpr word WORD_HALF_MASK = ((word)-1) >> WORD_HALF_BITS;
-
+using wstack = std::vector<word>;
 using wit = wstack::iterator;
 using cwit = wstack::const_iterator;
 using rwit = wstack::reverse_iterator;
 using crwit = wstack::const_reverse_iterator;
+
+constexpr size_t WORD_BITS = sizeof (word) * CHAR_BIT;
+constexpr size_t WORD_BITS_1 = WORD_BITS - 1;
+constexpr size_t WORD_HALF_BITS = WORD_BITS / 2;
+constexpr word WORD_HALF_MASK = ((word)-1) >> WORD_HALF_BITS;
 
 /** private function **/
 //  +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -314,10 +315,18 @@ BigInteger::operator bool () const {
   return words.size ();
 }
 BigInteger::operator int () const {
-  if (!words.empty ())
-    return (neg) ? -int (words[0]) : int (words[0]);
-  return 0;
-  // return (!words.empty ()) * (neg ? -int (words[0]) : int (words[0]));
+  if (words.empty ()) return 0;
+  int ret = 0xafffffff;
+  if (*this < ret) ret = words[0] & ret;
+  if (neg) ret *= -1;
+  return ret;
+}
+BigInteger::operator char () const {
+  if (words.empty ()) return 0;
+  char ret = 0xaf;
+  if (*this < ret) ret = words[0] & ret;
+  if (neg) ret *= -1;
+  return ret;
 }
 
 /** math operational **/
@@ -619,7 +628,7 @@ std::ostream &operator<< (std::ostream &out, const BigInteger a) {
       A.pop_back ();
   } while (A.size ());
   if (a.neg) texts.push_back('-');
-  std::reverse(texts.begin(), texts.end());
+  reverse(texts.begin(), texts.end());
   texts.push_back(0);
   out << texts.data();
   return out;

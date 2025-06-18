@@ -6,14 +6,13 @@
 #include <iostream>
 #include <vector>
 
-using word = unsigned int;
-using wstack = std::vector<word>;
+typedef unsigned long word;
 
 struct BigInteger {
 private:
   // values
   bool neg = false;
-  wstack words;
+  std::vector<word> words;
 
 public:
   /** Constructors **/
@@ -21,12 +20,13 @@ public:
   BigInteger (const BigInteger &);
   BigInteger (const signed);
   BigInteger (const char *);
-  BigInteger (const wstack&, bool);
+  BigInteger (const std::vector<word>&, bool);
   /** Destructor **/
   ~BigInteger ();
   /** operator casting **/
   operator bool () const;
   explicit operator int () const;
+  explicit operator char () const;
   // operator double() const;
   /** math operational function **/
   BigInteger sqrt () const;

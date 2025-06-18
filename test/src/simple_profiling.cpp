@@ -30,13 +30,13 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
     ++writed;
   }
   if (td > CLOCKS_PER_MS) {
-    if (writed) ss << ", ";
+    if (writed) ss << ":";
     ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_MS) << "ms";
     td %= CLOCKS_PER_MS;
     ++writed;
   }
   if ((writed <= 1) && (td || !writed)) {
-    if (writed) ss << ", ";
+    if (writed) ss << ":";
     ss << std::setw (3) << std::setfill ('0') << (td / CLOCKS_PER_US) << "us";
   }
   o << ss.str ();

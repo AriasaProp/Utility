@@ -17,6 +17,8 @@
 //  Global Macro
 // ================================
 
+#if defined(_MSC_VER)
+
 #ifdef _WIN32
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -26,17 +28,17 @@
 #endif
 #endif
 
-#if defined(_MSC_VER)
 #define INLINE        __forceinline
 #define CDECL         __cdecl
 #define UNUSED(x)     ((void)x)
 #define UNUSED_ARG(x) __pragma(warning(suppress : 4100 4101)) x
+
 #elif defined(__GNUC__) || defined(__clang__)
 #define INLINE        inline
 #define CDECL         /* no translate */
 #define UNUSED(x)     ((void)x)
 #define UNUSED_ARG(x) __attribute__((unused)) x
-#else
+#else /* Unknown compiler */
 #define INLINE        inline
 #define CDECL         /* no translate */
 #define UNUSED(x)     /* no parameter */
