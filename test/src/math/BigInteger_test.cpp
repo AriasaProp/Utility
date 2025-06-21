@@ -9,13 +9,24 @@
 #include <string>
 #include <cerrno>
 #include <cstring>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 // undef TIME to reach limit of file digits
 #define TIME 20
 // undef UPDATE_RATE to update data each digits found
 #define UPDATE_RATE 0.8
+enum stop_type : unsigned char {
+  NO_END = 0,
+#ifdef TIME
+  TIMEOUT = 1,
+#endif
+  END_OF_FILE = 2,
+};
 
 extern std::ostream *output_file;
+extern const unsigned int TEXT_BUFFER_SIZE;
 extern char *text_buffer;
 extern const char *data_address;
 
@@ -198,22 +209,29 @@ BigInteger N(text_buffer)
       s[3] *= 10;
       return r;
     }},// e
-    {" π", "piDigits.txt", new BigInteger[6]{1,6,3,2,5,3}, [](BigInteger *s) -> char {
-      // q, r, t, k, l, n
-     // do math
-      while ((s[0] << (size_t)2) + s[1] >= s[2] * (s[5] + 1)) {
-        s[2] *= s[4];
-        s[5] = s[3] * 7;
-        s[5] += 2;
-        s[5] *= s[0];
-        s[5] += s[1] * s[4];
-        s[5] /= s[2];
-        s[1] += s[0] << (size_t)1;
-        s[1] *= s[4];
-        s[0] *= s[3];
-        ++s[3];
-        s[4] += 2;
-      }
+    {" π", "piDigits.txt", new BigInteger[8]{1,6,3,2,5,3, 0, 0}, [](BigInteger *s) -> char {
+      // q, r, t, k, l, n, (m, o)
+      // do compare
+pi_cmp:
+      s[6] = s[0] << (size_t)2;
+      s[6] += s[1];
+      s[7] = s[5] + 1;
+      s[7] *= s[2];
+      // do math
+      if (s[6] < s[7]) goto pi_return;
+      s[2] *= s[4];
+      s[5] = s[3] * 7;
+      s[5] += 2;
+      s[5] *= s[0];
+      s[5] += s[1] * s[4];
+      s[5] /= s[2];
+      s[1] += s[0] << (size_t)1;
+      s[1] *= s[4];
+      s[0] *= s[3];
+      ++s[3];
+      s[4] += 2;
+      goto pi_cmp;
+pi_return:
       char r = (char) s[5];
       s[0] *= 10;
       s[1] -= s[2] * s[5];
@@ -224,31 +242,41 @@ BigInteger N(text_buffer)
       return r;
     }},// pi
   };
-  unsigned int flags_end;
-#ifdef TIME
-#define TIMEOUT 1
-#endif
-#define END_OF_FILE 2
-  size_t digit_index, digit_readed;
+  stop_type end_type;
   char result;
   unsigned long generated;
-  FILE *file_digits;
+  void *file_digits;
+  const char *file_digits_current, *file_digits_end;
+  struct stat bstat;
+  int fd;
   // time proof
   simple_time_t counted_time;
 #ifdef UPDATE_RATE
   simple_timer_t pt;
 #endif
   do {
-    flags_end = 0;
+    end_type = NO_END;
     algo A = algos.back();
     generated = 0;
-    digit_index = 0;
-    digit_readed = 0;
-    sprintf (text_buffer, "%s/%s", data_address, A.file);
-    if (!(file_digits = fopen (text_buffer, "r"))) {
-      *output_file << "  Err: file I/O error";
+    sprintf (text_buffer, "./%s/%s", data_address, A.file);
+    if ((fd = open(text_buffer, O_RDONLY | S_IRUSR)) < 0) {
+      strcpy(text_buffer, "file I/O error");
       goto end_ex;
     }
+    *text_buffer = 0;
+    if (fstat(fd, &bstat) == -1) {
+      close(fd);
+      strcpy(text_buffer, "file stat error");
+      goto end_ex;
+    }
+    if (!(file_digits = mmap(NULL, bstat.st_size, PROT_READ, MAP_PRIVATE, fd, 0))) {
+      close(fd);
+      strcpy(text_buffer, "mapping stat error");
+      goto end_ex;
+    }
+    file_digits_current = (const char*)file_digits;
+    file_digits_end = file_digits_current + bstat.st_size;
+    close(fd);
     ct.start ();
 #ifdef UPDATE_RATE
     pt.start ();
@@ -260,11 +288,11 @@ print_ex:
     counted_time = ct.end();
     *output_file << std::setfill ('0') << std::setw ( 8) << std::fixed << std::setprecision (1) << ((double)generated / counted_time.to_sec ()) << " | ";
     *output_file << std::setfill (' ') << std::setw (10) << std::right << counted_time;
-    switch (flags_end) {
+    switch (end_type) {
       default:
-      case 0:
+      case NO_END:
         break;
-      case END_OF_FILE
+      case END_OF_FILE:
         *output_file << " | end of file";
         goto end_exf;
 #ifdef TIME
@@ -274,48 +302,39 @@ print_ex:
 #endif
     }
 start_ex:
-    if (digit_index >= digit_readed) {
-      digit_index = 0;
-      digit_readed = fread (text_buffer, 1, 2048, file_digits);
-      if (!digit_readed) {
-        if (feof (file_digits)) {
-          flags_end = END_OF_FILE;
-          goto print_ex;
-        }
-        if (ferror (file_digits))
-          strcpy(text_buffer, strerror (errno));
-        else
-          strcpy(text_buffer, "can't get data");
-        goto error_ex;
-      }
-    }
     try {
       result = A.extract (A.data);
     } catch (const char *e) {
       strcpy(text_buffer, e);
-      goto error_ex;
+      goto end_exf;
     }
-    if ((text_buffer[digit_index++] - result) != '0') {
-      sprintf(text_buffer, "wrong, result %d, correct %c", (int)result, text_buffer[digit_index - 1]);
-      goto error_ex;
+    if ((*file_digits_current - result) != '0') {
+      sprintf(text_buffer, "wrong, result %d, correct %c", (int)result, *file_digits_current);
+      goto end_exf;
     }
     ++generated;
+    if (++file_digits_current >= file_digits_end) {
+      end_type = END_OF_FILE;
+      goto print_ex;
+    }
 #ifdef TIME
+    // end when time passed 
     if ((ct.end()).to_sec () > TIME) {
-      flags_end = TIMEOUT;
+      end_type = TIMEOUT;
       goto print_ex;
     }
 #endif
 #ifdef UPDATE_RATE
+    // do print state when update rate passed 
     if (pt.end().to_sec () < UPDATE_RATE) goto start_ex;
     pt.start ();
 #endif
     goto print_ex;
-error_ex:
-    *output_file << std::flush << "\re: " << std::setfill (' ') << std::setw (20) << text_buffer << " at: " << generated;
 end_exf:
-    fclose (file_digits);
+    munmap(file_digits, bstat.st_size);
 end_ex:
+    if (*text_buffer) 
+      *output_file << std::flush << "\re: " << std::setfill (' ') << std::setw (20) << text_buffer << " at: " << generated;
     *output_file << " |\n";
     delete[] A.data;
     algos.pop_back();
