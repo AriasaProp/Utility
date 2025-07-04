@@ -19,8 +19,10 @@ private:
   double *data;
 
 public:
+  static Matrix identity (size_t, size_t);
   // constructors
   Matrix ();
+  // matrix string format [cols rows]{v .... }
   Matrix (const char *);
   Matrix (size_t, size_t);
   Matrix (size_t, size_t, double*);
@@ -31,7 +33,6 @@ public:
   double &operator[] (const size_t) const;
   double &operator() (const size_t, const size_t) const;
   // unique function
-  Matrix identity () const;
   Matrix inverse () const;
   // operator compare
   bool operator== (const Matrix&) const;

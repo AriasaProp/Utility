@@ -53,7 +53,10 @@ Matrix N (text_buffer);
             EXTRACT(B);
             EXTRACT(C);
             fgetc(file);
-    	      if (A/B != C) throw "/ operator";
+    	      if (A/B != C) {
+              *output_file << "Result: " << (A/B) << "\n should be : " << C << "\n";
+    	        throw "/ operator";
+    	      }
       			break;
           }
           default:

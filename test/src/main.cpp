@@ -82,6 +82,6 @@ int main (int argv, char *args[]) {
   free (text_buffer);
   
   
-  print_resources(*output_file);
+  //print_resources(*output_file);
 #endif
 }

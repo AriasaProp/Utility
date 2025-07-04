@@ -1,13 +1,15 @@
 #include "math/Matrix.hpp"
 #include "common.hpp"
 
+#include <iostream>
 #include <cstring>
+#include <utility>
 #include <algorithm>
 #include <iomanip>
 #include <cmath>
 #include <sstream>
 #include <string>
-#include <stdexcept> // Untuk std::invalid_argument
+#include <stdexcept> // for std::invalid_argument
 
 
 /*
@@ -23,11 +25,13 @@ rows 00  01   02   03  ....
 
 /*
 TO DO
-Add, sub logic -> must equal dimension
-mul logic -> A cols == B rows
-div logic -> B must square
+Add, sub logic -> must be equal dimension √
+mul logic -> A cols == B rows √
+div logic -> A * B^-1 that B must be square √
+inverse: gauss-jordan augment √
 
 */
+#define EPSILON 1e-13
 
 #define THIS_MATRIX_SIZE (rows * cols)
 #define THIS_MATRIX_SIZE_BYTE (THIS_MATRIX_SIZE * sizeof(double))
@@ -38,14 +42,31 @@ div logic -> B must square
 #define MATRIX_SIZE_BYTE(A) (MATRIX_SIZE(A) * sizeof(double))
 #define MATRIX_IS_SQUARE(A) (A.rows == A.cols)
 #define MATRIX_DIMS_EQ(A, B) (A.rows == B.rows) * (A.cols == B.cols)
-
+static INLINE bool is_approach_zero(double a) {
+  return fabs(a) < EPSILON;
+}
+static bool floating_equals(double *a, double *b, size_t n) {
+  size_t i = 0;
+  while ((i < n) && is_approach_zero(a[i] - b[i]))
+    ++i;
+  return i >= n;
+}
+// make identity Matrix by size
+Matrix Matrix::identity (size_t c, size_t r) {
+  Matrix b(c, r);
+  size_t i, j = MIN(c,r);
+  for(i = 0; i < j; ++i)
+    b(i, i) = 1.0;
+  return b;
+}
 // constructors
 Matrix::Matrix () {}
+// matrix string format [cols rows]{v .... }
 Matrix::Matrix (const char *c) {
   char *array = (char*)malloc(2048);
-  char *a=array;
+  char *a = array;
   if (sscanf(c, "[%zu %zu]{%[^}]}", &cols, &rows, array) < 3)
-    throw c;
+    throw "Matrix string argument construction doesn't follow \"[cols rows]{v .... }\" format text";
   data = (double*) malloc(THIS_MATRIX_SIZE_BYTE);
   size_t i = 0, j = THIS_MATRIX_SIZE;
   while (*a && (i < j)) {
@@ -89,79 +110,75 @@ double &Matrix::operator[] (const size_t i) const {
 double &Matrix::operator() (const size_t c, const size_t r) const {
   return data[MIN (r, rows) * cols + MIN (c, cols)];
 }
+
   // unique function
-Matrix Matrix::identity () const {
-  Matrix b(cols, rows);
-  size_t i, j = MATRIX_SIZE(b);
-  for(i = 0; i < j; i += b.cols + 1)
-    b[i] = 1.0;
-  return b;
-}
 Matrix Matrix::inverse () const {
   if (!THIS_MATRIX_IS_SQUARE) throw "Matrix not square";
-  size_t n = cols, i, j, k;
-  Matrix b(n, n);
-#define EPSILON 1e-9
-  double** augmented = (double**)malloc(n * sizeof(double*));
+  const size_t &n = cols;
+  size_t i, j, k;
+  // gauss-jordan matrix inverse
+  Matrix A(*this), C = identity(n,n), D(n,n), E(n,n);
+  struct M { size_t a, b; };
+  M *m = new M[n]{0};
+  // convert to row echelons form
   for (i = 0; i < n; ++i) {
-    augmented[i] = (double*)malloc(2 * n * sizeof(double));
-    for (j = 0; j < n; ++j) {
-      augmented[i][j] = (*this)(j, i);            // Kiri: matriks A
-      augmented[i][j + n] = (i == j) ? 1.0 : 0.0;  // Kanan: identitas
-    }
-  }
-  for (i = 0; i < n; ++i) {
-    size_t max_row = i;
-    for (k = i + 1; k < n; ++k)
-      if (fabs(augmented[k][i]) > fabs(augmented[max_row][i]))
-        max_row = k;
-
-    if (fabs(augmented[max_row][i]) < EPSILON) {
-      for (j = 0; j < n; ++j)
-        free(augmented[j]);
-      free(augmented);
-      throw "fail on inverse";
-    }
-    if (i != max_row) {
-      for (k = 0; k < 2 * n; ++k) {
-        double temp = augmented[i][k];
-        augmented[i][k] = augmented[j][k];
-        augmented[j][k] = temp;
+    if (is_approach_zero(A(i, i))) {
+      // get order
+      for (j = 0; j < n; ++j) {
+        for (k = 0; is_approach_zero (A(k, j)) && (k++ < n); );
+        // is singular return itself
+        if (k >= n) return *this;
+        m[j].a = j, m[j].b = k;
       }
+      static const auto sf = [](M a, M b) { return a.b < b.b; };
+      std::sort(m, m + n, sf);
+      for (j = 0; j < n; ++j) {
+        M &mp = m[j];
+        memcpy(D.data+(j * n), A.data+(mp.a * n), n * sizeof(double));
+        memcpy(E.data+(j * n), C.data+(mp.a * n), n * sizeof(double));
+      }
+      A = D, C = E;
     }
-    double pivot = augmented[i][i];
-    for (j = 0; j < 2 * n; ++j)
-      augmented[i][j] /= pivot;
-    for (k = 0; k < n; ++k) {
-      if (k != i) {
-        double factor = augmented[k][i];
-        for (j = 0; j < 2 * n; ++j) {
-          augmented[k][j] -= factor * augmented[i][j];
-        }
+    // this is singular
+    if (is_approach_zero(A(i, i))) return *this;
+    for (j = i + 1; j < n; ++j) A(j, i) /= A(i, i);
+    for (j = 0; j < n; ++j) C(j, i) /= A(i, i);
+    A(i, i) = 1.0;
+    // delete elements in row below
+    for (j = i + 1; j < n; ++j) {
+      if (!is_approach_zero (A(i, j))) {
+        for (k = i + 1; k < n; ++k) A(k, j) -= A(i, j) * A(k, i);
+        for (k = 0; k < n; ++k) C(k, j) -= A(i, j) * C(k, i);
+        A(i, j) = 0;
       }
     }
   }
-  for (i = 0; i < n; ++i)
-    for (j = 0; j < n; ++j)
-      b(j, i) = augmented[i][j + n];
-    free(augmented[i]);
-  free(augmented);
-#undef EPSILON
-  return b;
+  // backtrack
+  while (--i) {
+    for (j = i; j--; ) {
+      if (!is_approach_zero(A(i, j))) {
+        for (k = 0; k < n; ++k) C(k, j) -= A(i, j) * C(k, i);
+        A(i, j) = 0;
+      }
+    }
+  }
+  delete[] m;
+  return C;
 }
   // operator compare
 bool Matrix::operator== (const Matrix &b) const {
-  return THIS_MATRIX_DIMS_EQ(b) * (0 == memcmp(data, b.data, THIS_MATRIX_SIZE_BYTE));
+  return (rows == b.rows) && (cols == b.cols) &&
+    floating_equals(data, b.data, THIS_MATRIX_SIZE);
 }
 bool Matrix::operator!= (const Matrix &b) const {
-  return !THIS_MATRIX_DIMS_EQ(b) * memcmp(data, b.data, THIS_MATRIX_SIZE_BYTE);
+  return (rows != b.rows) || (cols != b.cols) ||
+    !floating_equals(data, b.data, THIS_MATRIX_SIZE);
 }
   // operators math
 Matrix &Matrix::operator= (const Matrix b) {
   size_t by = MATRIX_SIZE_BYTE(b);
   if (!THIS_MATRIX_DIMS_EQ(b)) {
-    cols = b.cols;
-    rows = b.rows;
+    cols = b.cols, rows = b.rows;
     data = (double*) realloc (data, by);
   }
   memcpy(data, b.data, by);
@@ -170,26 +187,26 @@ Matrix &Matrix::operator= (const Matrix b) {
 Matrix Matrix::operator+ (const Matrix b) const {
   if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Addition for different Matrix dimension";
   Matrix c(cols, rows);
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     c[i] = data[i] + b[i];
   return c;
 }
 Matrix Matrix::operator- (const Matrix b) const {
   if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Subtraction for different Matrix dimension";
   Matrix c(cols, rows);
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     c[i] = data[i] - b[i];
   return c;
 }
 Matrix Matrix::operator* (const double b) const {
   Matrix c(cols, rows);
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     c[i] = data[i] * b;
   return c;
 }
 Matrix Matrix::operator/ (const double b) const {
   Matrix c(cols, rows);
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     c[i] = data[i] / b;
   return c;
 }
@@ -208,23 +225,23 @@ Matrix Matrix::operator/ (const Matrix b) const {
 }
 Matrix &Matrix::operator+= (const Matrix b) {
   if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Addition for different Matrix dimension";
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     data[i] += b[i];
   return *this;
 }
 Matrix &Matrix::operator-= (const Matrix b) {
   if (!THIS_MATRIX_DIMS_EQ(b)) throw "cannot do Subtraction for different Matrix dimension";
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     data[i] -= b[i];
   return *this;
 }
 Matrix &Matrix::operator*= (const double b) {
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     data[i] *= b;
   return *this;
 }
 Matrix &Matrix::operator/= (const double b) {
-  for (size_t i = 0; i < THIS_MATRIX_SIZE; ++i)
+  for (size_t i = 0, j = THIS_MATRIX_SIZE; i < j; ++i)
     data[i] /= b;
   return *this;
 }

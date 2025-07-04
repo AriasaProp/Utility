@@ -39,14 +39,12 @@
 #define UNUSED(x)     ((void)x)
 #define UNUSED_ARG(x) __attribute__((unused)) x
 #else /* Unknown compiler */
-#define INLINE        inline
-#define CDECL         /* no translate */
-#define UNUSED(x)     /* no parameter */
-#define UNUSED_ARG(x) /* no parameter */
+#error "Not ready for this compiler"
 #endif
 
 #define MAX(X, Y)      ((X > Y) ? (X) : (Y))
 #define MIN(X, Y)      ((X < Y) ? (X) : (Y))
+// x min wall, y args, z max wall
 #define CLAMP(X, Y, Z) ((X < Z) ? ((Y > Z) ? (Z) : (Y)) : (X))
 
 #endif // COMMON_INCLUDED_

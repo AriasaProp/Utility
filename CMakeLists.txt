@@ -8,8 +8,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(COMPILE_WARNING_AS_ERROR ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-
 
 # output
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
@@ -22,11 +20,16 @@ file(GLOB_RECURSE Main_Src "${SRC}/src/*.cpp" "${SRC}/src/*.c")
 add_library(${PROJECT_NAME} STATIC ${Main_Src})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SRC}/include)
 
-add_definitions(-DMATH_TEST)
+add_definitions(
+#  -DSORTING_TEST
+   -DMATH_TEST
+#  -DMINING_TEST
+#  -DCODEC_TEST
+)
 
 # set test executable
 set(TSRC ${CMAKE_CURRENT_SOURCE_DIR}/test)
 file(GLOB_RECURSE Test_Src "${TSRC}/src/*.cpp" "${TSRC}/src/*.c")
-add_executable(${PROJECT_NAME}_test ${Test_Src})
-target_include_directories(${PROJECT_NAME}_test PRIVATE ${TSRC}/include)
-target_link_libraries(${PROJECT_NAME}_test PRIVATE ${PROJECT_NAME})
+add_executable(test ${Test_Src})
+target_include_directories(test PRIVATE ${TSRC}/include)
+target_link_libraries(test PRIVATE ${PROJECT_NAME})
