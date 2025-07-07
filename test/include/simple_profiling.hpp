@@ -6,6 +6,8 @@
 
 struct simple_time_t {
   double to_sec ();
+  simple_time_t operator+ (const simple_time_t) const;
+  simple_time_t &operator+= (const simple_time_t);
   friend std::ostream &operator<< (std::ostream &, const simple_time_t &);
   std::clock_t t;
 };

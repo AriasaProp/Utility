@@ -4,20 +4,13 @@
 #include <iomanip>
 #include <sstream>
 
-double simple_time_t::to_sec () {
-  return (double)t / CLOCKS_PER_SEC;
+simple_time_t simple_time_t::operator+ (const simple_time_t a) const {
+  return simple_time_t{t+a.t};
 }
-
-simple_timer_t::simple_timer_t () {
-  safe_time = clock ();
+simple_time_t &simple_time_t::operator+= (const simple_time_t a) {
+  t += a.t;
+  return *this;
 }
-void simple_timer_t::start () {
-  safe_time = clock ();
-}
-simple_time_t simple_timer_t::end () {
-  return simple_time_t{clock () - safe_time};
-}
-
 std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   std::stringstream ss;
   long td = t.t;
@@ -41,6 +34,19 @@ std::ostream &operator<< (std::ostream &o, const simple_time_t &t) {
   }
   o << ss.str ();
   return o;
+}
+
+double simple_time_t::to_sec () {
+  return (double)t / CLOCKS_PER_SEC;
+}
+simple_timer_t::simple_timer_t () {
+  safe_time = clock ();
+}
+void simple_timer_t::start () {
+  safe_time = clock ();
+}
+simple_time_t simple_timer_t::end () {
+  return simple_time_t{clock () - safe_time};
 }
 
 void print_resources (std::ostream &o) {
