@@ -7,10 +7,6 @@ on:
       - 'main/**'
       - 'test/**'
 
-permissions:
-  actions: write
-  contents: write
-
 jobs:
   formating-test:
     runs-on: ubuntu-latest
@@ -18,38 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
 
-      - name: Filtering
-        uses: dorny/paths-filter@v3.0.1
-        id: files
-        with:
-          list-files: shell
-          filters: |
-            src:
-              - added|modified: '**/*.cpp'
-              - added|modified: '**/*.hpp'
-              - added|modified: '**/*.c'
-              - added|modified: '**/*.h'
-              - added|modified: '**/*.S'
-
-      - name: Formating Src File
-        if: steps.files.outputs.src == 'true'
-        run: |
-          sudo apt-get install -y clang-format
-          echo ${{ steps.files.outputs.src_files }} | xargs -n 1 clang-format -i
-
-      - name: Push Change
-        continue-on-error: true
-        run: |
-          git add .
-          if (git commit -m "Reformatting Code Sources"); then
-            git config --global user.email "ikomangwidiadaariasa12@gmail.com"
-            git config --global user.name "AriasaProp"
-            git push
-          fi
-
       - name: Build and Run Test
-        run: |
-          cmake -S . -B build
-          cmake --build build
-          ./build/Utility_test
-          
+        run: make Test
+

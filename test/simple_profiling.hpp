@@ -19,6 +19,4 @@ struct simple_timer_t {
   std::clock_t safe_time;
 };
 
-void print_resources (std::ostream &);
-
 #endif // SIMPLE_PROFILING_

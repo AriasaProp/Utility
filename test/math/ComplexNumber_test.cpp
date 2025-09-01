@@ -1,5 +1,6 @@
 #include "math/ComplexNumber.hpp"
 #include "simple_profiling.hpp"
+#include "common.hpp"
 
 #include <ostream>
 #include <iostream>
@@ -34,7 +35,7 @@ void ComplexNumber_test(){
       	    ComplexNumber C(text_buffer);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if (A+B != C) {
   			  	  *output_file << "result: " << (A+B) << " should be " << C;
   			  		throw text_buffer;
@@ -53,7 +54,7 @@ void ComplexNumber_test(){
       	    ComplexNumber C(text_buffer);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if (A-B != C) {
   			  	  *output_file << "result: " << (A-B) << " should be " << C;
   			  		throw text_buffer;
@@ -72,7 +73,7 @@ void ComplexNumber_test(){
       	    ComplexNumber C(text_buffer);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if ((A*B) != C) {
   			  	  *output_file << "result: " << (A*B) << " should be " << C;
     		  		throw text_buffer;
@@ -91,7 +92,7 @@ void ComplexNumber_test(){
       	    ComplexNumber C(text_buffer);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if (A/B != C) {
   			  	  *output_file << "result: " << (A/B) << " should be " << C;
   			  		throw text_buffer;
@@ -110,7 +111,7 @@ void ComplexNumber_test(){
       	    ComplexNumber C(text_buffer);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if ((A^B) != C) {
   			  	  *output_file << "result: " << (A^B) << " should be " << C;
   			  		throw text_buffer;

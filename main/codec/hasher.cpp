@@ -2,7 +2,7 @@
 
 #include <cmath>
 #include <cstring>
-
+/*
 static inline int lrotl(int x, size_t n) {
 #if (defined(__GNUC__) || defined(__clang__)) && __has_builtin(__builtin_rotateleft32) // GCC 12+ / Clang 14+
   return __builtin_rotateleft32(x, n);
@@ -12,6 +12,7 @@ static inline int lrotl(int x, size_t n) {
   return (x << n) | (x >> (-n & 31));
 #endif
 }
+*/
 static inline int lrotr(int x, size_t n) {
 #if (defined(__GNUC__) || defined(__clang__)) && __has_builtin(__builtin_rotateright32) // GCC 12+ / Clang 14+
   return __builtin_rotateright32(x, n);
@@ -131,7 +132,7 @@ hash256 sha256 (const char *input, uint64_t l) {
 				// chunk 1
 				W[16] += W[9];
 				State[0] += W[16];
-				memmove(W, W + 1, 64);
+				memcpy(W, W + 1, 64);
 			} else {
 				State[0] += W[i];
 			}

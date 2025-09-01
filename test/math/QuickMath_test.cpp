@@ -40,7 +40,7 @@ void QuickMath_test() {
     	switch (ch) {
     		case 'A': {
           if (!fscanf(file, "%f %f", &a, &b)) throw "format test wrong!";
-          fgetc(file);
+          UNUSED(fgetc(file));
           ctm.start();
           curr = fabs(QuickMath::inverse_sqrt(a) - b) * 100.0f / b;
           datas[0].duration += ctm.end();

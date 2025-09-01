@@ -1,5 +1,6 @@
 #include "math/Matrix.hpp"
 #include "simple_profiling.hpp"
+#include "common.hpp"
 
 #include <ostream>
 #include <cstdio>
@@ -28,7 +29,7 @@ Matrix N (text_buffer);
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-            fgetc(file);
+            UNUSED(fgetc(file));
     	      if (A+B != C) throw "+ operator";
       			break;
           }
@@ -36,7 +37,7 @@ Matrix N (text_buffer);
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-            fgetc(file);
+            UNUSED(fgetc(file));
     	      if (A-B != C) throw "- operator";
       			break;
           }
@@ -44,7 +45,7 @@ Matrix N (text_buffer);
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-            fgetc(file);
+            UNUSED(fgetc(file));
     	      if (A*B != C) throw "* operator";
       			break;
           }
@@ -52,7 +53,7 @@ Matrix N (text_buffer);
             EXTRACT(A);
             EXTRACT(B);
             EXTRACT(C);
-            fgetc(file);
+            UNUSED(fgetc(file));
     	      if (A/B != C) {
               *output_file << "Result: " << (A/B) << "\n should be : " << C << "\n";
     	        throw "/ operator";

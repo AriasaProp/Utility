@@ -1,6 +1,8 @@
 #include "math/BigInteger.hpp"
+#include "common.hpp"
 #include "simple_profiling.hpp"
 
+#include <unistd.h>
 #include <cmath>
 #include <cstdlib>
 #include <ostream>
@@ -9,8 +11,8 @@
 #include <string>
 #include <cerrno>
 #include <cstring>
-#include <sys/mman.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 
 // undef TIME to reach limit of file digits
@@ -52,37 +54,45 @@ void BigInteger_test () {
   		int ch = 0;
       while((ch = fgetc(file)) != EOF) {
         cnt++;
-  #define EXTRACT(N) if (!fscanf(file, " %s", text_buffer)) throw "format test wrong!"; \
-  BigInteger N(text_buffer)
-  #define COMMON3(D) if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!"; \
-  fgetc(file); if (A D B != C) throw text_buffer; \
-  break
+#define EXTRACT(N) \
+  if (!fscanf(file, " %s", text_buffer)) \
+    throw "format test wrong!"; \
+  BigInteger N(text_buffer) \
+
+#define COMMON(D) do {\
+  if (!fscanf(file, " #%[^\n]", text_buffer)) \
+    throw "format test wrong!"; \
+  UNUSED(fgetc(file)); \
+  if (A D B != C) \
+    throw text_buffer; \
+  break; \
+} while (0)
       	switch (ch) {
       		case 'A': {
       		  EXTRACT(A); EXTRACT(B); EXTRACT(C);
       		  if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!";
-      		  fgetc(file);
+      		  UNUSED(fgetc(file));
       		  if (A + B != C) throw text_buffer;
       			break;
       		}
       		case 'B': {
       		  EXTRACT(A); EXTRACT(B); EXTRACT(C);
       		  if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!";
-      		  fgetc(file);
+      		  UNUSED(fgetc(file));
       		  if (A - B != C) throw text_buffer;
       			break;
       		}
       		case 'C': {
       		  EXTRACT(A); EXTRACT(B); EXTRACT(C);
       		  if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!";
-      		  fgetc(file);
+      		  UNUSED(fgetc(file));
       		  if (A * B != C) throw text_buffer;
       			break;
       		}
       		case 'D': {
       		  EXTRACT(A); EXTRACT(B); EXTRACT(C);
       		  if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!";
-      		  fgetc(file);
+      		  UNUSED(fgetc(file));
       		  if (A / B != C) throw text_buffer;
       			break;
       		}
@@ -94,7 +104,7 @@ void BigInteger_test () {
       	    EXTRACT(C);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if ((A^B) != C)
   			  		throw text_buffer;
       			break;
@@ -104,7 +114,7 @@ void BigInteger_test () {
       	    EXTRACT(B);
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if (A.sqrt() != B)
   			  		throw text_buffer;
       			break;
@@ -112,7 +122,7 @@ void BigInteger_test () {
       		case 'G': {
       		  EXTRACT(A); EXTRACT(B); EXTRACT(C);
       		  if (!fscanf(file, " #%[^\n]", text_buffer)) throw "format test wrong!";
-      		  fgetc(file);
+      		  UNUSED(fgetc(file));
       		  if (A % B != C) throw text_buffer;
       			break;
       		}
@@ -124,7 +134,7 @@ void BigInteger_test () {
       		  BigInteger A1 = A;
       	    if (!fscanf(file, " #%[^\n]", text_buffer))
       	      throw "format test wrong!";
-      	    fgetc(file);
+      	    UNUSED(fgetc(file));
   			  	if (A1.div_mod(B) != C || (A1 != D))
   			  		throw text_buffer;
       			break;

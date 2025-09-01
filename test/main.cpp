@@ -11,9 +11,7 @@ char *data_address;
 
 #ifndef NO_TEST
 
-#if defined (SORTING_TEST) || defined (MATH_TEST) || defined (MINING_TEST) || defined (CODEC_TEST)
-
-#else
+#if !defined (SORTING_TEST) && !defined (MATH_TEST) && !defined (MINING_TEST) && !defined (CODEC_TEST)
 
 #define SORTING_TEST
 #define MATH_TEST
@@ -25,7 +23,10 @@ char *data_address;
 #endif
 
 #ifdef MATH_TEST
-extern void math_test();
+extern void QuickMath_test ();
+extern void BigInteger_test ();
+extern void ComplexNumber_test ();
+extern void Matrix_test ();
 #endif
 
 #ifdef SORTING_TEST
@@ -37,10 +38,10 @@ extern "C" void mining_test();
 #endif
 
 #ifdef CODEC_TEST
-extern void codec_test();
+extern void hasher_test();
 #endif
 
-int main (int argv, char *args[]) {
+int main (int argv, char **args) {
 
 #ifdef NO_TEST
 	std::cout << "no test will run!" << std::endl;
@@ -60,7 +61,11 @@ int main (int argv, char *args[]) {
   */
 
 #ifdef MATH_TEST
-	math_test();
+  strcpy(data_address, "data/math");
+  QuickMath_test ();
+  BigInteger_test ();
+  ComplexNumber_test ();
+  Matrix_test ();
 #endif
 
 #ifdef SORTING_TEST
@@ -72,7 +77,8 @@ int main (int argv, char *args[]) {
 #endif
 
 #ifdef CODEC_TEST
-	codec_test();
+	strcpy(data_address, "data/codec");
+  hasher_test();
 #endif
 
   //f.close ();

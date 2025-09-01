@@ -1,11 +1,11 @@
 #include "math/QuickMath.hpp"
 
 #include <cstdint>
-
-static const float EPSILON = 1e-50f;
+/* unused
+static const float EPSILON = 1.40129846E-45f;
 static const float PI = 3.14159265f;
 static const float PIHalf = 1.57079633f;
-
+*/
 float QuickMath::inverse_sqrt(float x) {
   static const float threehalf = 1.5f;
   int i = *(int *) &x;

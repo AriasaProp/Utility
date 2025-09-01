@@ -119,7 +119,7 @@ Matrix Matrix::inverse () const {
   // gauss-jordan matrix inverse
   Matrix A(*this), C = identity(n,n), D(n,n), E(n,n);
   struct M { size_t a, b; };
-  M *m = new M[n]{0};
+  M *m = new M[n]{};
   // convert to row echelons form
   for (i = 0; i < n; ++i) {
     if (is_approach_zero(A(i, i))) {

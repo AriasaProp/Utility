@@ -244,7 +244,7 @@ static wstack div_word(wstack &a, wstack b) {
 }
 static wstack div_word(wstack &a, const word b) {
   wstack c = std::move(a);
-  word rmr, curr;
+  word rmr = 0, curr = 0;
   for (rwit i = c.rbegin (), j = c.rend(); i < j; ++i) {
     curr = *i;
     rmr <<= WORD_HALF_BITS;
