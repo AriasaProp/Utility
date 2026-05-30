@@ -1,47 +1,84 @@
-BUILD_DIR := build
-MAIN_DIR := main
-TEST_DIR := test
+BIN_DIR := bin
+OBJ_DIR := $(BIN_DIR)/obj
+TOOL_DIR := $(BIN_DIR)/tool
+DATA_DIR := $(BIN_DIR)/data
+TEST_DIR := $(BIN_DIR)/test
 
 # flags
-MAKEFLAGS += -j4
-FLAG_SRC := -Werror -Wall -MMD -MP
-CFLAGS := -std=c11
-CXXFLAGS := -std=c++20
-LDFLAGS := -lc
+CFLAGS	 := -std=c11 -Werror -Wall -MMD -MP -I./main 
+OFLAGS   := -O3
+TFLAGS	 := -O0 -ggdb -I./test
+LDFLAGS  := -lc -lm
 
-# sources
-MAIN_SRCS := $(shell find $(MAIN_DIR) -type f \( -name "*.c" -o -name "*.cpp" \))
-TEST_SRCS := $(shell find $(TEST_DIR) -type f \( -name "*.c" -o -name "*.cpp" \))
-MAIN_OBJS := $(MAIN_SRCS:%=$(BUILD_DIR)/%.o)
-TEST_OBJS := $(TEST_SRCS:%=$(BUILD_DIR)/%.o)
-MAIN_DEPS := $(MAIN_OBJS:.o=.d)
-TEST_DEPS := $(TEST_OBJS:.o=.d)
+ALL_TESTS := bigInteger_test complex_test matrix_test sort_test hash_test
 
-all:
-	@echo "nothing"
-	@echo $(TEST_SRCS) # $(MAIN_SRCS)
+TEST_SRC := $(OBJ_DIR)/test/util/profiling.c.o
 
-# executables
-Test: FLAG_SRC += -O0 -g $(addprefix -D,$(ARGS)) $(addprefix -I./,$(MAIN_DIR) $(TEST_DIR))
-Test: $(TEST_OBJS) $(MAIN_OBJS)
-	@echo "build test ... "
-	@$(CXX) $^ -o $@ $(LDFLAGS)
-	@chmod +x Test
-	@./Test
+# program create c template
+define PROG =
+$(1): CFLAGS += $(2)
+$(1): $(OBJ_DIR)/main/common.c.o $(3)
+	@echo "build $$@ "
+	@mkdir -p $$(@D)
+	@$(CC) $$(filter %.o, $$^) -o $$@ $$(LDFLAGS)
+	@chmod +x $$@
+	@./$$@
+endef
 
-# generate cpp to o file
-$(BUILD_DIR)/%.cpp.o: %.cpp
-	@mkdir -p $(@D)
-	@$(CXX) -c $< -o $@ $(CXXFLAGS) $(FLAG_SRC)
+.PHONY: tests clean h
+
+h:
+	@echo "\n"\
+		"h[elp]      show this message.\n" \
+ "$(TEST_DIR)/%  run spesific test.\n" \
+ "that is : $(ALL_TESTS).\n" \
+		"tests       make and run all test.\n" \
+		"clean       clean generated binary files/folders.\n" \
+		""
+
+$(TEST_DIR)/qtest: LDFLAGS += -lm
+$(eval $(call PROG,$(TEST_DIR)/qtest, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/test/qtest.c.o \
+))
+
+
+tests: $(addprefix $(TEST_DIR)/, $(ALL_TESTS))
+	@echo "All Tests Passed"
+
+$(eval $(call PROG,$(TEST_DIR)/complex_test, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/main/math/complex.c.o \
+	$(OBJ_DIR)/test/math/complex_test.c.o \
+))
+$(eval $(call PROG,$(TEST_DIR)/bigInteger_test, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/main/math/bigInteger.c.o \
+	$(OBJ_DIR)/test/math/bigInteger_test.c.o \
+))
+$(eval $(call PROG,$(TEST_DIR)/matrix_test, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/main/math/matrix.c.o \
+	$(OBJ_DIR)/test/math/matrix_test.c.o \
+))
+$(eval $(call PROG,$(TEST_DIR)/sort_test, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/main/algorithm/sort.c.o \
+	$(OBJ_DIR)/test/algorithm/sort_test.c.o \
+))
+$(eval $(call PROG,$(TEST_DIR)/hash_test, $(TFLAGS), \
+	$(TEST_SRC) \
+	$(OBJ_DIR)/main/codec/hash.c.o \
+	$(OBJ_DIR)/test/codec/hash_test.c.o \
+))
 
 # generate c to o file
-$(BUILD_DIR)/%.c.o: %.c
+$(OBJ_DIR)/%.c.o: %.c
 	@mkdir -p $(@D)
-	@$(CC) -c $< -o $@ $(CFLAGS) $(FLAG_SRC)
+	@$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	@echo "cleanup build files ..."
-	@rm -rf $(BUILD_DIR) Test
+	@echo "cleanup binary files ..."
+	@rm -rf $(BIN_DIR)
 
-
--include $(TEST_DEPS) $(MAIN_DEPS)
+-include $(shell find $(OBJ_DIR) -type f -name "*.d")

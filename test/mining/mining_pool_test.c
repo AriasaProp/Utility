@@ -3,11 +3,10 @@
 do mining pool test in litecoinpool.org
 
 */
+#include "codec/hasher.h"
 
-#include <stdint.h>
 #include <stdio.h>
 #include <time.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -24,14 +23,15 @@ static unsigned short PORT_POOL = 8080;
 static char *data_buffer = NULL;
 static char *error_msg = NULL;
 
-void mining_test() {
+int main (int, char **) {
+  int result = EXIT_FAILURE;
   struct sockaddr_in server_addr;
   struct hostent *server;
   int sockfd, out = 0;
   data_buffer = (char*)malloc(MAX_MESSAGE);
   error_msg = (char*)calloc(1, MAX_ERROR_MESSAGE);
   int bytes_read = 0;
-  size_t tries = 0;
+  iter tries = 0;
   
   if (errno) {
 		strcpy(error_msg, "at start");
@@ -62,7 +62,7 @@ void mining_test() {
 		// customize value 
 		"TEST_MACHINE", "Ariasa.test", " 1234");
 
-	for (size_t length = strlen(data_buffer), s; length > 0;) {
+	for (iter length = strlen(data_buffer), s; length > 0;) {
     s = send (sockfd, data_buffer, length, 0);
     if (s <= 0) {
   		IF_TRIAL_FAIL {
@@ -99,16 +99,16 @@ void mining_test() {
   	printf("%s",data_buffer);
     scanf("%d",&out);
   }
-  
+  result = EXIT_SUCCESS;
 end_sock_mining:
   close(sockfd);
 end_mining:
-	if (*error_msg || errno)
+	if (*error_msg || errno) {
 		printf("Err: %s, %s",error_msg, strerror(errno));
+	}
   free (data_buffer);
   free (error_msg);
-	return;
-  
+	return result;
   
 #undef TRIAL_SUCCESS
 #undef IF_TRIAL_FAIL
