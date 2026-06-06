@@ -10,7 +10,7 @@
 #define DATA_RANDOM imath_rand_float ()
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
-#define DATA_SIZE   19000
+#define DATA_SIZE   11000
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);

@@ -1,0 +1,58 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/tests.yml'
+      - 'main/**'
+      - 'test/**'
+
+jobs:
+
+  # test-macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v6.0.2
+  #     - run: make tests
+
+  # test-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v6.0.2
+  #     - run: make tests
+
+  test-linux-armv8:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - run: make tests
+
+  test-linux-x64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - run: make tests
+
+  test-linux-x86:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: uraimo/run-on-arch-action@v3
+        id: tests
+        with:
+          arch: i386
+          distro: ubuntu24.04
+          githubToken: ${{ github.token }}
+          run: make tests
+
+  test-linux-armv7:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: uraimo/run-on-arch-action@v3
+        id: tests
+        with:
+          arch: armv7
+          distro: ubuntu24.04
+          githubToken: ${{ github.token }}
+          run: make tests

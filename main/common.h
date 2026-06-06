@@ -139,7 +139,8 @@ extern "C" {
 int convert_wchar_to_utf8(char *, iter, const wchar_t *);
 #endif // _WIN32
 
-
+// assembly convetion
+void hello_world ();
 
 /* ================================
  *  Standar Utility Functions
@@ -153,11 +154,11 @@ void  util_memfree(void*);
 void  util_memswap(void*,void*,iter);
 void  util_memflip(void*,iter);
 void  util_memcpy (void*,const void*,iter);
-void  util_memrcpy(void*,const void*,iter);
 int   util_memcmp (const void*,const void*,iter);
 void  util_memmove(void*,void*,iter);
 void  util_memset (void*,int,iter);
 iter  util_strlen (const char*);
+iter  util_clz(ulong);
 iter  util_bitlead(ulong);
 
 /* ================================
@@ -241,7 +242,7 @@ float imath_rand_float();
 /* ================================
  *  dynamic array 
  *  Apply in macro
- *  ARRAY object format 
+ *  ARRAY object format at least contain this
  * struct {
  *   T *items;
  *   iter cap;
@@ -264,7 +265,7 @@ float imath_rand_float();
   util_memset((a)->items + (a)->count, 0, ((z)-(a)->count) * sizeof(*(a)->items)); \
   (a)->count = (z); \
 } while (0)
-#define da_duplicate(a,b) do {\
+#define da_copy(a,b) do {\
   da_reserve((a),(b)->count);\
   util_memcpy((a)->items, (b)->items, (b)->count * sizeof(*(a)->items)); \
   (a)->count = (b)->count; \
@@ -273,7 +274,10 @@ float imath_rand_float();
   da_reserve((a), (a)->count + 1); \
   (a)->items[(a)->count++] = (item); \
 } while (0)
-#define da_free(a) util_memfree((a)->items), util_memset((a), 0, sizeof(*a))
+#define da_free(a) do {\
+  if ((a)->items) util_memfree((a)->items);\
+  util_memset((a), 0, sizeof(*a)); \
+} while (0)
 #define da_clean(a) (a)->count = 0
 #define da_appends(a, b, l) do { \
   da_reserve((a), (a)->count + (l)); \

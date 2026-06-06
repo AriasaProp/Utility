@@ -10,7 +10,8 @@
 #include "common.h"
 
 // should exponent of 2
-#define STRING_CAP_ROUND 16
+#define STRING_CAP_ROUND 4
+#define STRING_CAP_MASK  3
 
 // #define NO_STDMATH // not with -lm
 #if !defined(NO_STDMATH)
@@ -37,7 +38,7 @@
   #include <string.h>
   #include <time.h>
 #endif // NO_STDC
-// #define FASTER_MATH // no use when STD_MATH defined
+// #define FASTER_MATH //  no use when STD_MATH defined
 #if defined(_WIN32) || defined(_WIN64)
   #include <intrin.h>
   #pragma intrinsic(__rdtsc)
@@ -52,6 +53,12 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
 
 #define CHAR_WHITESPACE ' '
 
+TODO("Support assembly!.\n")
+#ifndef ASM
+void hello_world() {
+  printf("Hello, from C,?\n");
+}
+#endif
 
 /* ================================
  *  Standar Utility Function
@@ -111,11 +118,6 @@ void util_memcpy (void *dst, const void *src,iter bytes) {
   memcpy(dst,src,bytes);
 #endif // NO_STDC
 }
-void util_memrcpy(void *dst, const void *src,iter bytes) {
-  byte *DST = CAST(byte*)dst;
-  const byte *SRC = CAST(byte*)src;
-  while (bytes--) DST[bytes] = SRC[bytes];
-}
 int util_memcmp (const void *a, const void *b,iter bytes) {
 #ifdef NO_STDC
   int ret = 0;
@@ -129,13 +131,13 @@ int util_memcmp (const void *a, const void *b,iter bytes) {
 }
 void util_memmove(void *dst, void *src,iter bytes) {
 #ifdef NO_STDC
-  byte *DST = CAST(byte*)dst, *SRC = CAST(byte*)src;
-  byte *BUF = CAST(byte*)util_malloc(bytes);
-  for (iter i = 0; i < bytes; ++i)
-    BUF[i] = SRC[i];
-  for (iter i = 0; i < bytes; ++i)
-    DST[i] = BUF[i];
-  util_memfree(BUF);
+  byte *S = CAST(byte*)src;
+  byte *D = CAST(byte*)dst;
+  byte *B = CAST(byte*)util_malloc(bytes);
+  util_memcpy(B, S, bytes);
+  util_memset(S, 0, bytes);
+  util_memcpy(D, B, bytes);
+  util_memfree(B);
 #else
   memmove(dst,src,bytes);
 #endif // NO_STDC
@@ -149,14 +151,25 @@ void util_memset(void *dst, int src, iter bytes) {
   memset(dst,src,bytes);
 #endif // NO_STDC
 }
+#ifndef ASM
 iter util_strlen(const char *str) {
 #ifdef NO_STDC
   iter i = 0;
-  while (str && str[i]) ++i;
+  while (str[i]) ++i;
   return i;
 #else
   return strlen(str);
 #endif // NO_STDC
+}
+#endif // ASM
+iter util_clz(ulong x) {
+#if __has_builtin(__builtin_clzl)
+  return __builtin_clzl(x);
+#else
+  iter r = 0;
+  while (x) ++r, x >>= 1;
+  return sizeof(ulong) * 8 - r;
+#endif
 }
 iter util_bitlead(ulong x) {
 #if __has_builtin(__builtin_clzl)
@@ -168,22 +181,20 @@ iter util_bitlead(ulong x) {
 #endif
 }
 
-typedef struct {
-  iter cap, count;
-} string_head;
+typedef struct {iter cap, count; } string_head;
 
 static inline string_head *string__get_head(String str) {
   if (str) return (CAST(string_head*)str) - 1;
-  return NULL;
+  return CAST(string_head*)util_calloc(sizeof(string_head), 1);
 }
 static inline String string__get_string(string_head *sh) {
   return CAST(String) (!sh ? NULL : (sh + 1));
 }
-static inline string_head *string__reserve(string_head *sh, iter more) {
-  if (sh) more += sh->count;
-  iter need = (more & ~(STRING_CAP_ROUND - 1)) + STRING_CAP_ROUND * !!(more & (STRING_CAP_ROUND - 1));
+static inline string_head *string__reserve(string_head *sh, iter need) {
+  need = (need & ~STRING_CAP_MASK) + STRING_CAP_ROUND * !!(need & STRING_CAP_MASK);
   if (!sh || (sh->cap < need)) {
     sh = CAST(string_head*) util_realloc(sh, need + sizeof(string_head));
+    ASSERT(sh && "string fail to allocate");
     sh->cap = need;
   }
   return sh;
@@ -194,34 +205,37 @@ static inline string_head *string__reserve(string_head *sh, iter more) {
  * ================================
  */
 inline void string_append_char(String *str,char c) {
-  string_head *sh = string__reserve(string__get_head(*str), 2);
+  string_head *sh = string__get_head(*str);
+  sh = string__reserve(sh, sh->count + 2);
   *str = string__get_string(sh);
   *(*str + (sh->count++)) = c;
   str[sh->count] = 0;
 }
 inline void string_append_cstr(String *str, const char *cstr, iter len) {
-  string_head *sh = string__reserve(string__get_head(*str), len + 1);
+  string_head *sh = string__get_head(*str);
+  sh = string__reserve(sh, sh->count + len + 1);
   *str = string__get_string(sh);
   util_memcpy(*str + sh->count, cstr, len + 1);
   sh->count += len;
   // is always memcpy end with null?
-  // str[sh->count += len] = 0;
+  str[sh->count += len] = 0;
 }
 inline void string_append(String *str, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   int r = vsnprintf(NULL, 0, fmt, args);
-  ASSERT(r >= 0);
-  string_head *sh = string__reserve(string__get_head(*str), r + 1);
+  ASSERT((r >= 0) && "invalid on vsnprintf");
+  string_head *sh = string__get_head(*str);
+  sh = string__reserve(sh, sh->count + r + 1);
   *str = string__get_string(sh);
-  r = vsnprintf((*str) + sh->count, r + 1, fmt, args);
+  r = vsnprintf(*str + sh->count, r + 1, fmt, args);
   va_end(args);
   sh->count += r;
   // is always vsnprintf end with null?
-  // str[sh->count += r] = 0;
+  str[sh->count += r] = 0;
 }
 inline void string_reserve(String *str, iter sz) {
-  *str = string__get_string(string__reserve(string__get_head(*str), sz + 1));
+  *str = string__get_string(string__reserve(string__get_head(*str), sz));
 }
 inline iter string_len(const String str) {
   const string_head *sh = string__get_head(str);
@@ -229,12 +243,12 @@ inline iter string_len(const String str) {
 }
 inline void string_clean(String str) {
   string_head *sh = string__get_head(str);
-  if (!sh) return;
+  if (!sh || !sh->count) return;
   sh->count = 0;
   *(CAST(char*)str) = 0;
 }
 inline void string_free (String *str) {
-  free(string__get_head(*str));
+  util_memfree(string__get_head(*str));
   *str = NULL;
 }
 
@@ -698,54 +712,21 @@ int64 imath_rotr64(int64 x, const iter n) {
 // rdtsc_rand.h: v0.7
 // https://github.com/scottchiefbaker/rdtsc_rand
 ////////////////////////////////////////////////////////////////////////////////
-
+#ifndef ASM
 inline uint64 imath_rand_uint64() {
-	static int hwrng = -1;
 	uint64 x;
-	if (hwrng == -1) {
-    // Hardware rand supported by x86_64 and ARM 8.5+
-#ifdef __x86_64
-  	uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-  	__get_cpuid(1, &eax, &ebx, &ecx, &edx);
-  	hwrng = (ecx & bit_RDRND) != 0;
-#elif defined(__ARM_ARCH) && (__ARM_ARCH >= 8)
-  	__asm__ volatile("mrs %0, ID_AA64ISAR0_EL1" : "=r"(x));
-  	hwrng = ((x >> 60) & 0xF) != 0;  // Check RNDR bit field
-#else
-    hwrng = 0;
-#endif
-	}
-	if (hwrng) {
-#ifdef __x86_64
-  	unsigned char ok;
-  	__asm__ volatile("rdrand %0; setc %1" : "=r" (x), "=qm" (ok) : : "cc");
-  	if (!ok) x = CAST(uint64)clock();
-#elif defined(__ARM_ARCH) && (__ARM_ARCH >= 8)
-  	__asm__ volatile("mrs %0, s3_3_c2_c4_0" : "=r"(x));
-#else
-    ASSERT("UNREACHABLE");
-#endif
-	} else {
-// Get the instruction counter for various CPU/Platforms
-#ifdef ARDUINO
-	  x = micros();
-#elif defined(_WIN32) || defined(_WIN64)
-	  x = __rdtsc();
-#elif defined(__aarch64__) || defined(__arm64)
-	  __asm__ volatile ("mrs %0, cntvct_el0" : "=r" (x));
-#elif (defined(__x86_64) || defined(__i386__) || defined(__i686__)) && (defined(__GNUC__) || defined(__clang__))
-    uint32 *v = CAST(uint32*)&x;
-	  __asm__ volatile ("rdtsc" : "=a"v[0], "=d"v[1]);
-#elif defined(NO_STDC)
-    static float private_seed = 0xa2cf27bb2397108fULL;
-    x = 0xbf58476d1ce4e5b9ULL ^ private_seed;
-    private_seed ^= x;
-#else
-    x = CAST(uint64)clock();
-#endif
-  }
-	return x * 0xbf58476d1ce4e5b9ULL; // scramble rng (may small)
+  #if defined(_WIN32) || defined(_WIN64)
+  x = __rdtsc();
+  #elif defined(NO_STDC)
+  static volatile ulong p = 0xa2cf27bb2397108fULL;
+  x = 0xbf58476d1ce4e5b9ULL * p;
+  p = 0x7b84fe9d21a748f4ULL * x;
+  #else
+  x = CAST(uint64)clock();
+  #endif
+	return x * 0x9a9fbe3f8f21421fULL; // scramble rng (may small)
 }
+#endif
 #define RAND_VARIANT(T) \
 inline T imath_rand_##T () {\
   uint64 t = imath_rand_uint64();\

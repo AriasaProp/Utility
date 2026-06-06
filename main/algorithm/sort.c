@@ -105,7 +105,7 @@ static void sort_merge__rec(char*, iter, iter, compare_funct,char*);
 void sort_merge(void *dat, iter size, iter bytes, compare_funct cmp) {
 	char *c = CAST(char*) util_malloc(bytes);
   sort_merge__rec(CAST(char*)dat, size, bytes, cmp, c);
-	util_memfree (c);
+  util_memfree(c);
 }
 static void sort_merge__rec(char *data, iter size, iter bytes, compare_funct cmp, char *c) {
   VALID_ARRAY(size);
@@ -138,14 +138,10 @@ static void sort_merge__rec(char *data, iter size, iter bytes, compare_funct cmp
  *  reduce tree array from front view
  *
  * ==========================================================*/
-#define PRE_PRINT(X) do {\
-  float *fs = CAST(float*)data; \
-  printf(X "-> %.1f, %.1f, %.1f, %.1f, %.1f, %.1f\n", fs[0],fs[1],fs[2],fs[3],fs[4],fs[5]);\
-} while (0)
 void sort_heap(void *dat, iter size, iter bytes, compare_funct cmp) {
 	char *data = (char*)dat;
 	iter i, prnt, ndl, ndr;
-  while (size >= 2) {
+  while (size > 1) {
     // climb target up to top
     i = size >> 1;
     while (i--) {
