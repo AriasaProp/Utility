@@ -26,7 +26,7 @@ else
 			CFLAGS   += -DASM -mfloat-abi=hard -mfpu=neon
 		else ifeq ($(UNAME_M),x86_64)
 			ARCH     := x64
-			ASMFLAGS += -march=x86_64
+			ASMFLAGS += -march=x86-64
 			CFLAGS   += -DASM
 		else ifneq (,$(filter i386 i486 i586 i686,$(UNAME_M)))
 			ARCH     := x86

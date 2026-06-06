@@ -6,6 +6,7 @@ on:
       - '.github/workflows/tests.yml'
       - 'main/**'
       - 'test/**'
+      - 'Makefile'
 
 jobs:
 
