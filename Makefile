@@ -26,11 +26,11 @@ else
 			CFLAGS   += -DASM -mfloat-abi=hard -mfpu=neon
 		else ifeq ($(UNAME_M),x86_64)
 			ARCH     := x64
-			ASMFLAGS += -march=x86-64
+			ASMFLAGS += --64
 			CFLAGS   += -DASM
 		else ifneq (,$(filter i386 i486 i586 i686,$(UNAME_M)))
 			ARCH     := x86
-			ASMFLAGS += -march=i386 -m32
+			ASMFLAGS += --32 -march=i386 -m32
 			CFLAGS   += -DASM -m32
 		else
 			$(error Unknown Machine: $(UNAME_M))
