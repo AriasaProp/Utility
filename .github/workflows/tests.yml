@@ -41,9 +41,12 @@ jobs:
       - uses: uraimo/run-on-arch-action@v3
         id: tests
         with:
-          arch: i386
+          arch: 386
           distro: ubuntu24.04
           githubToken: ${{ github.token }}
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y make
           run: make tests
 
   test-linux-armv7:
@@ -56,4 +59,7 @@ jobs:
           arch: armv7
           distro: ubuntu24.04
           githubToken: ${{ github.token }}
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y make
           run: make tests

@@ -1,8 +1,7 @@
   .data
 
 cmsg:
-  .asciz "Hello from ARM!\n"
-  .align 4
+  .ascii "Hello from ARM!\n"
 cmsg_end:
 
 	.align 2

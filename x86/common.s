@@ -1,7 +1,6 @@
   .data
 cmsg:
-  .asciz "Hello from x86!\n"
-  .align 4
+  .ascii "Hello from x86!\n"
 cmsg_end:
 
   .text
@@ -9,44 +8,42 @@ cmsg_end:
   .global hello_world
   .type hello_world, @function
 hello_world:
-  push ebp
-  mov ebp, esp
-  mov eax, 4          ; sys_write
-  mov ebx, 1          ; fd = 1 (stdout)
-  lea ecx, [cmsg]     ; buf
-  mov edx, cmsg_end
-  sub edx, ecx        ; compute length: cmsg_end - cmsg
+  push %ebp
+  mov %esp, %ebp
+  mov $4, %eax        ; sys_write
+  mov $1, %ebx        ; fd = 1 (stdout)
+  lea cmsg, %ecx,     ; buf
+  mov cmsg_end, %edx
+  sub %ecx, %edx        ; compute length: cmsg_end - cmsg
   int 0x80
 
-  mov esp, ebp
-  pop ebp
+  mov %ebp, %esp
+  pop %ebp
   ret
 
   .global util_strlen
   .type util_strlen, @function
 util_strlen:          ; 32bit cdecl
-  push ebp
-  mov ebp, esp
-  mov eax, [ebp+8]    ; eax = s (pointer)
-  xor ecx, ecx        ; counter = 0
+  push %ebp
+  mov %esp, %ebp
+  mov 8(%ebp), %eax   ; eax = s (pointer)
+  xor %ecx, %ecx        ; counter = 0
 .loop:
-  mov dl, byte [eax]  ; dl = *s
-  cmp dl, 0
+  mov 8(%eax), %dl  ; dl = *s
+  cmp $0, %dl
   je .ret
-  inc ecx
-  inc eax
+  inc %ecx
+  inc %eax
   jmp .loop
 .ret:
-  mov eax, ecx        ; return = counter (in EAX)
-  pop ebp
+  mov %ecx, %eax       ; return = counter (in EAX)
+  pop %ebp
   ret
 
 	.global imath_rand_uint64
 	.type imath_rand_uint64, @function
 imath_rand_uint64:
-	/* rdtsc -> EDX:EAX already */
 	rdtsc
-	/* place 64-bit value in stack for 64-bit multiply */
 	pushl	%edx
 	pushl	%eax
 	/* Load low and high words */

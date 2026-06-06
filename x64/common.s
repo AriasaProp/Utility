@@ -1,8 +1,7 @@
   .data
 
 cmsg:
-  .asciz "Hello from x64!\n"
-  .align 8
+  .ascii "Hello from x64!\n"
 cmsg_end:
 
   .text

@@ -1,7 +1,7 @@
   .data
 
 cmsg:
-  .asciz "Hello from ARM64!\n"
+  .ascii "Hello from ARM64!\n"
 cmsg_end:
 
   .text
