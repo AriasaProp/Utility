@@ -1,6 +1,8 @@
 #include "profiling.h"
+#define _POSIX_C_SOURCE 199309L
+#include <time.h>
+
 #if !defined(NO_STDC)
-  #include <time.h>
 #endif // NO_STDC
 
 #define SEC_IN_NS   1000000000ULL
