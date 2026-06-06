@@ -26,7 +26,7 @@ else
 			CFLAGS   += -DASM -mfloat-abi=hard -mfpu=neon
 		else ifeq ($(UNAME_M),x86_64)
 			ARCH     := x64
-			ASMFLAGS += -march=x86-64
+			ASMFLAGS += -march=x86_64
 			CFLAGS   += -DASM
 		else ifneq (,$(filter i386 i486 i586 i686,$(UNAME_M)))
 			ARCH     := x86
@@ -79,8 +79,8 @@ h:
 		"t[ests]     make and run all test.\n" \
 		"c[lean]     clean generated binary files/folders.\n" \
 		"s[tatus]    show current device stat.\n" \
- "$(TEST_DIR)/*  run spesific test, that is:\n" \
- $(addprefix "\t\t",$(addsuffix "\n", $(ALL_TESTS))) \
+  "$(TEST_DIR)/*  run spesific test, that is:\n" \
+  $(addprefix "\t\t",$(addsuffix "\n", $(ALL_TESTS))) \
 		"" >&2
 
 
