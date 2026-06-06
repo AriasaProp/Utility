@@ -1,5 +1,4 @@
 #include "profiling.h"
-#define _POSIX_C_SOURCE 199309L
 #include <time.h>
 
 #if !defined(NO_STDC)
@@ -16,16 +15,10 @@
 #define LONG_SEC 1000000000000ULL
 
 pr_time profiling_current_time() {
-  struct timespec tv;
-  if (clock_gettime(CLOCK_MONOTONIC, &tv) == -1)
-    return clock() * (SEC_IN_NS / CLOCKS_PER_SEC);
-  return tv.tv_sec * SEC_IN_NS + tv.tv_nsec;
+  return clock() * (SEC_IN_NS / CLOCKS_PER_SEC);
 }
 pr_time profiling_time_since  (pr_time s) {
-  struct timespec tv;
-  if (clock_gettime(CLOCK_MONOTONIC, &tv) == -1)
-    return (clock() * (SEC_IN_NS / CLOCKS_PER_SEC)) - s;
-  return (tv.tv_sec * SEC_IN_NS + tv.tv_nsec) - s;
+  return profiling_current_time() - s;
 }
 // usually print 2 unit time
 void  profiling_append_as_time2 (String *str, pr_time s) {
