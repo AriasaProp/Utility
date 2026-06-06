@@ -2,7 +2,6 @@
 
 cmsg:
   .asciz "Hello from ARM64!\n"
-  .align 8
 cmsg_end:
 
   .text

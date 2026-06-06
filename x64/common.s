@@ -38,24 +38,18 @@ imath_rand_uint64:
 	xor	%rax, %rax
 	mov	$1, %eax
 	cpuid
-	# ecx bit 30 indicates RDRAND availability 
 	bt	$30, %ecx
-	jnc	.rdrand_fallback
-	# Try RDRAND (RDRAND r64 sets CF on success) 
-.rdrand_try:
+	jnc	.fallback
 	rdrandq %rax
 	setc	%al
 	testb	%al, %al
-	jz	.rdrand_fallback
-	# rdrand placed 64-bit result in RAX already 
+	jz	.fallback
 	jmp	.scramble
-.rdrand_fallback:
-	# Use RDTSCP if available (CPUID leaf 0x80000001 not needed)# RDTSCP writes TSC into EDX:EAX 
+.fallback:
 	rdtscp
 	shlq	$32, %rdx
 	orq	%rdx, %rax
 .scramble:
-	# scramble: x *= 0x9a9fbe3f8f21421f 
 	movq	%rax, %rdx
 	movabs $0x9a9fbe3f8f21421f, %rcx
 	imulq	%rcx, %rdx
