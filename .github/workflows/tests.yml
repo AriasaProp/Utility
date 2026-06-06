@@ -26,12 +26,16 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6.0.2
+      - run: uname -s
+      - run: uname -m
       - run: make tests
 
   test-linux-x64:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6.0.2
+      - run: uname -s
+      - run: uname -m
       - run: make tests
 
   test-linux-x86:
