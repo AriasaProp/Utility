@@ -46,7 +46,7 @@ jobs:
           githubToken: ${{ github.token }}
           install: |
             apt-get update -q -y
-            apt-get install -q -y make
+            apt-get install -q -y make cc as
           run: make tests
 
   test-linux-armv7:
@@ -61,5 +61,5 @@ jobs:
           githubToken: ${{ github.token }}
           install: |
             apt-get update -q -y
-            apt-get install -q -y make
+            apt-get install -q -y make cc as
           run: make tests
