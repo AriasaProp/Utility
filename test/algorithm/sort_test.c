@@ -10,7 +10,7 @@
 #define DATA_RANDOM imath_rand_float ()
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
-#define DATA_SIZE   11000
+#define DATA_SIZE   2150
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);
@@ -24,7 +24,7 @@ int main (int argc, char **argv) {
   int proofen = 0;
 	iter i, j;
 	// randomize $(STYPE) data
-	printf("Sorting Test! \n");
+	printf("Sorting Test! %d data \n", DATA_SIZE);
   void *temp_data = malloc(DATA_BYTES * 2);
 	if (!temp_data) {
 	  printf("fail to allocate trial memory, for %lu bytes \n", DATA_BYTES * 2);
@@ -50,14 +50,12 @@ int main (int argc, char **argv) {
     const char *name; sort_funct srt;
   } sort_algo[] = {
   	{ .name = "Quick{b}", .srt = qsort,      },
-#if DATA_SIZE < 10000
+#if DATA_SIZE < 2500
   	{ .name = "Bubble"  , .srt = sort_bubble,},
   	{ .name = "Gnome"   , .srt = sort_gnome, },
   	{ .name = "Select"  , .srt = sort_select,},
-  	{ .name = "Insert"  , .srt = sort_insert,},
-#endif
-#if DATA_SIZE < 200000
   	{ .name = "Heap"    , .srt = sort_heap,  },
+  	{ .name = "Insert"  , .srt = sort_insert,},
 #endif
   	{ .name = "Shell"   , .srt = sort_shell, },
   	{ .name = "Merge"   , .srt = sort_merge, },

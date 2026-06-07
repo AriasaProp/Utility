@@ -140,17 +140,23 @@ static void sort_merge__rec(char *data, iter size, iter bytes, compare_funct cmp
  * ==========================================================*/
 void sort_heap(void *dat, iter size, iter bytes, compare_funct cmp) {
 	char *data = (char*)dat;
-	iter i, prnt, ndl, ndr;
+	iter i, prnt, nd;
   while (size > 1) {
     // climb target up to top
     i = size >> 1;
     while (i--) {
       prnt = i;
-      ndl = (i << 1) + 1;
-      if ((ndl < size) && (cmp(data + ndl * bytes, data + prnt * bytes) < 0)) prnt = ndl;
-      ndr = ndl + 1;
-      if ((ndr < size) && (cmp(data + ndr * bytes, data + prnt * bytes) < 0)) prnt = ndr;
-      if (prnt != i) util_memswap(data + prnt * bytes, data + i * bytes, bytes);
+      nd = (prnt << 1) + 1;
+      // left
+      if (nd < size) {
+        if (cmp(data + nd * bytes, data + prnt * bytes) < 0)
+          prnt = nd;
+        // right
+        if ((++nd < size) && (cmp(data + nd * bytes, data + prnt * bytes) < 0))
+          prnt = nd;
+        if (prnt != i)
+          util_memswap(data + prnt * bytes, data + i * bytes, bytes);
+      }
     }
     data += bytes;
     --size;
