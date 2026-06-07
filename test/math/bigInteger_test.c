@@ -31,7 +31,6 @@ static const iter BIG_TENS = sizeof(word) * 8;
 bigInteger state[8];
 int statei[8];
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
-  hello_world();
   int result = EXIT_SUCCESS;
   String qstr = NULL;
   char text_buffer[1024] = {0};

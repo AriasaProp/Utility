@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-typedef ulong pr_time;
+typedef ullong pr_time;
 
 #ifdef __cplusplus
 extern "C" {

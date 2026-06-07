@@ -7,44 +7,17 @@ OFLAGS   := -O3
 # test c flags
 TFLAGS	 := -O0 -ggdb -I./test
 # linker flags
-LDFLAGS  := -lc -lm
-# OS detection
-ifeq ($(OS),Windows_NT)
-	$(error Unsupported Windows)
+LDFLAGS  := -lc
+
+ifdef NO_STDMATH
+CFLAGS   += -DNO_STDMATH
 else
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Linux)
-		UNAME_M  := $(shell uname -m)
-		ASMFLAGS := --warn --fatal-warnings
-		ifeq ($(UNAME_M),aarch64)
-			ARCH     := arm64
-			CFLAGS   += -DASM
-		else ifeq ($(UNAME_M),armv7l)
-			ARCH     := arm
-			CFLAGS   += -DASM -mfloat-abi=hard -mfpu=neon
-		else ifeq ($(UNAME_M),x86_64)
-			ARCH     := x64
-			CFLAGS   += -DASM
-		else ifneq (,$(filter i386 i486 i586 i686,$(UNAME_M)))
-			ARCH     := x86
-			CFLAGS   += -DASM -m32
-		else
-			$(error Unknown Machine: $(UNAME_M))
-		endif
-	else ifeq ($(UNAME_S),Darwin)
-		$(error Unsupported MacOS)
-	else
-		$(error Unknown OS: $(UNAME_S))
-	endif
+LDFLAGS  += -lm
 endif
 
 CMN_FILES := $(OBJ_DIR)/main/common.c.o
-ifdef ARCH
-CMN_FILES += $(OBJ_DIR)/$(ARCH)/common.s.o
-endif
 
-
-ALL_TESTS := bigInteger_test complex_test matrix_test sort_test hash_test
+ALL_TESTS := complex_test matrix_test sort_test hash_test bigInteger_test
 TEST_SRC := $(OBJ_DIR)/test/util/profiling.c.o
 # information
 define INF =
@@ -82,9 +55,6 @@ h:
 
 status: s
 s:
-ifdef ARCH
-	@echo "Use Assembly: $(ARCH)"
-endif
 	@for t in $(ALL_TESTS); do \
 		if [ -e "$(TEST_DIR)/$$t" ]; then \
 			echo "test of $$t created!"; \
@@ -132,13 +102,6 @@ $(eval $(call PROG,$(TEST_DIR)/hash_test, $(TFLAGS), \
 $(OBJ_DIR)/%.c.o: %.c
 	@mkdir -p $(@D)
 	$(call INF, $(CC) -c $< -o $@ $(CFLAGS), build $@ failed)
-
-ifdef ARCH
-# generate asm to o file
-$(OBJ_DIR)/%.s.o: %.s
-	@mkdir -p $(@D)
-	$(call INF, as $(ASMFLAGS) -o $@ $<, build $@ failed)
-endif
 
 clean: c
 c:

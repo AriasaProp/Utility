@@ -10,12 +10,15 @@
 #ifndef _COMMON_INCLUDED_
 #define _COMMON_INCLUDED_
 
+#include <stdlib.h>
+#include <assert.h>
+#include <assert.h>
+
 // ================================
 //  Global Macro & Primitive Redefinition
 // ================================
+
 #if (defined(_MSC_VER) && _MSC_VER < 1600) /*|| defined(__SYMBIAN32__) */
-  #include <assert.h>
-  
   typedef          __int8   byte;
   typedef          __int16  shrt;
   typedef          __int32  int32;
@@ -26,13 +29,8 @@
   typedef unsigned __int64 	uint64;
   typedef unsigned __int64 	iter;
   
-  
-  
-  #define ASSERT(X)           assert(X)
-#elif !defined(NO_STDC)
+#else
   #include <stdint.h>
-  #include <stdlib.h>
-  #include <assert.h>
   
   typedef int8_t    byte;
   typedef int16_t   shrt;
@@ -43,28 +41,13 @@
   typedef uint32_t 	uint32;
   typedef uint64_t 	uint64;
   typedef size_t    iter;
-  
-  #define ASSERT(X)           assert(X)
-#else
-  typedef char               byte;
-  typedef short              shrt;
-  typedef int                int32;
-  typedef long long          int64;
-  typedef unsigned char      ubyte;
-  typedef unsigned short     ushrt;
-  typedef unsigned int       uint32;
-  typedef unsigned long long uint64;
-  typedef unsigned int       iter;
-  
-  #error "need non-standart abort!"
-  #define ASSERT(X)
-  #define EXIT_SUCCESS  0
-  #define EXIT_FAILURE -1
 #endif
 
-typedef unsigned int      uint;
-typedef unsigned long     ulong;
-typedef char *            String;
+typedef long long          llong;
+typedef unsigned int       uint;
+typedef unsigned long      ulong;
+typedef unsigned long long ullong;
+typedef char *             String;
 
 typedef struct { iter count; const char *cstr; } StringView;
 
@@ -75,6 +58,7 @@ typedef struct { iter count; const char *cstr; } StringView;
 #endif
 
 
+#define ASSERT(X)           assert(X)
 #define TODO(X)               // Message that need todo in future: (X)
 #define PRIVATE_STRINGIFY(X)  #X
 #define STRINGIFY(X)          PRIVATE_STRINGIFY(X)
@@ -139,8 +123,6 @@ extern "C" {
 int convert_wchar_to_utf8(char *, iter, const wchar_t *);
 #endif // _WIN32
 
-// assembly convetion
-void hello_world ();
 
 /* ================================
  *  Standar Utility Functions

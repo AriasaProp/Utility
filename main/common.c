@@ -29,15 +29,12 @@
   #define M_LN2_INV  1.4426950408890f // 1/ln(2)
 
 #endif // NO_STDMATH
-// #define NO_STDC // not with -lc
-#if !defined(NO_STDC)
-  #include <byteswap.h>
-  #include <stdarg.h>
-  #include <stdio.h>
-  #include <stddef.h>
-  #include <string.h>
-  #include <time.h>
-#endif // NO_STDC
+#include <byteswap.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+#include <time.h>
 // #define FASTER_MATH //  no use when STD_MATH defined
 #if defined(_WIN32) || defined(_WIN64)
   #include <intrin.h>
@@ -46,51 +43,25 @@
 int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
   return WideCharToMultiByte(65001 /* UTF8 */, 0, input, -1, buffer, (int)bufferlen, NULL, NULL);
 }
-#elif defined(__x86_64) && (defined(__GNUC__) || defined(__clang__))
-  // CPUID stuff is only for X86 + GCC/Clang, MSVC has it in intrin.h
-  #include <cpuid.h>
 #endif
 
 #define CHAR_WHITESPACE ' '
-
-TODO("Support assembly!.\n")
-#ifndef ASM
-void hello_world() {
-  printf("Hello, from C,?\n");
-}
-#endif
 
 /* ================================
  *  Standar Utility Function
  * ================================
  */
 void *util_malloc(iter bytes) {
-#ifdef NO_STDC
-  TODO("Implements malloc on non standar usage!");
-#else
   return malloc(bytes);
-#endif // NO_STDC
 }
 void *util_calloc(iter n, iter bytes) {
-#ifdef NO_STDC
-  TODO("Implements calloc on non standar usage!");
-#else
   return calloc(n, bytes);
-#endif // NO_STDC
 }
 void *util_realloc(void *a, iter bytes) {
-#ifdef NO_STDC
-  TODO("Implements realloc on non standar usage!");
-#else
   return realloc(a, bytes);
-#endif // NO_STDC
 }
 void util_memfree(void *p) {
-#ifdef NO_STDC
-  TODO("Implements free on non standar usage!");
-#else
   free(p);
-#endif // NO_STDC
 }
 void util_memswap(void *a, void *b, iter bytes) {
   byte *A = CAST(byte*)a, *B = CAST(byte*)b;
@@ -109,59 +80,20 @@ void util_memflip(void *a, iter n) {
   }
 }
 void util_memcpy (void *dst, const void *src,iter bytes) {
-#ifdef NO_STDC
-  byte *DST = CAST(byte*)dst;
-  const byte *SRC = CAST(byte*)src;
-  for (iter i = 0; i < bytes; ++i)
-    DST[i] = SRC[i];
-#else 
   memcpy(dst,src,bytes);
-#endif // NO_STDC
 }
 int util_memcmp (const void *a, const void *b,iter bytes) {
-#ifdef NO_STDC
-  int ret = 0;
-  byte *A = CAST(byte*)a, *N = CAST(byte*)b;
-  for (iter i = 0; !ret && (i < bytes); ++i)
-    ret = (A[i] > B[i]) - (A[i] < B[i]);
-  return ret;
-#else
   return memcmp(a,b,bytes);
-#endif // NO_STDC
 }
 void util_memmove(void *dst, void *src,iter bytes) {
-#ifdef NO_STDC
-  byte *S = CAST(byte*)src;
-  byte *D = CAST(byte*)dst;
-  byte *B = CAST(byte*)util_malloc(bytes);
-  util_memcpy(B, S, bytes);
-  util_memset(S, 0, bytes);
-  util_memcpy(D, B, bytes);
-  util_memfree(B);
-#else
   memmove(dst,src,bytes);
-#endif // NO_STDC
 }
 void util_memset(void *dst, int src, iter bytes) {
-#ifdef NO_STDC
-  byte *DST = CAST(byte*)dst, SRC = CAST(byte)src;
-  for (iter i = 0; i < bytes; ++i)
-    DST[i] = SRC;
-#else 
   memset(dst,src,bytes);
-#endif // NO_STDC
 }
-#ifndef ASM
 iter util_strlen(const char *str) {
-#ifdef NO_STDC
-  iter i = 0;
-  while (str[i]) ++i;
-  return i;
-#else
   return strlen(str);
-#endif // NO_STDC
 }
-#endif // ASM
 iter util_clz(ulong x) {
 #if __has_builtin(__builtin_clzl)
   return __builtin_clzl(x);
@@ -646,28 +578,22 @@ ubyte imath_flip8(ubyte x) {
 ushrt imath_flip16(ushrt x) {
 #if __has_builtin(__builtin_bswap16)
   return __builtin_bswap16(x);
-#elif !defined(NO_STDC)
-  return bswap_16(x);
 #else
-  return CAST(ushrt)NAIVE_FLIP(x,8,8);
+  return bswap_16(x);
 #endif
 } 
 uint32 imath_flip32(uint32 x) {
 #if __has_builtin(__builtin_bswap32)
   return __builtin_bswap32(x);
-#elif !defined(NO_STDC)
-  return bswap_32(x);
 #else
-  return CAST(uint32)NAIVE_FLIP(x,16,16);
+  return bswap_32(x);
 #endif
 }
 uint64 imath_flip64(uint64 x) {
 #if __has_builtin(__builtin_bswap64)
   return __builtin_bswap64(x);
-#elif !defined(NO_STDC)
-  return bswap_64(x);
 #else
-  return CAST(uint64)NAIVE_FLIP(x,32,32);
+  return bswap_64(x);
 #endif
 }
 int32 imath_rotl32(int32 x, const iter n) {
@@ -707,31 +633,12 @@ int64 imath_rotr64(int64 x, const iter n) {
 #endif
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// random generate by time counter uint64
-// rdtsc_rand.h: v0.7
-// https://github.com/scottchiefbaker/rdtsc_rand
-////////////////////////////////////////////////////////////////////////////////
-#ifndef ASM
-inline uint64 imath_rand_uint64() {
-	uint64 x;
-  #if defined(_WIN32) || defined(_WIN64)
-  x = __rdtsc();
-  #elif defined(NO_STDC)
-  static volatile ulong p = 0xa2cf27bb2397108fULL;
-  x = 0xbf58476d1ce4e5b9ULL * p;
-  p = 0x7b84fe9d21a748f4ULL * x;
-  #else
-  x = CAST(uint64)clock();
-  #endif
-	return x * 0x9a9fbe3f8f21421fULL; // scramble rng (may small)
-}
+#if defined(_WIN32) || defined(_WIN64)
+  #define RAND_VARIANT(T) inline T imath_rand_##T () { return CAST(T)__rdtsc() * CAST(T)0xe9b5dba59b05688cULL; }
+#else
+  #define RAND_VARIANT(T) inline T imath_rand_##T () { return CAST(T)clock() * CAST(T)0xe9b5dba59b05688cULL; }
 #endif
-#define RAND_VARIANT(T) \
-inline T imath_rand_##T () {\
-  uint64 t = imath_rand_uint64();\
-  return *((T*)&t);\
-}
+
 RAND_VARIANT(byte)
 RAND_VARIANT(shrt)
 RAND_VARIANT(int32)
@@ -741,8 +648,10 @@ RAND_VARIANT(long)
 RAND_VARIANT(ubyte)
 RAND_VARIANT(ushrt)
 RAND_VARIANT(uint32)
+RAND_VARIANT(uint64)
 RAND_VARIANT(uint)
 RAND_VARIANT(ulong)
+
 #undef RAND_VARIANT
 inline float imath_rand_float() {
   return imath_rand_int64() * ((3.8518597e-21f * imath_rand_uint64()) * imath_rand_uint64());

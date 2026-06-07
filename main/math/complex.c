@@ -10,7 +10,7 @@
 #include "math/complex.h"
 #include "common.h"
 
-#define EPSILON 9.7144060021e-5f
+#define EPSILON 9.7144060021e-2f
 //initialize
 void complex_set_cartesian(complex *c,const float r, const float i) {
   c->r = r; c->i = i;
@@ -20,12 +20,8 @@ void complex_set_polar(complex *c,const float m, const float a) {
   c->i = m * imath_sin(a);
 }
 // attribute 
-inline float complex_real(const complex c) {
-  return c.r;
-}
-inline float complex_imaginary(const complex c) {
-  return c.i;
-}
+inline float complex_real(const complex c) { return c.r; }
+inline float complex_imaginary(const complex c) { return c.i; }
 inline float complex_argument(const complex c) {
   return imath_atan2(c.i,c.r);
 }
@@ -92,15 +88,15 @@ inline complex complex_mul (const complex a, const complex b) {
     a.r * b.i + a.i * b.r
   );
 }
+/*
+ *
+ *  (a+bi)(c-di)     (ac+bd)      (bc-ad)i
+ *  ------------ => ---------- + ----------
+ *    (c2+d2)        (c2+d2)      (c2+d2)
+ *
+ *
+ */
 inline complex complex_div (const complex a, const complex b) {
-   /*
-    *  (a+bi)(c-di)     (ac+bd)      (bc-ad)i
-    *  ------------ => ---------- + ----------
-    *    (c2+d2)        (c2+d2)      (c2+d2)
-    *
-    *
-    *
-    */
   float d = (b.r*b.r + b.i*b.i);
   return complex_cartesian(
     (a.r * b.r + a.i * b.i) / d,
@@ -108,29 +104,6 @@ inline complex complex_div (const complex a, const complex b) {
   );
 }
 inline complex complex_pow (const complex a, const complex b) {
-  /*
-   *  r = √(c2+d2)
-   *  @ = 2 * atan((c - r) / d)
-   *              (            -d2              )
-   *   => 4 * atan(-----------------------------)
-   *              (d +  √(d2 + dc - d√(c2 + d2))) * (c - √(c2 + d2))
-   *  R = ln(c2+d2)/2
-   *
-   *
-   *   (  i@)(a+bi)    (ln(r)a-@b)    (ln(r)b+@a)i
-   *   (re  )      => e              e 
-   *
-   *
-   *                     a         (b*ln(r)+@a)i
-   *                =>  r         e 
-   *                   -----  ×
-   *                     @b
-   *                    e
-   *
-   *
-   *
-   *
-   */
   float lmagA = imath_log(complex_magnitude(a));
   float argA = complex_argument(a);
   float mag = imath_exp(lmagA * b.r - argA * b.i);
@@ -156,7 +129,7 @@ inline void complex_mulsf(complex *c, const float f) {
 }
 inline void complex_mulsfi(complex *c, const float f) {
   float *F = CAST(float*)c;
-  imath_swap(F, F + 1, sizeof(float));
+  util_memswap(F, F + 1, sizeof(float));
   c->r *= -f;
   c->i *= f;
 }
@@ -166,7 +139,7 @@ inline void complex_divsf(complex *c, const float f) {
 }
 inline void complex_divsfi(complex *c, const float f) {
   float *F = CAST(float*)c;
-  imath_swap(F, F + 1, sizeof(float));
+  util_memswap(F, F + 1, sizeof(float));
   c->r /= f;
   c->i /= -f;
 }
@@ -203,6 +176,39 @@ inline void complex_divs (complex *a, const complex b) {
   a->r = r;
   a->i = i;
 }
+/*      ( 2   2)
+ * R = √(a + x )
+ * ∆ = atan(a/x)
+ * 
+ * 
+ *       (b+yi)    ( ( ∆i))(b+yi)
+ *  (a+xi)      => (R(e  ))
+ *                  (b+yi)  ∆(bi-y)
+ *              => R       e
+ *                  b  yi  ∆bi  -∆y
+ *              => R  R   e    e
+ *                  b  -∆y  ( y  ∆b)i
+ *              => R  e     (R  e  )
+ *                  b  -∆y  ( y[ln(R)]  ∆b)i
+ *              => R  e     (e         e  )
+ *                  bln(R)-∆y   y[ln(R)]+∆b)i
+ *              => e           e
+ *                  b[ln(R)]-∆y
+ *              => e             (cos(y[ln(R)]+∆b) + sin(y[ln(R)]+∆b)i)
+ *
+ *
+ *
+ *
+ *       (b+yi)     (b+yi)[ln(a+xi)]
+ *  (a+xi)      => e    
+ *                      
+ *              =>   
+ *                      
+ *              =>   
+ *
+ *
+ *
+ */
 inline void complex_pows (complex *a, const complex b) {
   float lmagA = imath_log(complex_magnitude(*a));
   float argA = complex_argument(*a);
@@ -212,14 +218,6 @@ inline void complex_pows (complex *a, const complex b) {
 }
 // return to string
 inline void complex_append_string(String *str, const complex a) {
-  string_append_char(str, '{');
-  if (a.r || a.i) {
-    if (a.r) string_append(str, "%.2f", a.r);
-    if (a.i) {
-      if (a.i >= 0.0f) string_append_char(str, '+');
-      string_append(str, "%.2fi", a.i);
-    }
-  } else string_append_char(str, '0');
-  string_append_char(str, '}');
+  string_append(str, "{%.2f %c %.2fi}", a.r, a.i < 0.0f ? '-' : '+', imath_fabs(a.i));
 }
 
