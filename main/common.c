@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <time.h>
+#include <alloca.h>
 // #define FASTER_MATH //  no use when STD_MATH defined
 #if defined(_WIN32) || defined(_WIN64)
   #include <intrin.h>
@@ -52,19 +53,39 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
  * ================================
  */
 void *util_alloca(iter bytes) {
+#if BLTN(__builtin_alloca)
+  return __builtin_alloca(bytes);
+#else
   return alloca(bytes);
+#endif
 }
 void *util_malloc(iter bytes) {
+#if BLTN(__builtin_malloc)
+  return __builtin_malloc(bytes);
+#else
   return malloc(bytes);
+#endif
 }
 void *util_calloc(iter n, iter bytes) {
+#if BLTN(__builtin_calloc)
+  return __builtin_calloc(n, bytes);
+#else
   return calloc(n, bytes);
+#endif
 }
 void *util_realloc(void *a, iter bytes) {
+#if BLTN(__builtin_realloc)
+  return __builtin_realloc(a, bytes);
+#else
   return realloc(a, bytes);
+#endif
 }
 void util_memfree(void *p) {
+#if BLTN(__builtin_free)
+  __builtin_free(p);
+#else
   free(p);
+#endif
 }
 void util_memswap(void *a, void *b, iter bytes) {
   if (a == b) return;
@@ -84,19 +105,39 @@ void util_memflip(void *a, iter n) {
   }
 }
 void util_memcpy (void *dst, const void *src,iter bytes) {
+#if BLTN(__builtin_memcpy)
+  __builtin_memcpy(dst,src,bytes);
+#else
   memcpy(dst,src,bytes);
+#endif
 }
 int util_memcmp (const void *a, const void *b,iter bytes) {
+#if BLTN(__builtin_memcmp)
+  return __builtin_memcmp(a,b,bytes);
+#else
   return memcmp(a,b,bytes);
+#endif
 }
 void util_memmove(void *dst, void *src,iter bytes) {
+#if BLTN(__builtin_memmove)
+  __builtin_memmove(dst,src,bytes);
+#else
   memmove(dst,src,bytes);
+#endif
 }
 void util_memset(void *dst, int src, iter bytes) {
+#if BLTN(__builtin_memset)
+  __builtin_memset(dst,src,bytes);
+#else
   memset(dst,src,bytes);
+#endif
 }
 iter util_strlen(const char *str) {
+#if BLTN(__builtin_strlen)
+  return __builtin_strlen(str);
+#else
   return strlen(str);
+#endif
 }
 iter util_clz(ulong x) {
 #if BLTN(__builtin_clzl)
