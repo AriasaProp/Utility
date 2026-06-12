@@ -33,7 +33,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stddef.h>
-#include <string.h>
+// #include <string.h>
 #include <time.h>
 #include <alloca.h>
 // #define FASTER_MATH //  no use when STD_MATH defined

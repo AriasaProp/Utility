@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <assert.h>
+#include <string.h>
 
 // ================================
 //  Global Macro & Primitive Redefinition
