@@ -44,13 +44,9 @@ static word bigInteger__wordsub(word *a, const iter an, const word *b, const ite
   }
   return c;
 }
-static void bigInteger__move(bigInteger *a, bigInteger *b) {
-  da_copy(a,b);
-  a->neg = b->neg;
-  bigInteger_free(b);
-}
 static void bigInteger__shrink(bigInteger *a) {
   while(a->count && !da_last(a)) --a->count;
+  if (!a->count) a->neg &= 0;
 }
 static int bigInteger__cmpa(word *a, word *b, const iter n) {
   //  +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -80,8 +76,7 @@ static void bigInteger__subtract(bigInteger *a, const word c) {
   word r = bigInteger__wordsub(a->items, a->count, &c, 1);
   if (r) {
     da_foreach (word, w, a)
-      r &= !(*w = ~(*w) + r);
-    ++(*a->items);
+      r &= (*w = ~(*w) + r);
     a->neg ^= 1;
   }
   bigInteger__shrink(a);
@@ -98,18 +93,19 @@ static void bigInteger__Subtract(bigInteger *a, const bigInteger b) {
 }
 static void bigInteger__multiply(bigInteger *a, const word b) {
   const word bhi = b >> WORD_HALF_BITS, blo = b & WORD_HALF_MASK;
-  word ihi, ilo, carry = 0;
-  for (iter i = 0; i < a->count; ++i) {
-    ihi = a->items[i]>> WORD_HALF_BITS;
-    ilo = a->items[i] & WORD_HALF_MASK;
-    a->items[i] *= b;
-    a->items[i] += carry;
+  word ihi, ilo, carry = 0, ex;
+  da_foreach(word, i, a) {
+    ihi = *i>> WORD_HALF_BITS;
+    ilo = *i & WORD_HALF_MASK;
+    *i *= b;
+    ex = (*i += carry) < carry;
     carry = blo * ilo;
     carry >>= WORD_HALF_BITS;
     carry += blo * ihi;
     carry += bhi * ilo;
     carry >>= WORD_HALF_BITS;
     carry += bhi * ihi;
+    carry += ex;
   }
   if (carry) da_append(a, carry);
   else bigInteger__shrink(a);
@@ -143,25 +139,8 @@ static bigInteger bigInteger__Multiply(const bigInteger a, const bigInteger b) {
       if (mt) da_append(&c,mt);
     }
   }
-  bigInteger__shrink(&c);
+  c.neg = !!a.neg ^ !!b.neg;
   return c;
-}
-static word bigInteger__division(bigInteger *a, word b) {
-  word rmr = 0, c;
-  da_rforeach(word, i, a) {
-    c = *i;
-    rmr <<= WORD_HALF_BITS;
-    rmr |= c >> WORD_HALF_BITS;
-    *i = rmr / b;
-    rmr %= b;
-    rmr <<= WORD_HALF_BITS;
-    rmr |= c & WORD_HALF_MASK;
-    *i <<= WORD_HALF_BITS;
-    *i |= rmr / b;
-    rmr %= b;
-  }
-  a->count -= a->count && !da_last(a);
-  return rmr;
 }
 static void bigInteger__shiftleft(bigInteger *a, iter i) {
   iter bit_shift = i % WORD_BITS;
@@ -199,6 +178,32 @@ static void bigInteger__shiftright(bigInteger *a, iter i) {
     }
     a->count -= a->count && !da_last(a);
   }
+}
+/*
+ * a + b + c + d + ....  
+ *------------------------
+ *            x
+ * 1 ->
+ * 3 ->
+ *
+ *
+ */
+static word bigInteger__division(bigInteger *a,const word b) {
+  word rmr = 0, c;
+  da_rforeach(word, i, a) {
+    c = *i;
+    rmr <<= WORD_HALF_BITS;
+    rmr |= c >> WORD_HALF_BITS;
+    *i = rmr / b;
+    rmr %= b;
+    rmr <<= WORD_HALF_BITS;
+    rmr |= c & WORD_HALF_MASK;
+    *i <<= WORD_HALF_BITS;
+    *i = rmr / b;
+    rmr %= b;
+  }
+  bigInteger__shrink(a);
+  return rmr;
 }
 static bigInteger bigInteger__sqrt(const bigInteger a) {
   bigInteger res = {0};
@@ -251,21 +256,23 @@ static bigInteger bigInteger__sqrt(const bigInteger a) {
   res.count -= (res.count && !da_last(&res));
   return res;
 }
-static void bigInteger__pow2(bigInteger *a) {
-  const iter ccap = a->count * 2 + 1;
-  word *c = CAST(word*)util_calloc(WORD_BYTES, ccap);
-  word xhi,xlo,yhi,ylo,mt,mt1;
-  for (iter x = 0,y,z; x < a->count; ++x) {
-    xhi = a->items[x]>> WORD_HALF_BITS;
-    xlo = a->items[x] & WORD_HALF_MASK;
-    for (y = 0; y < a->count; ++y) {
-      yhi = a->items[y]>> WORD_HALF_BITS;
-      ylo = a->items[y] & WORD_HALF_MASK;
+// a ^ 2
+static bigInteger bigInteger__pow2(const bigInteger a) {
+  bigInteger c = {0};
+  da_atleast(&c, a.count * 2 + 1);
+  word xhi,xlo,yhi,ylo,mt;
+  for (iter x = 0,y,z; x < a.count; ++x) {
+    xhi = a.items[x]>> WORD_HALF_BITS;
+    xlo = a.items[x] & WORD_HALF_MASK;
+    for (y = 0; y < a.count; ++y) {
       // muls
-      mt1 = a->items[x] * a->items[y];
+      mt = a.items[x] * a.items[y];
       // adds
-      z = x + y;
-      mt1 = (c[z] += mt1) < mt1;
+      for (z = x + y; mt && (z < c.count); ++z)
+        mt = (c.items[z] += mt) < mt;
+      if (mt) da_append(&c,mt);
+      yhi = a.items[y]>> WORD_HALF_BITS;
+      ylo = a.items[y] & WORD_HALF_MASK;
       // muls 2
       mt = xlo * ylo;
       mt >>= WORD_HALF_BITS;
@@ -273,28 +280,27 @@ static void bigInteger__pow2(bigInteger *a) {
       mt += xhi * ylo;
       mt >>= WORD_HALF_BITS;
       mt += xhi * yhi;
-      mt += mt1;
       // adds 2
-      while (mt && (++z < ccap)) mt = (c[z] += mt) < mt;
-      ASSERT(!mt && "pow to 2 generate digit to many!");
+      for (z = x + y + 1; mt && (z < c.count); ++z)
+        mt = (c.items[z] += mt) < mt;
+      if (mt) da_append(&c,mt);
     }
   }
-  da_atleast(a, ccap);
-  util_memcpy(a->items, c, WORD_BYTES * ccap);
-  bigInteger__shrink(a);
-  util_memfree(c);
+  c.neg &= 0;
+  return c;
 }
 static void bigInteger__pow(bigInteger *a, iter b) {
   bigInteger r = bigInteger_from_int(1);
   while (b) {
     if (b & 1) {
       bigInteger r1 = bigInteger__Multiply(r, *a);
-      bigInteger__move(&r, &r1);
+      bigInteger_move(&r, &r1);
     }
-    bigInteger__pow2(a);
+    bigInteger a1 = bigInteger__pow2(*a);
+    bigInteger_move(a, &a1);
     b >>= 1;
   }
-  bigInteger__move(a, &r);
+  bigInteger_move(a, &r);
 }
 
 // initialization
@@ -323,9 +329,15 @@ bigInteger bigInteger_from_cstr(const char *c) {
   return ret;
 }
 bigInteger bigInteger_from_int(const int in) {
-  bigInteger ret = {.neg = (in < 0), .items = NULL, .cap = 0, .count = 0};
-  da_append(&ret, CAST(word)imath_iabs (in));
+  bigInteger ret = {.neg = (in < 0)};
+  da_append(&ret, (CAST(word)imath_iabs (in)));
   return ret;
+}
+void bigInteger_set_words(bigInteger *a, int neg, const word *w, iter i) {
+  da_clean(a);
+  da_appends(a, w, i);
+  bigInteger__shrink(a);
+  a->neg = !!neg;
 }
 void bigInteger_set_cstr(bigInteger *a, const char *c) {
   da_clean(a);
@@ -360,12 +372,22 @@ void bigInteger_set(bigInteger *a, const bigInteger b) {
   a->neg = b.neg;
 }
 // helper
-bigInteger bigInteger_dup(const bigInteger x) {
-  word *d = CAST(word*)util_malloc(WORD_BYTES * x.count);
-  util_memcpy(d, x.items, x.count * WORD_BYTES);
-  return (bigInteger){.neg = x.neg, .items = d, .cap = x.count, .count = x.count};
+inline bigInteger bigInteger_dup(const bigInteger x) {
+  bigInteger r = {.neg = !!x.neg};
+  da_copy(&r,&x);
+  bigInteger__shrink(&r);
+  return r;
 }
-void bigInteger_free(bigInteger *x) {
+void bigInteger_move(bigInteger *a, bigInteger *b) {
+  da_copy(a,b);
+  a->neg = b->neg;
+  bigInteger_free(b);
+}
+inline void bigInteger_zero(bigInteger *x) {
+  da_clean(x);
+  x->neg = 0;
+}
+inline void bigInteger_free(bigInteger *x) {
   da_free(x);
 }
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
@@ -378,15 +400,16 @@ int bigInteger_cmp(const bigInteger a, const bigInteger b) {
 // return division result, save reminder on nominator
 bigInteger bigInteger_div_mmod(bigInteger *a, const bigInteger b) {
   bigInteger res = {0};
+  bigInteger__shrink(a);
   word c, c1;
   if (b.count && (bigInteger__cmp(*a, b) >= 0)) {
     res.neg = a->neg ^ b.neg;
-    iter s = (a->count - b.count) * WORD_BITS - util_clz(da_last(a)) + util_clz(da_last(&b));
+    int s = (a->count - b.count) * WORD_BITS - util_clz(da_last(a)) + util_clz(da_last(&b)) + 1;
     bigInteger d = bigInteger_dup(b);
     bigInteger__shiftleft(&d, s);
     for (;;) {
       // check remainder bigger than divider
-      c1 = bigInteger__cmp(*a, d) >= 0;
+      c1 = (bigInteger__cmp(*a, d) >= 0);
       if (c1) {
         c = bigInteger__wordsub(a->items, a->count, d.items, d.count);
         ASSERT(!c && "bigInteger divider (subtraction) shouldn't bigger than reminder!");
@@ -409,12 +432,13 @@ bigInteger bigInteger_div_mmod(bigInteger *a, const bigInteger b) {
         *id |= c1;
         c1 = c << (WORD_BITS - 1);
       }
-      d.count -= !da_last(&d);
+      bigInteger__shrink(&d);
       --s;
     }
-    bigInteger__shiftleft(&res, s);
+    if (s > 0) bigInteger__shiftleft(&res, s);
+    //bigInteger_mincr(&res);
     bigInteger_free(&d);
-    res.count -= res.count && !da_last(&res);
+    bigInteger__shrink(&res);
   }
   return res;
 }
@@ -431,31 +455,58 @@ bigInteger bigInteger_incr(const bigInteger a) {
 }
 bigInteger bigInteger_addi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  if (r.neg ^ (c < 0)) bigInteger__subtract(&r, CAST(word)imath_iabs(c));
-  else bigInteger__addition(&r, CAST(word)imath_iabs(c));
+  const word w = CAST(word)imath_iabs(c);
+  if (!!r.neg ^ (c < 0)) bigInteger__subtract(&r, w);
+  else bigInteger__addition(&r, w);
   return r;
 }
 bigInteger bigInteger_subi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  if (r.neg & (c < 0)) bigInteger__subtract(&r, CAST(word)imath_iabs(c));
-  else bigInteger__addition(&r, CAST(word)imath_iabs(c));
+  const word w = CAST(word)imath_iabs(c);
+  if (!!r.neg ^ (c < 0)) bigInteger__addition(&r, w);
+  else bigInteger__subtract(&r, w);
   return r;
 }
 bigInteger bigInteger_muli(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger_mmuli(&r, CAST(word)imath_iabs(c));
+  r.neg ^= (c < 0);
+  bigInteger__multiply(&r, CAST(word)imath_iabs(c));
   return r;
 }
 bigInteger bigInteger_divi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  UNUSED(bigInteger__division(&r, CAST(word)imath_iabs(c)));
   r.neg ^= (c < 0);
+  word w = CAST(word)imath_iabs(c);
+  if (w <= WORD_HALF_MASK)
+    UNUSED(bigInteger__division(&r, w));
+  else {
+    bigInteger W = bigInteger_from_int(w);
+    bigInteger r1 = bigInteger_div_mmod(&r, W);
+    bigInteger_move(&r, &r1);
+    bigInteger_free(&W);
+  }
   return r;
+}
+word bigInteger_modi(const bigInteger a, const int c) {
+  bigInteger r = bigInteger_dup(a);
+  r.neg ^= (c < 0);
+  word w = CAST(word)imath_iabs(c);
+  if (w <= WORD_HALF_MASK) {
+    w = bigInteger__division(&r, w);
+  } else {
+    bigInteger W = bigInteger_from_int(w);
+    bigInteger r1 = bigInteger_div_mmod(&r, W);
+    ASSERT((r.count <= 1) && "bigInteger modi invalid");
+    w = r.count ? r.items[0] : 0;
+    bigInteger_free(&r1);
+    bigInteger_free(&W);
+  }
+  bigInteger_free(&r);
+  return w;
 }
 bigInteger bigInteger_powi(const bigInteger a, const uint b) {
   bigInteger r = bigInteger_dup(a);
   bigInteger__pow(&r,b);
-  r.neg &= (b & 1);
   return r;
 }
 bigInteger bigInteger_shfli(const bigInteger a, const uint i) {
@@ -468,25 +519,26 @@ bigInteger bigInteger_shfri(const bigInteger a, const uint i) {
   bigInteger__shiftright(&r, i);
   return r;
 }
+bigInteger bigInteger_pow2(const bigInteger a) {
+  return bigInteger__pow2(a);
+}
 bigInteger bigInteger_sqrt(const bigInteger a) {
   return bigInteger__sqrt(a);
 }
 bigInteger bigInteger_add(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  if (r.neg ^ b.neg) bigInteger__Subtract(&r, b);
+  if (!!r.neg ^ !!b.neg) bigInteger__Subtract(&r, b);
   else bigInteger__Addition(&r, b);
   return r;
 }
 bigInteger bigInteger_sub(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  if (r.neg ^ b.neg) bigInteger__Addition(&r, b);
+  if (!!r.neg ^ !!b.neg) bigInteger__Addition(&r, b);
   else bigInteger__Subtract(&r, b);
   return r;
 }
 bigInteger bigInteger_mul(const bigInteger a, const bigInteger b) {
-  bigInteger r = bigInteger__Multiply(a, b);
-  r.neg = a.neg ^ b.neg;
-  return r;
+  return bigInteger__Multiply(a, b);
 }
 bigInteger bigInteger_div(const bigInteger a, const bigInteger b) {
   bigInteger rem = bigInteger_dup(a);
@@ -529,28 +581,45 @@ void bigInteger_mincr(bigInteger *a) {
   }
 }
 void bigInteger_maddi(bigInteger *a, const int c) {
-  if (a->neg ^ (c < 0)) bigInteger__subtract(a, CAST(word)imath_iabs(c));
-  else bigInteger__addition(a, CAST(word)imath_iabs(c));
+  word w = CAST(word)imath_iabs(c);
+  if (!!a->neg ^ (c < 0)) bigInteger__subtract(a, w);
+  else bigInteger__addition(a, w);
 }
 void bigInteger_msubi(bigInteger *a, const int c) {
-  if (a->neg ^ (c < 0)) bigInteger__addition(a, CAST(word)imath_iabs(c));
-  else bigInteger__subtract(a, CAST(word)imath_iabs(c));
+  word w = CAST(word)imath_iabs(c);
+  if (!!a->neg ^ (c < 0)) bigInteger__addition(a, w);
+  else bigInteger__subtract(a, w);
 }
 void bigInteger_mmuli(bigInteger *a, const int c) {
-  bigInteger__multiply(a, c);
   a->neg ^= (c < 0);
+  bigInteger__multiply(a, CAST(word)imath_iabs(c));
 } 
 void bigInteger_mdivi(bigInteger *a, const int c) {
-  UNUSED(bigInteger__division(a, CAST(word)imath_iabs(c)));
   a->neg ^= (c < 0);
+  word w = CAST(word)imath_iabs(c);
+  if (w <= WORD_HALF_MASK)
+    bigInteger__division(a, w);
+  else {
+    bigInteger W = bigInteger_from_int(w);
+    bigInteger a1 = bigInteger_div_mmod(a, W);
+    bigInteger_move(a, &a1);
+    bigInteger_free(&W);
+  }
 }
 void bigInteger_mmodi(bigInteger *a, const uint c) {
-  word r = bigInteger__division(a, CAST(word)imath_iabs(c));
-  bigInteger_set_int(a, r);
+  a->neg ^= (c < 0);
+  word w = CAST(word)imath_iabs(c);
+  if (w <= WORD_HALF_MASK) {
+    word r = bigInteger__division(a, w);
+    bigInteger_set_int(a, r);
+  } else {
+    bigInteger W = bigInteger_from_int(w);
+    bigInteger_div_mmod(a, W);
+    bigInteger_free(&W);
+  }
 }
 void bigInteger_mpowi(bigInteger *a, const uint b) {
   bigInteger__pow(a, b);
-  a->neg &= (b & 1);
 }
 void bigInteger_mshfli(bigInteger *a, const uint i) {
   bigInteger__shiftleft(a, i);
@@ -558,26 +627,29 @@ void bigInteger_mshfli(bigInteger *a, const uint i) {
 void bigInteger_mshfri(bigInteger *a, const uint i) {
   bigInteger__shiftright(a, i);
 }
+void bigInteger_mpow2(bigInteger *a) {
+  bigInteger r = bigInteger__pow2(*a);
+  bigInteger_move(a, &r);
+}
 void bigInteger_msqrt(bigInteger *a) {
   bigInteger r = bigInteger__sqrt(*a);
-  bigInteger__move(a, &r);
+  bigInteger_move(a, &r);
 }
 void bigInteger_madd(bigInteger *a, const bigInteger b) {
-  if (a->neg ^ b.neg) bigInteger__Subtract(a, b);
+  if (!!a->neg ^ !!b.neg) bigInteger__Subtract(a, b);
   else bigInteger__Addition(a,b);
 }
 void bigInteger_msub(bigInteger *a, const bigInteger b) {
-  if (a->neg ^ b.neg) bigInteger__Addition(a,b);
+  if (!!a->neg ^ !!b.neg) bigInteger__Addition(a,b);
   else bigInteger__Subtract(a, b);
 }
 void bigInteger_mmul(bigInteger *a, const bigInteger b) {
   bigInteger r = bigInteger__Multiply(*a, b);
-  r.neg = a->neg ^ b.neg;
-  bigInteger__move(a, &r);
+  bigInteger_move(a, &r);
 }
 void bigInteger_mdiv(bigInteger *a, const bigInteger b) {
   bigInteger res = bigInteger_div_mmod(a, b);
-  bigInteger__move(a, &res);
+  bigInteger_move(a, &res);
 }
 void bigInteger_mmod(bigInteger *a, const bigInteger b) {
   if (bigInteger__cmp(*a, b) < 0) return;
@@ -629,14 +701,18 @@ void bigInteger_mmod(bigInteger *a, const bigInteger b) {
 void bigInteger_append_string(String *str, const bigInteger a) {
   word rmr, current;
   iter ac = a.count;
+  if (!ac) {
+    string_append_char(str, '0');
+    return;
+  }
   iter string_old = string_len(*str);
   string_reserve(str, string_old + ac * 10);
-  word *aw = CAST(word*)util_malloc(WORD_BYTES * ac);
-  util_memcpy(aw, a.items, WORD_BYTES * ac);
+  iter bytes = WORD_BYTES * ac;
+  word *aw = CAST(word*)util_malloc(bytes);
+  util_memcpy(aw, a.items, bytes);
   do {
     rmr = 0;
-    for(word *i = aw + ac; i > aw; ){
-      --i;
+    for(word *i = aw + ac; (i--) > aw; ){
       current = *i;
       rmr <<= WORD_HALF_BITS;
       rmr |= current >> WORD_HALF_BITS;
@@ -649,10 +725,11 @@ void bigInteger_append_string(String *str, const bigInteger a) {
       rmr %= 10;
     }
     string_append_char(str, '0' + CAST(char)rmr);
-    ac -= ac && !aw[ac - 1];
+    ac -= (ac && !aw[ac - 1]);
   } while (ac);
+  util_memfree(aw);
   if (a.neg) string_append_char(str, '-');
   util_memflip(*str + string_old, string_len(*str) - string_old);
-  util_memfree(aw);
+  // string_append_char(str, 0);
 }
 

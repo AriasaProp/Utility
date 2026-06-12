@@ -5,63 +5,63 @@
 #include "util/console_out.h"
 #include "common.h"
 
+#define TEST 10000
+
+static float rander() {
+  return CAST(float)imath_rand_shrt() * 0.01f;
+}
+
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   String main_str = NULL;
-  printf("complex test -> ");
+  printf("Complex Test! -> ");
   pr_time ct = profiling_current_time(); \
-	complex r;
-	iter i, j;
+	complex left, right, mid;
+	float c;
   string_clean(main_str);
-
-  // do calculation
-#define CASE(A) do {\
-  j = STACK_ARR_LEN(tests);\
-  for (i = 0; i < j; ++i) { \
-    r = complex_##A(tests[i][0], tests[i][1]); \
-    if (!complex_eq(r, tests[i][2])) { \
-      complex_append_string(&main_str, r); \
-      string_append_cstr(&main_str, "!=", 2); \
-      complex_append_string(&main_str, tests[i][2]); \
-      printf(RED "%s fail[%zu] %s\n"RESET, #A, i, main_str); \
-      goto complex_test_end; \
-    } \
-  } \
-} while(0)
-  {
-    complex tests[][3] = {
-     {{2,3},{3,4},{5,7}},
-     {{0,1},{0,1},{0,2}},
-     {{-3,7},{-2,-2},{-5,5}},
-    };
-    CASE(add);
+  iter i;
+#define TY_LEN 256
+  char types[TY_LEN] = {0};
+  for (i = 0; i < TEST; ++i) {
+#define CASE(A,B)    do {\
+  strncpy(types,#A " " #B " real ", TY_LEN);\
+  complex_set_cartesian(&left, rander(), rander());\
+  c = rander();\
+  right = complex_##A##f(left, c);\
+  complex_m##B##f(&right, c);\
+  if (!complex_equal(left,right)) break;\
+  strncpy(types,#A " " #B " imaginary ", TY_LEN);\
+  complex_set_cartesian(&left, rander(), rander());\
+  c = rander();\
+  right = complex_##A##fi(left, c);\
+  complex_m##B##fi(&right, c);\
+  if (!complex_equal(left,right)) break;\
+  strncpy(types,#A " " #B " complex ", TY_LEN);\
+  complex_set_cartesian(&left, rander(), rander());\
+  complex_set_cartesian(&mid, rander(), rander());\
+  right = complex_##A (left, mid);\
+  complex_m##B (&right, mid);\
+  if (!complex_equal(left,right)) break;\
+} while (0)
+#define CASER(A,B)  do {\
+  CASE(A,B);\
+  CASE(B,A);\
+} while (0)
+    CASER(add,sub);
+    CASER(mul,div);
+    CASER(pow,root);
   }
-  {
-    complex tests[][3] = {
-     {{-6,8},{7,-1},{-13,9}},
-    };
-    CASE(sub);
-  }
-  {
-    complex tests[][3] = {
-     {{-1,2},{4,4},{-12,4}},
-    };
-    CASE(mul);
-  }
-  {
-    complex tests[][3] = {
-     {{7,14},{1,2},{7,0}},
-    };
-    CASE(div);
-  }
-  {
-    complex tests[][3] = {
-     {{2,3},{5,0},{122,-597}},
-    };
-    CASE(pow);
-  }
-#undef CASE
+  string_clean(main_str);
   profiling_append_as_time2(&main_str, profiling_time_since(ct));
-  printf("%s\n", main_str);
-complex_test_end:
+  printf("%s ", main_str);
+  if (i < TEST) {
+    string_clean(main_str);
+    complex_append_string(&main_str, left);
+    printf(RED"failure at %s \n"RESET"left -> %s\n", types, main_str);
+    string_clean(main_str);
+    complex_append_string(&main_str, right);
+    printf("right -> %s\n", main_str);
+  } else printf(GREEN"success\n"RESET);
+  
   string_free(&main_str);
+  return (i < TEST) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

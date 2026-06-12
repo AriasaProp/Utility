@@ -32,8 +32,10 @@ float   complex_imaginary(const complex);
 float   complex_argument (const complex);
 float   complex_magnitude(const complex);
 // compare
-int     complex_eq  (const complex, const complex);  
-// operator duplicate 
+int     complex_equal(const complex, const complex);  
+// extra
+complex complex_inv(const complex);
+// operator duplicate
 complex complex_addf (const complex, const float);
 complex complex_addfi(const complex, const float);
 complex complex_subf (const complex, const float);
@@ -43,28 +45,36 @@ complex complex_mulfi(const complex, const float);
 complex complex_divf (const complex, const float);
 complex complex_divfi(const complex, const float);
 complex complex_powf (const complex, const float);
+complex complex_rootf(const complex, const float);
 complex complex_powfi(const complex, const float);
+complex complex_rootfi(const complex, const float);
 complex complex_add  (const complex, const complex);
 complex complex_sub  (const complex, const complex);
 complex complex_mul  (const complex, const complex);
 complex complex_div  (const complex, const complex);
 complex complex_pow  (const complex, const complex);
+complex complex_root (const complex, const complex);
+// extra modify 
+void    complex_minv  (complex*);
 // operator modify 
-void    complex_addsf (complex*, const float);
-void    complex_addsfi(complex*, const float);
-void    complex_subsf (complex*, const float);
-void    complex_subsfi(complex*, const float);
-void    complex_mulsf (complex*, const float);
-void    complex_mulsfi(complex*, const float);
-void    complex_divsf (complex*, const float);
-void    complex_divsfi(complex*, const float);
-void    complex_powsf (complex*, const float);
-void    complex_powsfi(complex*, const float);
-void    complex_adds  (complex*, const complex);
-void    complex_subs  (complex*, const complex);
-void    complex_muls  (complex*, const complex);
-void    complex_divs  (complex*, const complex);
-void    complex_pows  (complex*, const complex);
+void    complex_maddf (complex*, const float);
+void    complex_maddfi(complex*, const float);
+void    complex_msubf (complex*, const float);
+void    complex_msubfi(complex*, const float);
+void    complex_mmulf (complex*, const float);
+void    complex_mmulfi(complex*, const float);
+void    complex_mdivf (complex*, const float);
+void    complex_mdivfi(complex*, const float);
+void    complex_mpowf (complex*, const float);
+void    complex_mrootf(complex*, const float);
+void    complex_mpowfi(complex*, const float);
+void    complex_mrootfi(complex*, const float);
+void    complex_madd  (complex*, const complex);
+void    complex_msub  (complex*, const complex);
+void    complex_mmul  (complex*, const complex);
+void    complex_mdiv  (complex*, const complex);
+void    complex_mpow  (complex*, const complex);
+void    complex_mroot (complex*, const complex);
 // return to string
 void    complex_append_string(String *, const complex);
 

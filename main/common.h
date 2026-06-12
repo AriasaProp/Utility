@@ -51,14 +51,8 @@ typedef char *             String;
 
 typedef struct { iter count; const char *cstr; } StringView;
 
-// clang/gcc builtin feature
-#ifndef __has_builtin
-  // non clang/gcc always false
-  #define __has_builtin(x) 0
-#endif
 
-
-#define ASSERT(X)           assert(X)
+#define ASSERT(X)             assert(X)
 #define TODO(X)               // Message that need todo in future: (X)
 #define PRIVATE_STRINGIFY(X)  #X
 #define STRINGIFY(X)          PRIVATE_STRINGIFY(X)
@@ -77,15 +71,17 @@ typedef struct { iter count; const char *cstr; } StringView;
   #define CDECL            __cdecl
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __pragma(warning(suppress : 4100 4101)) x
+  #define BLTN(x)          0
 #elif defined(__GNUC__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
+  #define BLTN(x)          __has_builtin(x)
 #elif defined(__clang__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
-  
+  #define BLTN(x)          __has_builtin(x)
 #else /* Unknown compiler */
   #error "Not ready for this compiler"
 #endif
@@ -96,7 +92,7 @@ typedef struct { iter count; const char *cstr; } StringView;
   #define LIKELY(x)   (x) [[likely]]
   #define UNLIKELY(x) (x) [[unlikely]]
   #define EXPECT(x,y) ((x) == (y)) [[likely]]
-#elif __has_builtin(__builtin_expect)
+#elif BLTN(__builtin_expect)
   #define IS_ERROR(x) if (__builtin_expect(!!(x), 0))
   #define LIKELY(x)   __builtin_expect(!!(x), 1)
   #define UNLIKELY(x) __builtin_expect(!!(x), 0)
@@ -129,6 +125,7 @@ int convert_wchar_to_utf8(char *, iter, const wchar_t *);
  *  just bridge of memory access + modification
  * ================================
  */
+void *util_alloca (iter);
 void *util_malloc (iter);
 void *util_calloc (iter,iter);
 void *util_realloc(void*,iter);
@@ -210,10 +207,14 @@ RAND_CAST(byte);
 RAND_CAST(shrt);
 RAND_CAST(int32);
 RAND_CAST(int64);
+RAND_CAST(int);
+RAND_CAST(long);
 RAND_CAST(ubyte);
 RAND_CAST(ushrt);
 RAND_CAST(uint32);
 RAND_CAST(uint64);
+RAND_CAST(uint);
+RAND_CAST(ulong);
 #undef RAND_CAST
 float imath_rand_float();
 

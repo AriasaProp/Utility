@@ -60,13 +60,6 @@ static inline float *matrix__datadup(const matrix r) {
   util_memcpy(ret, r.data, bytes);
   return ret;
 }
-static inline void   matrix__move   (matrix *a, matrix *b) {
-  a->data = CAST(float*)util_realloc(a->data, mat__bytes(b));
-  util_memcpy(a->data, b->data, FZ * mat__size(b));
-  a->cols = b->cols;
-  a->rows = b->rows;
-  matrix_free(b);
-}
 
 // initialize
 matrix matrix_idt(iter cols,iter rows) {
@@ -76,6 +69,13 @@ matrix matrix_idt(iter cols,iter rows) {
 }
 inline matrix matrix_dup(const matrix a) {
   return (matrix){a.cols, a.rows, matrix__datadup(a)};
+}
+inline void matrix_move(matrix *a, matrix *b) {
+  a->data = CAST(float*)util_realloc(a->data, mat__bytes(b));
+  util_memcpy(a->data, b->data, FZ * mat__size(b));
+  a->cols = b->cols;
+  a->rows = b->rows;
+  matrix_free(b);
 }
 void matrix_midt(matrix *r) {
   util_memset(r->data, 0, mat__bytes(r));
@@ -90,6 +90,12 @@ inline void matrix_set(matrix *a, const matrix b) {
 void matrix_free(matrix *r) {
   util_memfree(r->data);
   util_memset(r, 0, sizeof(matrix));
+}
+inline iter matrix_size (const matrix a) {
+  return a.cols * a.rows;
+}
+inline iter matrix_bytes(const matrix a) {
+  return matrix_size(a) * sizeof(float);
 }
 // operaror compare
 int matrix_equal(const matrix a, const matrix b) {
@@ -114,9 +120,7 @@ float matrix_det(const matrix r) {
 }
 matrix matrix_minor(const matrix a, iter i, iter j) {
   matrix r = {.cols = a.cols - 1, .rows = a.rows - 1};
-  if (mat__empty(&r)) {
-    matrix_free(&r);
-  } else {
+  if (!mat__empty(&r)) {
     r.data = CAST(float*)util_malloc(mat__bytes(&r));
     mat__foreach2D(&a, x, y) {
       if (x == i || y == j) continue;
@@ -205,13 +209,13 @@ void       matrix_mtrn(matrix *r) {
 }
 inline void matrix_mcof(matrix *r) {
   matrix d = matrix_cof(*r);
-  matrix__move(r, &d);
+  matrix_move(r, &d);
 }
 // operator modify, 0 success 1 fail
 inline int matrix_madj(matrix *r) {
   matrix d = matrix_adj(*r);
   if (mat__empty(&d)) return 1;
-  matrix__move(r, &d);
+  matrix_move(r, &d);
   return 0;
 }
 inline int matrix_minv (matrix *r) {
@@ -239,7 +243,7 @@ int        matrix_msub(matrix *a,const matrix b) {
 inline int matrix_mmul(matrix *a,const matrix b) {
   matrix d = matrix_mul(*a, b);
   if (mat__empty(&d)) return 1;
-  matrix__move(a, &d);
+  matrix_move(a, &d);
   return 0;
 }
 inline int matrix_mdiv(matrix *a,const matrix b) {

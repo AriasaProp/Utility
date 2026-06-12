@@ -24,9 +24,14 @@ extern "C" {
 // initialize
 matrix matrix_idt  (iter,iter);
 matrix matrix_dup  (const matrix);
+// init modify
 void   matrix_midt (matrix*);
 void   matrix_set  (matrix*,const matrix);
+// extra
 void   matrix_free (matrix *);                    // free
+void   matrix_move (matrix *, matrix*);                    // free
+iter   matrix_size (const matrix);
+iter   matrix_bytes(const matrix);
 int    matrix_equal(const matrix, const matrix);  // operaror compare
 float  matrix_det  (const matrix);                // property
 matrix matrix_minor(const matrix,iter,iter);

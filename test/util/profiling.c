@@ -1,10 +1,8 @@
 #include "profiling.h"
-#if !defined(NO_STDC)
 #include <time.h>
-#endif
+
 #define CLK_IN_US   1000000ULL / CLOCKS_PER_SEC
 
-#define LONG_SEC 1000000000ULL
 #define SEC_TO_US   1000000ULL
 #define  MS_TO_US      1000ULL
 
@@ -20,8 +18,7 @@ void  profiling_append_as_time2 (String *str, pr_time s) {
   int count = 0;
   if (s > SEC_TO_US) {
     string_append(str, "%lus", s / SEC_TO_US);
-    if (s > LONG_SEC) return;
-    string_append_cstr(str, " ", 1);
+    string_append_char(str, ' ');
     s %= SEC_TO_US;
     ++count;
   }
@@ -29,13 +26,12 @@ void  profiling_append_as_time2 (String *str, pr_time s) {
     string_append(str, "%03lums", s / MS_TO_US);
     s %= MS_TO_US;
     if (count++) return;
-    else string_append_cstr(str, " ", 1);
+    else string_append_char(str, ' ');
   }
-  if (s) string_append(str, "%03luus", s);
-  else if (!count) string_append(str, "0");
+  if (count < 2) string_append(str, "%03luus", s);
 }
 void  profiling_append_as_time  (String *str, pr_time s) {
-  if (s > SEC_TO_US) string_append(str, "%lus", s / SEC_TO_US);
+  if (s > SEC_TO_US) string_append(str, "%lu s", s / SEC_TO_US);
   else if (s > MS_TO_US) string_append(str, "%03lums", s / MS_TO_US);
   else string_append(str, "%03luus", s);
 }

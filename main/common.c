@@ -9,7 +9,7 @@
 
 #include "common.h"
 
-// should exponent of 2
+// should be exponent of 2
 #define STRING_CAP_ROUND 4
 #define STRING_CAP_MASK  3
 
@@ -51,6 +51,9 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
  *  Standar Utility Function
  * ================================
  */
+void *util_alloca(iter bytes) {
+  return alloca(bytes);
+}
 void *util_malloc(iter bytes) {
   return malloc(bytes);
 }
@@ -64,6 +67,7 @@ void util_memfree(void *p) {
   free(p);
 }
 void util_memswap(void *a, void *b, iter bytes) {
+  if (a == b) return;
   byte *A = CAST(byte*)a, *B = CAST(byte*)b;
   for (iter i = 0; i < bytes; ++i) {
     A[i] ^= B[i];
@@ -95,16 +99,16 @@ iter util_strlen(const char *str) {
   return strlen(str);
 }
 iter util_clz(ulong x) {
-#if __has_builtin(__builtin_clzl)
+#if BLTN(__builtin_clzl)
   return __builtin_clzl(x);
 #else
-  iter r = 0;
-  while (x) ++r, x >>= 1;
-  return sizeof(ulong) * 8 - r;
+  iter r = sizeof(ulong) * 8;
+  while (x) --r, x >>= 1;
+  return r;
 #endif
 }
 iter util_bitlead(ulong x) {
-#if __has_builtin(__builtin_clzl)
+#if BLTN(__builtin_clzl)
   return sizeof(ulong) * 8 - __builtin_clzl(x);
 #else
   iter r = 0;
@@ -140,34 +144,34 @@ inline void string_append_char(String *str,char c) {
   string_head *sh = string__get_head(*str);
   sh = string__reserve(sh, sh->count + 2);
   *str = string__get_string(sh);
-  *(*str + (sh->count++)) = c;
-  str[sh->count] = 0;
+  *(*str + sh->count) = c;
+  ++sh->count;
+  (*str)[sh->count] = 0;
 }
 inline void string_append_cstr(String *str, const char *cstr, iter len) {
   string_head *sh = string__get_head(*str);
   sh = string__reserve(sh, sh->count + len + 1);
   *str = string__get_string(sh);
-  util_memcpy(*str + sh->count, cstr, len + 1);
+  util_memcpy(*str + sh->count, cstr, len);
   sh->count += len;
   // is always memcpy end with null?
-  str[sh->count += len] = 0;
+  // (*str)[sh->count] = 0;
 }
 inline void string_append(String *str, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   int r = vsnprintf(NULL, 0, fmt, args);
   ASSERT((r >= 0) && "invalid on vsnprintf");
+  r += 2;
   string_head *sh = string__get_head(*str);
-  sh = string__reserve(sh, sh->count + r + 1);
+  sh = string__reserve(sh, sh->count + r);
   *str = string__get_string(sh);
-  r = vsnprintf(*str + sh->count, r + 1, fmt, args);
+  r = vsnprintf(*str + sh->count, r, fmt, args);
   va_end(args);
   sh->count += r;
-  // is always vsnprintf end with null?
-  str[sh->count += r] = 0;
 }
 inline void string_reserve(String *str, iter sz) {
-  *str = string__get_string(string__reserve(string__get_head(*str), sz));
+  *str = string__get_string(string__reserve(string__get_head(*str), sz + 1));
 }
 inline iter string_len(const String str) {
   const string_head *sh = string__get_head(str);
@@ -189,10 +193,10 @@ inline void string_free (String *str) {
  *  String View Functions
  * ================================
  */
-#define STRINGVIEW_NONNULL(X) if (!X) return (StringView){0}
+#define NO_NULL(X) if (!X) return (StringView){0}
 // generate StringView from String
 StringView stringview_str(const String s) {
-  STRINGVIEW_NONNULL(s);
+  NO_NULL(s);
   return (StringView){.count = string_len(s), .cstr = CAST(const char*)s};
 }
 // chop by whitespace
@@ -200,14 +204,14 @@ StringView stringview_chop(const String s) {
   return stringview_chop_char(s, CHAR_WHITESPACE);
 }
 StringView stringview_chop_char(const String s,const char d) {
-  STRINGVIEW_NONNULL(s);
+  NO_NULL(s);
   StringView ret = {.count = 0, .cstr = CAST(const char*)s};
   for (iter i = string_len(s); (ret.count < i) && s[ret.count] && (s[ret.count] != d); ++(ret.count)) ;
   return ret;
 }
 StringView stringview_chop_chars(const String s,const char *d) {
-  STRINGVIEW_NONNULL(s);
-  STRINGVIEW_NONNULL(d);
+  NO_NULL(s);
+  NO_NULL(d);
   StringView ret = {.count = 0, .cstr = CAST(const char*)s};
   for (iter i = string_len(s),j; (ret.count < i) && s[ret.count]; ) {
     for (j = 0; d[j]; ++j) if (d[j] == s[ret.count]) return ret;
@@ -216,8 +220,8 @@ StringView stringview_chop_chars(const String s,const char *d) {
   return ret;
 }
 StringView stringview_chop_cstr(const String s,const char *cstr) {
-  STRINGVIEW_NONNULL(s);
-  STRINGVIEW_NONNULL(cstr);
+  NO_NULL(s);
+  NO_NULL(cstr);
   StringView ret = {.count = 0, .cstr = CAST(const char*)s};
   for (iter i = string_len(s), j = util_strlen(cstr); ((i - ret.count) > j) && (ret.count < i) && s[ret.count] && !util_memcmp(s + ret.count, cstr, j); ++(ret.count)) ;
   return ret;
@@ -235,7 +239,7 @@ int stringview_equal (const StringView a,const StringView b) {
  */
 
 
-#if defined(NO_STDMATH) || !(__has_builtin(__builtin_sinf) || __has_builtin(__builtin_cosf) || __has_builtin(__builtin_tanf))
+#if defined(NO_STDMATH) || !(BLTN(__builtin_sinf) || BLTN(__builtin_cosf))
 // src https://gist.githubusercontent.com/Sam-Belliveau/9c2e5a7584ec9900831877b3155f6f16/raw/238a72e91f46ad616fbaedddec30f163dbb8cb85/fast_trig.h
 static inline float imath__cosine_wave(float x) {
   x *= M_PI2;
@@ -251,17 +255,15 @@ static inline float imath__cosine_wave(float x) {
 #endif // builtin trig
 
 inline uint imath_iabs (int a) {
-#if __has_builtin(__builtin_abs)
+#if BLTN(__builtin_abs)
   return __builtin_abs(a);
-#elif !defined(NO_STDMATH)
+#elif // libc
   return abs(a);
-#else
-  return a & 0x7fffffff; // assume big endian
 #endif // builtin
 }
 
 inline float imath_fabs  (float a) {
-#if __has_builtin(__builtin_fabs)
+#if BLTN(__builtin_fabs)
   return __builtin_fabs(a);
 #elif !defined(NO_STDMATH)
   return fabs(a);
@@ -271,7 +273,7 @@ inline float imath_fabs  (float a) {
 #endif // builtin
 }
 inline float imath_fmax(float a, float b) {
-#if __has_builtin(__builtin_fmax)
+#if BLTN(__builtin_fmax)
   return __builtin_fmax(a,b);
 #elif !defined(NO_STDMATH)
   return fmax(a,b);
@@ -280,7 +282,7 @@ inline float imath_fmax(float a, float b) {
 #endif // builtin
 }
 inline float imath_fmin(float a, float b) {
-#if __has_builtin(__builtin_fmin)
+#if BLTN(__builtin_fmin)
   return __builtin_fmin(a,b);
 #elif !defined(NO_STDMATH)
   return fmin(a,b);
@@ -289,7 +291,7 @@ inline float imath_fmin(float a, float b) {
 #endif // builtin
 }
 inline float imath_round(float a) {
-#if __has_builtin(__builtin_roundf)
+#if BLTN(__builtin_roundf)
   return __builtin_roundf(a);
 #elif !defined(NO_STDMATH)
   return roundf(a);
@@ -298,7 +300,7 @@ inline float imath_round(float a) {
 #endif // builtin
 }
 inline float imath_floor(float a) {
-#if __has_builtin(__builtin_floorf)
+#if BLTN(__builtin_floorf)
   return __builtin_floorf(a);
 #elif !defined(NO_STDMATH)
   return floorf(a);
@@ -307,7 +309,7 @@ inline float imath_floor(float a) {
 #endif // builtin
 }
 inline float imath_frexp(float a,int *i) {
-#if __has_builtin(__builtin_frexpf)
+#if BLTN(__builtin_frexpf)
   return __builtin_frexpf(a,i);
 #elif !defined(NO_STDMATH)
   return frexpf(a,i);
@@ -317,7 +319,7 @@ inline float imath_frexp(float a,int *i) {
 #endif // builtin
 }
 inline float imath_ceil(float a) {
-#if __has_builtin(__builtin_ceilf)
+#if BLTN(__builtin_ceilf)
   return __builtin_ceilf(a);
 #elif !defined(NO_STDMATH)
   return ceilf(a);
@@ -326,7 +328,7 @@ inline float imath_ceil(float a) {
 #endif // builtin
 }
 inline float imath_sin(float x) {
-#if __has_builtin(__builtin_sinf)
+#if BLTN(__builtin_sinf)
   return __builtin_sinf(x);
 #elif !defined(NO_STDMATH)
   return sinf(x);
@@ -337,7 +339,7 @@ inline float imath_sin(float x) {
 #endif // builtin
 }
 inline float imath_cos(float x) {
-#if __has_builtin(__builtin_cosf)
+#if BLTN(__builtin_cosf)
   return __builtin_cosf(x);
 #elif !defined(NO_STDMATH)
   return cosf(x);
@@ -348,7 +350,7 @@ inline float imath_cos(float x) {
 #endif // builtin
 }
 inline float imath_tan(float x) {
-#if __has_builtin(__builtin_tanf)
+#if BLTN(__builtin_tanf)
   return __builtin_tanf(x);
 #elif !defined(NO_STDMATH)
   return tanf(x);
@@ -365,7 +367,7 @@ inline float imath_tan(float x) {
 #endif // builtin
 }
 inline float imath_asin(float x) {
-#if __has_builtin(__builtin_asinf)
+#if BLTN(__builtin_asinf)
   return __builtin_asinf(x);
 #elif !defined(NO_STDMATH)
   return asinf(x);
@@ -381,7 +383,7 @@ inline float imath_asin(float x) {
 #endif // builtin
 }
 inline float imath_acos(float x) {
-#if __has_builtin(__builtin_acosf)
+#if BLTN(__builtin_acosf)
   return __builtin_acosf(x);
 #elif !defined(NO_STDMATH)
   return acosf(x);
@@ -398,7 +400,7 @@ inline float imath_acos(float x) {
 #endif // builtin
 }
 inline float imath_atan(float x) {
-#if __has_builtin(__builtin_atanf)
+#if BLTN(__builtin_atanf)
   return __builtin_atanf(x);
 #elif !defined(NO_STDMATH)
   return atanf(x);
@@ -411,7 +413,7 @@ inline float imath_atan(float x) {
 }
 // idk what is right order argument of atan 2? y,x or x,y
 inline float imath_atan2(float x, float y) {
-#if __has_builtin(__builtin_atan2f)
+#if BLTN(__builtin_atan2f)
   return __builtin_atan2f(x,y);
 #elif !defined(NO_STDMATH)
   return atan2f(x,y);
@@ -419,28 +421,32 @@ inline float imath_atan2(float x, float y) {
   return imath_atan(x/y);
 #endif // builtin
 }
+/*   b     b*ln(a)
+ *  a  => e
+ *
+ */
 inline float imath_pow(float a,float b) {
-#if __has_builtin(__builtin_powf)
+#if BLTN(__builtin_powf)
   return __builtin_powf(a,b);
 #elif !defined(NO_STDMATH)
   return powf(a,b);
 #else
-  b *= imath_log(a);
-  return imath_exp(b);
+  return imath_exp(b * imath_log(a));
 #endif // builtin
 }
+/*
+ * stolen from https://gist.github.com/LingDong-/7e4c4cae5cbbc44400a05fba65f06f23
+ *       x  =    m  *   2^p
+ * => ln(x) = ln(m) + ln(2)p
+ * exp = 127 for a = 1, 
+ * so 2^(exp-127) is the multiplier
+ */
 inline float imath_log(float a) {
-#if __has_builtin(__builtin_logf)
+#if BLTN(__builtin_logf)
   return __builtin_logf(a);
 #elif !defined(NO_STDMATH)
   return logf(a);
 #else
-  // stolen from https://gist.github.com/LingDong-/7e4c4cae5cbbc44400a05fba65f06f23
-  // FORMULA: 
-  //       x  =    m  *   2^p
-  // => ln(x) = ln(m) + ln(2)p
-  // exp = 127 for a = 1, 
-  // so 2^(exp-127) is the multiplier
   // evil floating point bit level hacking
   uint *bx = CAST(uint*)&a;
   // extract exp, since a>0, sign bit must be 0
@@ -459,17 +465,17 @@ inline float imath_log(float a) {
 }
 #endif // builtin
 }
+/* same logic as imath_log
+ *        a  =    m  *2^p
+ * => lg2(a) =lg2(m) + p
+ * => lg2(a) = ln(m)/ln(2) + p
+ */
 inline float imath_log2(float a) {
-#if __has_builtin(__builtin_log2f)
+#if BLTN(__builtin_log2f)
   return __builtin_log2f(a);
 #elif !defined(NO_STDMATH)
   return log2f(a);
 #else
-  // same logic as imath_log
-  // FORMULA: 
-  //        a  =    m  *2^p
-  // => lg2(a) =lg2(m) + p
-  // => lg2(a) = ln(m)/ln(2) + p
   uint *bx = CAST(uint*)&a;
   // extract exp, since a>0, sign bit must be 0
   float t = CAST(float)((*bx >> 23) - 127);
@@ -486,30 +492,32 @@ inline float imath_log2(float a) {
     ) * M_LN2_INV;
 #endif // builtin
 }
+/*
+ *       a  =    m*2^p
+ * => e^(a) = e^(m*2^p)
+ * => e^(a) = 2^((m*2^p)*lg2(e))
+ * => e^(a) = 2^((m*2^p)/ln(2))
+ */
 inline float imath_exp(float a) {
-#if __has_builtin(__builtin_expf)
+#if BLTN(__builtin_expf)
   return __builtin_expf(a);
 #elif !defined(NO_STDMATH)
   return expf(a);
 #else
-  // FORMULA: 
-  //       a  =    m*2^p
-  // => e^(a) = e^(m*2^p)
-  // => e^(a) = 2^((m*2^p)*lg2(e))
-  // => e^(a) = 2^((m*2^p)/ln(2))
   return imath_exp2(a*M_LN2_INV);
 #endif // builtin
 }
+/*
+ *       a  = n+f
+ * => 2^(a) = 2^(n+f)
+ * => 2^(a) = 2^n * 2^f
+ */
 inline float imath_exp2(float a) {
-#if __has_builtin(__builtin_exp2f)
+#if BLTN(__builtin_exp2f)
   return __builtin_exp2f(a);
 #elif !defined(NO_STDMATH)
   return exp2f(a);
 #else
-  // FORMULA: 
-  //       a  = n+f
-  // => 2^(a) = 2^(n+f)
-  // => 2^(a) = 2^n * 2^f
   int *n = CAST(int*)&a;
   if (a > 126.0f) {*n |= 0x7f800000; return a;} // INF
   else if (a < -149.0f) return 0.0f;
@@ -529,7 +537,7 @@ float imath_len(const float *x, iter n) {
   return imath_sqrt(vs);
 }
 inline float imath_hypot(float x, float y) {
-#if __has_builtin(__builtin_hypotf)
+#if BLTN(__builtin_hypotf)
   return __builtin_hypotf(x, y);
 #elif !defined(NO_STDMATH)
   return hypotf(x,y);
@@ -538,7 +546,7 @@ inline float imath_hypot(float x, float y) {
 #endif // builtin
 }
 inline float imath_sqrt(float x) {
-#if __has_builtin(__builtin_sqrtf)
+#if BLTN(__builtin_sqrtf)
   return __builtin_sqrtf(x);
 #elif !defined(NO_STDMATH)
   return sqrtf(x);
@@ -547,16 +555,14 @@ inline float imath_sqrt(float x) {
   int *i = CAST(int*)&x;
   *i = (*i >> 1) - 0x5f3759df;
   #ifndef FASTER_MATH
-    x += x2;
-    x *= 0.5f;
+  x += x2; x *= 0.5f;
   #endif // faster math
-  x += x2;
-  x *= 0.5f;
+  x += x2; x *= 0.5f;
   return x;
 #endif // builtin
 }
 inline float imath_isqrt(float x) {
-#if __has_builtin(__builtin_sqrtf)
+#if BLTN(__builtin_sqrtf)
   return 1.0f / __builtin_sqrtf(x);
 #elif !defined(NO_STDMATH)
   return sqrtf(x);
@@ -576,28 +582,28 @@ ubyte imath_flip8(ubyte x) {
   return CAST(ubyte)NAIVE_FLIP(x,4,4);
 }
 ushrt imath_flip16(ushrt x) {
-#if __has_builtin(__builtin_bswap16)
+#if BLTN(__builtin_bswap16)
   return __builtin_bswap16(x);
 #else
   return bswap_16(x);
 #endif
 } 
 uint32 imath_flip32(uint32 x) {
-#if __has_builtin(__builtin_bswap32)
+#if BLTN(__builtin_bswap32)
   return __builtin_bswap32(x);
 #else
   return bswap_32(x);
 #endif
 }
 uint64 imath_flip64(uint64 x) {
-#if __has_builtin(__builtin_bswap64)
+#if BLTN(__builtin_bswap64)
   return __builtin_bswap64(x);
 #else
   return bswap_64(x);
 #endif
 }
 int32 imath_rotl32(int32 x, const iter n) {
-#if __has_builtin(__builtin_rotateleft32)
+#if BLTN(__builtin_rotateleft32)
   return __builtin_rotateleft32(x, n);
 #elif defined(_MSC_VER)
   return _rotl(x, n);
@@ -606,7 +612,7 @@ int32 imath_rotl32(int32 x, const iter n) {
 #endif
 }
 int64 imath_rotl64(int64 x, const iter n) {
-#if __has_builtin(__builtin_rotateleft64)
+#if BLTN(__builtin_rotateleft64)
   return __builtin_rotateleft64(x, n);
 #elif defined(_MSC_VER)
   return _rotl64(x, n);
@@ -615,7 +621,7 @@ int64 imath_rotl64(int64 x, const iter n) {
 #endif
 }
 int32 imath_rotr32(int32 x, const iter n) {
-#if __has_builtin(__builtin_rotateright32)
+#if BLTN(__builtin_rotateright32)
   return __builtin_rotateright32(x, n);
 #elif defined(_MSC_VER)
   return _rotr(x, n);
@@ -624,7 +630,7 @@ int32 imath_rotr32(int32 x, const iter n) {
 #endif
 }
 int64 imath_rotr64(int64 x, const iter n) {
-#if __has_builtin(__builtin_rotateright64)
+#if BLTN(__builtin_rotateright64)
   return __builtin_rotateright64(x, n);
 #elif defined(_MSC_VER)
   return _rotr64(x, n);
@@ -632,12 +638,10 @@ int64 imath_rotr64(int64 x, const iter n) {
   return CAST(int64)NAIVE_FLIP(x,(-n&63),n);
 #endif
 }
-
-#if defined(_WIN32) || defined(_WIN64)
-  #define RAND_VARIANT(T) inline T imath_rand_##T () { return CAST(T)__rdtsc() * CAST(T)0xe9b5dba59b05688cULL; }
-#else
-  #define RAND_VARIANT(T) inline T imath_rand_##T () { return CAST(T)clock() * CAST(T)0xe9b5dba59b05688cULL; }
-#endif
+#define RAND_VARIANT(T) inline T imath_rand_##T () { \
+  T r = CAST(T)rand();\
+  return r ^ (CAST(T)CAST(long)&r);\
+}
 
 RAND_VARIANT(byte)
 RAND_VARIANT(shrt)
@@ -654,7 +658,10 @@ RAND_VARIANT(ulong)
 
 #undef RAND_VARIANT
 inline float imath_rand_float() {
-  return imath_rand_int64() * ((3.8518597e-21f * imath_rand_uint64()) * imath_rand_uint64());
+  union { float f; int i; } U;
+  U.i = imath_rand_int();
+  U.i -= 1 << 11;
+  return U.f;
 }
 
 

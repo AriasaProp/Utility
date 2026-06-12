@@ -10,7 +10,7 @@
 #include "math/complex.h"
 #include "common.h"
 
-#define EPSILON 9.7144060021e-2f
+#define EPSILON 9.7144060021e-3f
 //initialize
 void complex_set_cartesian(complex *c,const float r, const float i) {
   c->r = r; c->i = i;
@@ -29,9 +29,14 @@ inline float complex_magnitude(const complex c) {
   return imath_hypot(c.r,c.i);
 }
 // compare 
-inline int complex_eq  (const complex a, const complex b) {
+inline int complex_equal(const complex a, const complex b) {
   return (imath_fabs(b.r - a.r) < EPSILON) && (imath_fabs(b.i - a.i) < EPSILON);
 } 
+// extra duplicate 
+inline complex complex_inv(const complex a) {
+  float dv = a.r * a.r - a.i * a.i;
+  return complex_cartesian(a.r / dv, - a.i / dv);
+}
 // operator duplicate 
 inline complex complex_addf(const complex c, const float f) {
   return complex_cartesian(c.r + f, c.i);
@@ -67,14 +72,20 @@ inline complex complex_powf(const complex c, const float f) {
   float arg = complex_argument(c) * f;
   return complex_polar(mag,arg);
 }
+inline complex complex_rootf(const complex c, const float f) {
+  return complex_powf(c, 1/f);
+}
+/*   (  i@)(bi)     bi*ln(r)   -b@
+ *   (re  )    => e           e
+ *
+ */
 inline complex complex_powfi(const complex c, const float f) {
-  /*   (  i@)(bi)     bi*ln(r)   -b@
-   *   (re  )    => e           e
-   *
-   */
   float mag = imath_exp(-f * complex_argument(c));
   float arg = imath_log(complex_magnitude(c)) * f;
   return complex_polar(mag,arg);
+}
+inline complex complex_rootfi(const complex c, const float f) {
+  return complex_powfi(c, -1/f);
 }
 inline complex complex_add (const complex a, const complex b) {
   return complex_cartesian(a.r + b.r, a.i + b.i);
@@ -97,7 +108,7 @@ inline complex complex_mul (const complex a, const complex b) {
  *
  */
 inline complex complex_div (const complex a, const complex b) {
-  float d = (b.r*b.r + b.i*b.i);
+  float d = (b.r*b.r - b.i*b.i);
   return complex_cartesian(
     (a.r * b.r + a.i * b.i) / d,
     (a.i * b.r - a.r * b.i) / d
@@ -110,64 +121,79 @@ inline complex complex_pow (const complex a, const complex b) {
   float arg = lmagA * b.i + argA * b.r;
   return complex_polar(mag,arg);
 }
+inline complex complex_root(const complex a, const complex b) {
+  return complex_pow(a, complex_inv(b));
+}
+// extra modify 
+inline void complex_minv(complex *c) {
+  float dv = c->r * c->r - c->i * c->i;
+  c->r /= dv;
+  c->i /= -dv;
+}
 // operator modify 
-inline void complex_addsf(complex *c, const float f) {
+inline void complex_maddf(complex *c, const float f) {
   c->r += f;
 }
-inline void complex_addsfi(complex *c, const float f) {
+inline void complex_maddfi(complex *c, const float f) {
   c->i += f;
 }
-inline void complex_subsf(complex *c, const float f) {
+inline void complex_msubf(complex *c, const float f) {
   c->r -= f;
 }
-inline void complex_subsfi(complex *c, const float f) {
+inline void complex_msubfi(complex *c, const float f) {
   c->i -= f;
 }
-inline void complex_mulsf(complex *c, const float f) {
+inline void complex_mmulf(complex *c, const float f) {
   c->r *= f;
   c->i *= f;
 }
-inline void complex_mulsfi(complex *c, const float f) {
+inline void complex_mmulfi(complex *c, const float f) {
   float *F = CAST(float*)c;
   util_memswap(F, F + 1, sizeof(float));
   c->r *= -f;
   c->i *= f;
 }
-inline void complex_divsf(complex *c, const float f) {
+inline void complex_mdivf(complex *c, const float f) {
   c->r /= f;
   c->i /= f;
 }
-inline void complex_divsfi(complex *c, const float f) {
+inline void complex_mdivfi(complex *c, const float f) {
   float *F = CAST(float*)c;
   util_memswap(F, F + 1, sizeof(float));
   c->r /= f;
   c->i /= -f;
 }
-inline void complex_powsf(complex *c, const float f) {
+inline void complex_mpowf(complex *c, const float f) {
   float mag = imath_exp(imath_log(complex_magnitude(*c)) * f);
   float arg = complex_argument(*c) * f;
   complex_set_polar(c,mag,arg);
 }
-inline void complex_powsfi(complex *c, const float f) {
+inline void complex_mrootf(complex *c, const float f) {
+  complex_mpowf(c, 1.0f/f);
+}
+inline void complex_mpowfi(complex *c, const float f) {
   float mag = imath_exp(-complex_argument(*c) * f);
   float arg = complex_magnitude(*c) * f;
   complex_set_polar(c,mag,arg);
 }
-inline void complex_adds (complex *a, const complex b) {
+inline void complex_mrootfi(complex *c, const float f) {
+  complex_mpowfi(c, -1.0f/f);
+}
+inline void complex_madd (complex *a, const complex b) {
   a->r += b.r;
   a->i += b.i;
 }
-inline void complex_subs (complex *a, const complex b) {
+inline void complex_msub (complex *a, const complex b) {
   a->r -= b.r;
   a->i -= b.i;
 }
-inline void complex_muls (complex *a, const complex b) {
+inline void complex_mmul (complex *a, const complex b) {
   float r = a->r * b.r - a->i * b.i;
   float i = a->r * b.i + a->i * b.r;
   a->r = r;
   a->i = i;
 }
-inline void complex_divs (complex *a, const complex b) {
+inline void complex_mdiv (complex *a, const complex b) {
   float d = b.r * b.r - b.i * b.i;
   a->r /= d;
   a->i /= d;
@@ -209,12 +235,25 @@ inline void complex_divs (complex *a, const complex b) {
  *
  *
  */
-inline void complex_pows (complex *a, const complex b) {
+inline void complex_mpow (complex *a, const complex b) {
   float lmagA = imath_log(complex_magnitude(*a));
   float argA = complex_argument(*a);
   float mag = imath_exp(b.r * lmagA - argA * b.i);
   float arg = argA * b.r + b.i * lmagA;
   complex_set_polar(a,mag,arg);
+}
+/*
+ * 
+ *       1/(b+yi)        (b-yi)/(b2-y2)
+ *  (a+xi)      => (a+xi)    
+ *                      
+ *                       (b-yi)/(b2-y2)
+ *              => (a+xi)    
+ *
+ *
+ */
+inline void complex_mroot(complex *a, const complex b) {
+  complex_mpow(a, complex_inv(b));
 }
 // return to string
 inline void complex_append_string(String *str, const complex a) {
