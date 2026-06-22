@@ -8,24 +8,72 @@
  * *****************************************************************************/
 
 #include "algorithm/sort.h"
-#define NO_NULL        if (!dat || (size < 2) || !bytes || !cmp) return
+#define NO_NULL        if (!(dat && bytes && cmp)) return
+#define SIZE_ELIM(p)   do {\
+  switch (size) { \
+    case 2:\
+      if (cmp((p), (p) + bytes) > 0) util_memswap((p), (p) + bytes, bytes);\
+    case 0: case 1: return; \
+    default: break;\
+  }\
+}  while (0)
 
 /* ==========================================================
  * stooge sort
  * worst, resursively correcting data order head and tail
  * then call itself 3 times
  * ==========================================================*/
+static void sort_stooge_rec(byte *, iter, iter, compare_funct);
 void sort_stooge(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-	char *data = CAST(char*)dat;
-	char *end = data + (size - 1) * bytes;
-	if (cmp(data, end) > 0)
-	  util_memswap(data, end, bytes);
-	if ((data + bytes) >= end) return;
+  sort_stooge_rec(CAST(byte*)dat, size,bytes, cmp);
+}
+static void sort_stooge_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
+  SIZE_ELIM(d);
+	byte *end = d + (size - 1) * bytes;
+	if (cmp(d, end) > 0) util_memswap(d, end, bytes);
+	if ((d + bytes) >= end) return;
 	iter k = size / 3;
-	sort_stooge(data            , size - k, bytes, cmp);
-	sort_stooge(data + k * bytes, size - k, bytes, cmp);
-	sort_stooge(data            , size - k, bytes, cmp);
+	sort_stooge_rec(d            , size - k, bytes, cmp);
+	sort_stooge_rec(d + k * bytes, size - k, bytes, cmp);
+	sort_stooge_rec(d            , size - k, bytes, cmp);
+}
+/* ==========================================================
+ * pancake sort
+ * do data flip for data range
+ *
+ * ==========================================================*/
+void sort_panck(void *dat, iter size, iter bytes, compare_funct cmp) {
+  NO_NULL;
+  byte *max, *i, *j, *data = CAST(byte*)dat, *end;
+  while (size-- > 1) {
+    // find biggest
+    end = data + size * bytes;
+    for (i = max = end; (i -= bytes) >= data; )
+      if (cmp(max, i) < 0) max = i;
+    if (max == end) continue;
+    for (i = data, j = max; i < j; i += bytes, j -= bytes)
+      util_memswap(i, j, bytes);
+    for (i = data, j = data + size * bytes; i < j; i += bytes, j -= bytes)
+      util_memswap(i, j, bytes);
+  }
+}
+/* ==========================================================
+ * gnome sort
+ * worst version of insertion sort with no nested loop
+ * do more evaluation when back to prev->next
+ * 
+ * ==========================================================*/
+void sort_gnome(void *dat, iter size, iter bytes, compare_funct cmp) {
+	NO_NULL;
+	byte *data = CAST(byte*)dat;
+	for (byte *i = data, *j = data + (size - 1) * bytes; i < j;) {
+	  if ((i >= data) && (cmp(i, i + bytes) > 0)) {
+		  util_memswap(i, i + bytes, bytes);
+	    i -= bytes;
+	  } else
+	    i += bytes;
+	}
 }
 /* ==========================================================
  * brick sort
@@ -34,7 +82,7 @@ void sort_stooge(void *dat, iter size, iter bytes, compare_funct cmp) {
  * ==========================================================*/
 void sort_brick(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-	char *data = CAST(char*)dat, *end = data + (size - 1) * bytes, *i, *j;
+	byte *data = CAST(byte*)dat, *end = data + (size - 1) * bytes, *i, *j;
 	for (int sorted = 0, bin = 1; !sorted; bin = !bin) {
 	  sorted |= 1;
 	  for (i = data + bin * bytes, j = i + bytes; i < end; i += bytes * 2, j += bytes * 2) {
@@ -45,46 +93,20 @@ void sort_brick(void *dat, iter size, iter bytes, compare_funct cmp) {
 	}
 }
 /* ==========================================================
- * gnome sort
- * worst version of insertion sort with no nested loop
- * do more evaluation when back to prev->next
+ * bubble sort
+ * do next evaluate with bring sorted data to end
+ * # # .. .. .. .. # # # 
+ * ------------------>
+ * continue do evaluate till end with less loop
  * 
  * ==========================================================*/
-void sort_gnome(void *dat, iter size, iter bytes, compare_funct cmp) {
+void sort_bubble(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *data = CAST(char*)dat;
-	for (char *i = data, *j = data + (size - 1) * bytes; i < j;) {
-	  if ((i >= data) && (cmp(i, i + bytes) > 0)) {
-		  util_memswap(i, i + bytes, bytes);
-	    i -= bytes;
-	  } else
-	    i += bytes;
-	}
-}
-/* ==========================================================
- * quick sort
- * 
- * pick end data as pivot to put data on left and right
- * 
- * 
- * ==========================================================*/
-void sort_quick(void *dat, iter size, iter bytes, compare_funct cmp) {
-  NO_NULL;
-  char *data = CAST(char*)dat;
-  char *pivot = data + (size - 1) * bytes;
-  iter c = 0;
-  char *i = data, *j = data;
-  while (j < pivot) {
-    if (cmp(j, pivot) < 0) {
-      util_memswap(i, j, bytes);
-      i += bytes;
-      ++c;
-    }
-    j += bytes;
-  }
-  util_memswap(i, pivot, bytes);
-  sort_quick(data, c, bytes, cmp);
-  if (size > c) sort_quick(i + bytes, size - c, bytes, cmp);
+	byte *data = (byte*)dat;
+	for(byte *i = data + size * bytes, *j; (i -= bytes) >= data; ) // start move
+		for (j = data; j < i; j += bytes) // go prev
+			if (cmp(j, j + bytes) > 0)
+			  util_memswap(j, j + bytes, bytes);
 }
 /* ==========================================================
  * shaker sort
@@ -98,112 +120,42 @@ void sort_quick(void *dat, iter size, iter bytes, compare_funct cmp) {
  * ==========================================================*/
 void sort_shaker(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *start = CAST(char*)dat, *end = start + (size - 1) * bytes, *i;
-	int swapped = 1;
-	while (swapped) {
+	byte *start = CAST(byte*)dat, *end = start + (size - 1) * bytes, *i;
+	int scramb = 1;
+	while (scramb) {
+    scramb = 0;
 	  for (i = start; i < end; i += bytes) {
-	    if (cmp(i, i + bytes) > 0) {
-	      util_memswap(i, i + bytes, bytes);
-	      swapped = 1;
-	    }
+	    if (cmp(i, i + bytes) <= 0) continue;
+      util_memswap(i, i + bytes, bytes);
+      scramb = 1;
 	  }
-	  if (!swapped) break;
-    swapped = 0;
 	  end -= bytes;
+	  if (!scramb) break;
+    scramb = 0;
 	  for (i = end; i > start; i -= bytes) {
-	    if (cmp(i - bytes, i) > 0) {
-	      util_memswap(i - bytes, i, bytes);
-	      swapped = 1;
-	    }
+	    if (cmp(i - bytes, i) <= 0) continue;
+      util_memswap(i - bytes, i, bytes);
+      scramb = 1;
 	  }
 	  start += bytes;
 	}
 }
 /* ==========================================================
- * bubble sort
- * do next evaluate with bring sorted data to end
- * # # .. .. .. .. # # # 
- * ------------------>
- * continue do evaluate till end with less loop
+ * insertion sort
+ * start evaluate from first data, if sorted move next
+ * # # # .. .. .. .. .. ->
+ * if not, swap then evaluate prev
+ * .. .. .. .. <- # # # .. ..   ^
+ * continue evaluate next data  |
+ * .. .. .. # # # -> .. .. ..
  * 
  * ==========================================================*/
-void sort_bubble(void *dat, iter size, iter bytes, compare_funct cmp) {
+void sort_insert(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *data = (char*)dat;
-	for(char *i = data + size * bytes, *j; (i -= bytes) >= data; ) // start move
-		for (j = data; j < i; j += bytes) // go prev
-			if (cmp(j, j + bytes) > 0)
-			  util_memswap(j, j + bytes, bytes);
-}
-/* ==========================================================
- * intro sort
- * introspective sort
- * split sort divide task by quick, insertion and heap sort
- * 
- * 
- * ==========================================================*/
-void sort_intro(void *dat, iter size, iter bytes, compare_funct cmp) {
-  NO_NULL;
-  if (size <= 16) sort_insert(dat, size, bytes, cmp);
-  else if (!CAST(int)imath_floor(2*imath_log(size)))
-    sort_heap(dat, size, bytes, cmp);
-  else {
-    char *d = CAST(char*)dat;
-    char *pivot = d + (size - 1) * bytes;
-    iter c = 0;
-    char *i = d, *j = d;
-    while (j < pivot) {
-      if (cmp(j, pivot) < 0) {
-        util_memswap(i, j, bytes);
-        i += bytes;
-        ++c;
-      }
-      j += bytes;
-    }
-    util_memswap(i, pivot, bytes);
-    sort_intro(d, c, bytes, cmp);
-    if (size > c) sort_intro(i + bytes, size - c, bytes, cmp);
-  }
-}
-/* ==========================================================
- * pancake sort
- * do data flip for data range
- *
- * ==========================================================*/
-void sort_panck(void *dat, iter size, iter bytes, compare_funct cmp) {
-  NO_NULL;
-  char *max, *i, *j, *data = CAST(char*)dat, *end;
-  while (size > 1) {
-    // find biggest
-    --size;
-    end = data + size * bytes;
-    for (i = end, max = end; (i -= bytes) >= data; )
-      if (cmp(max, i) < 0) max = i;
-    if (max == end) continue;
-    for (i = data, j = max; i < j; i += bytes, j -= bytes)
-      util_memswap(i, j, bytes);
-    for (i = data, j = data + size * bytes; i < j; i += bytes, j -= bytes)
-      util_memswap(i, j, bytes);
-  }
-}
-/* ==========================================================
- * selection sort
- * # # # .. ..  ..
- * -->
- * evaluate to find minimum each iteration
- * # # # .. _ ..
- *  <-------
- * swap it to the first
- *
- * ==========================================================*/
-void sort_select(void *dat, iter size, iter bytes, compare_funct cmp) {
-	NO_NULL;
-	char *data = (char*)dat;
-	for(char *i = data,*j,*k = data + size * bytes, *min; i < k; i += bytes) { // loop right
-		for (j = i, min = i; (j += bytes) < k; ) // loop left
-			if (cmp(j, min) < 0) min = j;
-		if (min != i) util_memswap(i, min, bytes);
-	}
+	byte *data = (byte*)dat;
+	for(byte *i = data, *j, *k = data + size * bytes; (i += bytes) < k; ) // loop next
+		for (j = i; (j > data) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
+			util_memswap(j, j - bytes, bytes);
 }
 /* ==========================================================
  * heap sort
@@ -220,14 +172,14 @@ void sort_select(void *dat, iter size, iter bytes, compare_funct cmp) {
  * ==========================================================*/
 void sort_heap(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *data = (char*)dat;
+	byte *data = (byte*)dat;
 	iter i, prnt, nd;
   while (size > 1) {
     // get parent
     i = size >> 1;
     // first iter may had less children
     prnt = --i;
-    // left , should always exit
+    // left , should always exists
     nd = (prnt << 1) + 1;
     if (cmp(data + nd * bytes, data + prnt * bytes) < 0) prnt = nd;
     // right
@@ -236,7 +188,7 @@ void sort_heap(void *dat, iter size, iter bytes, compare_funct cmp) {
     // next will always had
     while (i--) {
       prnt = i;
-      // left , should always exit
+      // left , should always exists
       nd = (prnt << 1) + 1;
       if (cmp(data + nd * bytes, data + prnt * bytes) < 0) prnt = nd;
       // right
@@ -248,21 +200,23 @@ void sort_heap(void *dat, iter size, iter bytes, compare_funct cmp) {
   }
 }
 /* ==========================================================
- * insertion sort
- * start evaluate from first data, if sorted move next
- * # # # .. .. .. .. .. ->
- * if not, swap then evaluate prev
- * .. .. .. .. <- # # # .. ..   ^
- * continue evaluate next data  |
- * .. .. .. # # # -> .. .. ..
- * 
+ * selection sort
+ * # # # .. ..  ..
+ * -->
+ * evaluate to find minimum each iteration
+ * # # # .. _ ..
+ *  <-------
+ * swap it to the first
+ *
  * ==========================================================*/
-void sort_insert(void *dat, iter size, iter bytes, compare_funct cmp) {
+void sort_select(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *data = (char*)dat;
-	for(char *i = data, *j, *k = data + size * bytes; (i += bytes) < k; ) // loop next
-		for (j = i; (j > data) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
-			util_memswap(j, j - bytes, bytes);
+	byte *data = (byte*)dat;
+	for(byte *i = data,*j,*k = data + size * bytes, *min; i < k; i += bytes) { // loop right
+		for (j = i, min = i; (j += bytes) < k; ) // loop left
+			if (cmp(j, min) < 0) min = j;
+		if (min != i) util_memswap(i, min, bytes);
+	}
 }
 /* ==========================================================
  * shell sort
@@ -272,7 +226,7 @@ void sort_insert(void *dat, iter size, iter bytes, compare_funct cmp) {
  * ==========================================================*/
 void sort_shell(void *dat, iter size, iter bytes, compare_funct cmp) {
 	NO_NULL;
-	char *data = (char*)dat, *end = data + size * bytes, *i,*j;
+	byte *data = (byte*)dat, *end = data + size * bytes, *i,*j;
 	iter sb;
   while (size >>= 1) {
     for (sb = size * bytes, i = data + sb; i < end; i += bytes)
@@ -286,14 +240,19 @@ void sort_shell(void *dat, iter size, iter bytes, compare_funct cmp) {
  * { -1 ... 1 } { -1 ... 1 }
  * 
  * ==========================================================*/
+static void sort_merge_rec(byte *, iter, iter, compare_funct, byte*);
 void sort_merge(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-	char *a = CAST(char*)dat;
+  byte *c = CAST(byte*)util_malloc(bytes);
+	sort_merge_rec(CAST(byte*)dat, size, bytes, cmp, c);
+	util_memfree(c);
+}
+static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp, byte *c) {
+  SIZE_ELIM(a);
 	iter i = size >> 1;
-	char *b = a + i * bytes, *d = a + size * bytes;
-	sort_merge(a, i, bytes, cmp);
-	sort_merge(b, size - i, bytes, cmp);
-  char *c = CAST(char*)util_alloca(bytes);
+	byte *b = a + i * bytes, *d = a + size * bytes;
+	sort_merge_rec(a, i, bytes, cmp, c);
+	sort_merge_rec(b, size - i, bytes, cmp, c);
   b -= bytes;
 	while ((a <= b) && (b < (d -= bytes))) {
 	  if (cmp(b, d) <= 0) continue;
@@ -302,4 +261,105 @@ void sort_merge(void *dat, iter size, iter bytes, compare_funct cmp) {
 		util_memcpy (d, c, bytes);
     b -= bytes;
 	}
+}
+/* ==========================================================
+ * intro sort
+ * introspective sort
+ * split sort divide task by quick, insertion and heap sort
+ * 
+ * 
+ * ==========================================================*/
+static void sort_intro_rec(byte *, iter, iter, compare_funct);
+void sort_intro(void *dat, iter size, iter bytes, compare_funct cmp) {
+  NO_NULL;
+  sort_intro_rec(CAST(byte*)dat, size, bytes, cmp);
+}
+static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
+  SIZE_ELIM(d);
+  if (size <= 16) {
+    // insertion sort internal
+  	for(byte *i = d, *j, *k = d + size * bytes; (i += bytes) < k; ) // loop next
+  		for (j = i; (j > d) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
+  		  util_memswap(j, j - bytes, bytes);
+  } else if (!CAST(int)imath_floor(2*imath_log(size))) {
+  	// heap sort internal
+  	iter i, prnt, nd;
+    do {
+      // get parent
+      i = size >> 1;
+      // first iter may had less children
+      prnt = --i;
+      // left , should always exists
+      nd = (prnt << 1) + 1;
+      if (cmp(d + nd * bytes, d + prnt * bytes) < 0) prnt = nd;
+      // right
+      if ((++nd < size) && (cmp(d + nd * bytes, d + prnt * bytes) < 0)) prnt = nd;
+      if (prnt != i) util_memswap(d + prnt * bytes, d + i * bytes, bytes);
+      // next will always had
+      while (i--) {
+        prnt = i;
+        // left , should always exists
+        nd = (prnt << 1) + 1;
+        if (cmp(d + nd * bytes, d + prnt * bytes) < 0) prnt = nd;
+        // right
+        if (cmp(d + (++nd) * bytes, d + prnt * bytes) < 0) prnt = nd;
+        if (prnt != i) util_memswap(d + prnt * bytes, d + i * bytes, bytes);
+      }
+      d += bytes;
+    } while (--size);
+  } else {
+    // call partition function to find Partition Index
+    // Initialize pivot to be the first element
+    iter i = 1, j = size - 1;
+    while (i < j) {
+      // Find the first element greater than the pivot (from starting)
+      // first element are pivot, so skip
+      while ((i < size - 1) && (cmp(d, d + i * bytes) > 0))
+        ++i;
+      // Find the first element smaller than the pivot (from last)
+      while (j && (cmp(d + j * bytes, d) > 0))
+        --j;
+      if (i < j) util_memswap(d + i * bytes, d + j * bytes, bytes);
+    }
+    util_memswap(d, d + j * bytes, bytes);
+    // Recursively call quickSort() for left and right
+    // half based on Partition Index
+    sort_intro_rec(d, j, bytes, cmp);
+    if (size > j + 2)
+      sort_intro_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp);
+  }
+}
+/* ==========================================================
+ * quick sort
+ * 
+ * pick end data as pivot to put data on left and right
+ * 
+ * 
+ * ==========================================================*/
+static void sort_quick_rec(byte *, iter, iter, compare_funct);
+void sort_quick(void *dat, iter size, iter bytes, compare_funct cmp) {
+  NO_NULL;
+  sort_quick_rec(CAST(byte*)dat, size, bytes, cmp);
+}
+static void sort_quick_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
+  SIZE_ELIM(d);
+  // call partition function to find Partition Index
+  // Initialize pivot to be the first element
+  iter i = 1, j = size - 1;
+  while (i < j) {
+    // Find the first element greater than the pivot (from starting)
+    // first element are pivot, so skip
+    while ((i < size - 1) && (cmp(d, d + i * bytes) > 0))
+      ++i;
+    // Find the first element smaller than the pivot (from last)
+    while (j && (cmp(d + j * bytes, d) > 0))
+      --j;
+    if (i < j) util_memswap(d + i * bytes, d + j * bytes, bytes);
+  }
+  util_memswap(d, d + j * bytes, bytes);
+  // Recursively call quickSort() for left and right
+  // half based on Partition Index
+  sort_quick_rec(d, j, bytes, cmp);
+  if (size > j + 2)
+    sort_quick_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp);
 }

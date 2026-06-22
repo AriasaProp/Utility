@@ -1,0 +1,183 @@
+#include "algorithm/hash.h"
+#include "util/console_out.h"
+
+
+int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
+  iter i, j;
+  String str = NULL;
+  int ret = EXIT_FAILURE;
+  ubyte *resA = CAST(ubyte*)malloc(HASH512_IN_BYTES * 2);
+  if (!resA) {
+    PRINT_ERR("Memory allocation fail!");
+    goto main_ret;
+  }
+  ubyte *resB = resA + HASH512_IN_BYTES;
+  {
+    PRINT_INF("Try md5");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL , .hex = "D41D8CD98F00B204E9800998ECF8427E"},
+      {.str = "Hello World" , .hex = "B10A8DB164E0754105B7A99BE72E3FE5"},
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "9E107D9D372BB6826BD81D3542A419D6"},
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_md5(CAST(uint32*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH128_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH128_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH128_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH128_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  {
+    PRINT_INF("Try sha1");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL , .hex = "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"},
+      {.str = "Hello World" , .hex = "0A4D55A8D778E5022FAB701977C5D840BBC486D0"},
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12"},
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_sha1(CAST(uint32*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH160_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH160_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH160_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH160_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  {
+    PRINT_INF("Try sha224");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL , .hex = "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F"},
+      {.str = "Hello World" , .hex = "C4890FAFFDB0105D991A461E668E276685401B02EAB1EF4372795047"},
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "730E109BD7A8A32B1CB9D9A09AA2325D2430587DDBC0C38BAD911525"},
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_sha224(CAST(uint32*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH224_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH224_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH224_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH224_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  {
+    PRINT_INF("Try sha256");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL, .hex = "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+      {.str = "Hello World", .hex = "A591A6D40BF420404A011733CFB7B190D62C65BF0BCDA32B57B277D9AD9F146E"},
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "D7A8FBB307D7809469CA9ABCB0082E4F8D5651E46D3CDB762D02D0BF37C9E592"},
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_sha256(CAST(uint32*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH256_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH256_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH256_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH256_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  {
+    PRINT_INF("Try sha384");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL, .hex = "38B060A751AC96384CD9327EB1B1E36A21FDB71114BE07434C0CC7BF63F6E1DA274EDEBFE76F65FBD51AD2F14898B95B" },
+      {.str = "Hello World", .hex = "99514329186B2F6AE4A1329E7EE6C610A729636335174AC6B740F9028396FCC803D0E93863A7C3D90F86BEEE782F4F3F" },
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "CA737F1014A48F4C0B6DD43CB177B0AFD9E5169367544C494011E3317DBF9A509CB1E5DC1E85A941BBEE3D7F2AFBC9B1" },
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_sha384(CAST(uint64*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH384_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH384_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH384_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH384_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  {
+    PRINT_INF("Try sha512");
+    struct {
+      const char *str,*hex;
+    } tests[] = {
+      {.str = NULL, .hex = "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E" },
+      {.str = "Hello World", .hex = "2C74FD17EDAFD80E8447B0D46741EE243B7EB74DD2149A0AB1B9246FB30382F27E853D8585719E0E67CBDA0DAA8F51671064615D645AE27ACB15BFB1447F459B" },
+      {.str = "The quick brown fox jumps over the lazy dog", .hex = "07E547D9586F6A73F73FBAC0435ED76951218FB7D0C8D788A309D785436BBB642E93A252A954F23912547D1E8A3B5ED6E1BFD7097821233FA0538F3DB854FEE6" },
+    };
+    for (i = 0, j = STACK_ARR_LEN(tests); i < j; ++i) {
+      hash_sha512(CAST(uint64*)resA, tests[i].str, util_strlen(tests[i].str));
+      hash_cstr_to_ubyte(resB, tests[i].hex, HASH512_IN_BYTES);
+      if (util_memcmp(resA, resB, HASH512_IN_BYTES)) {
+        printf("\n");
+        if (tests[i].str) PRINT_ERR("Inpt:\"%s\"\n", tests[i].str);
+        else PRINT_ERR("Inpt:NULL\n");
+        string_clean(str);
+        hash_ubyte_append_string(&str, resA, HASH512_IN_BYTES);
+        PRINT_ERR("Outp:%s\n", str);
+        string_clean(str);
+        hash_ubyte_append_string(&str, resB, HASH512_IN_BYTES);
+        PRINT_ERR("Expt:%s\n", str);
+        goto main_ret;
+      }
+    }
+    printf(" Success!\n");
+  }
+  ret = EXIT_SUCCESS;
+main_ret:
+  util_memfree(resA);
+  string_free(&str);
+  return ret;
+}
+

@@ -134,9 +134,9 @@ void util_memset(void *dst, int src, iter bytes) {
 }
 iter util_strlen(const char *str) {
 #if BLTN(__builtin_strlen)
-  return __builtin_strlen(str);
+  return str ? __builtin_strlen(str) : 0;
 #else
-  return strlen(str);
+  return str ? strlen(str) : 0;
 #endif
 }
 iter util_clz(ulong x) {
@@ -158,6 +158,58 @@ iter util_bitlead(ulong x) {
 #endif
 }
 
+/* ================================
+ *  File Functions
+ * ================================
+ */
+inline FILE *file_open(const char *filename, const char *mode) {
+  FILE *f;
+#if defined(_WIN32) && defined(STBIW_WINDOWS_UTF8)
+  wchar_t wMode[64];
+  wchar_t wFilename[1024];
+  if (0 == MultiByteToWideChar(65001 /* UTF8 */, 0, filename, -1, wFilename, sizeof(wFilename)/sizeof(*wFilename))) return 0;
+  if (0 == MultiByteToWideChar(65001 /* UTF8 */, 0, mode, -1, wMode, sizeof(wMode)/sizeof(*wMode))) return 0;
+  #if defined(_MSC_VER) && _MSC_VER >= 1400
+  if (0 != _wfopen_s(&f, wFilename, wMode)) f = 0;
+  #else
+  f = _wfopen(wFilename, wMode);
+  #endif
+  #elif defined(_MSC_VER) && _MSC_VER >= 1400
+  if (0 != fopen_s(&f, filename, mode))
+    f=0;
+  #else
+  f = fopen(filename, mode);
+  #endif
+  return f;
+}
+inline void file_rewind(FILE *file) {
+  rewind(file);
+}
+inline int file_read(char *buffer, iter n, FILE *file) {
+  return fread(buffer, 1, n, file);
+}
+inline int file_seek(iter n, FILE *file) {
+  fseek(file, n, SEEK_CUR);
+  int ch = fgetc(file);  /* have to read a byte to reset feof()'s flag */
+  if (ch != EOF) ungetc(ch, file);  /* push byte back onto stream if valid. */
+  else return -1;
+  return 0;
+}
+inline int file_write(const char *buffer,iter n, FILE *file) {
+  return fwrite(buffer, 1, n, file);
+}
+inline int file_eof(FILE *file) {
+  return feof(file) || ferror(file);
+}
+inline void file_close(FILE *file) {
+  fclose(file);
+}
+
+/* ================================
+ *  String Function
+ * ================================
+ */
+
 typedef struct {iter cap, count; } string_head;
 
 static inline string_head *string__get_head(String str) {
@@ -176,11 +228,6 @@ static inline string_head *string__reserve(string_head *sh, iter need) {
   }
   return sh;
 }
-
-/* ================================
- *  String Function
- * ================================
- */
 inline void string_append_char(String *str,char c) {
   string_head *sh = string__get_head(*str);
   sh = string__reserve(sh, sh->count + 2);

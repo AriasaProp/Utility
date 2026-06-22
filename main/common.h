@@ -11,6 +11,7 @@
 #define _COMMON_INCLUDED_
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 #include <assert.h>
 #include <string.h>
@@ -142,6 +143,19 @@ iter  util_clz(ulong);
 iter  util_bitlead(ulong);
 
 /* ================================
+ *  File Functions
+ * ================================
+ */
+FILE *file_open  (const char*,const char*);
+void  file_rewind(FILE*);
+int   file_read  (char*,iter, FILE*);
+int   file_seek  (iter, FILE*);
+int   file_write (const char*,iter, FILE*);
+int   file_eof   (FILE*);
+void  file_close (FILE*);
+
+
+/* ================================
  *  String Functions
  * ================================
  */
@@ -166,7 +180,6 @@ StringView stringview_chop_chars(const String,const char*);
 StringView stringview_chop_cstr (const String,const char*);
 // StringView helper
 int        stringview_equal     (const StringView,const StringView);
-
 
 /* ================================
  *  IMath Functions

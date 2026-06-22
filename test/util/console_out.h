@@ -21,8 +21,9 @@
 #define BOLDCYAN    "\033[1m\033[36m" /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m" /* Bold White */
 
-#define PRINT_INF(...) printf(CYAN "[INF] " RESET __VA_ARGS__)
-#define PRINT_SUC(...) printf(GREEN"[SUC] " RESET __VA_ARGS__)
-#define PRINT_ERR(...) printf(RED  "[ERR] " RESET __VA_ARGS__)
+#define PRINT_WRN(...) printf(YELLOW"[WRN] " RESET __VA_ARGS__)
+#define PRINT_INF(...) printf(CYAN  "[INF] " RESET __VA_ARGS__)
+#define PRINT_SUC(...) printf(GREEN "[SUC] " RESET __VA_ARGS__)
+#define PRINT_ERR(...) printf(RED   "[ERR] " RESET __VA_ARGS__)
 
 #endif // _CONSOLE_OUT_INCLUDED_

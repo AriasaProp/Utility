@@ -96,8 +96,8 @@ $(eval $(call PTEST,sort_test, \
 	$(OBJ_DIR)/test/algorithm/sort_test.c.o \
 ))
 $(eval $(call PTEST,hash_test, \
-	$(OBJ_DIR)/main/codec/hash.c.o \
-	$(OBJ_DIR)/test/codec/hash_test.c.o \
+	$(OBJ_DIR)/main/algorithm/hash.c.o \
+	$(OBJ_DIR)/test/algorithm/hash_test.c.o \
 ))
 $(eval $(call PTEST,rand_test,$(OBJ_DIR)/test/math/rand_test.c.o))
 

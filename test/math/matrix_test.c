@@ -26,7 +26,7 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   char types[TY] = {0};
   for (i = 0; i < TEST; ++i) {
 #define CASE(A,B) do {\
-  strncpy(types,#A " " #B " matrix ",TY);\
+  util_strncpy(types,#A " " #B " matrix ",TY);\
   m[0].cols = m[1].cols = matrix_rdim();\
   m[0].rows = m[1].rows = matrix_rdim();\
   m[0].data = CAST(float*)util_realloc(m[0].data, matrix_bytes(m[0])); \
@@ -41,7 +41,7 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   if (!matrix_equal(m[0],m[2])) break;\
 } while (0)
 #define CASE2(A,B) do {\
-  strncpy(types,#A " " #B " floating ",TY);\
+  util_strncpy(types,#A " " #B " floating ",TY);\
   c = rander();\
   m[0].cols = matrix_rdim();\
   m[0].rows = matrix_rdim();\
@@ -52,7 +52,7 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   m[2] = matrix_##A##f(m[0], c);\
   matrix_m##B##f(m + 2, c);\
   if (!matrix_equal(m[0],m[2])) break;\
-  strncpy(types,#A " " #B " matrix ", TY);\
+  util_strncpy(types,#A " " #B " matrix ", TY);\
   m[0].cols = m[1].cols = m[0].rows = m[1].rows = matrix_rdim();\
   m[0].data = CAST(float*)util_realloc(m[0].data, matrix_bytes(m[0])); \
   m[1].data = CAST(float*)util_realloc(m[1].data, matrix_bytes(m[1])); \

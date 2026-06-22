@@ -477,9 +477,9 @@ bigInteger bigInteger_divi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
   r.neg ^= (c < 0);
   word w = CAST(word)imath_iabs(c);
-  if (w <= WORD_HALF_MASK)
+  if (w <= WORD_HALF_MASK) {
     UNUSED(bigInteger__division(&r, w));
-  else {
+  } else {
     bigInteger W = bigInteger_from_int(w);
     bigInteger r1 = bigInteger_div_mmod(&r, W);
     bigInteger_move(&r, &r1);

@@ -23,19 +23,19 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   char types[TY_LEN] = {0};
   for (i = 0; i < TEST; ++i) {
 #define CASE(A,B)    do {\
-  strncpy(types,#A " " #B " real ", TY_LEN);\
+  util_strncpy(types,#A " " #B " real ", TY_LEN);\
   complex_set_cartesian(&left, rander(), rander());\
   c = rander();\
   right = complex_##A##f(left, c);\
   complex_m##B##f(&right, c);\
   if (!complex_equal(left,right)) break;\
-  strncpy(types,#A " " #B " imaginary ", TY_LEN);\
+  util_strncpy(types,#A " " #B " imaginary ", TY_LEN);\
   complex_set_cartesian(&left, rander(), rander());\
   c = rander();\
   right = complex_##A##fi(left, c);\
   complex_m##B##fi(&right, c);\
   if (!complex_equal(left,right)) break;\
-  strncpy(types,#A " " #B " complex ", TY_LEN);\
+  util_strncpy(types,#A " " #B " complex ", TY_LEN);\
   complex_set_cartesian(&left, rander(), rander());\
   complex_set_cartesian(&mid, rander(), rander());\
   right = complex_##A (left, mid);\

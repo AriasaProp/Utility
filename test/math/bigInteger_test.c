@@ -160,6 +160,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 } while(0)
     CASE(add,sub);
     CASE(sub,add);
+    TODO("Division doesn't give correct result!");
     CASE(mul,div);
     CASEW(pow2,sqrt);
 #undef IFERROR
