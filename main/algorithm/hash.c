@@ -92,8 +92,8 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
     W.i[13] = imath_flip32(W.i[13]);
     if (i < CHUNK_KUOTA) {
       // put 64 bit length in reverse order from other so, no swap
-      W.i[15] = imath_flip32(l <<  3);
-      W.i[14] = imath_flip32(l >> 29);
+      W.i[14] = imath_flip32(l <<  3);
+      W.i[15] = imath_flip32(l >> 29);
     } else {
       W.i[14] = imath_flip32(W.i[14]);
       W.i[15] = imath_flip32(W.i[15]);
@@ -101,8 +101,8 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
 #else
     if (i < CHUNK_KUOTA) {
       // put 64 bit length in reverse order from other so, no swap
-      W.i[15] = l <<  3;
-      W.i[14] = l >> 29;
+      W.i[14] = l <<  3;
+      W.i[15] = l >> 29;
     }
 #endif // BYTE_FLIP
     // initialize
