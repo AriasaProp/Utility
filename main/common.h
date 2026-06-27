@@ -139,6 +139,8 @@ int   util_memcmp (const void*,const void*,iter);
 void  util_memmove(void*,void*,iter);
 void  util_memset (void*,int,iter);
 iter  util_strlen (const char*);
+char *util_strncpy(char*, const char*, iter);
+char *util_strcpy (char*, const char*);
 iter  util_clz(ulong);
 iter  util_bitlead(ulong);
 

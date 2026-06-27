@@ -3,7 +3,7 @@
 #include "util/console_out.h"
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
-  printf("Random Test! ");
+  PRINT_INF("Random Test! ");
 #define ALL_POSSIBLE 0xffff
 #define TRY          0x100000
 #define TRY_P        0x10000

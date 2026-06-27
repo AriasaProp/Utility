@@ -1,8 +1,14 @@
 /* *****************************************************************************
  * hash.h v0.0.0000
  * 
- * Hashing algorithm
- * 
+ * Hashing algorithm list
+ *  - MD5
+ *
+ *  - SHA1
+ *  - SHA224
+ *  - SHA256
+ *  - SHA384
+ *  - SHA512
  * 
  * 
  * *****************************************************************************/
@@ -33,10 +39,6 @@ void hash_sha224      (uint32*, const char *, uint64);
 void hash_sha256      (uint32*, const char *, uint64);
 void hash_sha384      (uint64*, const char *, uint64);
 void hash_sha512      (uint64*, const char *, uint64);
-
-// void hash_scrypt      (const char *, uint64);
-// void hash_randomX256  (const char *, uint64);
-// void hash_randomX512  (const char *, uint64);
 
 void hash_crc32_start  (uint32*);
 void hash_crc32_append (uint32*,const byte);

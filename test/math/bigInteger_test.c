@@ -31,8 +31,8 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   char err_str[ERR_STR] = {0};
   iter i,cnt = 0;
   pr_time counted_time, start_time;
-  PRINT_INF("BigInteger Test!\n");
-  printf("  Name  |count|   rate   |    time    |      \n"
+  PRINT_INF("BigInteger Test!\n"
+         "  Name  |count|   rate   |    time    |      \n"
          "--------|-----|----------|------------|------\n");
 #ifdef UPDATE_RATE
   pr_time pt;
@@ -73,8 +73,8 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   bigInteger_append_string(&qstr, state[2]);\
   printf("2: %50s\n", qstr);\
   string_clean(qstr);\
-  bigInteger_append_string(&qstr, state[4]);\
-  printf("4: %50s\n", qstr);\
+  bigInteger_append_string(&qstr, state[3]);\
+  printf("3: %50s\n", qstr);\
   goto end; \
 } while(0)
 #define CASEW(A,B) do {\
@@ -119,10 +119,10 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
     bigInteger_set_words(state, (RAND_S && nword), rndT, nword);\
     oprB = RAND_I;\
-    state[3] = bigInteger_##A##i(state[0], oprB);\
-    bigInteger_move(state + 1, state + 3);\
-    state[3] = bigInteger_##B##i(state[1], oprB);\
-    bigInteger_move(state + 2, state + 3);\
+    state[4] = bigInteger_##A##i(state[0], oprB);\
+    bigInteger_move(state + 1, state + 4);\
+    state[4] = bigInteger_##B##i(state[1], oprB);\
+    bigInteger_move(state + 2, state + 4);\
     if (bigInteger_cmp(state[0],state[2])) {\
       snprintf(err_str, ERR_STR, RED"i "#A"_"#B RESET);\
       break;\
@@ -131,11 +131,11 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
     bigInteger_set_words(state + 0, 0, rndT, nword); \
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ; \
     bigInteger_set_words(state + 1, 0, rndT, nword); \
-    state[3] = bigInteger_##A (state[0], state[1]); \
-    bigInteger_move(state + 2, state + 3); \
-    state[3] = bigInteger_##B (state[2], state[1]); \
-    bigInteger_move(state + 4, state + 3); \
-    if (bigInteger_cmp(state[0],state[4])) { \
+    state[4] = bigInteger_##A (state[0], state[1]); \
+    bigInteger_move(state + 2, state + 4); \
+    state[4] = bigInteger_##B (state[2], state[1]); \
+    bigInteger_move(state + 3, state + 4); \
+    if (bigInteger_cmp(state[0],state[3])) { \
       snprintf(err_str, ERR_STR, RED"big "#A"_"#B RESET); \
       break; \
     }\

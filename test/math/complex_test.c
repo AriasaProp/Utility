@@ -13,7 +13,7 @@ static float rander() {
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   String main_str = NULL;
-  printf("Complex Test! -> ");
+  PRINT_INF("Complex Test! -> ");
   pr_time ct = profiling_current_time(); \
 	complex left, right, mid;
 	float c;

@@ -1,8 +1,15 @@
 /* *****************************************************************************
  * hash.c v0.0.0000
  * 
- * Hashing algorithm
- * 
+ * Hashing algorithm list
+ *  - MD5
+ *
+ *  - SHA1
+ *  - SHA224
+ *  - SHA256
+ *  - SHA384
+ *  - SHA512
+ *  all was unroll loop
  * 
  * 
  * *****************************************************************************/
@@ -55,6 +62,11 @@ void hash_ubyte_append_string(String *str, const ubyte *b, iter n) {
   } while (++b < bend);
 }
 
+/* ========================================================
+ *  MD family
+ *
+ *
+ * ========================================================*/
 void hash_md5(uint32 *out, const char *str, uint64 l) {
 #define DIGEST          4
 #define CHUNK           16
@@ -226,12 +238,11 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
 #undef DIGEST_ALL_BYTE
 #undef CHUNK_ALL_BYTE
 }
-/* ***********
+/* ========================================================
  *  SHA family
  *
- *  try unroll unneccesarry forloop
  *
- * ***********/
+ * ========================================================*/
 void hash_sha1(uint32 *out, const char *str, uint64 l) {
 #define DIGEST          5
 #define CHUNK           16

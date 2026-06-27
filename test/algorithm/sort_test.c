@@ -8,7 +8,7 @@
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
 // #define DATA_SIZE   124860
-#define DATA_SIZE   327
+#define DATA_SIZE   120
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);
@@ -19,10 +19,9 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   int proofen = 0;
 	iter i, j;
 	// randomize $(STYPE) data
-	printf("Sorting Test! %d data \n", DATA_SIZE);
   void *temp_data = util_malloc(DATA_BYTES * 2);
 	if (!temp_data) {
-	  printf("fail to allocate trial memory, for %lu bytes \n", DATA_BYTES * 2);
+	  PRINT_ERR("fail to allocate trial memory, for %lu bytes \n", DATA_BYTES * 2);
 	  return EXIT_FAILURE;
 	}
   STYPE *data_r = (CAST(STYPE*) temp_data) + DATA_SIZE;
@@ -37,10 +36,10 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 // 	for (j = 0; j < DATA_SIZE; ++j)
 //     printf(" %.1f -",(CAST(float*)data_r)[j]);
 //   printf("\n");
-	printf(
+	PRINT_INF("Sorting Test! %d data \n"
 		"|     Name     |     time     | \n"
 		"|--------------|--------------| \n"
-	);
+	, DATA_SIZE);
   const struct {
     const char *name; sort_funct srt;
   } sort_algo[] = {

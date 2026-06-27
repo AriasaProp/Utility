@@ -1,12 +1,15 @@
 #include "algorithm/hash.h"
 #include "util/console_out.h"
+#include "util/profiling.h"
 
 
 int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
-  iter i, j;
+  PRINT_INF("Hash test -> ");
+  pr_time start = profiling_current_time();
+  iter i, j, n;
   String str = NULL;
   int ret = EXIT_FAILURE;
-  ubyte *resA = CAST(ubyte*)malloc(HASH512_IN_BYTES * 2);
+  ubyte *resA = CAST(ubyte*)util_malloc(HASH512_IN_BYTES * 2);
   if (!resA) {
     PRINT_ERR("Memory allocation fail!");
     goto main_ret;
@@ -18,132 +21,81 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
   };
   ubyte *resB = resA + HASH512_IN_BYTES;
   {
-    PRINT_INF("Try md5");
     const char * const output[] = {
       "D41D8CD98F00B204E9800998ECF8427E",
       "B10A8DB164E0754105B7A99BE72E3FE5",
       "9E107D9D372BB6826BD81D3542A419D6",
     };
-    for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
+    for (i = 0, j = STACK_ARR_LEN(input), n = HASH128_IN_BYTES; i < j; ++i) {
       hash_md5(CAST(uint32*)resA, input[i], util_strlen(input[i]));
-      hash_cstr_to_ubyte(resB, output[i], HASH128_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH128_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH128_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH128_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+      hash_cstr_to_ubyte(resB, output[i], n);
+      if (util_memcmp(resA, resB, n)) {
+        string_append(&str, "md5");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   {
-    PRINT_INF("Try sha1");
     const char *const output[] = {
       "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709",
       "0A4D55A8D778E5022FAB701977C5D840BBC486D0",
       "2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12",
     };
-    for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
+    for (i = 0, j = STACK_ARR_LEN(input), n = HASH160_IN_BYTES; i < j; ++i) {
       hash_sha1(CAST(uint32*)resA, input[i], util_strlen(input[i]));
-      hash_cstr_to_ubyte(resB, output[i], HASH160_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH160_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH160_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH160_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+      hash_cstr_to_ubyte(resB, output[i], n);
+      if (util_memcmp(resA, resB, n)) {
+        string_append(&str, "sha1");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   {
-    PRINT_INF("Try sha224");
     const char *const output[] = {
       "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F",
       "C4890FAFFDB0105D991A461E668E276685401B02EAB1EF4372795047",
       "730E109BD7A8A32B1CB9D9A09AA2325D2430587DDBC0C38BAD911525",
     };
-    for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
+    for (i = 0, j = STACK_ARR_LEN(input), n = HASH224_IN_BYTES; i < j; ++i) {
       hash_sha224(CAST(uint32*)resA, input[i], util_strlen(input[i]));
-      hash_cstr_to_ubyte(resB, output[i], HASH224_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH224_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH224_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH224_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+      hash_cstr_to_ubyte(resB, output[i], n);
+      if (util_memcmp(resA, resB, n)) {
+        string_append(&str, "sha224");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   {
-    PRINT_INF("Try sha256");
     const char *const output[] = {
       "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
       "A591A6D40BF420404A011733CFB7B190D62C65BF0BCDA32B57B277D9AD9F146E",
       "D7A8FBB307D7809469CA9ABCB0082E4F8D5651E46D3CDB762D02D0BF37C9E592",
     };
-    for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
+    for (i = 0, j = STACK_ARR_LEN(input), n = HASH256_IN_BYTES; i < j; ++i) {
       hash_sha256(CAST(uint32*)resA, input[i], util_strlen(input[i]));
-      hash_cstr_to_ubyte(resB, output[i], HASH256_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH256_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH256_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH256_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+      hash_cstr_to_ubyte(resB, output[i], n);
+      if (util_memcmp(resA, resB, n)) {
+        string_append(&str, "sha256");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   {
-    PRINT_INF("Try sha384");
     const char *const output[] = {
       "38B060A751AC96384CD9327EB1B1E36A21FDB71114BE07434C0CC7BF63F6E1DA274EDEBFE76F65FBD51AD2F14898B95B",
       "99514329186B2F6AE4A1329E7EE6C610A729636335174AC6B740F9028396FCC803D0E93863A7C3D90F86BEEE782F4F3F",
       "CA737F1014A48F4C0B6DD43CB177B0AFD9E5169367544C494011E3317DBF9A509CB1E5DC1E85A941BBEE3D7F2AFBC9B1",
     };
-    for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
+    for (i = 0, j = STACK_ARR_LEN(input), n = HASH384_IN_BYTES; i < j; ++i) {
       hash_sha384(CAST(uint64*)resA, input[i], util_strlen(input[i]));
-      hash_cstr_to_ubyte(resB, output[i], HASH384_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH384_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH384_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH384_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+      hash_cstr_to_ubyte(resB, output[i], n);
+      if (util_memcmp(resA, resB, n)) {
+        string_append(&str, "sha384");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   {
-    PRINT_INF("Try sha512");
     const char *const output[] = {
       "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E",
       "2C74FD17EDAFD80E8447B0D46741EE243B7EB74DD2149A0AB1B9246FB30382F27E853D8585719E0E67CBDA0DAA8F51671064615D645AE27ACB15BFB1447F459B",
@@ -153,21 +105,27 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha512(CAST(uint64*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], HASH512_IN_BYTES);
       if (util_memcmp(resA, resB, HASH512_IN_BYTES)) {
-        printf("\n");
-        if (input[i]) PRINT_ERR("Inpt:\"%s\"\n", input[i]);
-        else PRINT_ERR("Inpt:NULL\n");
-        string_clean(str);
-        hash_ubyte_append_string(&str, resA, HASH512_IN_BYTES);
-        PRINT_ERR("Outp:%s\n", str);
-        string_clean(str);
-        hash_ubyte_append_string(&str, resB, HASH512_IN_BYTES);
-        PRINT_ERR("Expt:%s\n", str);
-        goto main_ret;
+        string_append(&str, "sha512");
+        goto main_err;
       }
     }
-    printf(" Success!\n");
   }
   ret = EXIT_SUCCESS;
+  string_clean(str);
+  profiling_append_as_time2(&str, profiling_time_since(start));
+  printf(GREEN"Success"RESET" %s\n", str);
+  goto main_ret;
+main_err:
+  printf(RED"Err %s \n"RESET, str);
+  string_clean(str);
+  if (i) PRINT_ERR("NULL");
+  else PRINT_ERR("\"%s\"", input[i]);
+  string_clean(str);
+  hash_ubyte_append_string(&str, resA, n);
+  printf("->%s\n", str);
+  string_clean(str);
+  hash_ubyte_append_string(&str, resB, n);
+  PRINT_ERR("Expt:%s\n", str);
 main_ret:
   util_memfree(resA);
   string_free(&str);

@@ -139,6 +139,21 @@ iter util_strlen(const char *str) {
   return str ? strlen(str) : 0;
 #endif
 }
+
+char *util_strncpy(char *dst, const char *src, iter n) {
+#if BLTN(__builtin_strncpy)
+  return __builtin_strncpy(dst, src, n);
+#else
+  return strncpy(dst, src, n);
+#endif
+}
+char *util_strcpy (char *dst, const char *src) {
+#if BLTN(__builtin_strcpy)
+  return __builtin_strcpy(dst, src);
+#else
+  return strcpy(dst, src);
+#endif
+}
 iter util_clz(ulong x) {
 #if BLTN(__builtin_clzl)
   return __builtin_clzl(x);
@@ -747,8 +762,8 @@ RAND_VARIANT(ulong)
 #undef RAND_VARIANT
 inline float imath_rand_float() {
   union { float f; int i; } U;
-  U.i = imath_rand_int();
-  U.i -= 1 << 11;
+  do { U.i = imath_rand_int();
+  } while (!isnormal(U.f));
   return U.f;
 }
 

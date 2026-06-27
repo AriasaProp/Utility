@@ -16,7 +16,7 @@ static ubyte matrix_rdim() {
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   String main_str = NULL;
-  printf("Matrix Test! -> ");
+  PRINT_INF("Matrix Test! -> ");
   pr_time ct = profiling_current_time(); \
   string_clean(main_str);
   iter i,j;
