@@ -11,6 +11,20 @@
 #define TEST_DIR  BIN_DIR"/test"
 
 #include "config.h"
+#include "help.h"
+
+typedef enum {
+  Action_None = 0,
+  Action_Help,
+  Action_Status,
+  Action_Clean,
+  Action_Test,
+} Actions;
+
+typedef enum {
+  ActionFlags_None = 0,
+  ActionFlags_ForceBuild = 1,
+} ActionFlags;
 
 static const char *Common_Files[] = {
   "main/common.c",
@@ -68,13 +82,12 @@ static const struct {
 };
 static Cmd cmd;
 static Procs procs;
+static int actionFlags;
 typedef struct {
   const char **items;
   size_t count;
   size_t capacity;
 } Flags;
-
-static void help(const char*);
 
 static bool test_run(size_t);
 static bool exec_run(const char *);
@@ -87,11 +100,58 @@ int main(int argc, char **argv) {
   int ret = EXIT_SUCCESS;
   size_t i, j;
   shift(argv, argc);
+  int action = Action_None;
+  int test_index = -1;
+  actionFlags = ActionFlags_None;
+#define CASE_ACT1(A)  if (!strcmp(*argv, A) && (action == Action_None))
+#define CASE_ACT(A,B) if ((!strcmp(*argv, A) || !strcmp(*argv, B)) && (action == Action_None))
+#define CASE_FLG(A,B) if (!strcmp(*argv, A) || !strcmp(*argv, B))
   while (argc) {
-    if (!strcmp(*argv, "h") || !strcmp(*argv, "help")) {
-      help("help");
+    CASE_ACT("h","help") {
+      action = Action_Help;
+    } else CASE_ACT("c","clean") {
+      action = Action_Clean;
+    } else CASE_ACT("s","status") {
+      action = Action_Status;
+    } else CASE_ACT("t","tests") {
+      action = Action_Test;
+    } else CASE_ACT1("rand_test") {
+      action = Action_Test;
+      test_index = 0;
+    } else CASE_ACT1("complex_test") {
+      action = Action_Test;
+      test_index = 1;
+    } else CASE_ACT1("matrix_test") {
+      action = Action_Test;
+      test_index = 2;
+    } else CASE_ACT1("bigInteger_test") {
+      action = Action_Test;
+      test_index = 3;
+    } else CASE_ACT1("sort_test") {
+      action = Action_Test;
+      test_index = 4;
+    } else CASE_ACT1("hash_test") {
+      action = Action_Test;
+      test_index = 5;
+    } else if (!strcmp(*argv, "d") || !strcmp(*argv, "debug")) {
       break;
-    } else if (!strcmp(*argv, "c") || !strcmp(*argv, "clean")) {
+    } else CASE_FLG("-b","--build") {
+      actionFlags |= ActionFlags_ForceBuild;
+    } else {
+      action = Action_Help;
+      nob_log(NOB_INFO, "unknown command or flags of \"%s\"!", *argv);
+    }
+    shift(argv, argc);
+  }
+#undef CASE_ACT1
+#undef CASE_ACT
+#undef CASE_FLG
+  switch (action) {
+    default:
+    case Action_Help:
+    	printf (help_msg);
+      break;
+    case Action_Clean:
       if (!file_exists(BIN_DIR))
         nob_log(NOB_INFO, "Binary file doesn't exists.");
       else if (walk_dir(BIN_DIR, walk_dir_cleanup, .post_order = true))
@@ -99,25 +159,23 @@ int main(int argc, char **argv) {
       else
         nob_log(NOB_ERROR, "Cleanup walk is error.");
       break;
-    } else if (!strcmp(*argv, "s") || !strcmp(*argv, "status")) {
+    case Action_Status:
       nob_log(NOB_INFO, "Lists test!");
       for (i = 0; i < ARRAY_LEN(Tests_Exc); ++i) {
         int exists = file_exists(temp_sprintf("%s/%s_test", TEST_DIR, Tests_Exc[i].name));
         nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m",Tests_Exc[i].name, exists ? "\033[32m" : "\033[31mnot ");
       }
       break;
-    } else if (!strcmp(*argv, "t") || !strcmp(*argv, "tests")) {
-      nob_log(NOB_INFO, "Running All Tests");
-      for (i = 0; i < ARRAY_LEN(Tests_Exc); ++i)
-        if (!test_run(i)) ret = EXIT_FAILURE;
+    case Action_Test:
+      if (test_index < 0) {
+        nob_log(NOB_INFO, "Running All Tests");
+        for (i = 0; i < ARRAY_LEN(Tests_Exc); ++i)
+          if (!test_run(i)) ret = EXIT_FAILURE;
+      } else {
+        nob_log(NOB_INFO, "Running %s test", Tests_Exc[test_index].name);
+        if (!test_run(test_index)) ret = EXIT_FAILURE;
+      }
       break;
-    } else if (!strcmp(*argv, "d") || !strcmp(*argv, "debug")) {
-      break;
-    } else {
-      help("unknown command!");
-      break;
-    }
-    shift(argv, argc);
   }
   nob_log(NOB_INFO, "Done!");
   da_free(procs);
@@ -125,16 +183,6 @@ int main(int argc, char **argv) {
   return ret;
 }
 
-static void help(const char *ask) {
-	printf ("%s\n"
-  "\tCOMMAND\t\t\tDescription\n"
-	"h[elp]\t\tshow this message.\n"
-	"t[ests]\t\tmake and run all test.\n"
-  "test <name>\trun spesific test, that is:\n"
-	"c[lean]\t\tclean generated binary files/folders.\n"
-	"s[tatus]\tshow current device stat.\n"
-	"", ask);
-}
 // test run format
 static const char * const Test_Flags[] = {
 #if defined(_MSC_VER) && !defined(__clang__)                   
@@ -156,7 +204,7 @@ static bool test_run(size_t i) {
   if(need_build < 0) {
     nob_log(NOB_ERROR, "Failure check test of %s_test", Tests_Exc[i].name);
   } else if (!need_build) { // no rebuild is needed
-    ret = true;
+    ret = exec_run(out);
   } else {
     // rename old test exists
     const char *out_old = temp_sprintf(TEST_DIR"/%s_test.old", Tests_Exc[i].name);
@@ -188,13 +236,14 @@ static bool exec_run(const char *exec) {
   return true;
 }
 static bool exec_compile(const char *out, File_Paths *in, Flags *flags) {
-  // exec need rebuild ?
-  int need_build = needs_rebuild(out, in->items, in->count);
-  if (need_build < 0) {
-    nob_log(NOB_ERROR, "check executable %s is fail", out);
-    return false;
-  } else if (!need_build) {
-    return true;
+  if (!(actionFlags & ActionFlags_ForceBuild)) {
+    // exec need rebuild ?
+    int need_build = needs_rebuild(out, in->items, in->count);
+    if (need_build < 0) {
+      nob_log(NOB_ERROR, "check executable %s is fail", out);
+      return false;
+    } else if (!need_build)
+      return true;
   }
   // src need rebuild ?
   da_foreach(const char* ,i ,in) {
@@ -215,21 +264,24 @@ static bool exec_compile(const char *out, File_Paths *in, Flags *flags) {
     cmd_append(&cmd, temp_sprintf(OBJ_DIR"/%s.o", *i));
   nob_cc_output(&cmd, out);
 #ifndef _MSC_VER
-  cmd_append(&cmd, "-lc");
+  cmd_append(&cmd, 
+   "-lc",
 # ifndef NO_STDMATH
-  cmd_append(&cmd, "-lm");
+   "-lm",
 # endif
+  );
 #endif
   return cmd_run(&cmd);
 }
 static bool obj_compile(const char *in, Flags *flags) {
   const char *out = temp_sprintf(OBJ_DIR"/%s.o",in);
-  int need_build = needs_rebuild1(out,in);
-  if (need_build < 0) {
-    nob_log(NOB_ERROR, "check rebuild of %s is fail", out);
-    return false;
-  } else if (!need_build) {
-    return true;
+  if (!(actionFlags & ActionFlags_ForceBuild)) {
+    int need_build = needs_rebuild1(out,in);
+    if (need_build < 0) {
+      nob_log(NOB_ERROR, "check rebuild of %s is fail", out);
+      return false;
+    } else if (!need_build)
+      return true;
   }
   if (!mkdir_if_not_exists(temp_dir_name(out))) return false;
   // create obj file
