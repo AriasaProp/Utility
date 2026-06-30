@@ -13,7 +13,7 @@
 #define STRING_CAP_ROUND 4
 #define STRING_CAP_MASK  3
 
-// #define NO_STDMATH // not with -lm
+
 #if !defined(NO_STDMATH)
   #include <math.h>
 #else
@@ -346,12 +346,12 @@ int stringview_equal (const StringView a,const StringView b) {
 // src https://gist.githubusercontent.com/Sam-Belliveau/9c2e5a7584ec9900831877b3155f6f16/raw/238a72e91f46ad616fbaedddec30f163dbb8cb85/fast_trig.h
 static inline float imath__cosine_wave(float x) {
   x *= M_PI2;
-  x -= M_PI_INV * x * imath_fabs(x);
+  x = imath_fma(-M_PI_INV * x, imath_fabs(x), x);
 #ifdef FASTER_MATH
-  x += 0.3451140202480f * x * imath_fabs(x);
+  x = imath_fma(0.3451140202480f * x, imath_fabs(x), x);
 #else
-  x += 0.25f * x * imath_fabs(x);
-  x += 0.0684571845286f * x * imath_fabs(x);
+  x = imath_fma(0.25f * x, imath_fabs(x), x);
+  x = imath_fma(0.0684571845286f * x, imath_fabs(x), x);
 #endif //FASTER_MATH
   return x;
 }
@@ -366,29 +366,29 @@ inline uint imath_iabs (int a) {
 }
 
 inline float imath_fabs  (float a) {
-#if BLTN(__builtin_fabs)
-  return __builtin_fabs(a);
+#if BLTN(__builtin_fabsf)
+  return __builtin_fabsf(a);
 #elif !defined(NO_STDMATH)
-  return fabs(a);
+  return fabsf(a);
 #else
 	(*CAST(int*)&a) &= 0x7fffffff;
 	return a;
 #endif // builtin
 }
 inline float imath_fmax(float a, float b) {
-#if BLTN(__builtin_fmax)
-  return __builtin_fmax(a,b);
+#if BLTN(__builtin_fmaxf)
+  return __builtin_fmaxf(a,b);
 #elif !defined(NO_STDMATH)
-  return fmax(a,b);
+  return fmaxf(a,b);
 #else
   return MAX(a,b);
 #endif // builtin
 }
 inline float imath_fmin(float a, float b) {
-#if BLTN(__builtin_fmin)
-  return __builtin_fmin(a,b);
+#if BLTN(__builtin_fminf)
+  return __builtin_fminf(a,b);
 #elif !defined(NO_STDMATH)
-  return fmin(a,b);
+  return fminf(a,b);
 #else
   return MIN(a,b);
 #endif // builtin
@@ -428,6 +428,15 @@ inline float imath_ceil(float a) {
   return ceilf(a);
 #else
   return CAST(float)CAST(int)(a + (a >= 0));
+#endif // builtin
+}
+inline float imath_fma(float a, float b, float c) {
+#if BLTN(__builtin_fmaf)
+  return __builtin_fmaf(a,b,c);
+#elif !defined(NO_STDMATH)
+  return fmaf(a,b,c);
+#else
+  return a * b + c;
 #endif // builtin
 }
 inline float imath_sin(float x) {
@@ -479,7 +488,7 @@ inline float imath_asin(float x) {
     int *i = CAST(int*)&x;
     *i = 0x7f800000; // NAN
   } else {
-    x *= 0.1666666666667f + 0.3333333333333f * imath_fabs(x);
+    x *= imath_fma(0.3333333333333f, imath_fabs(x), 0.1666666666667f);
     x *= M_PI;
   }
   return x;
@@ -495,7 +504,7 @@ inline float imath_acos(float x) {
     int *i = CAST(int*)&x;
     *i = 0x7f800000; // NAN 
   } else {
-    x *= 0.1666666666667f + 0.3333333333333f * imath_fabs(x);
+    x *= imath_fma(0.3333333333333f, imath_fabs(x), 0.1666666666667f);
     x *= -M_PI;
     x -= M_PI_HALF;
   }
@@ -558,13 +567,18 @@ inline float imath_log(float a) {
   *bx &= 8388607;
   // set exp
   *bx |= 1065353216;
-  return M_LN2 * t -
-  #ifdef FASTER_MATH
-    1.49278f+(2.11263f+(-0.729104f+0.10969f*a)*a)*a
-  #else
-    1.7417939f+(2.8212026f+(-1.4699568f+(0.44717955f-0.056570851f*a)*a)*a)*a
-  #endif // FASTER_MATH
-    ;
+  float out;
+#  ifdef FASTER_MATH
+  out = imath_fma(-0.10969f, a, 0.729104f);
+  out = imath_fma(out, a,-2.11263f);
+  out = imath_fma(out, a,-1.49278f);
+#  else
+  out = imath_fma(0.056570851f, a, -0.44717955f);
+  out = imath_fma(out, a,1.4699568f);
+  out = imath_fma(out, a,-2.8212026f);
+  out = imath_fma(out, a,-1.7417939f);
+#  endif // FASTER_MATH
+  return imath_fma(M_LN2, t, out);
 }
 #endif // builtin
 }
@@ -586,13 +600,18 @@ inline float imath_log2(float a) {
   *bx &= 8388607;
   // set exp
   *bx |= 1065353216;
-  return t - (
-  #ifdef FASTER_MATH
-    1.49278f   + (  2.11263f - (0.729104f  - 0.10969f * a) * a) * a
-  #else
-    1.7417939f + (2.8212026f - (1.4699568f - (0.44717955f - 0.056570851f * a) * a) * a) * a
-  #endif // FASTER_MATH
-    ) * M_LN2_INV;
+  float out;
+#  ifdef FASTER_MATH
+  out = imath_fma(-0.10969f, a, 0.729104f);
+  out = imath_fma(out, a, -2.11263f);
+  out = imath_fma(out, a, -1.49278f);
+#  else
+  out = imath_fma(0.056570851f, a, -0.44717955f);
+  out = imath_fma(out, a, 1.4699568f);
+  out = imath_fma(out, a, -2.8212026f);
+  out = imath_fma(out, a, -1.7417939f);
+#  endif // FASTER_MATH
+  return imath_fma(M_LN2_INV, out, t);
 #endif // builtin
 }
 /*
@@ -627,7 +646,7 @@ inline float imath_exp2(float a) {
   // a => N(integer) + F(fraction 0 ~ <1)
   float f = imath_frexp(a, n);
   // small polynomial approximate 2^f on [0,1)
-  f *= /* 1.0f + */ M_LN2 + f * (0.24022651f + f * 0.05550411f);
+  f *= imath_fma(f, imath_fma(f, 0.05550411f, 0.24022651f), M_LN2);
   // build float from exponent and mantissa: (n+bias) in exponent, m in mantissa
   *n += 127;
   return a * f;
@@ -636,7 +655,7 @@ inline float imath_exp2(float a) {
 float imath_len(const float *x, iter n) {
   float vs = 0.0f;
   for (iter i = 0; i < n; ++i)
-    vs += x[i] * x[i];
+    vs = imath_fma(x[i], x[i], vs);
   return imath_sqrt(vs);
 }
 inline float imath_hypot(float x, float y) {

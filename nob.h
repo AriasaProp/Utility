@@ -466,7 +466,7 @@ NOBDEF void nob_sb_pad_align(Nob_String_Builder *sb, size_t size);
 #define nob_sb_append nob_da_append
 
 // Free the memory allocated by a string builder
-#define nob_sb_free(sb) NOB_FREE((sb).items)
+#define nob_sb_free(sb) NOB_FREE((sb).items), memset(&(sb), 0, sizeof(sb))
 
 // Process handle
 #ifdef _WIN32

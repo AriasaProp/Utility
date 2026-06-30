@@ -11,6 +11,7 @@
 #define _COMMON_INCLUDED_
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
 #include <assert.h>
@@ -191,8 +192,11 @@ uint   imath_iabs  (int);
 float  imath_fabs  (float);
 float  imath_fmax  (float, float);
 float  imath_fmin  (float, float);
+float  imath_round (float);
 float  imath_floor (float);
 float  imath_frexp (float,int*);
+float  imath_ceil  (float);
+float  imath_fma   (float,float,float);
 float  imath_sin   (float);
 float  imath_cos   (float);
 float  imath_tan   (float);

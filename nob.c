@@ -3,7 +3,6 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 
-
 #define  BIN_DIR           "bin"
 #define  OBJ_DIR   BIN_DIR"/obj"
 #define TOOL_DIR  BIN_DIR"/tool"
@@ -24,75 +23,95 @@ typedef enum {
 typedef enum {
   ActionFlags_None = 0,
   ActionFlags_ForceBuild = 1,
+  ActionFlags_DebugRun   = 2,
 } ActionFlags;
 
-static const char *Common_Files[] = {
-  "main/common.c",
-};
-static const char *Tests_Files[] = {
-  "test/util/profiling.c",
-};
+typedef struct {
+  const char *src;
+  const char **deps;
+} File_Src;
+typedef struct {
+  File_Src *items;
+  size_t count, capacity;
+} File_Srcs;
 
+#define FILE_SRC_DEPS(SRC, ...) (File_Src){.src = (SRC), .deps = (const char*[]){"main/common.h", __VA_ARGS__}}
+#define FILE_SRC_TEST_DEPS(SRC, ...) (File_Src){.src = (SRC), .deps = (const char*[]){"main/common.h", "test/util/profiling.h", __VA_ARGS__}}
+#define COMMON_SRC FILE_SRC_DEPS("main/common.c", NULL)
+#define TEST_SRCS COMMON_SRC, FILE_SRC_TEST_DEPS("test/util/profiling.c", NULL)
 static const struct {
   const char *name;
-  const char **srcs;
+  File_Src *srcs;
 } Tests_Exc[] = {
   {
     .name = "rand",
-    .srcs = (const char*[]){
-	    "test/math/rand_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_TEST_DEPS("test/math/rand_test.c", "main/common.h"),
       NULL
     }
   },{
     .name = "complex",
-    .srcs = (const char*[]){
-      "main/math/complex.c",
-	    "test/math/complex_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_DEPS("main/math/complex.c","main/math/complex.h"),
+      FILE_SRC_TEST_DEPS("test/math/complex_test.c", NULL),
       NULL
     }
   },{
     .name = "matrix",
-    .srcs = (const char*[]){
-      "main/math/matrix.c",
-	    "test/math/matrix_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_DEPS("main/math/matrix.c","main/math/matrix.h"),
+      FILE_SRC_TEST_DEPS("test/math/matrix_test.c", NULL),
       NULL
     }
   },{
     .name = "bigInteger",
-    .srcs = (const char*[]){
-      "main/math/bigInteger.c",
-	    "test/math/bigInteger_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_DEPS("main/math/bigInteger.c","main/math/bigInteger.h"),
+      FILE_SRC_TEST_DEPS("test/math/bigInteger_test.c", NULL),
       NULL
     }
   },{
     .name = "sort",
-    .srcs = (const char*[]){
-      "main/algorithm/sort.c",
-	    "test/algorithm/sort_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_DEPS("main/algorithm/sort.c","main/algorithm/sort.h"),
+      FILE_SRC_TEST_DEPS("test/algorithm/sort_test.c", NULL),
       NULL
     }
   },{
     .name = "hash",
-    .srcs = (const char*[]){
-      "main/algorithm/hash.c",
-	    "test/algorithm/hash_test.c",
+    .srcs = (File_Src[]) {
+      TEST_SRCS,
+      FILE_SRC_DEPS("main/algorithm/hash.c","main/math/algorithm/hash.h"),
+      FILE_SRC_TEST_DEPS("test/algorithm/hash_test.c", NULL),
       NULL
     }
   },
+  NULL
 };
+#undef COMMON_SRC
+#undef TEST_SRCS
+#undef FILE_SRC_DEPS
+#undef FILE_SRC_TEST_DEPS
+
 static Cmd cmd;
 static Procs procs;
 static int actionFlags;
+
 typedef struct {
   const char **items;
   size_t count;
   size_t capacity;
 } Flags;
 
-static bool test_run(size_t);
+static bool test_run(const char*, const File_Src*);
 static bool exec_run(const char *);
-static bool obj_compile(const char*, Flags*);
-static bool exec_compile(const char*,File_Paths*,Flags*);
+static int  obj_compile(const File_Src, const Flags);
+static bool exec_compile(const char*,const File_Src*,const Flags);
 static bool walk_dir_cleanup(Walk_Entry);
 
 int main(int argc, char **argv) {
@@ -137,6 +156,8 @@ int main(int argc, char **argv) {
       break;
     } else CASE_FLG("-b","--build") {
       actionFlags |= ActionFlags_ForceBuild;
+    } else CASE_FLG("-d","--debug") {
+      actionFlags |= ActionFlags_DebugRun;
     } else {
       action = Action_Help;
       nob_log(NOB_INFO, "unknown command or flags of \"%s\"!", *argv);
@@ -162,18 +183,22 @@ int main(int argc, char **argv) {
     case Action_Status:
       nob_log(NOB_INFO, "Lists test!");
       for (i = 0; i < ARRAY_LEN(Tests_Exc); ++i) {
-        int exists = file_exists(temp_sprintf("%s/%s_test", TEST_DIR, Tests_Exc[i].name));
-        nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m",Tests_Exc[i].name, exists ? "\033[32m" : "\033[31mnot ");
+        nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m",
+          Tests_Exc[i].name,
+          file_exists(temp_sprintf("%s/%s_test", TEST_DIR, Tests_Exc[i].name)) ?
+            "\033[32m" : "\033[31mnot "
+        );
       }
       break;
     case Action_Test:
       if (test_index < 0) {
         nob_log(NOB_INFO, "Running All Tests");
-        for (i = 0; i < ARRAY_LEN(Tests_Exc); ++i)
-          if (!test_run(i)) ret = EXIT_FAILURE;
+        for (i = 0; (Tests_Exc[i].name); ++i) {
+          if (!test_run(Tests_Exc[i].name, Tests_Exc[i].srcs)) ret = EXIT_FAILURE;
+        }
       } else {
         nob_log(NOB_INFO, "Running %s test", Tests_Exc[test_index].name);
-        if (!test_run(test_index)) ret = EXIT_FAILURE;
+        if (!test_run(Tests_Exc[test_index].name, Tests_Exc[test_index].srcs)) ret = EXIT_FAILURE;
       }
       break;
   }
@@ -184,84 +209,69 @@ int main(int argc, char **argv) {
 }
 
 // test run format
-static const char * const Test_Flags[] = {
+static bool test_run(const char *name, const File_Src *fs) {
+  // test flags
+  const char *out = temp_sprintf(TEST_DIR"/%s_test", name);
+  Flags flags = {0};
+  da_append_many(&flags,
 #if defined(_MSC_VER) && !defined(__clang__)                   
-  "/Od", "/Zi", "/I.\test"
+    ((const char*[]){"/Od", "/Zi", "/I.\test"}), 3
 #else                   
-  "-O0", "-ggdb", "-I./test"
+    ((const char*[]){"-O0", "-ggdb", "-I./test"}), 3
 #endif
-};
-static bool test_run(size_t i) {
-  bool ret = false;
-  const char *out = temp_sprintf(TEST_DIR"/%s_test", Tests_Exc[i].name);
-  // need rebuild
-  File_Paths srcs = {0};
-  da_append_many(&srcs, Common_Files,      ARRAY_LEN(Common_Files));
-  da_append_many(&srcs, Tests_Files,       ARRAY_LEN(Tests_Files));
-  for (size_t j = 0; Tests_Exc[i].srcs[j]; ++j)
-    da_append(&srcs, Tests_Exc[i].srcs[j]);
-  int need_build = needs_rebuild(out, srcs.items, srcs.count);
-  if(need_build < 0) {
-    nob_log(NOB_ERROR, "Failure check test of %s_test", Tests_Exc[i].name);
-  } else if (!need_build) { // no rebuild is needed
-    ret = exec_run(out);
-  } else {
-    // rename old test exists
-    const char *out_old = temp_sprintf(TEST_DIR"/%s_test.old", Tests_Exc[i].name);
-    if (file_exists(out) && !nob_rename(out, out_old)) {
-      nob_log(NOB_ERROR, "Failure rename file of %s", out);
-    } else {
-      // start build
-      Flags flags = {0};
-      for (size_t j = 0; j < ARRAY_LEN(Test_Flags); ++j)
-        da_append(&flags, Test_Flags[j]);
-      if (exec_compile(out, &srcs, &flags) && exec_run(out)) {
-        if (file_exists(out_old)) delete_file(out_old);
-        ret = true;
-      } else if (file_exists(out_old) && !nob_rename(out_old, out)) // rename old test back
-        nob_log(NOB_ERROR, "Failure rename file test of %s, it stay old", out_old);
-      da_free(flags);
-    }
-  }
-  da_free(srcs);
+  );
+  bool ret = exec_compile(out, fs, flags) && exec_run(out);
+  da_free(flags);
   return ret;
 }
 static bool exec_run(const char *exec) {
+  if (actionFlags & ActionFlags_DebugRun) {
+#if defined(_MSC_VER) && !defined(__clang__)
+    #error("debug on msvc")
+#else                   
+    cmd_append(&cmd, "gdb");
+#endif
+  }
   cmd_append(&cmd, exec);
   if (!cmd_run(&cmd)) {
-    nob_log(NOB_ERROR, "Failure run %s", exec);
     delete_file(exec);
     return false;
   }
+  if (actionFlags & ActionFlags_DebugRun) {
+    delete_file(exec);
+  }
   return true;
 }
-static bool exec_compile(const char *out, File_Paths *in, Flags *flags) {
-  if (!(actionFlags & ActionFlags_ForceBuild)) {
-    // exec need rebuild ?
-    int need_build = needs_rebuild(out, in->items, in->count);
-    if (need_build < 0) {
-      nob_log(NOB_ERROR, "check executable %s is fail", out);
-      return false;
-    } else if (!need_build)
-      return true;
-  }
-  // src need rebuild ?
-  da_foreach(const char* ,i ,in) {
-    if (!obj_compile(*i, flags)) {
-      nob_log(NOB_ERROR, "make objs %s for executable %s is fail", *i, out);
+static bool exec_compile(const char *out, const File_Src *in, const Flags flags) {
+  size_t i;
+  // exec need rebuild ?
+  int build;
+  bool out_exists = file_exists(out);
+  bool rebuild = !out_exists;
+  for(i = 0; in[i].src; ++i) {
+    build = obj_compile(in[i], flags);
+    if (build < 0) {
+      nob_log(NOB_ERROR, "make objs %s for executable %s is fail", in[i].src, out);
+      if (!procs_flush(&procs))
+        nob_log(NOB_ERROR, "fail procs compile %s", out);
       return false;
     }
+    rebuild = rebuild || !!build;
   }
+  if (rebuild && out_exists) delete_file(out);
+  else if (!rebuild) return true;
+  
+  if (!mkdir_if_not_exists(temp_dir_name(out)))
+    return false;
   // Wait on all the async processes to finish and reset procs dynamic array to 0
   if (!procs_flush(&procs)) {
-    nob_log(NOB_ERROR, "fail compile %s", out);
+    nob_log(NOB_ERROR, "fail procs compile %s", out);
     return false;
   }
-  if (!mkdir_if_not_exists(temp_dir_name(out))) return false;
   nob_cc(&cmd);
   // append objs file
-  da_foreach(const char*,i,in)
-    cmd_append(&cmd, temp_sprintf(OBJ_DIR"/%s.o", *i));
+  for(i = 0; in[i].src; ++i)
+    da_append(&cmd, temp_sprintf(OBJ_DIR"/%s.o", in[i].src));
   nob_cc_output(&cmd, out);
 #ifndef _MSC_VER
   cmd_append(&cmd, 
@@ -273,47 +283,54 @@ static bool exec_compile(const char *out, File_Paths *in, Flags *flags) {
 #endif
   return cmd_run(&cmd);
 }
-static bool obj_compile(const char *in, Flags *flags) {
-  const char *out = temp_sprintf(OBJ_DIR"/%s.o",in);
-  if (!(actionFlags & ActionFlags_ForceBuild)) {
-    int need_build = needs_rebuild1(out,in);
-    if (need_build < 0) {
-      nob_log(NOB_ERROR, "check rebuild of %s is fail", out);
-      return false;
-    } else if (!need_build)
-      return true;
+static int obj_compile(const File_Src in, const Flags flags) {
+  const char *out = temp_sprintf(OBJ_DIR"/%s.o", in.src);
+  if (!(actionFlags & ActionFlags_ForceBuild) && file_exists(out)) {
+    File_Paths indep = {0};
+    da_append(&indep, in.src);
+    for (size_t i = 0; in.deps[i]; ++i) {
+      da_append(&indep, in.deps[i]);
+    }
+    int need_build = needs_rebuild(out, indep.items, indep.count);
+    da_free(indep);
+    if (need_build < 1) return need_build;
   }
-  if (!mkdir_if_not_exists(temp_dir_name(out))) return false;
+  if (!mkdir_if_not_exists(temp_dir_name(out))) return -1;
   // create obj file
-  nob_cc(&cmd);
+  char *ext = temp_file_ext(in.src);
+  if (!strcmp(ext, ".c")) {
+    nob_cc(&cmd);
 #if defined(_MSC_VER) && !defined(__clang__)
 # error("object input cl.exe")
 #else
-  cmd_append(&cmd, "-c", in);
+    cmd_append(&cmd, "-c", in.src);
 #endif
-  nob_cc_output(&cmd, out);
-  cmd_append(&cmd,
+    nob_cc_output(&cmd, out);
+    cmd_append(&cmd,
 #if defined(_MSC_VER) && !defined(__clang__)
-    "/MMD", "/MP", "/std:c11", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
+      "/std:c11", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
 #  ifdef NO_STDMATH
-    "/DNO_STDMATH",
+      "/DNO_STDMATH",
 #  endif // NO_STDMATH
 #  ifdef FAST_MATH
-    "/fp:fast", "/DFASTER_MATH"
+      "/fp:fast", "/DFASTER_MATH",
 #  endif // FAST_MATH
 #else
-    "-MMD", "-MP", "-std=c11", "-Werror", "-I./main"
+      "-std=c11", "-Werror", "-Wall", "-I./main",
 #  ifdef NO_STDMATH
-    "-DNO_STDMATH",
+      "-DNO_STDMATH",
 #  endif // NO_STDMATH
 #  ifdef FAST_MATH
-    "-ffast-math", "-DFASTER_MATH"
+      "-ffast-math", "-DFASTER_MATH",
 #  endif // FAST_MATH
 #endif
-  );
-  da_foreach(const char*, fi, flags)
-    cmd_append(&cmd, *fi);
-  return cmd_run(&cmd, .async = &procs);
+    );
+    da_append_many(&cmd, flags.items, flags.count);
+  } else {
+    nob_log(NOB_ERROR, "not ready to compile %s file", ext);
+    return -1;
+  }
+  return cmd_run(&cmd, .async = &procs) ? 1 : -1;
 }
 static bool walk_dir_cleanup(Walk_Entry entry) {
   return delete_file(entry.path);

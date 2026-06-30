@@ -14,7 +14,7 @@
 typedef uint word;
 
 typedef struct {
-  byte neg : 1;
+  bool neg;
   word *items;
   ushrt cap, count;
 } bigInteger;
@@ -26,7 +26,7 @@ extern "C" {
 // initialization
 bigInteger bigInteger_from_cstr(const char*);
 bigInteger bigInteger_from_int(const int);
-void bigInteger_set_words(bigInteger*, int, const word*, iter);
+void bigInteger_set_words(bigInteger*, bool, const word*, iter);
 void bigInteger_set_cstr(bigInteger*, const char*);
 void bigInteger_set_int(bigInteger*, const int);
 void bigInteger_set(bigInteger*, const bigInteger);
@@ -39,7 +39,7 @@ void bigInteger_free(bigInteger*);
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
 int bigInteger_cmp (const bigInteger, const bigInteger);
 // return division result, save reminder on nominator
-bigInteger bigInteger_div_mmod(bigInteger*, const bigInteger);
+void bigInteger_div_mod(const bigInteger, const bigInteger, bigInteger*, bigInteger*);
 
 // duplicate operate
 bigInteger bigInteger_redc (const bigInteger);

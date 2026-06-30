@@ -143,7 +143,7 @@ static bigInteger bigInteger__Multiply(const bigInteger a, const bigInteger b) {
       if (mt) da_append(&c,mt);
     }
   }
-  c.neg = !!a.neg ^ !!b.neg;
+  c.neg = a.neg ^ b.neg;
   return c;
 }
 static void bigInteger__shiftleft(bigInteger *a, iter i) {
@@ -375,11 +375,11 @@ bigInteger bigInteger_from_int(const int in) {
   da_append(&ret, (CAST(word)imath_iabs (in)));
   return ret;
 }
-void bigInteger_set_words(bigInteger *a, int neg, const word *w, iter i) {
+void bigInteger_set_words(bigInteger *a, bool neg, const word *w, iter i) {
   da_clean(a);
   da_appends(a, w, i);
   bigInteger__shrink(a);
-  a->neg = !!neg;
+  a->neg = neg;
 }
 void bigInteger_set_cstr(bigInteger *a, const char *c) {
   da_clean(a);
@@ -415,7 +415,7 @@ void bigInteger_set(bigInteger *a, const bigInteger b) {
 }
 // helper
 inline bigInteger bigInteger_dup(const bigInteger x) {
-  bigInteger r = {.neg = !!x.neg};
+  bigInteger r = {.neg = x.neg};
   da_copy(&r,&x);
   bigInteger__shrink(&r);
   return r;
@@ -440,34 +440,40 @@ int bigInteger_cmp(const bigInteger a, const bigInteger b) {
   return ret;
 }
 // return division result, save reminder on nominator
-bigInteger bigInteger_div_mmod(bigInteger *a, const bigInteger b) {
-  bigInteger res = {0};
-  bigInteger rem = {0};
+void bigInteger_div_mod(const bigInteger a, const bigInteger b, bigInteger *res, bigInteger *REM) {
+  bigInteger *rem = !REM ? CAST(bigInteger*)util_calloc(1, sizeof(bigInteger)) : REM;
+  if (res) {
+    bigInteger_zero(res);
+    res->neg = a.neg ^ b.neg;
+  }
+  bigInteger_zero(rem);
   word c, c1;
   iter i;
-  da_rforeach(word, ia, a) {
+  da_rforeach(word, ia, &a) {
     for (i = WORD_BITS; i--; ) {
-      c1 = ((*ia >> i) & 1);
-      da_foreach(word, irem, &rem) {
+      c1 = (*ia >> i) & 1;
+      da_foreach(word, irem, rem) {
         c = *irem;
         *irem <<= 1;
         *irem |= c1;
         c1 = (c >> (WORD_BITS - 1)) & 1;
       }
-      if (c1) da_append(&rem, c1);
-      c1 = (bigInteger__cmp(rem, b) >= 0);
-      if (c1) bigInteger__Subtract(&rem, b);
-      da_foreach(word, ires, &res) {
+      if (c1) da_append(rem, c1);
+      c1 = (bigInteger__cmp(*rem, b) >= 0);
+      if (c1) bigInteger__Subtract(rem, b);
+      if (!res) continue;
+      da_foreach(word, ires, res) {
         c = *ires;
         *ires <<= 1;
         *ires |= c1;
         c1 = (c >> (WORD_BITS - 1)) & 1;
       }
-      if (c1) da_append(&res, c1);
+      if (c1) da_append(res, c1);
     }
   }
-  bigInteger_move(a, &rem);
-  return res;
+  if (!REM) {
+    bigInteger_free(rem);
+  }
 }
 // duplicate operate
 bigInteger bigInteger_redc(const bigInteger a) {
@@ -483,14 +489,14 @@ bigInteger bigInteger_incr(const bigInteger a) {
 bigInteger bigInteger_addi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
   const word w = CAST(word)imath_iabs(c);
-  if (!!r.neg ^ (c < 0)) bigInteger__subtract(&r, w);
+  if (r.neg ^ (c < 0)) bigInteger__subtract(&r, w);
   else bigInteger__addition(&r, w);
   return r;
 }
 bigInteger bigInteger_subi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
   const word w = CAST(word)imath_iabs(c);
-  if (!!r.neg ^ (c < 0)) bigInteger__addition(&r, w);
+  if (r.neg ^ (c < 0)) bigInteger__addition(&r, w);
   else bigInteger__subtract(&r, w);
   return r;
 }
@@ -537,13 +543,13 @@ bigInteger bigInteger_sqrt(const bigInteger a) {
 }
 bigInteger bigInteger_add(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  if (!!r.neg ^ !!b.neg) bigInteger__Subtract(&r, b);
+  if (r.neg ^ b.neg) bigInteger__Subtract(&r, b);
   else bigInteger__Addition(&r, b);
   return r;
 }
 bigInteger bigInteger_sub(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  if (!!r.neg ^ !!b.neg) bigInteger__Addition(&r, b);
+  if (r.neg ^ b.neg) bigInteger__Addition(&r, b);
   else bigInteger__Subtract(&r, b);
   return r;
 }
@@ -552,52 +558,12 @@ bigInteger bigInteger_mul(const bigInteger a, const bigInteger b) {
 }
 bigInteger bigInteger_div(const bigInteger a, const bigInteger b) {
   bigInteger res = {0};
-  bigInteger rem = {0};
-  word c, c1;
-  iter i;
-  da_rforeach(word, ia, &a) {
-    for (i = WORD_BITS; i--; ) {
-      c1 = (*ia >> i) & 1;
-      da_foreach(word, irem, &rem) {
-        c = *irem;
-        *irem <<= 1;
-        *irem |= c1;
-        c1 = (c >> (WORD_BITS - 1)) & 1;
-      }
-      if (c1) da_append(&rem, c1);
-      c1 = bigInteger__cmp(rem, b) >= 0;
-      if (c1)
-        bigInteger__Subtract(&rem, b);
-      da_foreach(word, ires, &res) {
-        c = *ires;
-        *ires <<= 1;
-        *ires |= c1;
-        c1 = (c >> (WORD_BITS - 1)) & 1;
-      }
-      if (c1) da_append(&res, c1);
-    }
-  }
-  bigInteger_free(&rem);
+  bigInteger_div_mod(a, b, &res, NULL);
   return res;
 }
 bigInteger bigInteger_mod(const bigInteger a, const bigInteger b) {
   bigInteger rem = {0};
-  word c, c1;
-  iter i;
-  da_rforeach(word, ia, &a) {
-    for (i = WORD_BITS; i--; ) {
-      c1 = (*ia >> i) & 1;
-      da_foreach(word, irem, &rem) {
-        c = *irem;
-        *irem <<= 1;
-        *irem |= c1;
-        c1 = (c >> (WORD_BITS - 1)) & 1;
-      }
-      if (c1) da_append(&rem, c1);
-      c1 = bigInteger__cmp(rem, b) >= 0;
-      if (c1) bigInteger__Subtract(&rem, b);
-    }
-  }
+  bigInteger_div_mod(a, b, NULL, &rem);
   return rem;
 }
 // modification operate no error should be occure
@@ -631,12 +597,12 @@ void bigInteger_mincr(bigInteger *a) {
 }
 void bigInteger_maddi(bigInteger *a, const int c) {
   word w = CAST(word)imath_iabs(c);
-  if (!!a->neg ^ (c < 0)) bigInteger__subtract(a, w);
+  if (a->neg ^ (c < 0)) bigInteger__subtract(a, w);
   else bigInteger__addition(a, w);
 }
 void bigInteger_msubi(bigInteger *a, const int c) {
   word w = CAST(word)imath_iabs(c);
-  if (!!a->neg ^ (c < 0)) bigInteger__addition(a, w);
+  if (a->neg ^ (c < 0)) bigInteger__addition(a, w);
   else bigInteger__subtract(a, w);
 }
 void bigInteger_mmuli(bigInteger *a, const int c) {
@@ -669,11 +635,11 @@ void bigInteger_msqrt(bigInteger *a) {
   bigInteger_move(a, &r);
 }
 void bigInteger_madd(bigInteger *a, const bigInteger b) {
-  if (!!a->neg ^ !!b.neg) bigInteger__Subtract(a, b);
+  if (a->neg ^ b.neg) bigInteger__Subtract(a, b);
   else bigInteger__Addition(a,b);
 }
 void bigInteger_msub(bigInteger *a, const bigInteger b) {
-  if (!!a->neg ^ !!b.neg) bigInteger__Addition(a,b);
+  if (a->neg ^ b.neg) bigInteger__Addition(a,b);
   else bigInteger__Subtract(a, b);
 }
 void bigInteger_mmul(bigInteger *a, const bigInteger b) {
@@ -681,11 +647,13 @@ void bigInteger_mmul(bigInteger *a, const bigInteger b) {
   bigInteger_move(a, &r);
 }
 void bigInteger_mdiv(bigInteger *a, const bigInteger b) {
-  bigInteger res = bigInteger_div(*a, b);
+  bigInteger res = {0};
+  bigInteger_div_mod(*a, b, &res, NULL);
   bigInteger_move(a, &res);
 }
 void bigInteger_mmod(bigInteger *a, const bigInteger b) {
-  bigInteger rem = bigInteger_mod(*a, b);
+  bigInteger rem = {0};
+  bigInteger_div_mod(*a, b, NULL, &rem);
   bigInteger_move(a, &rem);
 }
 

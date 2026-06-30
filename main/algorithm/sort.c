@@ -8,6 +8,7 @@
  * *****************************************************************************/
 
 #include "algorithm/sort.h"
+
 #define NO_NULL        if (!(dat && bytes && cmp)) return
 #define SIZE_ELIM(p)   do {\
   switch (size) { \
@@ -29,14 +30,15 @@ void sort_stooge(void *dat, iter size, iter bytes, compare_funct cmp) {
   sort_stooge_rec(CAST(byte*)dat, size,bytes, cmp);
 }
 static void sort_stooge_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
-  SIZE_ELIM(d);
+  if (size < 2) return;
 	byte *end = d + (size - 1) * bytes;
 	if (cmp(d, end) > 0) util_memswap(d, end, bytes);
-	if ((d + bytes) >= end) return;
-	iter k = size / 3;
-	sort_stooge_rec(d            , size - k, bytes, cmp);
-	sort_stooge_rec(d + k * bytes, size - k, bytes, cmp);
-	sort_stooge_rec(d            , size - k, bytes, cmp);
+	if (size < 3) return;
+  iter k = size / 3;
+  size -= k;
+	sort_stooge_rec(d            , size, bytes, cmp);
+	sort_stooge_rec(d + k * bytes, size, bytes, cmp);
+	sort_stooge_rec(d            , size, bytes, cmp);
 }
 /* ==========================================================
  * pancake sort
@@ -281,40 +283,29 @@ static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
   	for(byte *i = d, *j, *k = d + size * bytes; (i += bytes) < k; ) // loop next
   		for (j = i; (j > d) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
   		  util_memswap(j, j - bytes, bytes);
-  } else if (!CAST(int)imath_floor(2*imath_log(size))) {
+  } else if (((size + 1) & size) == 0) { // pow of 2 less 1
   	// heap sort internal
-  	iter i, prnt, nd;
-    do {
+  	iter i;
+    byte *nd, *prnt;
+    for (i = size >> 1; i--; ) {
       // get parent
-      i = size >> 1;
-      // first iter may had less children
-      prnt = --i;
-      // left , should always exists
-      nd = (prnt << 1) + 1;
-      if (cmp(d + nd * bytes, d + prnt * bytes) < 0) prnt = nd;
+      prnt = d + i * bytes;
+      // left
+      nd = d + ((i << 1) + 1) * bytes;
+      if (cmp(nd, prnt) < 0) util_memswap(prnt, nd, bytes);
       // right
-      if ((++nd < size) && (cmp(d + nd * bytes, d + prnt * bytes) < 0)) prnt = nd;
-      if (prnt != i) util_memswap(d + prnt * bytes, d + i * bytes, bytes);
-      // next will always had
-      while (i--) {
-        prnt = i;
-        // left , should always exists
-        nd = (prnt << 1) + 1;
-        if (cmp(d + nd * bytes, d + prnt * bytes) < 0) prnt = nd;
-        // right
-        if (cmp(d + (++nd) * bytes, d + prnt * bytes) < 0) prnt = nd;
-        if (prnt != i) util_memswap(d + prnt * bytes, d + i * bytes, bytes);
-      }
-      d += bytes;
-    } while (--size);
+      nd += bytes;
+      if (cmp(nd, prnt) < 0) util_memswap(prnt, nd, bytes);
+    }
+    sort_intro_rec(d + bytes, --size, bytes, cmp);
   } else {
     // call partition function to find Partition Index
     // Initialize pivot to be the first element
-    iter i = 1, j = size - 1;
+    iter end = size - 1, i = 1, j = end;
     while (i < j) {
       // Find the first element greater than the pivot (from starting)
       // first element are pivot, so skip
-      while ((i < size - 1) && (cmp(d, d + i * bytes) > 0))
+      while ((i < end) && (cmp(d, d + i * bytes) > 0))
         ++i;
       // Find the first element smaller than the pivot (from last)
       while (j && (cmp(d + j * bytes, d) > 0))
@@ -322,7 +313,7 @@ static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
       if (i < j) util_memswap(d + i * bytes, d + j * bytes, bytes);
     }
     util_memswap(d, d + j * bytes, bytes);
-    // Recursively call quickSort() for left and right
+    // Recursively call introSort() for left and right
     // half based on Partition Index
     sort_intro_rec(d, j, bytes, cmp);
     if (size > j + 2)
@@ -336,30 +327,28 @@ static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
  * 
  * 
  * ==========================================================*/
-static void sort_quick_rec(byte *, iter, iter, compare_funct);
+static void sort_quick_rec(byte*, byte*, const iter, const compare_funct);
 void sort_quick(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-  sort_quick_rec(CAST(byte*)dat, size, bytes, cmp);
+  byte *start = CAST(byte*)dat;
+  sort_quick_rec(start, start + (size - 1) * bytes, bytes, cmp);
 }
-static void sort_quick_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
-  SIZE_ELIM(d);
+static void sort_quick_rec(byte *a, byte *b, const iter bytes, const compare_funct cmp) {
+  if (b <= a) return;
   // call partition function to find Partition Index
   // Initialize pivot to be the first element
-  iter i = 1, j = size - 1;
+  byte *i = a + bytes, *j = b;
   while (i < j) {
     // Find the first element greater than the pivot (from starting)
     // first element are pivot, so skip
-    while ((i < size - 1) && (cmp(d, d + i * bytes) > 0))
-      ++i;
+    while ((i < b) && (cmp(a, i) > 0)) i += bytes;
     // Find the first element smaller than the pivot (from last)
-    while (j && (cmp(d + j * bytes, d) > 0))
-      --j;
-    if (i < j) util_memswap(d + i * bytes, d + j * bytes, bytes);
+    while ((j > a) && (cmp(j, a) > 0)) j -= bytes;
+    if (i < j) util_memswap(i, j, bytes);
   }
-  util_memswap(d, d + j * bytes, bytes);
+  if (cmp(a, j) > 0) util_memswap(a, j, bytes);
   // Recursively call quickSort() for left and right
   // half based on Partition Index
-  sort_quick_rec(d, j, bytes, cmp);
-  if (size > j + 2)
-    sort_quick_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp);
+  sort_quick_rec(a, j - bytes, bytes, cmp);
+  sort_quick_rec(j + bytes, b, bytes, cmp);
 }

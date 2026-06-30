@@ -3,11 +3,12 @@
 #include "util/console_out.h"
 #include "common.h"
 
+
 #define STYPE       float
 #define DATA_RANDOM imath_rand_float ()
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
-// #define DATA_SIZE   124860
+// #define DATA_SIZE   123860
 #define DATA_SIZE   120
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
@@ -43,34 +44,30 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   const struct {
     const char *name; sort_funct srt;
   } sort_algo[] = {
-  	{ .name = "Quick{b}", .srt = qsort,      },
-#if 1
+  	{ .name = "Quick{b}", .srt = qsort,},
 #if DATA_SIZE < 410
-  	{ .name = "Stooge"  , .srt = sort_stooge, },
+  	{ .name = "Stooge"  , .srt = sort_stooge,},
 #endif
 #if DATA_SIZE < 2310
   	{ .name = "Pancke"  , .srt = sort_panck,},
-  	{ .name = "Gnome"   , .srt = sort_gnome, },
-  	{ .name = "Brick"   , .srt = sort_brick, },
+  	{ .name = "Gnome"   , .srt = sort_gnome,},
+  	{ .name = "Brick"   , .srt = sort_brick,},
   	{ .name = "Bubble"  , .srt = sort_bubble,},
 #endif
 #if DATA_SIZE < 6070
-  	{ .name = "Shaker"  , .srt = sort_shaker, },
+  	{ .name = "Shaker"  , .srt = sort_shaker,},
   	{ .name = "Insert"  , .srt = sort_insert,},
-  	{ .name = "Heap"    , .srt = sort_heap,  },
+  	{ .name = "Heap"    , .srt = sort_heap,},
 #endif
 #if DATA_SIZE < 12380
   	{ .name = "Select"  , .srt = sort_select,},
-  	{ .name = "Shell"   , .srt = sort_shell, },
+  	{ .name = "Shell"   , .srt = sort_shell,},
 #endif
-#if DATA_SIZE < 81005
-  	{ .name = "Merge"   , .srt = sort_merge, },
+#if DATA_SIZE < 100075
+  	{ .name = "Merge"   , .srt = sort_merge,},
 #endif
-#if 1
   	{ .name = "Intro"   , .srt = sort_intro,},
-  	{ .name = "Quick"   , .srt = sort_quick,      },
-#endif
-#endif
+  	{ .name = "Quick"   , .srt = sort_quick,},
   };
   pr_time c_time;
 	for (i = 0; i < STACK_ARR_LEN(sort_algo); ++i) {
@@ -92,7 +89,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 	  printf("\r| %12s | %12s | %s \n", sort_algo[i].name, main_str, (proofen?(GREEN "√" RESET):(RED "x" RESET)));
   }
 	string_free(&main_str);
-	util_memfree (temp_data);
+	util_memfree(temp_data);
   return EXIT_SUCCESS;
 }
 static int data_compare(const void* a, const void* b) {

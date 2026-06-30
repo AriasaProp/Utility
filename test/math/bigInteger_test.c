@@ -83,7 +83,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   cnt = 0;\
   do {\
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
-    bigInteger_set_words(state + 0, RAND_S, rndT, nword); \
+    bigInteger_set_words(state + 0, !!RAND_S, rndT, nword); \
     state[3] = bigInteger_##A (state[0]); \
     bigInteger_move(state + 1, state + 3); \
     state[3] = bigInteger_##B (state[1]); \
@@ -117,7 +117,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   cnt = 0;\
   do {\
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
-    bigInteger_set_words(state, (RAND_S && nword), rndT, nword);\
+    bigInteger_set_words(state, !!(RAND_S && nword), rndT, nword);\
     oprB = RAND_I;\
     state[4] = bigInteger_##A##i(state[0], oprB);\
     bigInteger_move(state + 1, state + 4);\
@@ -128,9 +128,9 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
       break;\
     }\
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
-    bigInteger_set_words(state + 0, 0, rndT, nword); \
+    bigInteger_set_words(state + 0, false, rndT, nword); \
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ; \
-    bigInteger_set_words(state + 1, 0, rndT, nword); \
+    bigInteger_set_words(state + 1, false, rndT, nword); \
     state[4] = bigInteger_##A (state[0], state[1]); \
     bigInteger_move(state + 2, state + 4); \
     state[4] = bigInteger_##B (state[2], state[1]); \
@@ -249,7 +249,8 @@ void e_ex(bigInteger *s, char *r) {
     bigInteger_mmul (s + 1,s[2]);
     bigInteger_mincr(s + 2);
   }
-  s[4] = bigInteger_div_mmod(s, s[1]);
+  bigInteger_div_mod(s[0], s[1], s + 4, s + 5);
+  bigInteger_set(s, s[5]);
   *r = s[4].count ? (char)s[4].items[0] : 0;
   bigInteger_free(s + 4);
   bigInteger_mmuli(s, 10);
@@ -278,10 +279,11 @@ void root2_ex(bigInteger *s, char *r) {
     bigInteger_maddi(s + 2, 4);
     bigInteger_maddi(s + 3, 2);
   }
-  s[5] = bigInteger_div_mmod(s, s[1]);
+  bigInteger_div_mod(s[0], s[1], s + 5, s + 7);
+  bigInteger_set(s, s[7]);
   *r = s[5].count ? (char) s[5].items[0] : 0;
   bigInteger_free(s + 5);
-  bigInteger_mmuli(  s  , 5);
+  bigInteger_mmuli(s, 5);
   bigInteger_mmuli(s + 4, 5);
   bigInteger_mshfri(s + 1, 1); 
 }
