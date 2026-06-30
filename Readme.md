@@ -52,7 +52,11 @@ To Usage: ./nob \<command\> \<flags\>
   <tr><th>Flags</th><th>Description</th></tr>
   <tr>
     <td>-b,--build</td>
-    <td>Force command to keep build even already exists. Only works on tests.</td>
+    <td>Keep build exec, even already updated.</td>
+  </tr>
+  <tr>
+    <td>-d,--debug</td>
+    <td>Run exec in debug mode. always removed after.</td>
   </tr>
 </table>
 

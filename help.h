@@ -15,6 +15,6 @@
   "hash_test\trun hash test.\n"\
   "sort_test\trun sort test.\n"\
   "\tFLAGS\t\t\tDescription\n"\
-  "-b,--build\tForce command to keep build even already exists.\n"\
+  "-b,--build\tKeep build exec, even already updated.\n"\
   "-d,--debug\tRun exec in debug mode. always removed after.\n"
 #endif // HELP
