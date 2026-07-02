@@ -1,9 +1,7 @@
-#include <stdio.h>
-
-#include "math/complex.h"
-#include "util/profiling.h"
-#include "util/console_out.h"
 #include "common.h"
+#include "array/dstring.h"
+#include "math/complex.h"
+#include "util/console_out.h"
 
 #define TEST 10000
 
@@ -12,12 +10,10 @@ static float rander() {
 }
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
-  String main_str = NULL;
-  PRINT_INF("Complex Test! -> ");
-  pr_time ct = profiling_current_time(); \
+  dstring main_str = NULL;
 	complex left, right, mid;
 	float c;
-  string_clean(main_str);
+  dstring_clean(main_str);
   iter i;
 #define TY_LEN 256
   char types[TY_LEN] = {0};
@@ -50,18 +46,15 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
     CASER(mul,div);
     CASER(pow,root);
   }
-  string_clean(main_str);
-  profiling_append_as_time2(&main_str, profiling_time_since(ct));
-  printf("%s ", main_str);
+  PRINT_INF("Complex Test is ");
   if (i < TEST) {
-    string_clean(main_str);
-    complex_append_string(&main_str, left);
+    dstring_clean(main_str);
+    complex_append_dstring(&main_str, left);
     printf(RED"failure at %s \n"RESET"left -> %s\n", types, main_str);
-    string_clean(main_str);
-    complex_append_string(&main_str, right);
+    dstring_clean(main_str);
+    complex_append_dstring(&main_str, right);
     printf("right -> %s\n", main_str);
   } else printf(GREEN"success\n"RESET);
-  
-  string_free(&main_str);
+  dstring_free(&main_str);
   return (i < TEST) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

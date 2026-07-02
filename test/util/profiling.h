@@ -2,6 +2,7 @@
 #define _PROFILING_UTIL_INCLUDED_
 
 #include "common.h"
+#include "array/dstring.h"
 
 typedef ullong pr_time;
 
@@ -17,8 +18,8 @@ double  profiling_as_dms          (pr_time);
 float   profiling_as_fms          (pr_time);
 double  profiling_as_dus          (pr_time);
 float   profiling_as_fus          (pr_time);
-void    profiling_append_as_time2 (String*, pr_time);
-void    profiling_append_as_time  (String*, pr_time);
+void    profiling_append_as_time2 (dstring*, pr_time);
+void    profiling_append_as_time  (dstring*, pr_time);
 
 #ifdef __cplusplus
 }

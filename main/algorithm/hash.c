@@ -15,7 +15,6 @@
  * *****************************************************************************/
 
 #include "algorithm/hash.h"
-#include "util/console_out.h"
 #if (defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)) || \
     (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)) || \
     defined(MANUAL_CHECK_LITTLE_ENDIAN)
@@ -49,8 +48,8 @@ int hash_cstr_to_ubyte(ubyte *b, const char *s, iter n) {
   } while (++b < bend);
   return 0;
 }
-void hash_ubyte_append_string(String *str, const ubyte *b, iter n) {
-  string_reserve(str, string_len(*str) + n * 2);
+void hash_ubyte_append_dstring(dstring *str, const ubyte *b, iter n) {
+  dstring_reserve(str, dstring_len(*str) + n * 2);
   char *c = CAST(char*)*str;
   const ubyte *bend = b + n;
   ubyte bt;

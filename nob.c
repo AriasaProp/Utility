@@ -18,6 +18,7 @@ typedef enum {
   Action_Status,
   Action_Clean,
   Action_Test,
+  Action_QTest,
 } Actions;
 
 typedef enum {
@@ -36,9 +37,16 @@ typedef struct {
 } File_Srcs;
 
 #define FILE_SRC_DEPS(SRC, ...) (File_Src){.src = (SRC), .deps = (const char*[]){"main/common.h", __VA_ARGS__}}
-#define FILE_SRC_TEST_DEPS(SRC, ...) (File_Src){.src = (SRC), .deps = (const char*[]){"main/common.h", "test/util/profiling.h", __VA_ARGS__}}
+#define FILE_SRC_TEST_DEPS(SRC, ...) (File_Src){.src = (SRC), .deps = (const char*[]){"main/common.h", "test/util/console_out.h", "main/array/dstring.h", __VA_ARGS__}}
 #define COMMON_SRC FILE_SRC_DEPS("main/common.c", NULL)
-#define TEST_SRCS COMMON_SRC, FILE_SRC_TEST_DEPS("test/util/profiling.c", NULL)
+#define TEST_SRCS COMMON_SRC, FILE_SRC_DEPS("main/array/dstring.c", "main/array/dstring.h", NULL)
+static const File_Src QTest_Srcs[] = {
+  TEST_SRCS,
+  FILE_SRC_DEPS("main/array/darray.c", "main/array/darray.h", NULL),
+  FILE_SRC_DEPS("main/math/bigInteger.c","main/math/bigInteger.h", "main/array/darray.h", "main/array/dstring.h", NULL),
+  FILE_SRC_TEST_DEPS("test/qtest.c","main/math/bigInteger.h", NULL),
+  NULL
+};
 static const struct {
   const char *name;
   File_Src *srcs;
@@ -47,47 +55,49 @@ static const struct {
     .name = "rand",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_TEST_DEPS("test/math/rand_test.c", "main/common.h"),
+      FILE_SRC_TEST_DEPS("test/math/rand_test.c", NULL),
       NULL
     }
   },{
     .name = "complex",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_DEPS("main/math/complex.c","main/math/complex.h"),
-      FILE_SRC_TEST_DEPS("test/math/complex_test.c", NULL),
+      FILE_SRC_DEPS("main/math/complex.c", "main/math/complex.h", "main/array/dstring.h", NULL),
+      FILE_SRC_TEST_DEPS("test/math/complex_test.c", "main/math/complex.h", NULL),
       NULL
     }
   },{
     .name = "matrix",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_DEPS("main/math/matrix.c","main/math/matrix.h"),
-      FILE_SRC_TEST_DEPS("test/math/matrix_test.c", NULL),
+      FILE_SRC_DEPS("main/math/matrix.c","main/math/matrix.h", "main/array/dstring.h", NULL),
+      FILE_SRC_TEST_DEPS("test/math/matrix_test.c", "main/math/matrix.h", NULL),
       NULL
     }
   },{
     .name = "bigInteger",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_DEPS("main/math/bigInteger.c","main/math/bigInteger.h"),
-      FILE_SRC_TEST_DEPS("test/math/bigInteger_test.c", NULL),
+      FILE_SRC_DEPS("test/util/profiling.c", "test/util/profiling.h", NULL),
+      FILE_SRC_DEPS("main/math/bigInteger.c","main/math/bigInteger.h", "main/array/dstring.h", NULL),
+      FILE_SRC_TEST_DEPS("test/math/bigInteger_test.c", "main/math/bigInteger.h", "test/util/profiling.h", NULL),
       NULL
     }
   },{
     .name = "sort",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_DEPS("main/algorithm/sort.c","main/algorithm/sort.h"),
-      FILE_SRC_TEST_DEPS("test/algorithm/sort_test.c", NULL),
+      FILE_SRC_DEPS("test/util/profiling.c", "test/util/profiling.h", NULL),
+      FILE_SRC_DEPS("main/algorithm/sort.c", "main/algorithm/sort.h", NULL),
+      FILE_SRC_TEST_DEPS("test/algorithm/sort_test.c", "main/algorithm/sort.h", "test/util/profiling.h", NULL),
       NULL
     }
   },{
     .name = "hash",
     .srcs = (File_Src[]) {
       TEST_SRCS,
-      FILE_SRC_DEPS("main/algorithm/hash.c","main/math/algorithm/hash.h"),
-      FILE_SRC_TEST_DEPS("test/algorithm/hash_test.c", NULL),
+      FILE_SRC_DEPS("main/algorithm/hash.c","main/algorithm/hash.h", "main/array/dstring.h", NULL),
+      FILE_SRC_TEST_DEPS("test/algorithm/hash_test.c", "main/algorithm/hash.h", NULL),
       NULL
     }
   },
@@ -134,6 +144,8 @@ int main(int argc, char **argv) {
       action = Action_Status;
     } else CASE_ACT("t","tests") {
       action = Action_Test;
+    } else CASE_ACT("q","qtest") {
+      action = Action_QTest;
     } else CASE_ACT1("rand_test") {
       action = Action_Test;
       test_index = 0;
@@ -200,6 +212,10 @@ int main(int argc, char **argv) {
         nob_log(NOB_INFO, "Running %s test", Tests_Exc[test_index].name);
         if (!test_run(Tests_Exc[test_index].name, Tests_Exc[test_index].srcs)) ret = EXIT_FAILURE;
       }
+      break;
+    case Action_QTest:
+      nob_log(NOB_INFO, "Running qtest");
+      if (!test_run("qtest", QTest_Srcs)) ret = EXIT_FAILURE;
       break;
   }
   nob_log(NOB_INFO, "Done!");

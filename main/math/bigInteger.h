@@ -10,6 +10,7 @@
 #define _BIGINTEGER_MATH_INCLUDED_
 
 #include "common.h"
+#include "array/dstring.h"
 
 typedef uint word;
 
@@ -78,7 +79,7 @@ void bigInteger_mmul  (bigInteger*, const bigInteger);
 void bigInteger_mdiv  (bigInteger*, const bigInteger);
 void bigInteger_mmod  (bigInteger*, const bigInteger);
 // print out
-void bigInteger_append_string(String*, const bigInteger);
+void bigInteger_append_dstring(dstring*, const bigInteger);
 
 #ifdef __cplusplus
 }

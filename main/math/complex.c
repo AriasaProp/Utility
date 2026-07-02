@@ -256,7 +256,7 @@ inline void complex_mroot(complex *a, const complex b) {
   complex_mpow(a, complex_inv(b));
 }
 // return to string
-inline void complex_append_string(String *str, const complex a) {
-  string_append(str, "{%.2f %c %.2fi}", a.r, a.i < 0.0f ? '-' : '+', imath_fabs(a.i));
+inline void complex_append_dstring(dstring *str, const complex a) {
+  dstring_append(str, "{%.2f %c %.2fi}", a.r, a.i < 0.0f ? '-' : '+', imath_fabs(a.i));
 }
 

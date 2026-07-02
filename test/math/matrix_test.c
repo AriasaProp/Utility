@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 #include "math/matrix.h"
-#include "util/profiling.h"
 #include "util/console_out.h"
 #include "common.h"
+#include "array/dstring.h"
 
 #define TEST 10000
 
@@ -15,10 +15,8 @@ static ubyte matrix_rdim() {
 }
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
-  String main_str = NULL;
-  PRINT_INF("Matrix Test! -> ");
-  pr_time ct = profiling_current_time(); \
-  string_clean(main_str);
+  dstring main_str = NULL;
+  dstring_clean(main_str);
   iter i,j;
   float c;
   matrix m[3] = {0};
@@ -73,17 +71,16 @@ int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {
   }
   for (j = 0; j < 3; ++j)
     matrix_free(m + j);
-  string_clean(main_str);
-  profiling_append_as_time2(&main_str, profiling_time_since(ct));
-  printf("%s ", main_str);
+  
+  PRINT_INF("Matrix Test is ");
   if (i < TEST) {
-    string_clean(main_str);
-    matrix_append_string(&main_str, m[0]);
+    dstring_clean(main_str);
+    matrix_append_dstring(&main_str, m[0]);
     printf(RED"failure at %s \n"RESET" [0] -> %s\n", types, main_str);
-    string_clean(main_str);
-    matrix_append_string(&main_str, m[2]);
+    dstring_clean(main_str);
+    matrix_append_dstring(&main_str, m[2]);
     printf(" [1] -> %s\n", main_str);
   } else printf(GREEN"success\n"RESET);
-  string_free(&main_str);
+  dstring_free(&main_str);
   return (i < TEST) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

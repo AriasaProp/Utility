@@ -26,7 +26,7 @@ static const iter BIG_TENS = sizeof(word) * 8;
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   bigInteger state[8] = {0};
   int result = EXIT_FAILURE;
-  String qstr = NULL;
+  dstring qstr = NULL;
 #define ERR_STR 256
   char err_str[ERR_STR] = {0};
   iter i,cnt = 0;
@@ -63,17 +63,17 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 #define IFERROR do {\
   if (cnt >= COMMON_TEST) break;\
   printf("i: %50d\n", oprB);\
-  string_clean(qstr);\
-  bigInteger_append_string(&qstr, state[0]);\
+  dstring_clean(qstr);\
+  bigInteger_append_dstring(&qstr, state[0]);\
   printf("0: %50s\n", qstr);\
-  string_clean(qstr);\
-  bigInteger_append_string(&qstr, state[1]);\
+  dstring_clean(qstr);\
+  bigInteger_append_dstring(&qstr, state[1]);\
   printf("1: %50s\n", qstr);\
-  string_clean(qstr);\
-  bigInteger_append_string(&qstr, state[2]);\
+  dstring_clean(qstr);\
+  bigInteger_append_dstring(&qstr, state[2]);\
   printf("2: %50s\n", qstr);\
-  string_clean(qstr);\
-  bigInteger_append_string(&qstr, state[3]);\
+  dstring_clean(qstr);\
+  bigInteger_append_dstring(&qstr, state[3]);\
   printf("3: %50s\n", qstr);\
   goto end; \
 } while(0)
@@ -100,13 +100,13 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
     UP_CASE; \
     fflush(stdout); \
     counted_time = profiling_time_since(start_time); \
-    string_clean(qstr);\
+    dstring_clean(qstr);\
     profiling_append_as_time2(&qstr, counted_time); \
     printf("\r"#A#B"|%05zu|%010.2e| %11s| --- ", cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr); \
   } while (1); \
   fflush(stdout); \
   counted_time = profiling_time_since(start_time); \
-  string_clean(qstr);\
+  dstring_clean(qstr);\
   profiling_append_as_time2(&qstr, counted_time); \
   printf("\r"#A#B"|%05zu|%010.2e| %11s| %s \n", cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr, err_str); \
   IFERROR;\
@@ -147,13 +147,13 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
     UP_CASE; \
     fflush(stdout); \
     counted_time = profiling_time_since(start_time); \
-    string_clean(qstr);\
+    dstring_clean(qstr);\
     profiling_append_as_time2(&qstr, counted_time); \
     printf("\r "#A"_"#B"|%05zu|%010.2e| %11s| --- ", cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr); \
   } while (1); \
   fflush(stdout); \
   counted_time = profiling_time_since(start_time); \
-  string_clean(qstr);\
+  dstring_clean(qstr);\
   profiling_append_as_time2(&qstr, counted_time); \
   printf("\r "#A"_"#B"|%05zu|%010.2e| %11s| %s \n", cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr, err_str); \
   IFERROR;\
@@ -206,7 +206,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
       UP_CASE; \
       fflush(stdout); \
       counted_time = profiling_time_since(start_time); \
-      string_clean(qstr);\
+      dstring_clean(qstr);\
       profiling_append_as_time2(&qstr, counted_time); \
       printf("\r%8s|%05zu|%010.2e| %11s| --- ", N, cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr); \
     } while (1);\
@@ -214,7 +214,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   } while(0); \
   fflush(stdout); \
   counted_time = profiling_time_since(start_time); \
-  string_clean(qstr);\
+  dstring_clean(qstr);\
   profiling_append_as_time2(&qstr, counted_time); \
   printf("\r%8s|%05zu|%010.2e| %11s| %s ", N, cnt, CAST(double)cnt / profiling_as_dsec(counted_time), qstr, err_str); \
 } while(0)
@@ -228,7 +228,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 end:
   for (i = 0; i < 8; ++i)
     bigInteger_free(state + i);
-  string_free(&qstr);
+  dstring_free(&qstr);
   return result;
 }
 void e_init(bigInteger *s) {

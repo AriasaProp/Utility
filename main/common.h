@@ -50,10 +50,6 @@ typedef long long          llong;
 typedef unsigned int       uint;
 typedef unsigned long      ulong;
 typedef unsigned long long ullong;
-typedef char *             String;
-
-typedef struct { iter count; const char *cstr; } StringView;
-
 
 #define ASSERT(X)             assert(X)
 #define TODO(X)               // Message that need todo in future: (X)
@@ -74,16 +70,19 @@ typedef struct { iter count; const char *cstr; } StringView;
   #define CDECL            __cdecl
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __pragma(warning(suppress : 4100 4101)) x
+  #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          0
 #elif defined(__GNUC__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
+  #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          __has_builtin(x)
 #elif defined(__clang__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
+  #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          __has_builtin(x)
 #else /* Unknown compiler */
   #error "Not ready for this compiler"
@@ -159,32 +158,6 @@ void  file_close (FILE*);
 
 
 /* ================================
- *  String Functions
- * ================================
- */
-void string_append_char(String*,char);
-void string_append_cstr(String*,const char *, iter);
-void string_append     (String*,const char *, ...);
-void string_reserve    (String*,iter);
-iter string_len        (const String);
-void string_clean      (String);
-void string_free       (String*);
-
-/* ================================
- *  String View Functions
- * ================================
- */
-// generate StringView from String
-StringView stringview_str       (const String);
-// chop by whitespace
-StringView stringview_chop      (const String);
-StringView stringview_chop_char (const String,const char);
-StringView stringview_chop_chars(const String,const char*);
-StringView stringview_chop_cstr (const String,const char*);
-// StringView helper
-int        stringview_equal     (const StringView,const StringView);
-
-/* ================================
  *  IMath Functions
  * ================================
  */
@@ -241,65 +214,5 @@ float imath_rand_float();
 #ifdef __cplusplus
 }
 #endif
-
-/* ================================
- *  dynamic array 
- *  Apply in macro
- *  ARRAY object format at least contain this
- * struct {
- *   T *items;
- *   iter cap;
- *   iter count;
- * } T's;
- *  
- * ================================
- */
-#define da_roundSize   8
-#define da_roundMask   7
-#define da_reserve(a, need) do { \
-  if ((need) <= (a)->cap) break; \
-  (a)->cap = ((need) & ~da_roundMask) + da_roundSize * !!((need) & da_roundMask); \
-  (a)->items = util_realloc((a)->items, (a)->cap * sizeof(*(a)->items)); \
-  ASSERT((a)->items && "Fail to allocate heap"); \
-} while (0)
-#define da_atleast(a, z) do { \
-  if ((a)->count >= (z)) break;\
-  da_reserve((a), (z)); \
-  util_memset((a)->items + (a)->count, 0, ((z)-(a)->count) * sizeof(*(a)->items)); \
-  (a)->count = (z); \
-} while (0)
-#define da_copy(a,b) do {\
-  da_reserve((a),(b)->count);\
-  util_memcpy((a)->items, (b)->items, (b)->count * sizeof(*(a)->items)); \
-  (a)->count = (b)->count; \
-} while (0)
-#define da_append(a, item) do { \
-  da_reserve((a), (a)->count + 1); \
-  (a)->items[(a)->count++] = (item); \
-} while (0)
-#define da_free(a) do {\
-  if ((a)->items) util_memfree((a)->items);\
-  util_memset((a), 0, sizeof(*a)); \
-} while (0)
-#define da_clean(a) (a)->count = 0
-#define da_appends(a, b, l) do { \
-  da_reserve((a), (a)->count + (l)); \
-  util_memcpy((a)->items + (a)->count, (b), (l)*sizeof(*(a)->items)); \
-  (a)->count += (l); \
-} while (0)
-#define da_index(a,i) (a)->items[(ASSERT((i) < (a)->count), (i))]
-#define da_last(a) (a)->items[(ASSERT((a)->count), (a)->count - 1)]
-#define da_pop(a) (a)->items[(ASSERT((a)->count), --(a)->count)]
-#define da_unorder_remove(a, j) (a)->items[(j)] = (a)->items[(ASSERT((j) < (a)->count), --(a)->count)]
-#define da_remove(a, j) do { \
-  ASSERT((j) < (a)->count); \
-  if ((j) < --(a)->count) \
-    util_memcpy(&(a)->items[(j)], &(a)->items[(j) + 1], (a)->count - (j));\
-} while(0)
-#define da_foreach(T, it, a) for (T *it = (a)->items, *__end = (a)->items + (a)->count; it < __end; ++it)
-#define da_rforeach(T, it, a) for (T *it = (a)->items + (a)->count; (it--) > (a)->items; )
-
-
-
 
 #endif // _COMMON_INCLUDED_

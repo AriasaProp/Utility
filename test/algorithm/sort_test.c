@@ -2,6 +2,7 @@
 #include "util/profiling.h"
 #include "util/console_out.h"
 #include "common.h"
+#include "array/dstring.h"
 
 
 #define STYPE       float
@@ -16,7 +17,7 @@ typedef void (*sort_funct)(void*, iter, iter, compare_funct);
 static int data_compare (const void*,const void*);
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
-  String main_str = NULL;
+  dstring main_str = NULL;
   int proofen = 0;
 	iter i, j;
 	// randomize $(STYPE) data
@@ -83,12 +84,12 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   	  proofen &= (ret[j - 1] <= ret[j]);
   	}
 	  // result log
-	  string_clean(main_str);
+	  dstring_clean(main_str);
 	  profiling_append_as_time2(&main_str, c_time);
 	  fflush(stdout);
 	  printf("\r| %12s | %12s | %s \n", sort_algo[i].name, main_str, (proofen?(GREEN "√" RESET):(RED "x" RESET)));
   }
-	string_free(&main_str);
+	dstring_free(&main_str);
 	util_memfree(temp_data);
   return EXIT_SUCCESS;
 }

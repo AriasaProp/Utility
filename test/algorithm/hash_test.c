@@ -1,13 +1,12 @@
 #include "algorithm/hash.h"
 #include "util/console_out.h"
-#include "util/profiling.h"
+#include "array/dstring.h"
 
 
 int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
-  PRINT_INF("Hash test -> ");
-  pr_time start = profiling_current_time();
+  PRINT_INF("Hash test is ");
   iter i, j, n;
-  String str = NULL;
+  dstring str = NULL;
   int ret = EXIT_FAILURE;
   ubyte *resA = CAST(ubyte*)util_malloc(HASH512_IN_BYTES * 2);
   if (!resA) {
@@ -30,7 +29,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_md5(CAST(uint32*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
       if (util_memcmp(resA, resB, n)) {
-        string_append(&str, "md5");
+        dstring_append(&str, "md5");
         goto main_err;
       }
     }
@@ -45,7 +44,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha1(CAST(uint32*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
       if (util_memcmp(resA, resB, n)) {
-        string_append(&str, "sha1");
+        dstring_append(&str, "sha1");
         goto main_err;
       }
     }
@@ -60,7 +59,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha224(CAST(uint32*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
       if (util_memcmp(resA, resB, n)) {
-        string_append(&str, "sha224");
+        dstring_append(&str, "sha224");
         goto main_err;
       }
     }
@@ -75,7 +74,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha256(CAST(uint32*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
       if (util_memcmp(resA, resB, n)) {
-        string_append(&str, "sha256");
+        dstring_append(&str, "sha256");
         goto main_err;
       }
     }
@@ -90,7 +89,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha384(CAST(uint64*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
       if (util_memcmp(resA, resB, n)) {
-        string_append(&str, "sha384");
+        dstring_append(&str, "sha384");
         goto main_err;
       }
     }
@@ -105,30 +104,28 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       hash_sha512(CAST(uint64*)resA, input[i], util_strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], HASH512_IN_BYTES);
       if (util_memcmp(resA, resB, HASH512_IN_BYTES)) {
-        string_append(&str, "sha512");
+        dstring_append(&str, "sha512");
         goto main_err;
       }
     }
   }
   ret = EXIT_SUCCESS;
-  string_clean(str);
-  profiling_append_as_time2(&str, profiling_time_since(start));
-  printf(GREEN"Success"RESET" %s\n", str);
+  printf(GREEN"Success\n"RESET);
   goto main_ret;
 main_err:
   printf(RED"Err %s \n"RESET, str);
-  string_clean(str);
+  dstring_clean(str);
   if (i) PRINT_ERR("NULL");
   else PRINT_ERR("\"%s\"", input[i]);
-  string_clean(str);
-  hash_ubyte_append_string(&str, resA, n);
+  dstring_clean(str);
+  hash_ubyte_append_dstring(&str, resA, n);
   printf("->%s\n", str);
-  string_clean(str);
-  hash_ubyte_append_string(&str, resB, n);
+  dstring_clean(str);
+  hash_ubyte_append_dstring(&str, resB, n);
   PRINT_ERR("Expt:%s\n", str);
 main_ret:
   util_memfree(resA);
-  string_free(&str);
+  dstring_free(&str);
   return ret;
 }
 

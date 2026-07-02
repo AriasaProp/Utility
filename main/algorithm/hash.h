@@ -17,6 +17,7 @@
 #define _HASH_FUNCTION_
 
 #include "common.h"
+#include "array/dstring.h"
 
 #define HASH128_IN_BYTES  16
 #define HASH160_IN_BYTES  20
@@ -31,7 +32,7 @@ extern "C" {
 
 // return 0 on valid hex string
 int  hash_cstr_to_ubyte(ubyte*, const char *,iter);
-void hash_ubyte_append_string(String*, const ubyte*, iter);
+void hash_ubyte_append_dstring(dstring*, const ubyte*, iter);
 // run hash on valid input will never fail
 void hash_md5         (uint32*, const char *, uint64);
 void hash_sha1        (uint32*, const char *, uint64);

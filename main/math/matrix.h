@@ -11,6 +11,7 @@
 #define _MATRIX_MATH_INCLUDED_
 
 #include "common.h"
+#include "array/dstring.h"
 
 typedef struct {
   ubyte cols, rows;
@@ -58,7 +59,7 @@ int  matrix_msub (matrix*,const matrix);
 int  matrix_mmul (matrix*,const matrix);
 int  matrix_mdiv (matrix*,const matrix);
 
-void matrix_append_string(String*,const matrix);
+void matrix_append_dstring(dstring*,const matrix);
 
 #ifdef __cplusplus
 }

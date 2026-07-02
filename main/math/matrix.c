@@ -246,15 +246,15 @@ inline int matrix_mdiv(matrix *a,const matrix b) {
   matrix_free(&d);
   return ret;
 }
-void matrix_append_string(String *str,const matrix a) {
-  string_append(str, "[%d, %d]{", a.cols, a.rows);
+void matrix_append_dstring(dstring *str,const matrix a) {
+  dstring_append(str, "[%d, %d]{", a.cols, a.rows);
   mat__foreachRow(&a,i) {
-    string_append_char(str, '{');
+    dstring_append_char(str, '{');
     mat__foreachCol(&a,j) {
-      if(j) string_append_char(str, ',');
-      string_append(str, "%02.2f", mat__idx(&a, j, i));
+      if(j) dstring_append_char(str, ',');
+      dstring_append(str, "%02.2f", mat__idx(&a, j, i));
     }
-    string_append_char(str, '}');
+    dstring_append_char(str, '}');
   }
-  string_append_char(str, '}');
+  dstring_append_char(str, '}');
 }

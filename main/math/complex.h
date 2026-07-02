@@ -11,6 +11,7 @@
 #define _COMPLEX_MATH_INCLUDED_
 
 #include "common.h"
+#include "array/dstring.h"
 
 // store into cartesian form
 typedef struct { float r, i; } complex;
@@ -76,7 +77,7 @@ void    complex_mdiv  (complex*, const complex);
 void    complex_mpow  (complex*, const complex);
 void    complex_mroot (complex*, const complex);
 // return to string
-void    complex_append_string(String *, const complex);
+void    complex_append_dstring(dstring *, const complex);
 
 #ifdef __cplusplus
 }
