@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
-#include <assert.h>
 #include <string.h>
 
 // ================================
@@ -163,6 +162,7 @@ void  file_close (FILE*);
  */
 uint   imath_iabs  (int);
 float  imath_fabs  (float);
+bool   imath_isnormal(float);
 float  imath_fmax  (float, float);
 float  imath_fmin  (float, float);
 float  imath_round (float);
@@ -195,7 +195,7 @@ int64  imath_rotl64(int64, const iter);
 int32  imath_rotr32(int32, const iter);
 int64  imath_rotr64(int64, const iter);
 
-#define RAND_CAST(T) T imath_rand_##T ();
+#define RAND_CAST(T) T imath_rand_##T (void);
 RAND_CAST(byte);
 RAND_CAST(shrt);
 RAND_CAST(int32);

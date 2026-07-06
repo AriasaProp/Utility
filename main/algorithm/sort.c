@@ -242,23 +242,23 @@ void sort_shell(void *dat, iter size, iter bytes, compare_funct cmp) {
  * { -1 ... 1 } { -1 ... 1 }
  * 
  * ==========================================================*/
-static void sort_merge_rec(byte *, iter, iter, compare_funct, byte*);
+static void sort_merge_rec(byte *, iter, iter, compare_funct);
 void sort_merge(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-  byte *c = CAST(byte*)util_malloc(bytes);
-	sort_merge_rec(CAST(byte*)dat, size, bytes, cmp, c);
-	util_memfree(c);
+	sort_merge_rec(CAST(byte*)dat, size, bytes, cmp);
 }
-static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp, byte *c) {
-  SIZE_ELIM(a);
+static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp) {
+  if (size < 2) return;
 	iter i = size >> 1;
-	byte *b = a + i * bytes, *d = a + size * bytes;
-	sort_merge_rec(a, i, bytes, cmp, c);
-	sort_merge_rec(b, size - i, bytes, cmp, c);
+	byte *b = a + i * bytes;
+	sort_merge_rec(a, i, bytes, cmp);
+	sort_merge_rec(b, size - i, bytes, cmp);
   b -= bytes;
+  byte *d = a + size * bytes;
+  byte *c = CAST(byte*)util_alloca(bytes);
 	while ((a <= b) && (b < (d -= bytes))) {
 	  if (cmp(b, d) <= 0) continue;
-		util_memcpy (c, b, bytes);
+    util_memcpy (c, b, bytes);
 		util_memcpy (b, b + bytes, d - b);
 		util_memcpy (d, c, bytes);
     b -= bytes;
@@ -271,33 +271,17 @@ static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp, by
  * 
  * 
  * ==========================================================*/
-static void sort_intro_rec(byte *, iter, iter, compare_funct);
+static void sort_intro_rec(byte *, int, iter, compare_funct, iter);
 void sort_intro(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-  sort_intro_rec(CAST(byte*)dat, size, bytes, cmp);
+  sort_intro_rec(CAST(byte*)dat, size, bytes, cmp, CAST(iter)(imath_log(size) * 2));
 }
-static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
-  SIZE_ELIM(d);
-  if (size <= 16) {
-    // insertion sort internal
-  	for(byte *i = d, *j, *k = d + size * bytes; (i += bytes) < k; ) // loop next
-  		for (j = i; (j > d) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
-  		  util_memswap(j, j - bytes, bytes);
-  } else if (((size + 1) & size) == 0) { // pow of 2 less 1
-  	// heap sort internal
-  	iter i;
-    byte *nd, *prnt;
-    for (i = size >> 1; i--; ) {
-      // get parent
-      prnt = d + i * bytes;
-      // left
-      nd = d + ((i << 1) + 1) * bytes;
-      if (cmp(nd, prnt) < 0) util_memswap(prnt, nd, bytes);
-      // right
-      nd += bytes;
-      if (cmp(nd, prnt) < 0) util_memswap(prnt, nd, bytes);
-    }
-    sort_intro_rec(d + bytes, --size, bytes, cmp);
+static void sort_intro_rec(byte *d, int size, iter bytes, compare_funct cmp, iter depth) {
+  if (size < 2) { return;
+  } else if (size <= 16) {
+    sort_insert(d, size, bytes, cmp);
+  } else if (!depth) {
+    sort_heap(d, size, bytes, cmp);
   } else {
     // call partition function to find Partition Index
     // Initialize pivot to be the first element
@@ -315,9 +299,65 @@ static void sort_intro_rec(byte *d, iter size, iter bytes, compare_funct cmp) {
     util_memswap(d, d + j * bytes, bytes);
     // Recursively call introSort() for left and right
     // half based on Partition Index
-    sort_intro_rec(d, j, bytes, cmp);
-    if (size > j + 2)
-      sort_intro_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp);
+    --depth;
+    sort_intro_rec(d, j, bytes, cmp, depth);
+    sort_intro_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp, depth);
+  }
+}
+/* ==========================================================
+ * intro sort (optimize)
+ * introspective sort
+ * split sort divide task by quick, insertion and heap sort
+ * 
+ * 
+ * ==========================================================*/
+static void sort_intro_opt_rec(byte *, int, iter, compare_funct);
+void sort_intro_opt(void *dat, iter size, iter bytes, compare_funct cmp) {
+  NO_NULL;
+  sort_intro_opt_rec(CAST(byte*)dat, size, bytes, cmp);
+}
+static void sort_intro_opt_rec(byte *d, int size, iter bytes, compare_funct cmp) {
+  if (size < 2) { return;
+  } else if (size < 15) {
+    // insertion sort internal
+  	for(byte *i = d, *j, *k = d + size * bytes; (i += bytes) < k; ) // loop next
+  		for (j = i; (j > d) && (cmp(j, j - bytes) < 0); j -= bytes) // loop prev
+  		  util_memswap(j, j - bytes, bytes);
+  } else if (!((size + 1) & size)) { // pow of 2 less 1
+  	// heap sort internal
+    byte *nd, *prnt;
+    for (iter i = size >> 1; i--; ) {
+      // get parent
+      prnt = d + i * bytes;
+      // left
+      nd = d + ((i << 1) + 1) * bytes;
+      if (cmp(nd, prnt) < 0)
+        util_memswap(prnt, nd, bytes);
+      // right
+      nd += bytes;
+      if (cmp(nd, prnt) < 0)
+        util_memswap(prnt, nd, bytes);
+    }
+    sort_intro_opt_rec(d + bytes, --size, bytes, cmp);
+  } else {
+    // call partition function to find Partition Index
+    // Initialize pivot to be the first element
+    iter end = size - 1, i = 1, j = end;
+    while (i < j) {
+      // Find the first element greater than the pivot (from starting)
+      // first element are pivot, so skip
+      while ((i < end) && (cmp(d, d + i * bytes) > 0))
+        ++i;
+      // Find the first element smaller than the pivot (from last)
+      while (j && (cmp(d + j * bytes, d) > 0))
+        --j;
+      if (i < j) util_memswap(d + i * bytes, d + j * bytes, bytes);
+    }
+    util_memswap(d, d + j * bytes, bytes);
+    // Recursively call introSort() for left and right
+    // half based on Partition Index
+    sort_intro_opt_rec(d, j, bytes, cmp);
+    sort_intro_opt_rec(d + (j + 1) * bytes,  size - (j + 1), bytes, cmp);
   }
 }
 /* ==========================================================
@@ -334,21 +374,26 @@ void sort_quick(void *dat, iter size, iter bytes, compare_funct cmp) {
   sort_quick_rec(start, start + (size - 1) * bytes, bytes, cmp);
 }
 static void sort_quick_rec(byte *a, byte *b, const iter bytes, const compare_funct cmp) {
-  if (b <= a) return;
+  if (b <= a) { return;
+  } else if (b == (a + bytes)) {
+    if (cmp(a, b) > 0) util_memswap(a, b, bytes);
+    return;
+  }
   // call partition function to find Partition Index
   // Initialize pivot to be the first element
   byte *i = a + bytes, *j = b;
   while (i < j) {
     // Find the first element greater than the pivot (from starting)
-    // first element are pivot, so skip
     while ((i < b) && (cmp(a, i) > 0)) i += bytes;
     // Find the first element smaller than the pivot (from last)
     while ((j > a) && (cmp(j, a) > 0)) j -= bytes;
     if (i < j) util_memswap(i, j, bytes);
   }
-  if (cmp(a, j) > 0) util_memswap(a, j, bytes);
+  util_memswap(a, j, bytes);
   // Recursively call quickSort() for left and right
   // half based on Partition Index
   sort_quick_rec(a, j - bytes, bytes, cmp);
   sort_quick_rec(j + bytes, b, bytes, cmp);
 }
+
+

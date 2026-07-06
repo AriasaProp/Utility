@@ -1,16 +1,14 @@
 #include "algorithm/sort.h"
-#include "util/profiling.h"
 #include "util/console_out.h"
-#include "common.h"
 #include "array/dstring.h"
-
+#include "common.h"
 
 #define STYPE       float
 #define DATA_RANDOM imath_rand_float ()
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
 // #define DATA_SIZE   123860
-#define DATA_SIZE   120
+#define DATA_SIZE   50
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);
@@ -18,7 +16,7 @@ static int data_compare (const void*,const void*);
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   dstring main_str = NULL;
-  int proofen = 0;
+  int proofen = 0, result = EXIT_FAILURE;
 	iter i, j;
 	// randomize $(STYPE) data
   void *temp_data = util_malloc(DATA_BYTES * 2);
@@ -38,10 +36,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 // 	for (j = 0; j < DATA_SIZE; ++j)
 //     printf(" %.1f -",(CAST(float*)data_r)[j]);
 //   printf("\n");
-	PRINT_INF("Sorting Test! %d data \n"
-		"|     Name     |     time     | \n"
-		"|--------------|--------------| \n"
-	, DATA_SIZE);
+	PRINT_INF("Sorting Test! %d data ", DATA_SIZE);
   const struct {
     const char *name; sort_funct srt;
   } sort_algo[] = {
@@ -68,30 +63,29 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   	{ .name = "Merge"   , .srt = sort_merge,},
 #endif
   	{ .name = "Intro"   , .srt = sort_intro,},
+  	{ .name = "Intro_"   , .srt = sort_intro_opt,},
   	{ .name = "Quick"   , .srt = sort_quick,},
   };
-  pr_time c_time;
 	for (i = 0; i < STACK_ARR_LEN(sort_algo); ++i) {
   	// start
   	util_memcpy(temp_data, data_r, DATA_BYTES);
-  	// profiling 
-  	c_time = profiling_current_time();
   	sort_algo[i].srt(temp_data, DATA_SIZE, sizeof(STYPE), data_compare);
-  	c_time = profiling_time_since(c_time);
   	// proof sorted
   	STYPE *ret = CAST(STYPE*) temp_data;
   	for (j = 1, proofen = 1; proofen && (j < DATA_SIZE); ++j) {
   	  proofen &= (ret[j - 1] <= ret[j]);
   	}
-	  // result log
-	  dstring_clean(main_str);
-	  profiling_append_as_time2(&main_str, c_time);
-	  fflush(stdout);
-	  printf("\r| %12s | %12s | %s \n", sort_algo[i].name, main_str, (proofen?(GREEN "√" RESET):(RED "x" RESET)));
+    if (!proofen) {
+	    printf("%s Sort was "RED"failure"RESET" to sort data!\n", sort_algo[i].name);
+      goto end;
+    }
   }
+  printf(GREEN"Success\n"RESET);
+  result = EXIT_SUCCESS;
+end:
 	dstring_free(&main_str);
 	util_memfree(temp_data);
-  return EXIT_SUCCESS;
+  return result;
 }
 static int data_compare(const void* a, const void* b) {
   const STYPE A = *(const STYPE*)a;

@@ -1,22 +1,49 @@
-#include "math/bigInteger.h"
 #include "util/console_out.h"
 #include "common.h"
-#include "array/darray.h"
 #include "array/dstring.h"
+
+bool bigger(const dstring a, const dstring b) {
+  
+  if (dstring_len(a) != dstring_len(b)) return dstring_len(a) > dstring_len(b);
+  for (iter i = 0; i < dstring_len(a); ++i) {
+    if (a[i] != b[i]) return a[i] > b[i]; 
+  }
+  return true;
+}
+bool subtract(dstring a, const dstring b) {
+  if (!dstring_len(a)) return false;
+  for (iter i = dstring_len(a) - dstring_len(b), j = 0, k; j < dstring_len(b); ++i, ++j) {
+    char sub = b[j];
+    k = i;
+    do {
+      while (a[k] < sub) {
+        a[k] += 10 - (sub - '0');
+        sub = 1;
+      } else {
+        a[k] += '0' - sub;
+        break;
+      }
+    } while (k--);
+  }
+  return true;
+}
+
 
 int main() {
   dstring str = NULL;
-  bigInteger a = bigInteger_from_cstr("320354604123224817850834072440270195965071568756");
-  bigInteger b = bigInteger_from_cstr("26809178147998024201567467132");
-  bigInteger c = bigInteger_from_cstr("11949437702070971651");
+  dstring a = NULL, b = NULL, c = NULL;
+  dstring res = NULL, rem = NULL;
+  dstring_append(&a, "42849112547792878652658951705");
+  dstring_append(&b, "16455251965419843997");
+  dstring_append(&c, "2604051373");
   
-  bigInteger res = {0};
-  bigInteger rem = {0};
-  // bigInteger sim = {0};
   #define WORD_BITS sizeof(word) * 8
   {
     iter shift = 0;
-    da_rforeach(word, ia, &a) {
+    for (iter i = 0; i < dstring_len(a); ++i) {
+      dstring_append_char(&rem, a[i]);
+      bool big = bigger(rem, b);
+      
       for (iter i = WORD_BITS; i--; ) {
         word t, t1;
         t1 = (*ia >> i) & 1;
@@ -59,26 +86,15 @@ int main() {
       printf("<: %010zu\n", shift);
     }
   }
-  if (!bigInteger_cmp(res,c))
-    PRINT_INF("cnmp: √\n");
-  dstring_clean(str);
-  bigInteger_append_dstring(&str, res);
-  PRINT_INF("R: %45s\n", str);
-  dstring_clean(str);
-  bigInteger_append_dstring(&str, rem);
-  PRINT_INF("%%: %45s\n", str);
-  dstring_clean(str);
-  bigInteger_append_dstring(&str, b);
-  PRINT_INF("B: %45s\n", str);
-  dstring_clean(str);
-  bigInteger_append_dstring(&str, c);
-  PRINT_INF("C: %45s\n", str);
+  PRINT_INF("R: %45s\n", res);
+  PRINT_INF("%%: %45s\n", rem);
+  PRINT_INF("B: %45s\n", b);
+  PRINT_INF("C: %45s\n", c);
   
-  dstring_free(&str);
-  bigInteger_free(&a);
-  bigInteger_free(&b);
-  bigInteger_free(&c);
-  bigInteger_free(&rem);
-  bigInteger_free(&res);
+  dstring_free(&a);
+  dstring_free(&b);
+  dstring_free(&c);
+  dstring_free(&res);
+  dstring_free(&rem);
   return 0;
 }

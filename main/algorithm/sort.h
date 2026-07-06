@@ -31,7 +31,9 @@ void sort_select (void*, iter, iter,compare_funct);
 void sort_shell  (void*, iter, iter,compare_funct);
 void sort_merge  (void*, iter, iter,compare_funct);
 void sort_intro  (void*, iter, iter,compare_funct);
+void sort_intro_opt(void*, iter, iter,compare_funct);
 void sort_quick  (void*, iter, iter,compare_funct);
+void sort_quick_med(void*, iter, iter,compare_funct);
 
 
 #ifdef __cplusplus

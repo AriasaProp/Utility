@@ -105,7 +105,9 @@
 #        define _CRT_SECURE_NO_WARNINGS (1)
 #    endif // _CRT_SECURE_NO_WARNINGS
 #endif //  _WIN32
-
+#ifndef NOBDEBUG
+#define NOBDEBUG
+#endif // NOBDEBUG
 #ifndef NOBDEF
 /*
    Goes before declarations and definitions of the nob functions. Useful to `#define NOBDEF static inline`
@@ -835,15 +837,15 @@ NOBDEF char *nob_temp_running_executable_path(void);
 #  if defined(_WIN32)
 #    if defined(__clang__)
 #      if defined(__cplusplus)
-#        define NOB_REBUILD_URSELF(binary_path, source_path) "clang", "-x", "c++", "-o", binary_path, source_path
+#        define NOB_REBUILD_URSELF(binary_path, source_path) "clang", "-x", NOBDEBUG "c++", "-o", binary_path, source_path
 #      else
-#        define NOB_REBUILD_URSELF(binary_path, source_path) "clang", "-x", "c", "-o", binary_path, source_path
+#        define NOB_REBUILD_URSELF(binary_path, source_path) "clang", "-x", NOBDEBUG "c", "-o", binary_path, source_path
 #      endif
 #    elif defined(__GNUC__)
 #      if defined(__cplusplus)
-#        define NOB_REBUILD_URSELF(binary_path, source_path) "gcc", "-x", "c++", "-o", binary_path, source_path
+#        define NOB_REBUILD_URSELF(binary_path, source_path) "gcc", "-x", NOBDEBUG "c++", "-o", binary_path, source_path
 #      else
-#        define NOB_REBUILD_URSELF(binary_path, source_path) "gcc", "-x", "c", "-o", binary_path, source_path
+#        define NOB_REBUILD_URSELF(binary_path, source_path) "gcc", "-x", NOBDEBUG "c", "-o", binary_path, source_path
 #      endif
 #    elif defined(_MSC_VER)
 #       define NOB_REBUILD_URSELF(binary_path, source_path) "cl.exe", nob_temp_sprintf("/Fe:%s", (binary_path)), source_path
@@ -852,9 +854,9 @@ NOBDEF char *nob_temp_running_executable_path(void);
 #    endif
 #  else
 #    if defined(__cplusplus)
-#      define NOB_REBUILD_URSELF(binary_path, source_path) "cc", "-x", "c++", "-o", binary_path, source_path
+#      define NOB_REBUILD_URSELF(binary_path, source_path) "cc", NOBDEBUG "-x", "c++", "-o", binary_path, source_path
 #    else
-#      define NOB_REBUILD_URSELF(binary_path, source_path) "cc", "-x", "c", "-o", binary_path, source_path
+#      define NOB_REBUILD_URSELF(binary_path, source_path) "cc", NOBDEBUG "-x", "c", "-o", binary_path, source_path
 #    endif
 #  endif
 #endif

@@ -22,7 +22,6 @@
 
 
 #include "math/matrix.h"
-#include "util/console_out.h"
 #include "common.h"
 
 #define EPSILON            1.0e-24f

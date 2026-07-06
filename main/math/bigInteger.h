@@ -13,7 +13,6 @@
 #include "array/dstring.h"
 
 typedef uint word;
-
 typedef struct {
   bool neg;
   word *items;

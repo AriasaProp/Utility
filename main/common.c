@@ -249,6 +249,13 @@ inline uint imath_iabs (int a) {
 #endif // builtin
 }
 
+inline bool imath_isnormal(float a) {
+#if !defined(NO_STDMATH)
+  return !!isnormal(a);
+#else
+  return (*(CAST(int*)&a) & 0x7fe00000) != 0x7fe00000;
+#endif // builtin
+}
 inline float imath_fabs  (float a) {
 #if BLTN(__builtin_fabsf)
   return __builtin_fabsf(a);
@@ -583,7 +590,7 @@ inline float imath_isqrt(float x) {
   return u.f;
 #endif // builtin
 }
-#define NAIVE_FLIP(X,L,R) (((X) << (L)) | ((X) >> (R)))
+#define NAIVE_FLIP(X,L,R) (((X) << (L % (sizeof(X) * 8))) | ((X) >> (R % (sizeof(X) * 8))))
 ubyte imath_flip8(ubyte x) {
   return CAST(ubyte)NAIVE_FLIP(x,4,4);
 }
@@ -644,7 +651,7 @@ int64 imath_rotr64(int64 x, const iter n) {
   return CAST(int64)NAIVE_FLIP(x,(-n&63),n);
 #endif
 }
-#define RAND_VARIANT(T) inline T imath_rand_##T () { \
+#define RAND_VARIANT(T) inline T imath_rand_##T (void) { \
   T r = CAST(T)rand();\
   return r ^ (CAST(T)CAST(long)&r);\
 }
@@ -663,10 +670,10 @@ RAND_VARIANT(uint)
 RAND_VARIANT(ulong)
 
 #undef RAND_VARIANT
-inline float imath_rand_float() {
+inline float imath_rand_float(void) {
   union { float f; int i; } U;
   do { U.i = imath_rand_int();
-  } while (!isnormal(U.f));
+  } while (!imath_isnormal(U.f));
   return U.f;
 }
 
