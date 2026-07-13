@@ -796,45 +796,42 @@ static const uint32 crc_table[256] = {
 
 bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void *data) {
   // png signaturev137 PNG \r\n 26 \n (header len, 13) \0\0\0\r *****
-  ubyte wrbyte;
+  union {
+    ubyte ub[4];
+    uint32 ui;
+  } temp;
   uint32 crc;
-  ubyte tdat[5];
 
   stbiw__write_smalln(s, PNG_SIGNATURE, 8);
 
 #define WRCRC(x) do {       \
-  wrbyte = (x) & 0xff;        \
-  stbiw__write1(s, wrbyte); \
-  crc = (crc >> 8) ^ crc_table[wrbyte ^ (crc & 0xff)]; \
+  temp.ub = (x);        \
+  stbiw__write1(s, temp.ub); \
+  hash_crc32_append(&crc, temp.ub); \
 } while (0)
-
 #define WRCRC32(x) do {                                                                                  \
-  tdat[0] = ((x) >> 24) & 0xff, tdat[1] = ((x) >> 16) & 0xff, tdat[2] = ((x) >> 8) & 0xff, tdat[3] = (x) & 0xff; \
-  stbiw__write_smalln(s, tdat, 4);                                                                                 \
-  for (iter k = 0; k < 4; ++k)                                                                            \
-    crc = (crc >> 8) ^ crc_table[tdat[k] ^ (crc & 0xff)]; \
+  temp.ui = imath_flip32(x); \
+  stbiw__write_smalln(s, &temp.ui, 4);  \
+  hash_crc32_append(&crc, &temp.ui, 4); \
 } while (0)
-
 #define WR32(x) do {                                                   \
-  tdat[0] = x >> 24, tdat[1] = x >> 16, tdat[2] = x >> 8, tdat[3] = x; \
-  stbiw__write_smalln(s, tdat, 4); \
+  temp.ui = imath_flip32(x); \
+  stbiw__write_smalln(s, &temp.ui, 4); \
 } while (0)
-
-#define WRCRCS(x, y) do {     \
-  stbiw__write_smalln(s, (x), (y));         \
-  for (iter k = 0; k < (y); ++k) \
-    crc = (crc >> 8) ^ crc_table[(CAST(ubyte*)x)[k] ^ (crc & 0xff)]; \
+#define HEAD(x, l) do { \
+  temp.ui = imath_flip32(l); \
+  stbiw__write_smalln(s, &temp.ui, 4); \
+  hash_crc32_start(&crc); \
+  stbiw__write_smalln(s, (x), 4); \
+  hash_crc32_appends(&crc, (x), 4); \
 } while (0)
-
 #define SIGN do {\
   hash_crc32_end(&crc); \
   crc = imath_flip32(crc); \
   stbiw__write_smalln(s, &crc, 4); \
 } while (0)
 
-  WR32(13);
-  hash_crc32_start(&crc);
-  WRCRCS("IHDR", 4);
+  HEAD("IHDR", 13);
   WRCRC32(x);
   WRCRC32(y);
   WRCRC(8);
@@ -869,13 +866,10 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     ubyte *zlib = stbi_zlib_encode(filt, (stride_bytes + 1) * y, &zlen, 0);
     util_memfree(filt);
     if (!zlib) return false;
-    WR32(zlen);
-    hash_crc32_start(&crc);
-    WRCRCS("IDAT", 4);
+    HEAD("IDAT", zlen);
     stbiw__write_flush(s);
     s->func(s->context, zlib, zlen);
-    for (i = 0; i < zlen; ++i)
-      crc = (crc >> 8) ^ crc_table[zlib[i] ^ (crc & 0xff)];
+    hash_crc32_appends(&crc, zlib, zlen);
     util_memfree(zlib);
     SIGN;
   }
@@ -884,7 +878,7 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
 #undef WRCRC
 #undef WRCRC32
 #undef WR32
-#undef WRCRCS
+#undef HEAD
   return true;
 }
 
