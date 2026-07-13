@@ -10,11 +10,14 @@
 #ifndef _COMMON_INCLUDED_
 #define _COMMON_INCLUDED_
 
+#include <limits.h> // INT_MAX
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 // ================================
 //  Global Macro & Primitive Redefinition
@@ -87,6 +90,20 @@ typedef unsigned long long ullong;
   #error "Not ready for this compiler"
 #endif
 
+// thread local
+#if defined(__cplusplus) &&  __cplusplus >= 201103L
+  #define THREAD_LOCAL       thread_local
+#elif defined(__GNUC__) && __GNUC__ < 5
+  #define THREAD_LOCAL       __thread
+#elif defined(_MSC_VER)
+  #define THREAD_LOCAL       __declspec(thread)
+#elif defined (__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+  #define THREAD_LOCAL       _Thread_local
+#elif defined(__GNUC__)
+  #define THREAD_LOCAL       __thread
+#else
+  #define THREAD_LOCAL
+#endif
 
 #ifdef __cplusplus
   #define IS_ERROR(x) if (!!(x)) [[unlikely]]
@@ -108,12 +125,13 @@ typedef unsigned long long ullong;
 #define MIN(X,Y)  (((X) < (Y)) ? (X) : (Y))
 #define MAX(X,Y)  (((X) > (Y)) ? (X) : (Y))
 
-
-#ifndef __cplusplus
-  #define CAST(T) (T)
-#else
+#ifdef __cplusplus
+  #define CLIT(T) T
   #define CAST(T) (decltype(T))
 extern "C" {
+#else
+  #define CLIT(T) (T)
+  #define CAST(T) (T)
 #endif // __cplusplus
 
 #ifdef _WIN32
@@ -149,10 +167,10 @@ iter  util_bitlead(ulong);
  */
 FILE *file_open  (const char*,const char*);
 void  file_rewind(FILE*);
-int   file_read  (char*,iter, FILE*);
-int   file_seek  (iter, FILE*);
-int   file_write (const char*,iter, FILE*);
-int   file_eof   (FILE*);
+int   file_read  (void*,iter, FILE*);
+void  file_seek  (int, FILE*);
+int   file_write (const void*,iter, FILE*);
+bool  file_eof   (FILE*);
 void  file_close (FILE*);
 
 
@@ -181,6 +199,7 @@ float  imath_pow   (float,float);
 float  imath_log   (float);
 float  imath_log2  (float);
 float  imath_exp   (float);
+float  imath_ldexp (float,int);
 float  imath_exp2  (float);
 float  imath_len   (const float*,iter);
 float  imath_hypot (float,float);

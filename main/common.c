@@ -200,20 +200,16 @@ inline FILE *file_open(const char *filename, const char *mode) {
 inline void file_rewind(FILE *file) {
   rewind(file);
 }
-inline int file_read(char *buffer, iter n, FILE *file) {
+inline int file_read(void *buffer, iter n, FILE *file) {
   return fread(buffer, 1, n, file);
 }
-inline int file_seek(iter n, FILE *file) {
+inline void file_seek(int n, FILE *file) {
   fseek(file, n, SEEK_CUR);
-  int ch = fgetc(file);  /* have to read a byte to reset feof()'s flag */
-  if (ch != EOF) ungetc(ch, file);  /* push byte back onto stream if valid. */
-  else return -1;
-  return 0;
 }
-inline int file_write(const char *buffer,iter n, FILE *file) {
+inline int file_write(const void *buffer,iter n, FILE *file) {
   return fwrite(buffer, 1, n, file);
 }
-inline int file_eof(FILE *file) {
+inline bool file_eof(FILE *file) {
   return feof(file) || ferror(file);
 }
 inline void file_close(FILE *file) {
@@ -519,6 +515,28 @@ inline float imath_exp(float a) {
 #else
   return imath_exp2(a*M_LN2_INV);
 #endif // builtin
+}
+// a * 2 ^ x
+inline float imath_ldexp(float a, int x) {
+#if BLTN(__builtin_ldexpf)
+  return __builtin_ldexpf(a, x);
+#elif !defined(NO_STDMATH)
+  return ldexpf(a, x);
+#else
+  int *ae = CAST(int*)&a;
+  int c = ((*ae >> 23) & 0x3ff) - 127;
+  c += x;
+  if (c > 125) {
+    *ae |= 0x7ff; // inf
+  } else if (c < -125) {
+    *ae = 0; // zero
+  } else {
+    *ae &= 0x807fffff;
+    *ae |= (c + 127) << 23;
+  }
+  return a;
+#endif // builtin
+  
 }
 /*
  *       a  = n+f

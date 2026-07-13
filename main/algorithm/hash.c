@@ -1049,7 +1049,7 @@ inline void hash_crc32_start(uint32 *crc) {
   *crc = 0xffffffff;
 }
 #define POLYNOMIAL 0xEDB88320
-void hash_crc32_append(uint32 *crc, const byte buffer) {
+void hash_crc32_append(uint32 *crc, const ubyte buffer) {
   uint32 table = (buffer ^ (*crc & 0xff)) & 0xff;
   table = (table >> 1) ^ ((table & 1) * POLYNOMIAL);
   table = (table >> 1) ^ ((table & 1) * POLYNOMIAL);
@@ -1061,11 +1061,12 @@ void hash_crc32_append(uint32 *crc, const byte buffer) {
   table = (table >> 1) ^ ((table & 1) * POLYNOMIAL);
   *crc = (*crc >> 8) ^ table;
 }
-void hash_crc32_appends(uint32 *crc, const byte *buffer, iter n) {
+void hash_crc32_appends(uint32 *crc, const void *buffer, iter n) {
+  const ubyte *cbuff = CAST(const ubyte*)buffer;
   for (iter i = 0; i < n; ++i)
-    hash_crc32_append(crc, buffer[i]);
+    hash_crc32_append(crc, cbuff[i]);
 }
 #undef POLYNOMIAL
-inline void hash_crc32_end (uint *crc) {
+inline void hash_crc32_end (uint32 *crc) {
   *crc ^= 0xffffffff;
 }

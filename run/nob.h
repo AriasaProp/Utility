@@ -387,14 +387,21 @@ NOBDEF void nob_dir_entry_close(Nob_Dir_Entry dir);
         (da)->count = (new_size);       \
     } while (0)
 
-#define nob_da_pop(da) (da)->items[(NOB_ASSERT((da)->count > 0), --(da)->count)]
+#define nob_da_pop(da)   (da)->items[(NOB_ASSERT((da)->count > 0), --(da)->count)]
 #define nob_da_first(da) (da)->items[(NOB_ASSERT((da)->count > 0), 0)]
-#define nob_da_last(da) (da)->items[(NOB_ASSERT((da)->count > 0), (da)->count-1)]
+#define nob_da_last(da)  (da)->items[(NOB_ASSERT((da)->count > 0), (da)->count-1)]
 #define nob_da_remove_unordered(da, i)               \
     do {                                             \
         size_t j = (i);                              \
         NOB_ASSERT(j < (da)->count);                 \
         (da)->items[j] = (da)->items[--(da)->count]; \
+    } while(0)
+#define nob_da_remove_first_item(da)  \
+    do {                              \
+        NOB_ASSERT((da)->count > 0);                 \
+        if (1 < (da)->count) \
+          memcpy((da)->items, (da)->items + 1, sizeof(*(da)->items) * ((da)->count - 1)); \
+        --((da)->count);\
     } while(0)
 
 // Foreach over Dynamic Arrays. Example:
@@ -2928,6 +2935,7 @@ NOBDEF char *nob_temp_running_executable_path(void)
         #define da_last nob_da_last
         #define da_first nob_da_first
         #define da_pop nob_da_pop
+        #define da_remove_first_item nob_da_remove_first_item
         #define da_remove_unordered nob_da_remove_unordered
         #define da_foreach nob_da_foreach
         #define fa_append nob_fa_append

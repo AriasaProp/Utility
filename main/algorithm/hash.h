@@ -42,12 +42,12 @@ void hash_sha384      (uint64*, const char *, uint64);
 void hash_sha512      (uint64*, const char *, uint64);
 
 void hash_crc32_start  (uint32*);
-void hash_crc32_append (uint32*,const byte);
-void hash_crc32_appends(uint32*,const byte *, iter);
+void hash_crc32_append (uint32*,const ubyte);
+void hash_crc32_appends(uint32*,const void*, iter);
 void hash_crc32_end    (uint32*);
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 #endif // _HASH_FUNCTION_

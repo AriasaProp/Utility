@@ -15,19 +15,15 @@
 #include "help.h"
 
 typedef enum {
-  ActionFlags_None = 0,
-  ActionFlags_ForceBuild = 1,
-  ActionFlags_DebugRun   = 2,
+  ActionFlags_None       =      0,
+  ActionFlags_ForceBuild = 1 << 0,
+  ActionFlags_DebugRun   = 1 << 1,
 } ActionFlags;
 
 typedef struct {
   const char *src;
   File_Paths deps;
 } File_Src;
-typedef struct {
-  File_Src *items;
-  size_t count, capacity;
-} File_Srcs;
 
 #define COMMON_SRC      "main/common.c"
 #define TEST_SRCS       COMMON_SRC, "main/array/dstring.c"
@@ -41,29 +37,27 @@ typedef enum {
 
 typedef struct {
   const char *name;
-  Exec_Type type;
   const char **srcs;
 } File_Exe;
-static const File_Exe Execs[] = {
+
+static const File_Exe QExecs = {
+  .name =  "qtest",
+  .srcs = (const char *[]) {
+    TEST_SRCS,
+    "test/qtest.c",
+    NULL
+  }
+};
+static const File_Exe Test_Execs[] = {
   {
-    .name = BIN_DIR"/qtest",
-    .type = Exec_QTest,
-    .srcs = (const char *[]) {
-      TEST_SRCS,
-      "test/qtest.c",
-      NULL
-    }
-  },{
-    .name = TEST_DIR"/rand_test",
-    .type = Exec_Test,
+    .name = "rand",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "test/math/rand_test.c",
       NULL
     }
   },{
-    .name = TEST_DIR"/complex_test",
-    .type = Exec_Test,
+    .name = "complex",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/math/complex.c",
@@ -71,8 +65,7 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = TEST_DIR"/matrix_test",
-    .type = Exec_Test,
+    .name = "matrix",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/math/matrix.c",
@@ -80,8 +73,7 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = TEST_DIR"/bigInteger_test",
-    .type = Exec_Test,
+    .name = "bigInteger",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/math/bigInteger.c",
@@ -89,8 +81,7 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = TEST_DIR"/sort_test",
-    .type = Exec_Test,
+    .name = "sort",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/algorithm/sort.c",
@@ -98,8 +89,7 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = TEST_DIR"/hash_test",
-    .type = Exec_Test,
+    .name = "hash",
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/algorithm/hash.c",
@@ -107,8 +97,21 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = BENCHMARK_DIR"/bigInteger_benchmark",
-    .type = Exec_Benchmark,
+    .name = "image",
+    .srcs = (const char *[]) {
+      TEST_SRCS,
+      "main/algorithm/hash.c",
+      "main/stb/image_read.c",
+      "main/stb/image_write.c",
+      "main/stb/local.c",
+      "test/codec/image_test.c",
+      NULL
+    }
+  },
+};
+static const File_Exe Benchmark_Execs[] = {
+  {
+    .name = "bigInteger",
     .srcs = (const char *[]) {
       BENCHMARK_SRCS,
       "main/math/bigInteger.c",
@@ -116,8 +119,7 @@ static const File_Exe Execs[] = {
       NULL
     }
   },{
-    .name = BENCHMARK_DIR"/sort_benchmark",
-    .type = Exec_Benchmark,
+    .name = "sort",
     .srcs = (const char *[]) {
       BENCHMARK_SRCS,
       "main/algorithm/sort.c",
@@ -132,8 +134,7 @@ static const File_Exe Execs[] = {
 
 static Cmd cmd;
 static Procs procs;
-static File_Srcs src_dep;
-static String_Builder sb;
+static String_Builder stemp;
 static int actionFlags;
 
 typedef struct {
@@ -141,131 +142,232 @@ typedef struct {
   size_t count;
   size_t capacity;
 } Flags;
+typedef struct {
+  const char **items;
+  size_t count, capacity;
+} Task;
 
+// group function
+static bool clean_group(Task*);
+static bool status_group(Task*);
+static bool test_group(Task*);
+static bool benchmark_group(Task*);
+// root function
 static bool exec_run(const char *);
 static int  obj_compile(const char*, const Flags);
-static bool exec_compile(const File_Exe,const Flags);
+static bool exec_compile(const char*, const char**,const Flags);
 static bool walk_dir_cleanup(Walk_Entry);
 
 int main(int argc, char **argv) {
   GO_REBUILD_URSELF(argc, argv);
-  int ret = EXIT_SUCCESS;
-  size_t i, j, k;
   shift(argv, argc);
-  int exec_index = -1;
-  actionFlags = ActionFlags_None;
-#define CASE_ACT(A,B) if (!strcmp(*argv, A) || !strcmp(*argv, B))
-#define CASE_FLG(A,B) if (!strcmp(*argv, A) || !strcmp(*argv, B))
-  while (argc) {
+  Task task = {0};
+  for (;argc;shift(argv, argc)) {
+    if ((*argv)[0] == '-') {
+      if ((*argv)[1] == '-') {
+        const char *ar = (*argv) + 2;
+        // double dash flags
+        if (!strcmp("debug", ar)) {
+          actionFlags |= ActionFlags_DebugRun;
+        } else if (!strcmp("build", ar)) {
+          actionFlags |= ActionFlags_ForceBuild;
+        }
+      } else {
+        // dash flags
+        for (const char *ar = *argv; *(++ar); ) {
+          switch (*ar) {
+            case 'd': actionFlags |= ActionFlags_DebugRun; break;
+            case 'b': actionFlags |= ActionFlags_ForceBuild; break;
+            default: break;
+          }
+        }
+      }
+    } else {
+      da_append(&task, *argv);
+    }
+  }
+  nob_log(NOB_INFO, "Parsed args.\n");
+  int ret = EXIT_SUCCESS;
+#define CASE_ACT(A,B) if (!strcmp(da_first(&task), A) || !strcmp(da_first(&task), B))
+  if (!task.count) {
+    nob_log(NOB_ERROR, "at least give a command.\n");
+    printf (help_msg);
+    ret = EXIT_FAILURE;
+  } else {
     CASE_ACT("h","help") {
       printf (help_msg);
-      break;
     } else CASE_ACT("c","clean") {
-      if (!file_exists(BIN_DIR))
-        nob_log(NOB_INFO, "Binary file doesn't exists.");
-      else if (walk_dir(BIN_DIR, walk_dir_cleanup, .post_order = true))
-        nob_log(NOB_INFO, "Cleanup walk is suceed.");
-      else
-        nob_log(NOB_ERROR, "Cleanup walk is error.");
-      break;
+      da_remove_first_item(&task);
+      if (!clean_group(&task)) ret = EXIT_FAILURE;
     } else CASE_ACT("s","status") {
-      nob_log(NOB_INFO, "Exec status test!");
-      for (i = 0; i < ARRAY_LEN(Execs); ++i) {
-        nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Execs[i].name, file_exists(Execs[i].name) ? "\033[32m" : "\033[31mnot " );
-      }
-      break;
-    } else CASE_FLG("-b","--build") {
-      actionFlags |= ActionFlags_ForceBuild;
-    } else CASE_FLG("-d","--debug") {
-      actionFlags |= ActionFlags_DebugRun;
+      da_remove_first_item(&task);
+      if (!status_group(&task)) ret = EXIT_FAILURE;
+    } else if (!strcmp(da_first(&task), "test")) {
+      da_remove_first_item(&task);
+      if (!test_group(&task)) ret = EXIT_FAILURE;
+    } else if (!strcmp(da_first(&task), "benchmark")) {
+      da_remove_first_item(&task);
+      if (!benchmark_group(&task)) ret = EXIT_FAILURE;
+    } else if (!strcmp(da_first(&task), "qtest")) {
+      Flags compile_flags = {0};
+      nob_log(NOB_INFO, "Compile & running %s", QExecs.name);
+      stemp.count = 0;
+      sb_appendf(&stemp, BIN_DIR"/%s", QExecs.name);
+      const char *out = strndup(stemp.items, stemp.count);
+      bool result = exec_compile(out, QExecs.srcs, compile_flags) && exec_run(out);
+      free((void*)out);
+      da_free(compile_flags);
+      if (!result) ret = EXIT_FAILURE;
     } else {
-      for (i = 0; i < ARRAY_LEN(Execs); ++i) {
-        if (!strcmp(Execs[i].name, *argv)) {
-          exec_index = i;
-          break;
-        }
-      }
-      if (exec_index < 0) {
-        nob_log(NOB_INFO, "unknown command or flags of \"%s\"!", *argv);
-        printf (help_msg);
-        break;
-      }
-    }
-    shift(argv, argc);
-  }
-#undef CASE_ACT
-#undef CASE_FLG
-  if (exec_index >= 0) {
-    File_Exe current_exe = Execs[exec_index];
-    // load dependencies
-    if (!(actionFlags & ActionFlags_ForceBuild)) {
-      for (i = 0; current_exe.srcs[i]; ++i) {
-        const char *depen_file = temp_sprintf(OBJ_DIR"/%s.d", current_exe.srcs[i]);
-        sb.count = 0;
-        if (file_exists(depen_file)) {
-          if (read_entire_file(depen_file, &sb)) {
-            File_Paths fp = {0};
-            String_View sv = sb_to_sv(sb);
-            String_View src = sv_chop_by_delim(&sv, ':');
-            for (j = 0; (j < sv.count); ++j) {
-              if (!sv.data[j] || isspace(sv.data[j]) || (sv.data[j] == '\\'))
-                continue;
-              for (k = j + 1; (k < sv.count) && (!isspace(sv.data[k]) &&
-                  (sv.data[k] != '\\') && sv.data[k]
-                ); ++k) ;
-              da_append(&fp, strndup(sv.data + j, k - j));
-              j = k;
-            }
-            da_append(&src_dep, ((File_Src){.src = strndup(current_exe.srcs[i], strlen(current_exe.srcs[i])), .deps = fp}));
-          } else {
-            nob_log(NOB_ERROR, "Fail read %s dependency file.", depen_file);
-          }
-        } else {
-          nob_log(NOB_INFO, "%s will compiling anyway.", current_exe.srcs[i]);
-        }
-      }
-    }
-    Flags compile_flags = {0};
-    switch (current_exe.type) {
-      default: break;
-      case Exec_QTest:
-      case Exec_Test:
-        da_append_many(&compile_flags,
-#if defined(_MSC_VER) && !defined(__clang__)                   
-          ((const char*[]){"/Od", "/Zi", "/I.\test"}), 3
-#else                   
-          ((const char*[]){"-O0", "-ggdb", "-I./test"}), 3
-#endif
-        );
-        break;
-      case Exec_Benchmark:
-        da_append_many(&compile_flags,
-#if defined(_MSC_VER) && !defined(__clang__)                   
-          ((const char*[]){"/O3", "/I.\test", "-I./benchmark"}), 3
-#else
-          ((const char*[]){"-O3", "-I./test", "-I./benchmark"}), 3
-#endif
-        );
-        break;
-    }
-    nob_log(NOB_INFO, "Compile/running %s", current_exe.name);
-    if (!(exec_compile(current_exe, compile_flags) && exec_run(current_exe.name))) {
+      nob_log(NOB_ERROR, "%s option doesn't exists.\n", da_first(&task));
+      printf (help_msg);
       ret = EXIT_FAILURE;
     }
-    da_free(compile_flags);
   }
-  
+#undef CASE_ACT
+  da_free(task);
   da_free(procs);
   da_free(cmd);
-  sb_free(sb);
-  da_foreach(File_Src, fs, &src_dep) {
-    free((void*)fs->src);
-    da_foreach(const char*, fp, &fs->deps)
-      free((void*)*fp);
-    da_free(fs->deps);
-  }
-  da_free(src_dep);
+  sb_free(stemp);
   return ret;
+}
+
+static bool clean_group(Task *task) {
+  if (!task->count) {
+    if (!file_exists(BIN_DIR))
+      nob_log(NOB_INFO, "Binary file wasn't exists.");
+    else if (walk_dir(BIN_DIR, walk_dir_cleanup, .post_order = true))
+      nob_log(NOB_INFO, "Cleanup walk is suceed.");
+    else
+      nob_log(NOB_ERROR, "Cleanup walk is error.");
+  } else if(!strcmp(da_first(task), "test")) {
+    if (!file_exists(TEST_DIR))
+      nob_log(NOB_INFO, "Binary test file wasn't exists.");
+    else if (walk_dir(TEST_DIR, walk_dir_cleanup, .post_order = true))
+      nob_log(NOB_INFO, "Cleanup binary test walk is suceed.");
+    else
+      nob_log(NOB_ERROR, "Cleanup binary test walk is error.");
+  } else if(!strcmp(da_first(task), "benchmark")) {
+    if (!file_exists(BENCHMARK_DIR))
+      nob_log(NOB_INFO, "Binary benchmark file wasn't exists.");
+    else if (walk_dir(BENCHMARK_DIR, walk_dir_cleanup, .post_order = true))
+      nob_log(NOB_INFO, "Cleanup binary benchmark walk is suceed.");
+    else
+      nob_log(NOB_ERROR, "Cleanup binary benchmark walk is error.");
+  } else {
+    nob_log(NOB_ERROR, "Cleanup of %s is not exists.", da_first(task));
+    return false;
+  }
+  return true;
+}
+static bool status_group(Task *task) {
+  if (!task->count) {
+    nob_log(NOB_INFO, "Execution status!");
+    for (size_t i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Test_Execs[i].name, file_exists(Test_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+    }
+    for (size_t i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Benchmark_Execs[i].name, file_exists(Benchmark_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+    }
+  } else if (!strcmp(da_first(task), "test")) {
+    nob_log(NOB_INFO, "Execution status tests!");
+    for (size_t i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Test_Execs[i].name, file_exists(Test_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+    }
+  } else if (!strcmp(da_first(task), "benchmark")) {
+    nob_log(NOB_INFO, "Execution status benchmark!");
+    for (size_t i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Benchmark_Execs[i].name, file_exists(Benchmark_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+    }
+  } else {
+    nob_log(NOB_ERROR, "There is no status for %s group.", da_first(task));
+    return false;
+  }
+  return true;
+}
+static bool test_group(Task *task) {
+  Flags compile_flags = {0};
+  size_t i;
+  bool result;
+  da_append_many(&compile_flags,
+#if defined(_MSC_VER) && !defined(__clang__)                   
+    ((const char*[]){"/Od", "/Zi", "/I.\test"}), 3
+#else                   
+    ((const char*[]){"-O0", "-ggdb", "-I./test"}), 3
+#endif
+  );
+  if (!task->count) {
+    nob_log(NOB_INFO, "Compile & running All Tests");
+    result = true;
+    for (i = 0; result && (i < ARRAY_LEN(Test_Execs)); ++i) {
+      nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
+      stemp.count = 0;
+      sb_appendf(&stemp, TEST_DIR"/%s_test", Test_Execs[i].name);
+      const char *out = strndup(stemp.items, stemp.count);
+      result &= exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      free((void*)out);
+    }
+  } else {
+    for (i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
+      if (!strcmp(da_first(task), Test_Execs[i].name)) {
+        break;
+      }
+    }
+    if (i < ARRAY_LEN(Test_Execs)) {
+      nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
+      stemp.count = 0;
+      sb_appendf(&stemp, TEST_DIR"/%s_test", Test_Execs[i].name);
+      const char *out = strndup(stemp.items, stemp.count);
+      result = exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      free((void*)out);
+    } else {
+      nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
+    }
+  }
+  da_free(compile_flags);
+  return result;
+}
+static bool benchmark_group(Task *task) {
+  Flags compile_flags = {0};
+  size_t i;
+  bool result;
+  da_append_many(&compile_flags,
+#if defined(_MSC_VER) && !defined(__clang__)                   
+    ((const char*[]){"/O3", "/I.\test", "-I./benchmark"}), 3
+#else
+    ((const char*[]){"-O3", "-I./test", "-I./benchmark"}), 3
+#endif
+  );
+  if (!task->count) {
+    nob_log(NOB_INFO, "Compile & running All Tests");
+    result = true;
+    for (i = 0; result && (i < ARRAY_LEN(Benchmark_Execs)); ++i) {
+      nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
+      stemp.count = 0;
+      sb_appendf(&stemp, BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
+      const char *out = strndup(stemp.items, stemp.count);
+      result &= exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      free((void*)out);
+    }
+  } else {
+    for (i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
+      if (!strcmp(da_first(task), Benchmark_Execs[i].name)) {
+        break;
+      }
+    }
+    if (i < ARRAY_LEN(Benchmark_Execs)) {
+      nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
+      stemp.count = 0;
+      sb_appendf(&stemp, BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
+      const char *out = strndup(stemp.items, stemp.count);
+      result = exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      free((void*)out);
+    } else {
+      nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
+    }
+  }
+  da_free(compile_flags);
+  return result;
 }
 
 static bool exec_run(const char *exec) {
@@ -286,36 +388,36 @@ static bool exec_run(const char *exec) {
   }
   return true;
 }
-static bool exec_compile(const File_Exe file_exe, const Flags flags) {
+static bool exec_compile(const char *out, const char **srcs, const Flags flags) {
   size_t i;
   // exec need rebuild ?
   {
-    bool rebuild = !file_exists(file_exe.name);
+    bool rebuild = !file_exists(out);
     int build;
-    for(i = 0; file_exe.srcs[i]; ++i) {
-      build = obj_compile(file_exe.srcs[i], flags);
+    for(i = 0; srcs[i]; ++i) {
+      build = obj_compile(srcs[i], flags);
       if (build < 0) {
-        nob_log(NOB_ERROR, "make objs %s for executable %s is fail", file_exe.srcs[i], file_exe.name);
+        nob_log(NOB_ERROR, "make objs %s for executable %s is fail", srcs[i], out);
         if (!procs_flush(&procs))
-          nob_log(NOB_ERROR, "fail procs compile %s", file_exe.name);
+          nob_log(NOB_ERROR, "fail procs compile %s", out);
         return false;
       }
       rebuild = rebuild || !!build;
     }
     if (!rebuild) return true;
   }
-  if (!mkdir_if_not_exists(temp_dir_name(file_exe.name)))
+  if (!mkdir_if_not_exists(temp_dir_name(out)))
     return false;
   // Wait on all the async processes to finish and reset procs dynamic array to 0
   if (!procs_flush(&procs)) {
-    nob_log(NOB_ERROR, "fail procs compile %s", file_exe.name);
+    nob_log(NOB_ERROR, "fail procs compile %s", out);
     return false;
   }
   nob_cc(&cmd);
   // append objs file
-  for(i = 0; file_exe.srcs[i]; ++i)
-    da_append(&cmd, temp_sprintf(OBJ_DIR"/%s.o", file_exe.srcs[i]));
-  nob_cc_output(&cmd, file_exe.name);
+  for(i = 0; srcs[i]; ++i)
+    da_append(&cmd, temp_sprintf(OBJ_DIR"/%s.o", srcs[i]));
+  nob_cc_output(&cmd, out);
 #ifndef _MSC_VER
   cmd_append(&cmd, 
    "-lc",
@@ -327,54 +429,83 @@ static bool exec_compile(const File_Exe file_exe, const Flags flags) {
   return cmd_run(&cmd);
 }
 static int obj_compile(const char *in, const Flags flags) {
-  const char *out = temp_sprintf(OBJ_DIR"/%s.o", in);
-  if (!(actionFlags & ActionFlags_ForceBuild) && file_exists(out)) {
-    da_foreach(File_Src, fs, &src_dep) {
-      if (!strcmp(fs->src, out)) {
-        int need_build = needs_rebuild(out, fs->deps.items, fs->deps.count);
-        if (need_build < 1) return need_build;
-        break;
+  String_Builder sb = {0};
+  sb_appendf(&sb, OBJ_DIR"/%s.o", in);
+  const char *out = strndup(sb.items, sb.count);
+  int res = (actionFlags & ActionFlags_ForceBuild) || !file_exists(out);
+  if (res < 1) {
+    // load dependencies
+    sb.count = 0;
+    sb_appendf(&sb, OBJ_DIR"/%s.d", in);
+    const char *depen_file = strndup(sb.items, sb.count);
+    sb.count = 0;
+    if (file_exists(depen_file) && read_entire_file(depen_file, &sb)) {
+      File_Paths fp = {0};
+      String_View sv = sb_to_sv(sb);
+      String_View src = sv_chop_by_delim(&sv, ':');
+      for (size_t j = 0, k; (j < sv.count); ++j) {
+        if (!sv.data[j] || isspace(sv.data[j]) || (sv.data[j] == '\\'))
+          continue;
+        for (k = j + 1; (k < sv.count) && (!isspace(sv.data[k]) &&
+            (sv.data[k] != '\\') && sv.data[k]
+          ); ++k) ;
+        da_append(&fp, strndup(sv.data + j, k - j));
+        j = k;
       }
+      res = needs_rebuild(out, fp.items, fp.count);
+      da_foreach(const char*, fpi, &fp) {
+        free((void*)*fpi);
+      }
+      da_free(fp);
     }
+    free((void*)depen_file);
     // compile it anyway
   }
-  if (!mkdir_if_not_exists(temp_dir_name(out)))
-    return -1;
-  // create obj file
-  char *ext = temp_file_ext(in);
-  if (!strcmp(ext, ".c")) {
-    nob_cc(&cmd);
-#if defined(_MSC_VER) && !defined(__clang__)
-# error("object input cl.exe")
-#else
-    cmd_append(&cmd, "-c", in);
-#endif
-    nob_cc_output(&cmd, out);
-    cmd_append(&cmd,
-#if defined(_MSC_VER) && !defined(__clang__)
-      "/MMD", "/std:c11", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
-#  ifdef NO_STDMATH
-      "/DNO_STDMATH",
-#  endif // NO_STDMATH
-#  ifdef FAST_MATH
-      "/fp:fast", "/DFASTER_MATH",
-#  endif // FAST_MATH
-#else
-      "-MMD", "-std=c11", "-Werror", "-Wall", "-I./main",
-#  ifdef NO_STDMATH
-      "-DNO_STDMATH",
-#  endif // NO_STDMATH
-#  ifdef FAST_MATH
-      "-ffast-math", "-DFASTER_MATH",
-#  endif // FAST_MATH
-#endif
-    );
-    da_append_many(&cmd, flags.items, flags.count);
-  } else {
-    nob_log(NOB_ERROR, "not ready to compile %s file", ext);
-    return -1;
+  if (res > 0) {
+    if (mkdir_if_not_exists(temp_dir_name(out))) {
+      // res == 1, let's build
+      // create obj file
+      char *ext = temp_file_ext(in);
+      if (!strcmp(ext, ".c")) {
+        nob_cc(&cmd);
+    #if defined(_MSC_VER) && !defined(__clang__)
+    # error("object input cl.exe")
+    #else
+        cmd_append(&cmd, "-c", in);
+    #endif
+        nob_cc_output(&cmd, out);
+        cmd_append(&cmd,
+    #if defined(_MSC_VER) && !defined(__clang__)
+          "/MMD", "/std:c11", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
+    #  ifdef NO_STDMATH
+          "/DNO_STDMATH",
+    #  endif // NO_STDMATH
+    #  ifdef FAST_MATH
+          "/fp:fast", "/DFASTER_MATH",
+    #  endif // FAST_MATH
+    #else
+          "-MMD", "-std=c11", "-Werror", "-Wall", "-I./main",
+    #  ifdef NO_STDMATH
+          "-DNO_STDMATH",
+    #  endif // NO_STDMATH
+    #  ifdef FAST_MATH
+          "-ffast-math", "-DFASTER_MATH",
+    #  endif // FAST_MATH
+    #endif
+        );
+        da_append_many(&cmd, flags.items, flags.count);
+      } else {
+        nob_log(NOB_ERROR, "not ready to compile %s file", ext);
+        res = -1;
+      }
+      if (res > 0) res = cmd_run(&cmd, .async = &procs) ? 1 : -1;
+    } else {
+      res = -1;
+    }
   }
-  return cmd_run(&cmd, .async = &procs) ? 1 : -1;
+  free((void*)out);
+  sb_free(sb);
+  return res;
 }
 static bool walk_dir_cleanup(Walk_Entry entry) {
   return delete_file(entry.path);

@@ -25,6 +25,6 @@ int json_free(JSON*);
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 #endif //JSON_INCLUDED_

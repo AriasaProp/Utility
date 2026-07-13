@@ -35,9 +35,8 @@ void sort_intro_opt(void*, iter, iter,compare_funct);
 void sort_quick  (void*, iter, iter,compare_funct);
 void sort_quick_med(void*, iter, iter,compare_funct);
 
-
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 #endif // _SORT_INCLUDED_
