@@ -796,9 +796,9 @@ static const uint32 crc_table[256] = {
 
 bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void *data) {
   // png signaturev137 PNG \r\n 26 \n (header len, 13) \0\0\0\r *****
-  unsigned char wrbyte;
-  uint32_t crc;
-  unsigned char tdat[5];
+  ubyte wrbyte;
+  uint32 crc;
+  ubyte tdat[5];
 
   stbiw__write_smalln(s, PNG_SIGNATURE, 8);
 
@@ -826,13 +826,19 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     crc = (crc >> 8) ^ crc_table[(CAST(ubyte*)x)[k] ^ (crc & 0xff)]; \
 } while (0)
 
+#define SIGN do {\
+  hash_crc32_end(&crc); \
+  crc = imath_flip32(crc); \
+  stbiw__write_smalln(s, &crc, 4); \
+} while (0)
+
   WR32(13);
-  crc = ~0u;
+  hash_crc32_start(&crc);
   WRCRCS("IHDR", 4);
   WRCRC32(x);
   WRCRC32(y);
   WRCRC(8);
-  const unsigned char ctype[5] = {0xff, 0, 4, 2, 6};
+  const ubyte ctype[5] = {0xff, 0, 4, 2, 6};
   WRCRC(ctype[n]);
   {
     int i = 0;
@@ -841,16 +847,11 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
   crc = (crc >> 8) ^ crc_table[crc & 0xff];
   crc = (crc >> 8) ^ crc_table[crc & 0xff];
   crc = (crc >> 8) ^ crc_table[crc & 0xff];
-  crc = ~crc;
-  tdat[0] = (crc >> 24) & 0xff;
-  tdat[1] = (crc >> 16) & 0xff;
-  tdat[2] = (crc >>  8) & 0xff;
-  tdat[3] =  crc        & 0xff;
-  stbiw__write_smalln(s, tdat, 4);
+  SIGN;
   {
-    const unsigned char *pixels = (const unsigned char *)data;
+    const ubyte *pixels = (const ubyte *)data;
     iter stride_bytes = x * n, i, j;
-    unsigned char *filt = (unsigned char *)malloc((stride_bytes + 1) * y);
+    ubyte *filt = CAST(ubyte*)util_malloc((stride_bytes + 1) * y);
     if (!filt) return false;
     for (i = 0; i < y; ++i) {
       // Estimate the best filter by running through all of them:
@@ -869,21 +870,16 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     util_memfree(filt);
     if (!zlib) return false;
     WR32(zlen);
-    crc = ~0u;
+    hash_crc32_start(&crc);
     WRCRCS("IDAT", 4);
     stbiw__write_flush(s);
     s->func(s->context, zlib, zlen);
-    for (i = 0; i < (y); ++i)
+    for (i = 0; i < zlen; ++i)
       crc = (crc >> 8) ^ crc_table[zlib[i] ^ (crc & 0xff)];
     util_memfree(zlib);
-    crc = ~crc;
-    tdat[0] = (crc >> 24) & 0xff;
-    tdat[1] = (crc >> 16) & 0xff;
-    tdat[2] = (crc >>  8) & 0xff;
-    tdat[3] =  crc        & 0xff;
-    stbiw__write_smalln(s, tdat, 4);
+    SIGN;
   }
-  stbiw__write_smalln(s, (uint32_t[]){0, 0x444e4549, 0x826042ae}, 12);
+  stbiw__write_smalln(s, (uint32[]){0, 0x444e4549, 0x826042ae}, 12);
   stbiw__write_flush(s);
 #undef WRCRC
 #undef WRCRC32
