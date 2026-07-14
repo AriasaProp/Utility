@@ -46,8 +46,8 @@ static int zlib__zbuild_huffman(zlib__zhuffman *z, const ubyte *sizelist, int nu
   int code, next_code[16], sizes[17];
 
   // DEFLATE spec for generating codes
-  memset(sizes, 0, sizeof(sizes));
-  memset(z->fast, 0, sizeof(z->fast));
+  util_memset(sizes, 0, sizeof(sizes));
+  util_memset(z->fast, 0, sizeof(z->fast));
   for (i = 0; i < num; ++i)
     ++sizes[sizelist[i]];
   sizes[0] = 0;
@@ -211,19 +211,18 @@ static const int zlib__zlength_extra[31] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
 static const int zlib__zdist_base[32] = {1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
                                          257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 0, 0};
 static const int zlib__zdist_extra[32] = {0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13};
-static int zlib__parse_huffman_block(zlib__zbuf *a) {
+static bool zlib__parse_huffman_block(zlib__zbuf *a) {
   byte *zout = a->zout;
   for (;;) {
     int z = zlib__zhuffman_decode(a, &a->z_length);
-    if (z < 256) {
-      if (z < 0)
-        return zlib__err("bad huffman code"); // error in huffman codes
+    if (z < 0) return zlib__err("bad huffman code"); // error in huffman codes
+    else if (z < 256) {
       if (zout >= a->zout_end) {
         if (!zlib__zexpand(a, zout, 1))
-          return 0;
+          return false;
         zout = a->zout;
       }
-      *zout++ = (byte)z;
+      *zout++ = CAST(byte)z;
     } else {
       ubyte *p;
       int len, dist;
@@ -236,7 +235,7 @@ static int zlib__parse_huffman_block(zlib__zbuf *a) {
           // the stream actually read past the end so it is malformed.
           return zlib__err("unexpected end");
         }
-        return 1;
+        return true;
       }
       if (z >= 286)
         return zlib__err("bad huffman code"); // per DEFLATE, length codes 286 and 287 must not appear in compressed data
@@ -254,7 +253,7 @@ static int zlib__parse_huffman_block(zlib__zbuf *a) {
         return zlib__err("bad dist");
       if (len > a->zout_end - zout) {
         if (!zlib__zexpand(a, zout, len))
-          return 0;
+          return false;
         zout = a->zout;
       }
       p = (ubyte *)(zout - dist);
@@ -275,7 +274,7 @@ static int zlib__parse_huffman_block(zlib__zbuf *a) {
     }
   }
 }
-static int zlib__compute_huffman_codes(zlib__zbuf *a) {
+static bool zlib__compute_huffman_codes(zlib__zbuf *a) {
   static const ubyte length_dezigzag[19] = {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
   zlib__zhuffman z_codelength;
   ubyte lencodes[286 + 32 + 137]; // padding for maximum single op
@@ -287,13 +286,13 @@ static int zlib__compute_huffman_codes(zlib__zbuf *a) {
   int hclen = zlib__zreceive(a, 4) + 4;
   int ntot = hlit + hdist;
 
-  memset(codelength_sizes, 0, sizeof(codelength_sizes));
+  util_memset(codelength_sizes, 0, sizeof(codelength_sizes));
   for (i = 0; i < hclen; ++i) {
     int s = zlib__zreceive(a, 3);
     codelength_sizes[length_dezigzag[i]] = (ubyte)s;
   }
   if (!zlib__zbuild_huffman(&z_codelength, codelength_sizes, 19))
-    return 0;
+    return false;
 
   n = 0;
   while (n < ntot) {
@@ -318,17 +317,16 @@ static int zlib__compute_huffman_codes(zlib__zbuf *a) {
       }
       if (ntot - n < c)
         return zlib__err("bad codelengths");
-      memset(lencodes + n, fill, c);
+      util_memset(lencodes + n, fill, c);
       n += c;
     }
   }
   if (n != ntot)
     return zlib__err("bad codelengths");
-  if (!zlib__zbuild_huffman(&a->z_length, lencodes, hlit))
-    return 0;
-  if (!zlib__zbuild_huffman(&a->z_distance, lencodes + hlit, hdist))
-    return 0;
-  return 1;
+  if (!zlib__zbuild_huffman(&a->z_length, lencodes, hlit) ||
+      !zlib__zbuild_huffman(&a->z_distance, lencodes + hlit, hdist))
+    return false;
+  return true;
 }
 static int zlib__parse_uncompressed_block(zlib__zbuf *a) {
   ubyte header[4];
