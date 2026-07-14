@@ -63,15 +63,6 @@ int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *clbk, void *user);
 int stbi_info(char const *filename, int *x, int *y, int *comp);
 int stbi_is_16_bit(char const *filename);
 
-// ZLIB client - used by PNG, available for other purposes
-char *stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen);
-char *stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, int initial_size, int *outlen, int parse_header);
-char *stbi_zlib_decode_malloc(const char *buffer, int len, int *outlen);
-int stbi_zlib_decode_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
-
-char *stbi_zlib_decode_noheader_malloc(const char *buffer, int len, int *outlen);
-int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
-
 #ifdef __cplusplus
 }
 #endif

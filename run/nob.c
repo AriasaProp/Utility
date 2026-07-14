@@ -101,9 +101,10 @@ static const File_Exe Test_Execs[] = {
     .srcs = (const char *[]) {
       TEST_SRCS,
       "main/algorithm/hash.c",
+      "main/stb/local.c",
+      "main/stb/zlib.c",
       "main/stb/image_read.c",
       "main/stb/image_write.c",
-      "main/stb/local.c",
       "test/codec/image_test.c",
       NULL
     }
