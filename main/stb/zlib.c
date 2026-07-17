@@ -41,10 +41,9 @@ inline static int zlib__bit_reverse(int v, int bits) {
   // e.g. 11 bits, bit reverse and shift away 5
   return zlib__bitreverse16(v) >> (16 - bits);
 }
-static int zlib__zbuild_huffman(zlib__zhuffman *z, const ubyte *sizelist, int num) {
+static bool zlib__zbuild_huffman(zlib__zhuffman *z, const ubyte *sizelist, int num) {
   int i, k = 0;
   int code, next_code[16], sizes[17];
-
   // DEFLATE spec for generating codes
   util_memset(sizes, 0, sizeof(sizes));
   util_memset(z->fast, 0, sizeof(z->fast));
@@ -85,7 +84,7 @@ static int zlib__zbuild_huffman(zlib__zhuffman *z, const ubyte *sizelist, int nu
       ++next_code[s];
     }
   }
-  return 1;
+  return true;
 }
 // zlib-from-memory implementation for PNG reading
 //    because PNG allows splitting the zlib stream arbitrarily,
@@ -105,7 +104,7 @@ typedef struct {
 
   zlib__zhuffman z_length, z_distance;
 } zlib__zbuf;
-inline static int zlib__zeof(zlib__zbuf *z) {
+inline static bool zlib__zeof(zlib__zbuf *z) {
   return (z->zbuffer >= z->zbuffer_end);
 }
 inline static ubyte zlib__zget8(zlib__zbuf *z) {
@@ -121,7 +120,7 @@ static void zlib__fill_bits(zlib__zbuf *z) {
     z->num_bits += 8;
   } while (z->num_bits <= 24);
 }
-inline static uint zlib__zreceive(zlib__zbuf *z, int n) {
+inline static uint zlib__zreceive(zlib__zbuf *z, ubyte n) {
   uint k;
   if (z->num_bits < n)
     zlib__fill_bits(z);
@@ -179,7 +178,7 @@ inline static int zlib__zhuffman_decode(zlib__zbuf *a, zlib__zhuffman *z) {
   return zlib__zhuffman_decode_slowpath(a, z);
 }
 // need to make room for n bytes
-static int zlib__zexpand(zlib__zbuf *z, byte *zout, int n) {
+static bool zlib__zexpand(zlib__zbuf *z, byte *zout, int n) {
   byte *q;
   uint cur, limit, old_limit;
   z->zout = zout;
@@ -201,16 +200,16 @@ static int zlib__zexpand(zlib__zbuf *z, byte *zout, int n) {
   z->zout_start = q;
   z->zout = q + cur;
   z->zout_end = q + limit;
-  return 1;
+  return true;
 }
 static const int zlib__zlength_base[31] = {
   3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
   15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
   67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
-static const int zlib__zlength_extra[31] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0};
-static const int zlib__zdist_base[32] = {1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-                                         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 0, 0};
-static const int zlib__zdist_extra[32] = {0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13};
+static const ubyte zlib__zlength_extra[31] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0};
+static const int zlib__zdist_base[32] = {1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 0, 0};
+static const ubyte zlib__zdist_extra[32] = {0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13};
+
 static bool zlib__parse_huffman_block(zlib__zbuf *a) {
   byte *zout = a->zout;
   for (;;) {
@@ -328,7 +327,7 @@ static bool zlib__compute_huffman_codes(zlib__zbuf *a) {
     return false;
   return true;
 }
-static int zlib__parse_uncompressed_block(zlib__zbuf *a) {
+static bool zlib__parse_uncompressed_block(zlib__zbuf *a) {
   ubyte header[4];
   int len, nlen, k;
   if (a->num_bits & 7)
@@ -353,11 +352,11 @@ static int zlib__parse_uncompressed_block(zlib__zbuf *a) {
     return zlib__err("read past buffer");
   if (a->zout + len > a->zout_end)
     if (!zlib__zexpand(a, a->zout, len))
-      return 0;
+      return false;
   memcpy(a->zout, a->zbuffer, len);
   a->zbuffer += len;
   a->zout += len;
-  return 1;
+  return true;
 }
 static bool zlib__parse_zlib_header(zlib__zbuf *a) {
   int cmf = zlib__zget8(a);
@@ -399,48 +398,48 @@ Init algorithm: {
 }
 */
 
-static bool zlib__parse_zlib(zlib__zbuf *a, int parse_header) {
-  int final, type;
-  if (parse_header)
-    if (!zlib__parse_zlib_header(a))
-      return false;
+static bool zlib__parse_zlib(zlib__zbuf *a, bool parse_header) {
+  int final;
+  if (parse_header && !zlib__parse_zlib_header(a))
+    return false;
   a->num_bits = 0;
   a->code_buffer = 0;
   a->hit_zeof_once = 0;
   do {
     final = zlib__zreceive(a, 1);
-    type = zlib__zreceive(a, 2);
-    if (type == 0) {
-      if (!zlib__parse_uncompressed_block(a))
+    switch (zlib__zreceive(a, 2)) {
+      case 0:
+        if (!zlib__parse_uncompressed_block(a))
+          return false;
+        break;
+      case 3:
         return false;
-    } else if (type == 3) {
-      return false;
-    } else {
-      if (type == 1) {
+      case 1:
         // use fixed code lengths
         if (!zlib__zbuild_huffman(&a->z_length, zlib__zdefault_length, STBI__ZNSYMS) ||
-            !zlib__zbuild_huffman(&a->z_distance, zlib__zdefault_distance, 32))
+            !zlib__zbuild_huffman(&a->z_distance, zlib__zdefault_distance, 32) ||
+            !zlib__parse_huffman_block(a))
           return false;
-      } else if (!zlib__compute_huffman_codes(a)) {
-        return false;
-      }
-      if (!zlib__parse_huffman_block(a))
-        return false;
+        break;
+      default:
+        if (!zlib__compute_huffman_codes(a) ||
+            !zlib__parse_huffman_block(a))
+          return false;
+        break;
     }
   } while (!final);
   return true;
 }
-static bool zlib__do_zlib(zlib__zbuf *a, byte *obuf, int olen, int exp, int parse_header) {
+static bool zlib__do_zlib(zlib__zbuf *a, byte *obuf, int olen, int exp, bool parse_header) {
   a->zout_start = obuf;
   a->zout = obuf;
   a->zout_end = obuf + olen;
   a->z_expandable = exp;
-
   return zlib__parse_zlib(a, parse_header);
 }
 byte *zlib_decode_malloc_guesssize(const byte *buffer, int len, int initial_size, int *outlen) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(initial_size);
+  byte *p = CAST(byte *)util_malloc(initial_size);
   if (p == NULL)
     return NULL;
   a.zbuffer = (ubyte *)buffer;
@@ -457,16 +456,14 @@ byte *zlib_decode_malloc_guesssize(const byte *buffer, int len, int initial_size
 byte *zlib_decode_malloc(byte const *buffer, int len, int *outlen) {
   return zlib_decode_malloc_guesssize(buffer, len, 16384, outlen);
 }
-byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, int initial_size, int *outlen, int parse_header) {
+byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, iter *size, bool parse_header) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(initial_size);
-  if (p == NULL)
-    return NULL;
+  byte *p = (byte *)util_malloc(*size);
+  if (p == NULL) return NULL;
   a.zbuffer = (ubyte *)buffer;
   a.zbuffer_end = (ubyte *)buffer + len;
-  if (zlib__do_zlib(&a, p, initial_size, 1, parse_header)) {
-    if (outlen)
-      *outlen = (int)(a.zout - a.zout_start);
+  if (zlib__do_zlib(&a, p, *size, 1, parse_header)) {
+    *size = (int)(a.zout - a.zout_start);
     return a.zout_start;
   } else {
     util_memfree(a.zout_start);
@@ -484,7 +481,7 @@ int zlib_decode_buffer(byte *obuffer, int olen, byte const *ibuffer, int ilen) {
 }
 byte *zlib_decode_noheader_malloc(byte const *buffer, int len, int *outlen) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(16384);
+  byte *p = CAST(byte*)util_malloc(16384);
   if (p == NULL)
     return NULL;
   a.zbuffer = (ubyte *)buffer;
@@ -551,10 +548,8 @@ static int zlib__zlib_bitrev(int code, int codebits) {
   return res;
 }
 static uint zlib__zlib_countm(ubyte *a, ubyte *b, int limit) {
-  int i;
-  for (i = 0; i < limit && i < 258; ++i)
-    if (a[i] != b[i])
-      break;
+  uint i, j;
+  for (i = 0, j = MIN(limit, 258); (a[i] == b[i]) && (i < j); ++i) ;
   return i;
 }
 static uint zlib__zhash(ubyte *data) {
@@ -576,19 +571,17 @@ static uint zlib__zhash(ubyte *data) {
 #define zlib__zlib_huff3(n) zlib__zlib_huffa(0 + (n) - 256, 7)
 #define zlib__zlib_huff4(n) zlib__zlib_huffa(0xc0 + (n) - 280, 8)
 #define zlib__zlib_huff(n) do { \
-  if ((n) <= 143) zlib__zlib_huff1(n);\
+  if ((n) <= 143)      zlib__zlib_huff1(n); \
   else if ((n) <= 255) zlib__zlib_huff2(n); \
   else if ((n) <= 279) zlib__zlib_huff3(n); \
-  else zlib__zlib_huff4(n);\
+  else                 zlib__zlib_huff4(n); \
 } while (0)
 #define zlib__zlib_huffb(n) ((n) <= 143 ? zlib__zlib_huff1(n) : zlib__zlib_huff2(n))
 #define zlib__ZHASH 16384
 
 ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
   static ushrt lengthc[] = {3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 259};
-  static ubyte lengtheb[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0};
   static ushrt distc[] = {1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 32768};
-  static ubyte disteb[] = {0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13};
   uint bitbuf = 0;
   int i, j, bitcount = 0;
   ubyte *out = NULL;
@@ -651,13 +644,13 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
       for (j = 0; best > lengthc[j + 1] - 1; ++j)
         ;
       zlib__zlib_huff(j + 257);
-      if (lengtheb[j])
-        zlib__zlib_add(best - lengthc[j], lengtheb[j]);
+      if (zlib__zlength_extra[j])
+        zlib__zlib_add(best - lengthc[j], zlib__zlength_extra[j]);
       for (j = 0; d > distc[j + 1] - 1; ++j)
         ;
       zlib__zlib_add(zlib__zlib_bitrev(j, 5), 5);
-      if (disteb[j])
-        zlib__zlib_add(d - distc[j], disteb[j]);
+      if (zlib__zdist_extra[j])
+        zlib__zlib_add(d - distc[j], zlib__zdist_extra[j]);
       i += best;
     } else {
       zlib__zlib_huffb(data[i]);

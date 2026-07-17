@@ -8,7 +8,7 @@ extern "C" {
 #endif // __cplusplus
 
 byte *zlib_decode_malloc_guesssize(const byte *buffer, int len, int initial_size, int *outlen);
-byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, int initial_size, int *outlen, int parse_header);
+byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, iter size, bool parse_header);
 byte *zlib_decode_malloc(const byte *buffer, int len, int *outlen);
 int zlib_decode_buffer(byte *obuffer, int olen, const byte *ibuffer, int ilen);
 

@@ -120,8 +120,9 @@ typedef unsigned long long ullong;
   #define EXPECT(x,y) ((x) == (y))
 #endif
 
-#define MIN(X,Y)  (((X) < (Y)) ? (X) : (Y))
-#define MAX(X,Y)  (((X) > (Y)) ? (X) : (Y))
+#define MIN(X,Y)           (((X) < (Y)) ? (X) : (Y))
+#define MAX(X,Y)           (((X) > (Y)) ? (X) : (Y))
+#define CLAMP(min,mid,max) ((min) > (mid) ? (min) : ((max) < (mid) ? (max) : (mid)))
 
 #ifdef __cplusplus
   #define CLIT(T) T

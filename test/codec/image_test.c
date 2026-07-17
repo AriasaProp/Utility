@@ -26,23 +26,19 @@ int main(int UNUSED_ARG(argc), char** UNUSED_ARG(argv)) {
     printf("fail make bin/data/codec/image directory!");
     return EXIT_FAILURE;
   }
-  image_bitmap ibitmap = {
-    .bpc = 8,
-  };
   bool wr;
   for (i = 0; i < STACK_ARR_LEN(Image_Test); ++i) {
 #define RUN_FRMT(F, X) do {\
     snprintf(filename, 255, "%s." #F, Image_Test[i]); \
-    ibitmap.data = stbi_read(filename, CAST(int*)&ibitmap.w, CAST(int*)&ibitmap.h, &channel, 0); \
-    ibitmap.chnl = channel;\
-    if (!ibitmap.data) {                              \
+    image_bitmap ibitmap = image_read(filename); \
+    if (!ibitmap) {                              \
       printf("Image load fail for %s!\n", filename); \
       printf("reason: %s!\n", stb_get_error()); \
       break; \
     } \
     snprintf(filename, 255, "bin/%s." #F, Image_Test[i]); \
     wr = image_write(filename, ibitmap, ImageFile_##X, .quality = 100);\
-    util_memfree(ibitmap.data);\
+    image_free(ibitmap);\
     if (!wr) {\
       printf("fail rewrite %s!\n", filename);\
       printf("reason: %s!\n", stb_get_error());\
