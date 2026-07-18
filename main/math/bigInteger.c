@@ -286,36 +286,46 @@ int bigInteger_cmp(const bigInteger a, const bigInteger b) {
 }
 // return division result, save reminder on nominator
 void bigInteger_div_mod(const bigInteger a, const bigInteger b, bigInteger *res, bigInteger *REM) {
-  bigInteger *rem = !REM ? CAST(bigInteger*)util_calloc(1, sizeof(bigInteger)) : REM;
+  word c, c1;
+  iter i, j;
+  bigInteger *rem;
+  if (REM) bigInteger_zero((rem = REM));
+  else rem = CAST(bigInteger*)util_calloc(1, sizeof(bigInteger));
   if (res) {
     bigInteger_zero(res);
     res->neg = a.neg ^ b.neg;
   }
-  bigInteger_zero(rem);
-  word c, c1;
-  iter i, j;
-  for (j = a.count; j--; ) {
-    for (i = WORD_BITS; i--; ) {
-      c1 = (a.items[j] >> i) & 1;
-      darray_foreach(word, irem, rem) {
-        c = *irem;
-        *irem <<= 1;
-        *irem |= c1;
-        c1 = (c >> (WORD_BITS - 1)) & 1;
-      }
-      if (c1) darray_append(rem, c1);
-      c1 = (bigInteger__cmp(*rem, b) >= 0);
-      if (c1) bigInteger__wordsub(rem->items, rem->count, b.items, b.count);
-      if (!res) continue;
-      darray_foreach(word, ires, res) {
-        c = *ires;
-        *ires <<= 1;
-        *ires |= c1;
-        c1 = (c >> (WORD_BITS - 1)) & 1;
-      }
-      if (c1) darray_append(res, c1);
-    }
+  if (bigInteger__cmp(a, b) < 0) {
+  	if (!REM) bigInteger_free(rem);
+  	else bigInteger_set(rem, b);
+  	return;
   }
+  i = b.count - 1;
+  j = a.count - i;
+  darray_appends(rem, a.items + j, i);
+  j *= WORD_BITS;
+	while (j--) {
+		// for (i = WORD_BITS; i--;) {
+	    c1 = (a.items[j / WORD_BITS] >> (j % WORD_BITS)) & 1;
+	    darray_foreach(word, irem, rem) {
+	      c = *irem;
+	      *irem <<= 1;
+	      *irem |= c1;
+	      c1 = (c >> (WORD_BITS - 1)) & 1;
+	    }
+	    if (c1) darray_append(rem, c1);
+	    c1 = (bigInteger__cmp(*rem, b) >= 0);
+	    if (c1) bigInteger__wordsub(rem->items, rem->count, b.items, b.count);
+	    if (!res) continue;
+	    darray_foreach(word, ires, res) {
+	      c = *ires;
+	      *ires <<= 1;
+	      *ires |= c1;
+	      c1 = (c >> (WORD_BITS - 1)) & 1;
+	    }
+	    if (c1) darray_append(res, c1);
+	  // }
+	}
   if (!REM) bigInteger_free(rem);
 }
 // duplicate operate

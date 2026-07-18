@@ -187,7 +187,6 @@ int main(int argc, char **argv) {
       da_append(&task, *argv);
     }
   }
-  nob_log(NOB_INFO, "Parsed args.\n");
   int ret = EXIT_SUCCESS;
 #define CASE_ACT(A,B) if (!strcmp(da_first(&task), A) || !strcmp(da_first(&task), B))
   if (!task.count) {
