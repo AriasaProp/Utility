@@ -25,7 +25,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 	    dstring_clean(qstr);
 	    bigInteger_append_dstring(&qstr, state[0]);
 	    if (!dstring_equal(bstr, qstr)) {
-	      PRINT_ERR("Setter cstr: \n should %s but get %s \n", bstr, qstr);
+	      PRINT_ERR("Setter cstr: \n should %s(%zu) but get %s(%zu) \n", bstr, dstring_len(bstr), qstr, dstring_len(qstr));
 	      goto end; 
 	    }
 	  }
