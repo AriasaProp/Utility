@@ -1,10 +1,10 @@
 #ifndef help_msg
 #define help_msg "\n"\
-  "Usage: ./nob <command> [group|kind] [flags]\n"\
+  "Usage: run/nob <command> [group|kind] [flags]\n"\
   "   COMMAND\tDescription\n"\
   "h[elp]     show this message.\n"\
-  "c[lean]    clean generated binary files/folders by [group] or all.\n"\
-  "s[tatus]   show current device stat by [group] or all.\n"\
+  "c[lean]    clean generated binary [group] files/folders or all.\n"\
+  "s[tatus]   show current device [group] or all.\n"\
   "test       make and run test by [group] or all.\n"\
   "benchmark  make and run benchmark by [group] or all.\n"\
   "\n"\
