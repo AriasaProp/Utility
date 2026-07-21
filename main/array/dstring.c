@@ -52,11 +52,13 @@ inline void dstring_append(dstring *str, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   int r = vsnprintf(NULL, 0, fmt, args);
+  va_end(args);
   ASSERT((r >= 0) && "invalid on vsnprintf");
-  r += 2;
+  r += 1;
   dstring_head *sh = dstring__get_head(*str);
   sh = dstring__reserve(sh, sh->count + r);
   *str = dstring__get_string(sh);
+  va_start(args, fmt);
   r = vsnprintf(*str + sh->count, r, fmt, args);
   va_end(args);
   sh->count += r;
