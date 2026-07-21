@@ -13,6 +13,7 @@
 #include <limits.h> // INT_MAX
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <unistd.h>
