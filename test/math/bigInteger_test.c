@@ -3,59 +3,34 @@
 #include "common.h"
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
-  int result = EXIT_FAILURE;
-  bigInteger state[5] = {0};
-  dstring qstr = NULL;
-  iter i, cnt = 0;
-  PRINT_INF("BigInteger Test! ");
-  {
-    const char *sample[] = {
-      "983425567974209460010563773378164966770016445743813677744528736750847228861625287",
-      "361782048380060441055493094922754973076268374189619389236925117235200000000000000"
-    };
-    bigInteger_set_cstr(state    , sample[0]);
-    dstring_clean(qstr);
-    bigInteger_append_dstring(&qstr, state[0]);
-    if (util_memcmp(sample[0], qstr, util_strlen(sample[0]))) {
-      PRINT_ERR("Setter cstr: \n should %s but get %s \n", sample[0], qstr);
-      goto end; 
-    }
-    bigInteger_set_cstr(state + 1, sample[1]);
-    dstring_clean(qstr);
-    bigInteger_append_dstring(&qstr, state[1]);
-    if (util_memcmp(sample[1], qstr, util_strlen(sample[1]))) {
-      PRINT_ERR("Setter cstr: \n should %s but get %s \n", sample[1], qstr);
-      goto end; 
-    }
-  }
+#define COMMON_TEST 6080
 #define MAX_RNDI 16
-#define RAND_S  CAST(int)(imath_rand_ubyte()&1)
+#define RAND_S  CAST(bool)(imath_rand_ubyte()&1)
 #define RAND_C  CAST(iter)((imath_rand_uint() % MAX_RNDI) + 1)
 #define RAND_W  CAST(word)(imath_rand_uint() + imath_rand_uint())
 #define RAND_I  imath_rand_int()
-  word rndT[MAX_RNDI + 1] = {0};
-  iter nword;
-  int oprB;
-#define COMMON_TEST 6080
-#define CASEW(A,B) do {\
-  for (cnt = 0; cnt < COMMON_TEST; ++cnt) {\
-    for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
-    bigInteger_set_words(state + 0, false, rndT, nword); \
-    state[3] = bigInteger_##A (state[0]); \
-    bigInteger_move(state + 1, state + 3); \
-    state[3] = bigInteger_##B (state[1]); \
-    bigInteger_move(state + 2, state + 3); \
-    if (bigInteger_cmp(state[0],state[2])) { \
-      printf(RED"big[%zu] "#A"_"#B RESET"\n", cnt); \
-      for (i = 0; i < 3; ++i) {\
-        dstring_clean(qstr);\
-        bigInteger_append_dstring(&qstr, state[i]);\
-        printf("%zu: %50s\n", i, qstr);\
-      }\
-      goto end; \
-    }\
-  }\
-} while(0)
+  int result = EXIT_FAILURE, oprB;
+  bigInteger state[5] = {0};
+  dstring qstr = NULL;
+  iter nword, i, cnt = 0;
+  word rndT[MAX_RNDI + 1];
+  PRINT_INF("BigInteger Test! ");
+  {
+  	dstring bstr = NULL;
+	  for (cnt = 0; cnt < COMMON_TEST; ++cnt) {
+	    dstring_clean(bstr);
+	    for (i = RAND_C; i--; )
+	    	dstring_append(&bstr, "%zu", RAND_W);
+	    bigInteger_set_cstr(state, bstr);
+	    dstring_clean(qstr);
+	    bigInteger_append_dstring(&qstr, state[0]);
+	    if (!dstring_equal(bstr, qstr)) {
+	      PRINT_ERR("Setter cstr: \n should %s but get %s \n", bstr, qstr);
+	      goto end; 
+	    }
+	  }
+	  dstring_free(&bstr);
+  }
 #define CASE(A,B) do {\
   for (cnt = 0; cnt < COMMON_TEST; ++cnt) {\
     for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
@@ -97,6 +72,25 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   CASE(add,sub);
   CASE(sub,add);
   CASE(mul,div);
+#define CASEW(A,B) do {\
+  for (cnt = 0; cnt < COMMON_TEST; ++cnt) {\
+    for (nword = RAND_C,i = 0; i < nword; rndT[i++] = RAND_W) ;\
+    bigInteger_set_words(state + 0, false, rndT, nword); \
+    state[3] = bigInteger_##A (state[0]); \
+    bigInteger_move(state + 1, state + 3); \
+    state[3] = bigInteger_##B (state[1]); \
+    bigInteger_move(state + 2, state + 3); \
+    if (bigInteger_cmp(state[0],state[2])) { \
+      printf(RED"big[%zu] "#A"_"#B RESET"\n", cnt); \
+      for (i = 0; i < 3; ++i) {\
+        dstring_clean(qstr);\
+        bigInteger_append_dstring(&qstr, state[i]);\
+        printf("%zu: %50s\n", i, qstr);\
+      }\
+      goto end; \
+    }\
+  }\
+} while(0)
   CASEW(pow2,sqrt);
 #undef CASEW
 #undef CASE

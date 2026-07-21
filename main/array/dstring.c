@@ -61,6 +61,10 @@ inline void dstring_append(dstring *str, const char *fmt, ...) {
   va_end(args);
   sh->count += r;
 }
+bool dstring_equal(const dstring a,const dstring b) {
+	const iter l = dstring_len(a);
+	return (dstring_len(b) == l) && !util_memcmp(a,b,l);
+}
 inline void dstring_reserve(dstring *str, iter sz) {
   *str = dstring__get_string(dstring__reserve(dstring__get_head(*str), sz + 1));
 }

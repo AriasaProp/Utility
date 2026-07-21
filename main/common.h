@@ -72,18 +72,21 @@ typedef unsigned long long ullong;
   #define UNUSED_ARG(x)    __pragma(warning(suppress : 4100 4101)) x
   #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          0
+	#define SIMD_ALIGN(type, name) __declspec(align(16)) type name
 #elif defined(__GNUC__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
   #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          __has_builtin(x)
+	#define SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
 #elif defined(__clang__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
   #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          __has_builtin(x)
+	#define SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
 #else /* Unknown compiler */
   #error "Not ready for this compiler"
 #endif

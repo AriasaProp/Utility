@@ -150,7 +150,7 @@ static bigInteger bigInteger__Multiply(const bigInteger a, const bigInteger b) {
     if (carry[0]) darray_append(&c, carry[0]);
   }
   c.neg = a.neg ^ b.neg;
-  // bigInteger__shrink(&c);
+  bigInteger__shrink(&c);
   return c;
 }
 static word bigInteger__division(bigInteger *a, const word b) {
@@ -289,24 +289,25 @@ void bigInteger_div_mod(const bigInteger a, const bigInteger b, bigInteger *res,
   word c, c1;
   iter i, j;
   bigInteger *rem;
-  if (REM) bigInteger_zero((rem = REM));
-  else rem = CAST(bigInteger*)util_calloc(1, sizeof(bigInteger));
   if (res) {
     bigInteger_zero(res);
     res->neg = a.neg ^ b.neg;
   }
-  if (bigInteger__cmp(a, b) < 0) {
-  	if (!REM) bigInteger_free(rem);
-  	else bigInteger_set(rem, b);
-  	return;
-  }
+  j = a.count;
   i = b.count - 1;
-  j = a.count - i;
-  darray_appends(rem, a.items + j, i);
-  j *= WORD_BITS;
+	if (!b.count || (j < i)) {
+		if (REM) bigInteger_set(REM, a);
+	  return;
+	} else if (REM) {
+  	bigInteger_zero((rem = REM));
+  } else {
+  	rem = CAST(bigInteger*)util_calloc(1, sizeof(bigInteger));
+  }
+  j -= i;
+	darray_appends(rem, a.items + j, i);
 	while (j--) {
-		// for (i = WORD_BITS; i--;) {
-	    c1 = (a.items[j / WORD_BITS] >> (j % WORD_BITS)) & 1;
+		for (i = WORD_BITS; i--;) {
+	    c1 = (a.items[j] >> i) & 1;
 	    darray_foreach(word, irem, rem) {
 	      c = *irem;
 	      *irem <<= 1;
@@ -321,10 +322,10 @@ void bigInteger_div_mod(const bigInteger a, const bigInteger b, bigInteger *res,
 	      c = *ires;
 	      *ires <<= 1;
 	      *ires |= c1;
-	      c1 = (c >> (WORD_BITS - 1)) & 1;
+	      c1 = c >> (WORD_BITS - 1);
 	    }
 	    if (c1) darray_append(res, c1);
-	  // }
+	  }
 	}
   if (!REM) bigInteger_free(rem);
 }

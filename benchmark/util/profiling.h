@@ -10,7 +10,7 @@ typedef ullong pr_time;
 extern "C" {
 #endif // __cplusplus
 
-pr_time profiling_current_time    ();
+pr_time profiling_current_time    (void);
 pr_time profiling_time_since      (pr_time);
 double  profiling_as_dsec         (pr_time);
 float   profiling_as_fsec         (pr_time);
@@ -18,6 +18,8 @@ double  profiling_as_dms          (pr_time);
 float   profiling_as_fms          (pr_time);
 double  profiling_as_dus          (pr_time);
 float   profiling_as_fus          (pr_time);
+double  profiling_as_dns          (pr_time);
+float   profiling_as_fns          (pr_time);
 void    profiling_append_as_time2 (dstring*, pr_time);
 void    profiling_append_as_time  (dstring*, pr_time);
 

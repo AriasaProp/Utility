@@ -49,6 +49,7 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
 
 #define CHAR_WHITESPACE ' '
 
+
 /* ================================
  *  Standar Utility Function
  * ================================
