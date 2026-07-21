@@ -1,7 +1,6 @@
 name: Tests
 
 on:
-	workflow_dispatch
   push:
     paths:
       - '.github/workflows/tests.yml'
@@ -9,6 +8,7 @@ on:
       - 'test/**'
       - 'benchmark/**'
       - 'nob.c'
+  workflow_dispatch:
 
 jobs:
   tests:
