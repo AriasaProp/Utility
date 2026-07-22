@@ -4,7 +4,11 @@
 
 
 int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
-  PRINT_INF("Hash test is ");
+  PRINT_INF("Hash test is"
+#ifdef BYTE_FLIP
+		"(byte_flip) "
+#endif // BYTE_FLIP
+  );
   iter i, j, n;
   dstring str = NULL;
   int ret = EXIT_FAILURE;

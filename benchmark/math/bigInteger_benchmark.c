@@ -128,12 +128,12 @@ void init_e(bigInteger *state) {
   bigInteger_set_int (state + 3, 2);
 }
 char extract_e(bigInteger *state) {
-  bigInteger_mmul (state + 0, state[3]);
-  bigInteger_madd (state + 0, state[2]);
+  // bigInteger_mmul (state + 0, state[3]);
+  // bigInteger_madd (state + 0, state[2]);
+  bigInteger_mmuladd(state + 0, state[3], state[2]);
   bigInteger_mmul (state + 1, state[3]);
   bigInteger_mincr(state + 3);
-  bigInteger_mmul (state + 0, state[3]);
-  bigInteger_madd (state + 0, state[2]);
+  bigInteger_mmuladd(state + 0, state[3], state[2]);
   bigInteger_mmul (state + 1, state[3]);
   bigInteger_mincr(state + 3);
   bigInteger_div_mod(state[0], state[1], state + 4, state + 5);
@@ -183,8 +183,7 @@ void init_sqrt2(bigInteger *state) {
 char extract_sqrt2(bigInteger *state) {
 	for (iter i = 0; i < 4; ++i) {
     bigInteger_mmul(state + 2, state[3]);
-    bigInteger_mmul(state + 0, state[4]);
-    bigInteger_madd(state + 0, state[2]);
+    bigInteger_mmuladd(state + 0, state[4], state[2]);
     bigInteger_mmul(state + 1, state[4]);
     bigInteger_maddi(state + 3, 2);
     bigInteger_maddi(state + 4, 4);
@@ -218,10 +217,9 @@ char extract_pi(bigInteger *state) {
     bigInteger_set   (state + 5, state[3]);
     bigInteger_mmuli (state + 5, 7);
     bigInteger_maddi (state + 5, 2);
-    bigInteger_mmul  (state + 5, state[0]);
     bigInteger_set   (state + 6, state[1]);
     bigInteger_mmul  (state + 6, state[4]);
-    bigInteger_madd  (state + 5, state[6]);
+    bigInteger_mmuladd(state + 5, state[0], state[6]);
     bigInteger_mdiv  (state + 5, state[2]);
     bigInteger_set   (state + 6, state[0]);
     bigInteger_mshfli(state + 6, 1);

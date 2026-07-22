@@ -61,6 +61,7 @@ bigInteger bigInteger_sqrt (const bigInteger);
 bigInteger bigInteger_add  (const bigInteger, const bigInteger);
 bigInteger bigInteger_sub  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mul  (const bigInteger, const bigInteger);
+bigInteger bigInteger_muladd(const bigInteger, const bigInteger, const bigInteger);
 bigInteger bigInteger_div  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mod  (const bigInteger, const bigInteger);
 // modification operate no error should be occure
@@ -70,7 +71,7 @@ void bigInteger_maddi (bigInteger*, const int);
 void bigInteger_msubi (bigInteger*, const int);
 void bigInteger_mmuli (bigInteger*, const int);
 void bigInteger_mdivi (bigInteger*, const int);
-void bigInteger_mmodi (bigInteger*, const uint);
+void bigInteger_mmodi (bigInteger*, const int);
 void bigInteger_mpowi (bigInteger*, const uint);
 void bigInteger_mshfli(bigInteger*, const uint);
 void bigInteger_mshfri(bigInteger*, const uint);
@@ -79,6 +80,7 @@ void bigInteger_msqrt (bigInteger*);
 void bigInteger_madd  (bigInteger*, const bigInteger);
 void bigInteger_msub  (bigInteger*, const bigInteger);
 void bigInteger_mmul  (bigInteger*, const bigInteger);
+void bigInteger_mmuladd(bigInteger*, const bigInteger, const bigInteger);
 void bigInteger_mdiv  (bigInteger*, const bigInteger);
 void bigInteger_mmod  (bigInteger*, const bigInteger);
 // print out
