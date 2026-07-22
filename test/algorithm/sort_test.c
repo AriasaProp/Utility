@@ -15,15 +15,17 @@ typedef void (*sort_funct)(void*, iter, iter, compare_funct);
 static int data_compare (const void*,const void*);
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
-  dstring main_str = NULL;
-  int proofen = 0, result = EXIT_FAILURE;
-	iter i, j;
+	PRINT_INF("Sorting Test for %d data is ", DATA_SIZE);
 	// randomize $(STYPE) data
   void *temp_data = util_malloc(DATA_BYTES * 2);
 	if (!temp_data) {
-	  PRINT_ERR("fail to allocate trial memory, for %lu bytes \n", DATA_BYTES * 2);
+	  printf("fail to allocate memory, for %lu bytes \n", DATA_BYTES * 2);
 	  return EXIT_FAILURE;
 	}
+  dstring main_str = NULL;
+  bool proofen = true;
+  int result = EXIT_FAILURE;
+	iter i, j;
   STYPE *data_r = (CAST(STYPE*) temp_data) + DATA_SIZE;
   // data_r[0] = 3.0f;
   // data_r[1] = -2.0f;
@@ -36,7 +38,6 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 // 	for (j = 0; j < DATA_SIZE; ++j)
 //     printf(" %.1f -",(CAST(float*)data_r)[j]);
 //   printf("\n");
-	PRINT_INF("Sorting Test! %d data ", DATA_SIZE);
   const struct {
     const char *name; sort_funct srt;
   } sort_algo[] = {
@@ -63,7 +64,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   	{ .name = "Merge"   , .srt = sort_merge,},
 #endif
   	{ .name = "Intro"   , .srt = sort_intro,},
-  	{ .name = "Intro_"   , .srt = sort_intro_opt,},
+  	{ .name = "Intro_"  , .srt = sort_intro_opt,},
   	{ .name = "Quick"   , .srt = sort_quick,},
   };
 	for (i = 0; i < STACK_ARR_LEN(sort_algo); ++i) {
@@ -72,7 +73,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   	sort_algo[i].srt(temp_data, DATA_SIZE, sizeof(STYPE), data_compare);
   	// proof sorted
   	STYPE *ret = CAST(STYPE*) temp_data;
-  	for (j = 1, proofen = 1; proofen && (j < DATA_SIZE); ++j) {
+  	for (j = 1; proofen && (j < DATA_SIZE); ++j) {
   	  proofen &= (ret[j - 1] <= ret[j]);
   	}
     if (!proofen) {

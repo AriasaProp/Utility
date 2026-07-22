@@ -35,8 +35,7 @@ inline void dstring_append_char(dstring *str,char c) {
   dstring_head *sh = dstring__get_head(*str);
   sh = dstring__reserve(sh, sh->count + 2);
   *str = dstring__get_string(sh);
-  *(*str + sh->count) = c;
-  ++sh->count;
+  (*str)[sh->count++] = c;
   (*str)[sh->count] = 0;
 }
 inline void dstring_append_cstr(dstring *str, const char *cstr, iter len) {
@@ -44,9 +43,8 @@ inline void dstring_append_cstr(dstring *str, const char *cstr, iter len) {
   sh = dstring__reserve(sh, sh->count + len + 1);
   *str = dstring__get_string(sh);
   util_memcpy(*str + sh->count, cstr, len);
-  sh->count += len;
-  // is always memcpy end with null?
-  // (*str)[sh->count] = 0;
+  // may memcpy end with null?
+  (*str)[sh->count += len] = 0;
 }
 inline void dstring_append(dstring *str, const char *fmt, ...) {
   va_list args;

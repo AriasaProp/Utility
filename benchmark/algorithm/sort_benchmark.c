@@ -8,8 +8,8 @@
 #define DATA_RANDOM imath_rand_float ()
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
-// #define DATA_SIZE   2118047
-#define DATA_SIZE   200789
+// #define DATA_SIZE   200
+#define DATA_SIZE   102180
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);
@@ -49,25 +49,25 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 } while (0)
   
   CASE("Quick{b}",qsort);
-#if DATA_SIZE < 210
+#if DATA_SIZE <    210
   CASE("Stooge"  ,sort_stooge);
 #endif
-#if DATA_SIZE < 1310
+#if DATA_SIZE <   1310
   CASE("Pancke"  ,sort_panck);
   CASE("Gnome"   ,sort_gnome);
   CASE("Brick"   ,sort_brick);
   CASE("Bubble"  ,sort_bubble);
 #endif
-#if DATA_SIZE < 4070
+#if DATA_SIZE <   4070
   CASE("Shaker"  ,sort_shaker);
   CASE("Insert"  ,sort_insert);
   CASE("Heap"    ,sort_heap);
 #endif
-#if DATA_SIZE < 180380
+#if DATA_SIZE <  80380
   CASE("Select"  ,sort_select);
   CASE("Shell"   ,sort_shell);
 #endif
-#if DATA_SIZE < 304875
+#if DATA_SIZE < 187700
   CASE("Merge"   ,sort_merge);
 #endif
   CASE("Intro"   ,sort_intro);

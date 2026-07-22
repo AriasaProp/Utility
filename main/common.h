@@ -44,6 +44,9 @@
   typedef uint16_t 	ushrt;
   typedef uint32_t 	uint32;
   typedef uint64_t 	uint64;
+  #ifdef __SIZEOF_INT128__
+  typedef __uint128_t 	uint128;
+	#endif
   typedef size_t    iter;
 #endif
 

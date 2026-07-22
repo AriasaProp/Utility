@@ -12,7 +12,11 @@
 #include "common.h"
 #include "array/dstring.h"
 
-typedef uint word;
+#ifdef __SIZEOF_INT128__
+	typedef uint128 word;
+#else
+	typedef uint64 word;
+#endif
 typedef struct {
   bool neg;
   word *items;

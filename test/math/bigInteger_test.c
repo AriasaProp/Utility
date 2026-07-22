@@ -3,6 +3,7 @@
 #include "common.h"
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
+  PRINT_INF("BigInteger Test is ");
 #define COMMON_TEST 6080
 #define MAX_RNDI 16
 #define RAND_S  CAST(bool)(imath_rand_ubyte()&1)
@@ -14,7 +15,6 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   dstring qstr = NULL;
   iter nword, i, cnt = 0;
   word rndT[MAX_RNDI + 1];
-  PRINT_INF("BigInteger Test! ");
   {
   	dstring bstr = NULL;
 	  for (cnt = 0; cnt < COMMON_TEST; ++cnt) {
@@ -25,7 +25,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 	    dstring_clean(qstr);
 	    bigInteger_append_dstring(&qstr, state[0]);
 	    if (!dstring_equal(bstr, qstr)) {
-	      PRINT_ERR("Setter cstr: \n should %s(%zu) but get %s(%zu) \n", bstr, dstring_len(bstr), qstr, dstring_len(qstr));
+	      printf("Setter cstr:\n %s(%zu) != %s(%zu) \n", bstr, dstring_len(bstr), qstr, dstring_len(qstr));
 	      goto end; 
 	    }
 	  }
@@ -97,7 +97,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 #undef COMMON_TEST
 #undef MAX_RNDI
   result = EXIT_SUCCESS;
-  printf("Done!\n");
+  printf(GREEN"Success!\n"RESET);
 end:
   for (i = 0; i < 5; ++i)
     bigInteger_free(state + i);

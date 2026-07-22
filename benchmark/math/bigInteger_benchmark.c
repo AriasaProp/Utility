@@ -4,12 +4,13 @@
 #include "common.h"
 
 #include <unistd.h>
+#include <pthread.h>
 #include <fcntl.h>
 
 // duration limit each test
-#define TIME 3.1
+#define TIME 0.98
 // undef UPDATE_RATE for info
-#define UPDATE_RATE 0.98
+#define UPDATE_RATE 0.1
 
 // static const iter BIG_TENS = sizeof(word) * 8;
 static void init_e    (bigInteger*);
