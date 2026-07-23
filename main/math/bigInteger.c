@@ -180,22 +180,19 @@ static bigInteger bigInteger__MultiplyAdd(const bigInteger a, const bigInteger b
 }
 static word bigInteger__division(bigInteger *a, const int B) {
 	const word b = CAST(word)imath_iabs(B);
-  word rem[2] = {0};
-  word d, e;
-  iter i, j;
+  word rem[2] = {0}, c;
+  iter i;
   darray_rforeach(word, ia, a) {
-    for (j = WORD_BITS; j--; ) {
-      e = (*ia >> j) & 1;
-      for(i = 0;i < 2; ++i) {
-        d = rem[i];
-        rem[i] <<= 1;
-        rem[i] |= e;
-        e = d >> (WORD_BITS - 1);
-      }
-      ASSERT(!e && "bigInteger__division overflow remainder");
+  	c = *ia;
+    for (i = WORD_BITS; i--; ) {
+      rem[1] <<= 1;
+      rem[1] |= rem[0] >> (WORD_BITS - 1);
+      rem[0] <<= 1;
+      rem[0] |= (c >> i) & 1;
       *ia <<= 1;
       if (rem[1] || rem[0] >= b) {
-        rem[1] -= (rem[0] -= b) > b;
+        rem[1] -= rem[0] < b;
+        rem[0] -= b;
         *ia |= 1;
       }
     }
