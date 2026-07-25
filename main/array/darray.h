@@ -48,7 +48,7 @@
   util_memcpy((a)->items + (a)->count, (b), (l)*sizeof(*(a)->items)); \
   (a)->count += (l); \
 } while (0)
-#define darray_index(a,i) (a)->items[(ASSERT((i) < (a)->count), (i))]
+#define darray_index(a, i) (a)->items[(ASSERT((i) < (a)->count), (i))]
 #define darray_last(a) (a)->items[(ASSERT((a)->count), (a)->count - 1)]
 #define darray_pop(a) (a)->items[(ASSERT((a)->count), --(a)->count)]
 #define darray_unorder_remove(a, j) (a)->items[(j)] = (a)->items[(ASSERT((j) < (a)->count), --(a)->count)]

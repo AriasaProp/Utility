@@ -7,14 +7,62 @@ on:
       - 'main/**'
       - 'test/**'
       - 'benchmark/**'
-      - 'nob.c'
+      - 'run/**'
   workflow_dispatch:
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
+  test-windows-arm:
+    runs-on: windows-11-vs2026-arm
     steps:
       - uses: actions/checkout@v6.0.2
-      - run: |
-          cc run/nob.c -o run/nob
-          run/nob test && run/nob benchmark 
+      - name: Prepare run/nob
+        run: cl Fe:run/nob.c run/nob
+      - name: Test
+        run: run/nob test
+      - name: Benchmark
+        run: run/nob benchmark 
+
+  test-windows:
+    runs-on: windows-2025-vs2026
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Prepare run/nob
+        run: cl Fe:run/nob.c run/nob
+      - name: Test
+        run: run/nob test
+      - name: Benchmark
+        run: run/nob benchmark 
+
+  test-ubuntu-x86:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Prepare run/nob
+        run: cc run/nob.c -o run/nob
+      - name: Test
+        run: run/nob test
+      - name: Benchmark
+        run: run/nob benchmark 
+
+  test-ubuntu-x64:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Prepare run/nob
+        run: cc run/nob.c -o run/nob
+      - name: Test
+        run: run/nob test
+      - name: Benchmark
+        run: run/nob benchmark 
+
+  test-ubuntu-arm:
+    runs-on: ubuntu-26.04-arm
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Prepare run/nob
+        run: cc run/nob.c -o run/nob
+      - name: Test
+        run: run/nob test
+      - name: Benchmark
+        run: run/nob benchmark 
+

@@ -43,7 +43,7 @@ void bigInteger_free(bigInteger*);
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
 int bigInteger_cmp (const bigInteger, const bigInteger);
 // return division result, save reminder on nominator
-void bigInteger_div_mod(const bigInteger, const bigInteger, bigInteger*, bigInteger*);
+void bigInteger_div_mod(bigInteger*, const bigInteger, bigInteger*);
 
 // duplicate operate
 bigInteger bigInteger_redc (const bigInteger);
@@ -62,6 +62,7 @@ bigInteger bigInteger_add  (const bigInteger, const bigInteger);
 bigInteger bigInteger_sub  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mul  (const bigInteger, const bigInteger);
 bigInteger bigInteger_muladd(const bigInteger, const bigInteger, const bigInteger);
+bigInteger bigInteger_mulsub(const bigInteger, const bigInteger, const bigInteger);
 bigInteger bigInteger_div  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mod  (const bigInteger, const bigInteger);
 // modification operate no error should be occure
@@ -81,6 +82,7 @@ void bigInteger_madd  (bigInteger*, const bigInteger);
 void bigInteger_msub  (bigInteger*, const bigInteger);
 void bigInteger_mmul  (bigInteger*, const bigInteger);
 void bigInteger_mmuladd(bigInteger*, const bigInteger, const bigInteger);
+void bigInteger_mmulsub(bigInteger*, const bigInteger, const bigInteger);
 void bigInteger_mdiv  (bigInteger*, const bigInteger);
 void bigInteger_mmod  (bigInteger*, const bigInteger);
 // print out
