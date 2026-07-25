@@ -16,9 +16,11 @@ jobs:
       matrix:
         include:
           - os: windows-11-vs2026-arm
-            pre-nob: clang-cl.exe Fe:run/nob.c run/nob
+            pre-nob: clang-cl.exe run/nob.c -o run/nob
           - os: windows-2025-vs2026
-            pre-nob: cl.exe Fe:run/nob.c run/nob
+            pre-nob: |
+              call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64
+              cl /nologo /W3 run\nob.c /Fe:run\nob
           - os: ubuntu-slim
             pre-nob: cc run/nob.c -o run/nob
           - os: ubuntu-26.04
