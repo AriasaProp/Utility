@@ -16,27 +16,20 @@ jobs:
       matrix:
         include:
           - os: windows-11-arm
-            cli: cmd
             pre-nob: clang-cl.exe run/nob.c -o run/nob -I./run
           - os: windows-2025
-            cli: cmd
             pre-nob: cl.exe /nologo /W3 run\nob.c /I:\run /Fe:run\nob
           - os: ubuntu-slim
-            cli: bash
             pre-nob: cc run/nob.c -o run/nob -I./run
           - os: ubuntu-26.04
-            cli: bash
             pre-nob: cc run/nob.c -o run/nob -I./run
           - os: ubuntu-26.04-arm
-            cli: bash
             pre-nob: cc run/nob.c -o run/nob -I./run
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6.0.2
-      - name: build nob
-        shell: ${{ matrix.cli }}
-        run: ${{ matrix.pre-nob }}
+      - run: ${{ matrix.pre-nob }}
       - run: run/nob test
       - run: run/nob benchmark 
 
