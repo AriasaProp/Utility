@@ -11,58 +11,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-windows-arm:
-    runs-on: windows-11-vs2026-arm
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Prepare run/nob
-        run: cl Fe:run/nob.c run/nob
-      - name: Test
-        run: run/nob test
-      - name: Benchmark
-        run: run/nob benchmark 
+  strategy:
+    matrix:
+      include:
+        - os: windows-11-vs2026-arm
+          pre-nob: cl.exe Fe:run/nob.c run/nob
+        - os: windows-2025-vs2026
+          pre-nob: cl.exe Fe:run/nob.c run/nob
+        - os: ubuntu-slim
+          pre-nob: cc run/nob.c -o run/nob
+        - os: ubuntu-26.04
+          pre-nob: cc run/nob.c -o run/nob
+        - os: ubuntu-26.04-arm
+          pre-nob: cc run/nob.c -o run/nob
 
-  test-windows:
-    runs-on: windows-2025-vs2026
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Prepare run/nob
-        run: cl Fe:run/nob.c run/nob
-      - name: Test
-        run: run/nob test
-      - name: Benchmark
-        run: run/nob benchmark 
 
-  test-ubuntu-x86:
-    runs-on: ubuntu-slim
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Prepare run/nob
-        run: cc run/nob.c -o run/nob
-      - name: Test
-        run: run/nob test
-      - name: Benchmark
-        run: run/nob benchmark 
 
-  test-ubuntu-x64:
-    runs-on: ubuntu-26.04
+  test:
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6.0.2
-      - name: Prepare run/nob
-        run: cc run/nob.c -o run/nob
-      - name: Test
-        run: run/nob test
-      - name: Benchmark
-        run: run/nob benchmark 
-
-  test-ubuntu-arm:
-    runs-on: ubuntu-26.04-arm
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Prepare run/nob
-        run: cc run/nob.c -o run/nob
-      - name: Test
-        run: run/nob test
-      - name: Benchmark
-        run: run/nob benchmark 
+      - run: ${{ matrix.pre-nob }}
+      - run: run/nob test
+      - run: run/nob benchmark 
 
