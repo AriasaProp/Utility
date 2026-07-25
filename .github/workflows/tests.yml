@@ -15,23 +15,27 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-11-vs2026-arm
-            pre-nob: clang-cl.exe run/nob.c -o run/nob
-          - os: windows-2025-vs2026
-            pre-nob: |
-              call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64
-              cl /nologo /W3 run\nob.c /Fe:run\nob
+          - os: windows-11-arm
+            shell: cmd
+            pre-nob: clang-cl.exe run/nob.c -o run/nob -I./run
+          - os: windows-2025
+            shell: cmd
+            pre-nob: cl.exe /nologo /W3 run\nob.c /I:\run /Fe:run\nob
           - os: ubuntu-slim
-            pre-nob: cc run/nob.c -o run/nob
+            shell: bash
+            pre-nob: cc run/nob.c -o run/nob -I./run
           - os: ubuntu-26.04
-            pre-nob: cc run/nob.c -o run/nob
+            shell: bash
+            pre-nob: cc run/nob.c -o run/nob -I./run
           - os: ubuntu-26.04-arm
-            pre-nob: cc run/nob.c -o run/nob
+            shell: bash
+            pre-nob: cc run/nob.c -o run/nob -I./run
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6.0.2
-      - run: ${{ matrix.pre-nob }}
+      - shell: ${{ matrix.shell }}
+        run: ${{ matrix.pre-nob }}
       - run: run/nob test
       - run: run/nob benchmark 
 

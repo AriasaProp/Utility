@@ -3,6 +3,7 @@
 // #define NOBDEBUG "-ggdb", 
 #define NOB_IMPLEMENTATION
 #include "nob.h"
+#include <string.h>
 
 #define  BIN_DIR           "bin"
 #define  OBJ_DIR   BIN_DIR"/obj"
