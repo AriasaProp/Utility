@@ -14,22 +14,15 @@ jobs:
   test:
     strategy:
       matrix:
-        include:
-          - os: windows-11-arm
-            pre-nob: clang-cl.exe run/nob.c -o run/nob -I./run
-          - os: windows-2025
-            pre-nob: cl.exe /nologo /W3 run\nob.c /I:\run /Fe:run\nob
-          - os: ubuntu-slim
-            pre-nob: cc run/nob.c -o run/nob -I./run
-          - os: ubuntu-26.04
-            pre-nob: cc run/nob.c -o run/nob -I./run
-          - os: ubuntu-26.04-arm
-            pre-nob: cc run/nob.c -o run/nob -I./run
+        os: [windows-11-arm, windows-2025, ubuntu-slim, ubuntu-26.04, ubuntu-26.04-arm]
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6.0.2
-      - run: ${{ matrix.pre-nob }}
+      - uses: rlalik/setup-cpp-compiler@master
+        with:
+          compiler: gcc-latest
+      - run: gcc run/nob.c -o run/nob -I./run
       - run: run/nob test
       - run: run/nob benchmark 
 
