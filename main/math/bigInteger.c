@@ -756,7 +756,7 @@ void bigInteger_append_dstring(dstring *str, const bigInteger a) {
   iter dstring_old = dstring_len(*str);
   dstring_reserve(str, dstring_old + ac * 10);
   iter bytes = WORD_BYTES * ac;
-  word *aw = CAST(word*)util_alloca(bytes);
+  word *aw = CAST(word*)util_malloc(bytes);
   util_memcpy(aw, a.items, bytes);
   do {
     rmr = 0;
@@ -775,6 +775,7 @@ void bigInteger_append_dstring(dstring *str, const bigInteger a) {
     dstring_append_char(str, '0' + CAST(char)rmr);
     ac -= (ac && !aw[ac - 1]);
   } while (ac);
+  util_memfree(aw);
   if (a.neg) dstring_append_char(str, '-');
   util_memflip(*str + dstring_old, dstring_len(*str) - dstring_old);
   // dstring_append_char(str, 0);

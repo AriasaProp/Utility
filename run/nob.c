@@ -3,7 +3,7 @@
 // #define NOBDEBUG "-ggdb", 
 #define NOB_IMPLEMENTATION
 #include "nob.h"
-#include <string.h>
+#include "nob_extra.h"
 
 #define  BIN_DIR           "bin"
 #define  OBJ_DIR   BIN_DIR"/obj"
@@ -214,7 +214,7 @@ int main(int argc, char **argv) {
       nob_log(NOB_INFO, "Compile & running %s", QExecs.name);
       stemp.count = 0;
       sb_appendf(&stemp, BIN_DIR"/%s", QExecs.name);
-      const char *out = strndup(stemp.items, stemp.count);
+      const char *out = nob_strndup(stemp.items, stemp.count);
       bool result = exec_compile(out, QExecs.srcs, compile_flags) && exec_run(out);
       free((void*)out);
       da_free(compile_flags);
@@ -304,21 +304,19 @@ static bool test_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
       stemp.count = 0;
       sb_appendf(&stemp, TEST_DIR"/%s_test", Test_Execs[i].name);
-      const char *out = strndup(stemp.items, stemp.count);
+      const char *out = nob_strndup(stemp.items, stemp.count);
       result &= exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
       free((void*)out);
     }
   } else {
-    for (i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
-      if (!strcmp(da_first(task), Test_Execs[i].name)) {
+    for (i = 0; i < ARRAY_LEN(Test_Execs); ++i)
+      if (!strcmp(da_first(task), Test_Execs[i].name))
         break;
-      }
-    }
     if (i < ARRAY_LEN(Test_Execs)) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
       stemp.count = 0;
       sb_appendf(&stemp, TEST_DIR"/%s_test", Test_Execs[i].name);
-      const char *out = strndup(stemp.items, stemp.count);
+      const char *out = nob_strndup(stemp.items, stemp.count);
       result = exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
       free((void*)out);
     } else {
@@ -346,7 +344,7 @@ static bool benchmark_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
       stemp.count = 0;
       sb_appendf(&stemp, BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
-      const char *out = strndup(stemp.items, stemp.count);
+      const char *out = nob_strndup(stemp.items, stemp.count);
       result &= exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
       free((void*)out);
     }
@@ -360,7 +358,7 @@ static bool benchmark_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
       stemp.count = 0;
       sb_appendf(&stemp, BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
-      const char *out = strndup(stemp.items, stemp.count);
+      const char *out = nob_strndup(stemp.items, stemp.count);
       result = exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
       free((void*)out);
     } else {
@@ -429,16 +427,17 @@ static bool exec_compile(const char *out, const char **srcs, const Flags flags) 
 #endif
   return cmd_run(&cmd);
 }
+
 static int obj_compile(const char *in, const Flags flags) {
   String_Builder sb = {0};
   sb_appendf(&sb, OBJ_DIR"/%s.o", in);
-  const char *out = strndup(sb.items, sb.count);
+  const char *out = nob_strndup(sb.items, sb.count);
   int res = (actionFlags & ActionFlags_ForceBuild) || !file_exists(out);
   if (res < 1) {
     // load dependencies
     sb.count = 0;
     sb_appendf(&sb, OBJ_DIR"/%s.d", in);
-    const char *depen_file = strndup(sb.items, sb.count);
+    const char *depen_file = nob_strndup(sb.items, sb.count);
     sb.count = 0;
     if (file_exists(depen_file) && read_entire_file(depen_file, &sb)) {
       File_Paths fp = {0};
@@ -450,7 +449,7 @@ static int obj_compile(const char *in, const Flags flags) {
         for (k = j + 1; (k < sv.count) && (!isspace(sv.data[k]) &&
             (sv.data[k] != '\\') && sv.data[k]
           ); ++k) ;
-        da_append(&fp, strndup(sv.data + j, k - j));
+        da_append(&fp, nob_strndup(sv.data + j, k - j));
         j = k;
       }
       res = needs_rebuild(out, fp.items, fp.count);
