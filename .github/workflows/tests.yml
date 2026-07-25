@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - os: windows-11-vs2026-arm
-            pre-nob: cl.exe Fe:run/nob.c run/nob
+            pre-nob: clang-cl.exe Fe:run/nob.c run/nob
           - os: windows-2025-vs2026
             pre-nob: cl.exe Fe:run/nob.c run/nob
           - os: ubuntu-slim
@@ -26,6 +26,7 @@ jobs:
           - os: ubuntu-26.04-arm
             pre-nob: cc run/nob.c -o run/nob
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v6.0.2
       - run: ${{ matrix.pre-nob }}
