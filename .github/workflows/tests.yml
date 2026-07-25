@@ -11,20 +11,20 @@ on:
   workflow_dispatch:
 
 jobs:
-	strategy:
-	  matrix:
-	    include:
-	      - os: windows-11-vs2026-arm
-	        pre-nob: cl.exe Fe:run/nob.c run/nob
-	      - os: windows-2025-vs2026
-	        pre-nob: cl.exe Fe:run/nob.c run/nob
-	      - os: ubuntu-slim
-	        pre-nob: cc run/nob.c -o run/nob
-	      - os: ubuntu-26.04
-	        pre-nob: cc run/nob.c -o run/nob
-	      - os: ubuntu-26.04-arm
-	        pre-nob: cc run/nob.c -o run/nob
   test:
+		strategy:
+		  matrix:
+		    include:
+		      - os: windows-11-vs2026-arm
+		        pre-nob: cl.exe Fe:run/nob.c run/nob
+		      - os: windows-2025-vs2026
+		        pre-nob: cl.exe Fe:run/nob.c run/nob
+		      - os: ubuntu-slim
+		        pre-nob: cc run/nob.c -o run/nob
+		      - os: ubuntu-26.04
+		        pre-nob: cc run/nob.c -o run/nob
+		      - os: ubuntu-26.04-arm
+		        pre-nob: cc run/nob.c -o run/nob
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6.0.2

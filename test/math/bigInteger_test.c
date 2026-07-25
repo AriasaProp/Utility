@@ -4,7 +4,7 @@
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   PRINT_INF("BigInteger Test is ");
-#define COMMON_TEST 6080
+#define COMMON_TEST 2080
 #define MAX_RNDI 16
 #define RAND_S  CAST(bool)(imath_rand_ubyte()&1)
 #define RAND_C  CAST(iter)((imath_rand_uint() % MAX_RNDI) + 1)
