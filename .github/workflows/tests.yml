@@ -23,6 +23,7 @@ jobs:
         with:
           compiler: gcc-latest
       - run: gcc -o run/build -I./run run/build.c
+      - run: run/build info
       - run: run/build test
       - run: run/build benchmark 
 

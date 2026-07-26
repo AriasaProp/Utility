@@ -335,7 +335,7 @@ static bool status_group(Task *task) {
 }
 static bool test_group(Task *task) {
   Flags compile_flags = {0};
-  size_t i;
+  size_t i, j;
   bool result;
   da_append_many(&compile_flags,
 #if defined(_MSC_VER) && !defined(__clang__)                   
@@ -349,8 +349,10 @@ static bool test_group(Task *task) {
     result = true;
     for (i = 0; result && (i < ARRAY_LEN(Test_Execs)); ++i) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
+      j = nob_temp_save();
       const char *out = nob_temp_sprintf(TEST_DIR"/%s_test", Test_Execs[i].name);
       result &= exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      nob_temp_rewind(j);
     }
   } else {
     for (i = 0; i < ARRAY_LEN(Test_Execs); ++i)
@@ -358,8 +360,10 @@ static bool test_group(Task *task) {
         break;
     if (i < ARRAY_LEN(Test_Execs)) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
+      j = nob_temp_save();
       const char *out = nob_temp_sprintf(TEST_DIR"/%s_test", Test_Execs[i].name);
       result = exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      nob_temp_rewind(j);
     } else {
       nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
     }
@@ -409,7 +413,7 @@ static bool exec_run(const char *exec) {
 #if defined(__linux__)
     cmd_append(&cmd, "gdb");
 #else                   
-    #error("how to debug on other platform?")
+    nob_log(NOB_INFO, "how to debug on other platform?");
 #endif
   }
   cmd_append(&cmd, exec);
