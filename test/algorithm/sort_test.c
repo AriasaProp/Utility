@@ -22,7 +22,6 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 	  printf("fail to allocate memory, for %lu bytes \n", DATA_BYTES * 2);
 	  return EXIT_FAILURE;
 	}
-  dstring main_str = NULL;
   bool proofen = true;
   int result = EXIT_FAILURE;
 	iter i, j;
@@ -84,7 +83,6 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   printf(GREEN"Success\n"RESET);
   result = EXIT_SUCCESS;
 end:
-	dstring_free(&main_str);
 	util_memfree(temp_data);
   return result;
 }

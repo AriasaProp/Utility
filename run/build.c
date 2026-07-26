@@ -235,10 +235,10 @@ int main(int argc, char **argv) {
 
 static void info_ask(void) {
   // Informasi OS
-#if defined(_WIN32)
-  nob_log(NOB_INFO, "OS: Windows 32-bit or 64-bit");
-#elif defined(_WIN64)
+#if defined(_WIN64)
   nob_log(NOB_INFO, "OS: Windows 64-bit");
+#elif defined(_WIN32)
+  nob_log(NOB_INFO, "OS: Windows 32-bit");
 #elif defined(__linux__)
   nob_log(NOB_INFO, "OS: Linux");
 #elif defined(__APPLE__) && defined(__MACH__)
@@ -272,12 +272,26 @@ static void info_ask(void) {
   nob_log(NOB_INFO, "Architecture: Unknown");
 #endif
   // Informasi byte order
+#ifdef BYTE_ORDER
+#  if BYTE_ORDER == LITTLE_ENDIAN
+  nob_log(NOB_INFO, "Byte order: Little Endian");
+#  else
+    nob_log(NOB_INFO, "Byte order: Big Endian");
+#  endif // BYTE_ORDER
+#elif defined(__BYTE_ORDER__)
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  nob_log(NOB_INFO, "Byte order: Little Endian");
+#  else
+  nob_log(NOB_INFO, "Byte order: Big Endian");
+#  endif // __BYTE_ORDER__
+#else
   {
     unsigned int x = 1;
     char *c = (char*)&x;
     if (*c == 1) nob_log(NOB_INFO, "Byte order: Little Endian");
     else nob_log(NOB_INFO, "Byte order: Big Endian");
   }
+#endif
 }
 static bool clean_group(Task *task) {
   if (!task->count) {
@@ -373,7 +387,7 @@ static bool test_group(Task *task) {
 }
 static bool benchmark_group(Task *task) {
   Flags compile_flags = {0};
-  size_t i;
+  size_t i, j;
   bool result;
   da_append_many(&compile_flags,
 #if defined(_MSC_VER) && !defined(__clang__)                   
@@ -387,8 +401,10 @@ static bool benchmark_group(Task *task) {
     result = true;
     for (i = 0; result && (i < ARRAY_LEN(Benchmark_Execs)); ++i) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
+      j = nob_temp_save();
       const char *out = nob_temp_sprintf(BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
       result &= exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      nob_temp_rewind(j);
     }
   } else {
     for (i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
@@ -398,8 +414,10 @@ static bool benchmark_group(Task *task) {
     }
     if (i < ARRAY_LEN(Benchmark_Execs)) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
+      j = nob_temp_save();
       const char *out = nob_temp_sprintf(BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
       result = exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      nob_temp_rewind(j);
     } else {
       nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
     }
