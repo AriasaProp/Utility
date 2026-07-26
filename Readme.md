@@ -12,6 +12,7 @@ To Usage: run/build <command> [group|kind] [flags]
   <tr><td>h[elp]</td><td>show this message.</td></tr>
   <tr><td>c[lean]</td><td>clean generated binary [group] files/folders or all.</td></tr>
   <tr><td>s[tatus]</td><td>show current device [group] or all.</td></tr>
+  <tr><td>i[nfo]</td><td>show device information.</td></tr>
   <tr><td>test</td><td>run exists test or all.</td></tr>
   <tr><td>benchmark</td><td>run exists benchmark or all.</td></tr>
   <tr><th>Group</th><th>Description</th></tr>

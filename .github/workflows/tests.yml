@@ -13,6 +13,7 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-11-arm, windows-2025, ubuntu-slim, ubuntu-26.04, ubuntu-26.04-arm]
     runs-on: ${{ matrix.os }}
@@ -21,7 +22,7 @@ jobs:
       - uses: rlalik/setup-cpp-compiler@master
         with:
           compiler: gcc-latest
-      - run: gcc -o run/build -I./run run/build.c run/nob.c run/nob_extra.c
+      - run: gcc -o run/build -I./run run/build.c
       - run: run/build test
       - run: run/build benchmark 
 

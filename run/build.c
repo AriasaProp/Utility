@@ -1,6 +1,12 @@
 // #define NOBDEBUG "-ggdb", 
+#define NOBDEF extern
+#include "nob_extra.c"
+#include "config.h"
+#include "help.h"
+
+#define NOB_IMPLEMENTATION
+#define NOB_NO_ECHO
 #include "nob.h"
-#include "nob_extra.h"
 
 #define  BIN_DIR           "bin"
 #define  OBJ_DIR   BIN_DIR"/obj"
@@ -8,9 +14,6 @@
 #define DATA_DIR  BIN_DIR"/data"
 #define TEST_DIR  BIN_DIR"/test"
 #define BENCHMARK_DIR  BIN_DIR"/benchmark"
-
-#include "config.h"
-#include "help.h"
 
 typedef enum {
   ActionFlags_None       =      0,
@@ -146,6 +149,7 @@ typedef struct {
 } Task;
 
 // group function
+static void info_ask(void);
 static bool clean_group(Task*);
 static bool status_group(Task*);
 static bool test_group(Task*);
@@ -157,7 +161,7 @@ static bool exec_compile(const char*, const char**,const Flags);
 static bool walk_dir_cleanup(Walk_Entry);
 
 int main(int argc, char **argv) {
-  GO_REBUILD_URSELF_PLUS(argc, argv, "run/nob.c", "run/nob_extra.c");
+  GO_REBUILD_URSELF_PLUS(argc, argv, "run/nob.h", "run/nob_extra.c", "run/config.h", "run/help.h");
   shift(argv, argc);
   Task task = {0};
   for (;argc;shift(argv, argc)) {
@@ -199,6 +203,10 @@ int main(int argc, char **argv) {
     } else CASE_ACT("s","status") {
       da_remove_first_item(&task);
       if (!status_group(&task)) ret = EXIT_FAILURE;
+    } else CASE_ACT("i","info") {
+      da_remove_first_item(&task);
+      // info print out
+      info_ask();
     } else if (!strcmp(da_first(&task), "test")) {
       da_remove_first_item(&task);
       if (!test_group(&task)) ret = EXIT_FAILURE;
@@ -225,6 +233,52 @@ int main(int argc, char **argv) {
   return ret;
 }
 
+static void info_ask(void) {
+  // Informasi OS
+#if defined(_WIN32)
+  nob_log(NOB_INFO, "OS: Windows 32-bit or 64-bit");
+#elif defined(_WIN64)
+  nob_log(NOB_INFO, "OS: Windows 64-bit");
+#elif defined(__linux__)
+  nob_log(NOB_INFO, "OS: Linux");
+#elif defined(__APPLE__) && defined(__MACH__)
+  nob_log(NOB_INFO, "OS: macOS");
+#elif defined(__unix__)
+  nob_log(NOB_INFO, "OS: Unix");
+#else
+  nob_log(NOB_INFO, "OS: Unknown");
+#endif
+  // Informasi compiler
+#if defined(__clang__)
+  nob_log(NOB_INFO, "Compiler: Clang %d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
+#elif defined(__GNUC__) || defined(__GNUG__)
+  nob_log(NOB_INFO, "Compiler: GCC %d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#elif defined(_MSC_VER)
+  nob_log(NOB_INFO, "Compiler: MSVC %d", _MSC_VER);
+#else
+  nob_log(NOB_INFO, "Compiler: Unknown");
+#endif
+
+  // Informasi arsitektur
+#if defined(__x86_64__) || defined(_M_X64)
+  nob_log(NOB_INFO, "Architecture: x86_64 (64-bit)");
+#elif defined(__i386) || defined(_M_IX86)
+  nob_log(NOB_INFO, "Architecture: x86 (32-bit)");
+#elif defined(__aarch64__)
+  nob_log(NOB_INFO, "Architecture: ARM64 (64-bit)");
+#elif defined(__arm__) || defined(_M_ARM)
+  nob_log(NOB_INFO, "Architecture: ARM (32-bit)");
+#else
+  nob_log(NOB_INFO, "Architecture: Unknown");
+#endif
+  // Informasi byte order
+  {
+    unsigned int x = 1;
+    char *c = (char*)&x;
+    if (*c == 1) nob_log(NOB_INFO, "Byte order: Little Endian");
+    else nob_log(NOB_INFO, "Byte order: Big Endian");
+  }
+}
 static bool clean_group(Task *task) {
   if (!task->count) {
     if (!file_exists(BIN_DIR))
