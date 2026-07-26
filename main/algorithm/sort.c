@@ -242,20 +242,21 @@ void sort_shell(void *dat, iter size, iter bytes, compare_funct cmp) {
  * { -1 ... 1 } { -1 ... 1 }
  * 
  * ==========================================================*/
-static void sort_merge_rec(byte *, iter, iter, compare_funct);
+static void sort_merge_rec(byte *, iter, iter, compare_funct, byte*);
 void sort_merge(void *dat, iter size, iter bytes, compare_funct cmp) {
   NO_NULL;
-	sort_merge_rec(CAST(byte*)dat, size, bytes, cmp);
+  byte *c = CAST(byte*)util_malloc(bytes);
+	sort_merge_rec(CAST(byte*)dat, size, bytes, cmp, c);
+  util_memfree(c);
 }
-static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp) {
+static void sort_merge_rec(byte *a, iter size, iter bytes, compare_funct cmp, byte *c) {
   if (size < 2) return;
 	iter i = size >> 1;
 	byte *b = a + i * bytes;
-	sort_merge_rec(a, i, bytes, cmp);
-	sort_merge_rec(b, size - i, bytes, cmp);
+	sort_merge_rec(a, i, bytes, cmp, c);
+	sort_merge_rec(b, size - i, bytes, cmp, c);
   b -= bytes;
   byte *d = a + size * bytes;
-  byte *c = CAST(byte*)util_alloca(bytes);
 	while ((a <= b) && (b < (d -= bytes))) {
 	  if (cmp(b, d) <= 0) continue;
     util_memcpy (c, b, bytes);

@@ -6,7 +6,7 @@ This library provides a objects and functions to do spesifict purpose.
 
 This repo was made with [nob.h](https://github.com/tsoding/nob.h) with some command and flags as argument
 
-To Usage: run/nob <command> [group|kind] [flags]
+To Usage: run/build <command> [group|kind] [flags]
 <table>
   <tr><th>Command</th><th>Description</th></tr>
   <tr><td>h[elp]</td><td>show this message.</td></tr>

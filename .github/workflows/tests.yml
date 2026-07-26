@@ -16,13 +16,12 @@ jobs:
       matrix:
         os: [windows-11-arm, windows-2025, ubuntu-slim, ubuntu-26.04, ubuntu-26.04-arm]
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v6.0.2
       - uses: rlalik/setup-cpp-compiler@master
         with:
           compiler: gcc-latest
-      - run: gcc run/nob.c -o run/nob -I./run
-      - run: run/nob test
-      - run: run/nob benchmark 
+      - run: gcc -o run/build -I./run run/build.c run/nob.c run/nob_extra.c
+      - run: run/build test
+      - run: run/build benchmark 
 
