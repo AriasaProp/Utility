@@ -6,6 +6,7 @@
 
 #define NOB_IMPLEMENTATION
 #define NOB_NO_ECHO
+#define NOB_TEMP_CAPACITY 1024*1024
 #include "nob.h"
 
 #define  BIN_DIR           "bin"
@@ -260,91 +261,119 @@ static void info_ask(void) {
 #endif
 
   // Informasi arsitektur
+  nob_log(NOB_INFO, "Architecture: "
 #if defined(__x86_64__) || defined(_M_X64)
-  nob_log(NOB_INFO, "Architecture: x86_64 (64-bit)");
+  	"x86_64 (64-bit)"
 #elif defined(__i386) || defined(_M_IX86)
-  nob_log(NOB_INFO, "Architecture: x86 (32-bit)");
+  	"x86 (32-bit)"
 #elif defined(__aarch64__)
-  nob_log(NOB_INFO, "Architecture: ARM64 (64-bit)");
+  	"ARM64 (64-bit)"
 #elif defined(__arm__) || defined(_M_ARM)
-  nob_log(NOB_INFO, "Architecture: ARM (32-bit)");
+  	"ARM (32-bit)"
 #else
-  nob_log(NOB_INFO, "Architecture: Unknown");
+		"Unknown"
 #endif
+	);
   // Informasi byte order
 #ifdef BYTE_ORDER
+  nob_log(NOB_INFO, "Byte order: "
 #  if BYTE_ORDER == LITTLE_ENDIAN
-  nob_log(NOB_INFO, "Byte order: Little Endian");
+		"Little"
 #  else
-    nob_log(NOB_INFO, "Byte order: Big Endian");
+		"Big"
 #  endif // BYTE_ORDER
+		" Endian (BYTE_ORDER)");
 #elif defined(__BYTE_ORDER__)
+  nob_log(NOB_INFO, "Byte order: "
 #  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  nob_log(NOB_INFO, "Byte order: Little Endian");
+  	"Little"
 #  else
-  nob_log(NOB_INFO, "Byte order: Big Endian");
+  	"Big"
 #  endif // __BYTE_ORDER__
+		" Endian (__BYTE_ORDER__)");
 #else
   {
     unsigned int x = 1;
     char *c = (char*)&x;
-    if (*c == 1) nob_log(NOB_INFO, "Byte order: Little Endian");
-    else nob_log(NOB_INFO, "Byte order: Big Endian");
+  	nob_log(NOB_INFO, "Byte order: %s Endian (Manual)", *c == 1 ? "Little" : "Big");
   }
 #endif
 }
 static bool clean_group(Task *task) {
-  if (!task->count) {
-    if (!file_exists(BIN_DIR))
-      nob_log(NOB_INFO, "Binary file wasn't exists.");
-    else if (walk_dir(BIN_DIR, walk_dir_cleanup, .post_order = true))
-      nob_log(NOB_INFO, "Cleanup walk is suceed.");
-    else
-      nob_log(NOB_ERROR, "Cleanup walk is error.");
-  } else if(!strcmp(da_first(task), "test")) {
-    if (!file_exists(TEST_DIR))
-      nob_log(NOB_INFO, "Binary test file wasn't exists.");
-    else if (walk_dir(TEST_DIR, walk_dir_cleanup, .post_order = true))
-      nob_log(NOB_INFO, "Cleanup binary test walk is suceed.");
-    else
-      nob_log(NOB_ERROR, "Cleanup binary test walk is error.");
-  } else if(!strcmp(da_first(task), "benchmark")) {
-    if (!file_exists(BENCHMARK_DIR))
-      nob_log(NOB_INFO, "Binary benchmark file wasn't exists.");
-    else if (walk_dir(BENCHMARK_DIR, walk_dir_cleanup, .post_order = true))
-      nob_log(NOB_INFO, "Cleanup binary benchmark walk is suceed.");
-    else
-      nob_log(NOB_ERROR, "Cleanup binary benchmark walk is error.");
-  } else {
-    nob_log(NOB_ERROR, "Cleanup of %s is not exists.", da_first(task));
-    return false;
-  }
+  size_t i, j;
+	int clean;
+	if (task->count) {
+		clean = 0;
+		while (task->count) {
+			if (!strcmp(da_first(task), "test")) {
+				clean |= 1;
+			} else if (!strcmp(da_first(task), "benchmark")) {
+				clean |= 2;
+			} else {
+    		nob_log(NOB_ERROR, "unknow group of %s to clean.", da_first(task));
+			}
+			da_remove_first_item(task);
+		}
+	} else clean = 3;
+	switch (clean) {
+		default: return false;
+		case 1: 
+	    if (!file_exists(TEST_DIR))
+	      nob_log(NOB_INFO, "Binary test file wasn't exists.");
+	    else if (walk_dir(TEST_DIR, walk_dir_cleanup, .post_order = true))
+	      nob_log(NOB_INFO, "Cleanup binary test walk is suceed.");
+	    else
+	      nob_log(NOB_ERROR, "Cleanup binary test walk is error.");
+	    break;
+		case 2: 
+	    if (!file_exists(BENCHMARK_DIR))
+	      nob_log(NOB_INFO, "Binary benchmark file wasn't exists.");
+	    else if (walk_dir(BENCHMARK_DIR, walk_dir_cleanup, .post_order = true))
+	      nob_log(NOB_INFO, "Cleanup binary benchmark walk is suceed.");
+	    else
+	      nob_log(NOB_ERROR, "Cleanup binary benchmark walk is error.");
+	    break;
+	  case 3:
+		  if (!file_exists(BIN_DIR))
+		    nob_log(NOB_INFO, "Binary file wasn't exists.");
+		  else if (walk_dir(BIN_DIR, walk_dir_cleanup, .post_order = true))
+		    nob_log(NOB_INFO, "Cleanup walk is suceed.");
+		  else
+		    nob_log(NOB_ERROR, "Cleanup walk is error.");
+	    break;
+	}
   return true;
 }
 static bool status_group(Task *task) {
-	size_t i;
-  if (!task->count) {
-    nob_log(NOB_INFO, "Execution status!");
-    for (i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
-      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Test_Execs[i].name, file_exists(Test_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
-    }
-    for (i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
-      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Benchmark_Execs[i].name, file_exists(Benchmark_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
-    }
-  } else if (!strcmp(da_first(task), "test")) {
+	size_t i, j;
+	int status;
+	if (task->count) {
+		status = 0;
+		while (task->count) {
+			if (!strcmp(da_first(task), "test")) {
+				status |= 1;
+			} else if (!strcmp(da_first(task), "benchmark")) {
+				status |= 2;
+			}
+			da_remove_first_item(task);
+		}
+	} else status = 3;
+  j = nob_temp_save();
+  if (status & 1) {
     nob_log(NOB_INFO, "Execution status tests!");
     for (i = 0; i < ARRAY_LEN(Test_Execs); ++i) {
-      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Test_Execs[i].name, file_exists(Test_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+      const char *epath = nob_temp_sprintf(TEST_DIR"/%s_test", Test_Execs[i].name);
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Test_Execs[i].name, file_exists(epath) ? "\033[32m" : "\033[31mnot ");
     }
-  } else if (!strcmp(da_first(task), "benchmark")) {
+  }
+  if (status & 2) {
     nob_log(NOB_INFO, "Execution status benchmark!");
     for (i = 0; i < ARRAY_LEN(Benchmark_Execs); ++i) {
-      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Benchmark_Execs[i].name, file_exists(Benchmark_Execs[i].name) ? "\033[32m" : "\033[31mnot ");
+      const char *epath = nob_temp_sprintf(BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
+      nob_log(NOB_INFO, "%s is\t%sPASSED\033[0m", Benchmark_Execs[i].name, file_exists(epath) ? "\033[32m" : "\033[31mnot ");
     }
-  } else {
-    nob_log(NOB_ERROR, "There is no status for %s group.", da_first(task));
-    return false;
   }
+  nob_temp_rewind(j);
   return true;
 }
 static bool test_group(Task *task) {
@@ -428,10 +457,10 @@ static bool benchmark_group(Task *task) {
 
 static bool exec_run(const char *exec) {
   if (actionFlags & ActionFlags_DebugRun) {
-#if defined(__linux__)
+#ifdef __linux__
     cmd_append(&cmd, "gdb");
 #else                   
-    nob_log(NOB_INFO, "how to debug on other platform?");
+    nob_log(NOB_INFO, "how to debug on other platform? just run without debug");
 #endif
   }
   cmd_append(&cmd, exec);
@@ -439,8 +468,10 @@ static bool exec_run(const char *exec) {
     delete_file(exec);
     return false;
   }
+#ifdef __linux__
   if (actionFlags & ActionFlags_DebugRun)
     delete_file(exec);
+#endif
   return true;
 }
 static bool exec_compile(const char *out, const char **srcs, const Flags flags) {

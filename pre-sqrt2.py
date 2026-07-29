@@ -20,7 +20,6 @@ def gcd(x, y):
     y = t
   return x
 
-# Contoh penggunaan
 r = gcd(gcd(A, B), C)
 A = A // r
 B = B // r

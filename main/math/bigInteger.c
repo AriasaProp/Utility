@@ -342,8 +342,28 @@ void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *REM) {
 	    }
 	    if (c1) darray_append(rem, c1);
 	    a->items[j] <<= 1;
+	    /*
 	    if (rem->count < blen || (rem->count == blen && bigInteger__cmpa(rem->items, b.items, blen) < 0)) continue;
 	    c = bigInteger__wordsub(rem->items, rem->count, b.items, blen);
+	    */
+	    if (rem->count < blen) continue;
+	    if (rem->count == blen) {
+			  for (k = blen; k-- && (rem->items[k] == b.items[k]); ) ;
+			  if (k < blen && rem->items[k] < b.items[k]) continue;
+	    }
+	    c = 0, k = 0;
+		  while (k < blen) {
+		    c1 = rem->items[k];
+		    c = (rem->items[k] -= c) > c1;
+		    c1 = rem->items[k];
+		    c+= (rem->items[k] -= b.items[k]) > c1;
+		    ++k;
+		  }
+		  while (c && (k < rem->count)) {
+		    c1 = rem->items[k];
+		    c = (rem->items[k] -= c) > c1;
+		    ++k;
+		  }
 	    bigInteger__shrink(rem);
 		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
 	    a->items[j] |= 1;
@@ -581,8 +601,28 @@ bigInteger bigInteger_mod(const bigInteger a, const bigInteger b) {
 	      c1 = (c >> (WORD_BITS - 1)) & 1;
 	    }
 	    if (c1) darray_append(&rem, c1);
+	    /*
 	    if (rem.count < blen || (rem.count == blen && bigInteger__cmpa(rem.items, b.items, blen) < 0)) continue;
 	    c = bigInteger__wordsub(rem.items, rem.count, b.items, blen);
+	    */
+	    if (rem.count < blen) continue;
+	    if (rem.count == blen) {
+			  for (k = blen; k-- && (rem.items[k] == b.items[k]); ) ;
+			  if (k < blen && rem.items[k] < b.items[k]) continue;
+	    }
+	    c = 0, k = 0;
+		  while (k < blen) {
+		    c1 = rem.items[k];
+		    c = (rem.items[k] -= c) > c1;
+		    c1 = rem.items[k];
+		    c+= (rem.items[k] -= b.items[k]) > c1;
+		    ++k;
+		  }
+		  while (c && (k < rem.count)) {
+		    c1 = rem.items[k];
+		    c = (rem.items[k] -= c) > c1;
+		    ++k;
+		  }
 	    bigInteger__shrink(&rem);
 		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
 	  }
@@ -729,8 +769,25 @@ void bigInteger_mdiv(bigInteger *a, const bigInteger b) {
 	    }
 	    if (c1) darray_append(&rem, c1);
 	    a->items[j] <<= 1;
-	    if (rem.count < blen || (rem.count == blen && bigInteger__cmpa(rem.items, b.items, blen) < 0)) continue;
-	    c = bigInteger__wordsub(rem.items, rem.count, b.items, blen);
+	    if (rem.count < blen) continue;
+	    if (rem.count == blen) {
+			  for (k = blen; k-- && (rem.items[k] == b.items[k]); ) ;
+			  if (k < blen && rem.items[k] < b.items[k]) continue;
+	    }
+	    // c = bigInteger__wordsub(rem.items, rem.count, b.items, blen);
+	    c = 0, k = 0;
+		  while (k < blen) {
+		    c1 = rem.items[k];
+		    c = (rem.items[k] -= c) > c1;
+		    c1 = rem.items[k];
+		    c+= (rem.items[k] -= b.items[k]) > c1;
+		    ++k;
+		  }
+		  while (c && (k < rem.count)) {
+		    c1 = rem.items[k];
+		    c = (rem.items[k] -= c) > c1;
+		    ++k;
+		  }
 		  bigInteger__shrink(&rem);
 		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
 	    a->items[j] |= 1;
@@ -747,29 +804,24 @@ void bigInteger_mmod(bigInteger *a, const bigInteger b) {
 
 // print out
 void bigInteger_append_dstring(dstring *str, const bigInteger a) {
-  word rmr, current;
-  iter ac = a.count;
-  if (!ac) {
-    dstring_append_char(str, '0');
-    return;
-  }
+  iter ac = a.count, bytes = WORD_BYTES * ac, i;
+  word rmr, current, *aw = CAST(word*)util_malloc(bytes);
   iter dstring_old = dstring_len(*str);
-  dstring_reserve(str, dstring_old + ac * 10);
-  iter bytes = WORD_BYTES * ac;
-  word *aw = CAST(word*)util_malloc(bytes);
+  // predict each word decimal, log10(2) ~> 1/3
+  dstring_reserve(str, dstring_old + 1 + ac * WORD_BITS / 3);
   util_memcpy(aw, a.items, bytes);
   do {
     rmr = 0;
-    for(word *i = aw + ac; (i--) > aw; ){
-      current = *i;
+    for(i = ac; i--; ){
+      current = a.items[i];
       rmr <<= WORD_HALF_BITS;
       rmr |= current >> WORD_HALF_BITS;
-      *i = rmr / 10;
+      a.items[i] = rmr / 10;
       rmr %= 10;
       rmr <<= WORD_HALF_BITS;
       rmr |= current & WORD_HALF_MASK;
-      *i <<= WORD_HALF_BITS;
-      *i |= rmr / 10;
+      a.items[i] <<= WORD_HALF_BITS;
+      a.items[i] |= rmr / 10;
       rmr %= 10;
     }
     dstring_append_char(str, '0' + CAST(char)rmr);
@@ -778,5 +830,4 @@ void bigInteger_append_dstring(dstring *str, const bigInteger a) {
   util_memfree(aw);
   if (a.neg) dstring_append_char(str, '-');
   util_memflip(*str + dstring_old, dstring_len(*str) - dstring_old);
-  // dstring_append_char(str, 0);
 }

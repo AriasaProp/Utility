@@ -743,7 +743,7 @@ NOB_DEPRECATED("Use `nob_cmd_run(&cmd, "
 NOBDEF bool nob_cmd_run_sync_redirect_and_reset(Nob_Cmd *cmd, Nob_Cmd_Redirect redirect);
 
 #ifndef NOB_TEMP_CAPACITY
-#define NOB_TEMP_CAPACITY (8*1024*1024)
+#  define NOB_TEMP_CAPACITY (8*1024*1024)
 #endif // NOB_TEMP_CAPACITY
 NOBDEF char *nob_temp_strdup(const char *cstr);
 NOBDEF char *nob_temp_strndup(const char *cstr, size_t size);
@@ -2389,7 +2389,6 @@ NOBDEF char *nob_temp_strdup(const char *cstr)
     result[n] = '\0';
     return result;
 }
-
 NOBDEF char *nob_temp_strndup(const char *s, size_t n)
 {
     char *r = (char*)nob_temp_alloc(n + 1);
