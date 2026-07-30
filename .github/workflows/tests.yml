@@ -10,16 +10,34 @@ on:
       - 'run/**'
   workflow_dispatch:
 
+# this actions stolen from nob
 jobs:
-  test:
-    runs-on: ubuntu-26.04-arm
+  macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@master
-      - uses: rlalik/setup-cpp-compiler@master
-        with:
-          compiler: gcc-latest
-      - run: gcc -o run/build -I./run run/build.c
-      - run: run/build info
-      - run: run/build test
-      - run: run/build benchmark 
+      - run: clang -x c -o run/build run/build.c
+      - run: run/build info && run/build test && run/build benchmark
 
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: cc -x c -o run/build run/build.c
+      - run: run/build info && run/build test && run/build benchmark
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: vswhere
+      - shell: cmd
+        # cl.exe isn't available as-is in Github images because they don't want
+        # to, so we need to pull env vars ourselves. Refs:
+        # https://github.com/actions/runner-images/issues/6205#issuecomment-1241573412
+        # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170#create-your-own-command-prompt-shortcut
+        run: |
+          call "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+          cl.exe /std:c++20 /TP /Fe:run\\build run\\build.c
+      - shell: cmd
+        run: run/build.exe info && run/build.exe test && run/build.exe benchmark

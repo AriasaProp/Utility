@@ -8,9 +8,9 @@
 #include <fcntl.h>
 
 // duration limit each test
-#define TIME 10
+#define TIME 1
 // undef UPDATE_RATE for info
-#define UPDATE_RATE .7
+#define UPDATE_RATE 1
 
 // static const iter BIG_TENS = sizeof(word) * 8;
 static void init_e    (bigInteger*);
