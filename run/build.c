@@ -1,11 +1,11 @@
 // #define NOBDEBUG "-ggdb", 
 #define NOBDEF extern
+#define NOB_NO_ECHO
 #include "nob_extra.c"
 #include "config.h"
 #include "help.h"
 
 #define NOB_IMPLEMENTATION
-#define NOB_NO_ECHO
 #define NOB_TEMP_CAPACITY 1024*1024
 #include "nob.h"
 

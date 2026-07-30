@@ -12,10 +12,11 @@
 #define nob_da_remove_first_item(da) if ((da)->count) memcpy((da)->items, (da)->items + 1, ((da)->count -= 1) * sizeof(*(da)->items))
 
 bool nob_mkdir_rec(const char *path) {
+  int result =
 #ifdef _WIN32
-  int result = _mkdir(path);
+  	_mkdir(path);
 #else
-  int result = mkdir(path, 0755);
+		mkdir(path, 0755);
 #endif
   if (result < 0) {
     switch (errno) {
@@ -28,7 +29,7 @@ bool nob_mkdir_rec(const char *path) {
     case ENOENT: {
     	size_t point = nob_temp_save();
       bool res = nob_mkdir_rec(nob_temp_dir_name(path));
-      res &= nob_mkdir_if_not_exists(path);
+      res &= nob_mkdir_rec(path);
       nob_temp_rewind(point);
       return res;
     }

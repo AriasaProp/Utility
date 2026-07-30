@@ -192,29 +192,6 @@ static bigInteger bigInteger__MultiplySum(const bigInteger a, const bigInteger b
   bigInteger__shrink(&c);
   return c;
 }
-static word bigInteger__division(bigInteger *a, const int B) {
-	const word b = CAST(word)imath_iabs(B);
-  word rem[2] = {0}, c;
-  iter i, j;
-  for (j = a->count; j--; ) {
-  	c = a->items[j];
-    for (i = WORD_BITS; i--; ) {
-      rem[1] <<= 1;
-      rem[1] |= rem[0] >> (WORD_BITS - 1);
-      rem[0] <<= 1;
-      rem[0] |= (c >> i) & 1;
-      a->items[j] <<= 1;
-      if (!rem[1] && rem[0] < b) continue;
-      rem[1] -= rem[0] < b;
-      rem[0] -= b;
-      a->items[j] |= 1;
-    }
-  }
-  a->neg ^= B < 0;
-  ASSERT(!rem[1] && "bigInteger, word division overflow");
-  bigInteger__shrink(a);
-  return rem[0];
-}
 // initialization
 bigInteger bigInteger_from_cstr(const char *c) {
   bigInteger ret = {0};
@@ -317,15 +294,13 @@ int bigInteger_cmp(const bigInteger a, const bigInteger b) {
   return ret;
 }
 // return division result, save reminder on nominator
-void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *REM) {
+void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	bigInteger__shrink(a);
   word c, c1, d;
   iter i, j, k;
   iter blen = b.count;
   while (blen && !b.items[blen-1]) --blen;
-  bigInteger *rem;
-	if (REM) bigInteger_zero((rem = REM));
-  else rem = CAST(bigInteger*)util_calloc(1, sizeof(bigInteger));
+	bigInteger_zero(rem);
 	i = MIN(a->count, MAX(1, blen) - 1);
 	j = a->count - i;
 	darray_appends(rem, a->items + j, i);
@@ -371,10 +346,6 @@ void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *REM) {
 	}
 	a->neg ^= b.neg;
 	bigInteger__shrink(a);
-	if (!REM) {
-		bigInteger_free(rem);
-		util_memfree(rem);
-	}
 }
 // duplicate operate
 bigInteger bigInteger_redc(const bigInteger a) {
@@ -389,12 +360,12 @@ bigInteger bigInteger_incr(const bigInteger a) {
 }
 bigInteger bigInteger_addi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger__sumi(&r, c, false);
+  bigInteger_maddi(&r, c);
   return r;
 }
 bigInteger bigInteger_subi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger__sumi(&r, c, true);
+  bigInteger_msubi(&r, c);
   return r;
 }
 bigInteger bigInteger_muli(const bigInteger a, const int c) {
@@ -404,14 +375,25 @@ bigInteger bigInteger_muli(const bigInteger a, const int c) {
 }
 bigInteger bigInteger_divi(const bigInteger a, const int c) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger__division(&r, c);
+  bigInteger_mdivi(&r, c);
   return r;
 }
-word bigInteger_modi(const bigInteger a, const int c) {
-  bigInteger r = bigInteger_dup(a);
-  word m = bigInteger__division(&r, c);
-  bigInteger_free(&r);
-  return m;
+word bigInteger_modi(const bigInteger a, const int B) {
+	const word b = CAST(word)imath_iabs(B);
+	word rem[2] = {0};
+  for (iter j = a.count, i; j--; ) {
+    for (i = WORD_BITS; i--; ) {
+      rem[1] <<= 1;
+      rem[1] |= rem[0] >> (WORD_BITS - 1);
+      rem[0] <<= 1;
+      rem[0] |= (a.items[j] >> i) & 1;
+      if (!rem[1] && rem[0] < b) continue;
+      rem[1] -= rem[0] < b;
+      rem[0] -= b;
+    }
+  }
+  ASSERT(!rem[1] && "bigInteger, word modulo overflow");
+  return rem[0];
 }
 bigInteger bigInteger_powi(const bigInteger a, const uint b) {
   bigInteger r = bigInteger_dup(a);
@@ -526,12 +508,12 @@ bigInteger bigInteger_sqrt(const bigInteger a) {
 }
 bigInteger bigInteger_add(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger__Sum(&r, b, false);
+  bigInteger_madd(&r, b);
   return r;
 }
 bigInteger bigInteger_sub(const bigInteger a, const bigInteger b) {
   bigInteger r = bigInteger_dup(a);
-  bigInteger__Sum(&r, b, true);
+  bigInteger_msub(&r, b);
   return r;
 }
 bigInteger bigInteger_mul(const bigInteger a, const bigInteger b) {
@@ -667,12 +649,30 @@ void bigInteger_mmuli(bigInteger *a, const int B) {
   if (carry[0]) darray_append(a, carry[0]);
   else bigInteger__shrink(a);
 } 
-void bigInteger_mdivi(bigInteger *a, const int c) {
-  bigInteger__division(a, c);
+void bigInteger_mdivi(bigInteger *a, const int B) {
+  const word b = CAST(word)imath_iabs(B);
+  word rem[2] = {0}, c;
+  for (iter j = a->count, i; j--; ) {
+  	c = a->items[j];
+    for (i = WORD_BITS; i--; ) {
+      rem[1] <<= 1;
+      rem[1] |= rem[0] >> (WORD_BITS - 1);
+      rem[0] <<= 1;
+      rem[0] |= (c >> i) & 1;
+      a->items[j] <<= 1;
+      if (!rem[1] && rem[0] < b) continue;
+      rem[1] -= rem[0] < b;
+      rem[0] -= b;
+      a->items[j] |= 1;
+    }
+  }
+  a->neg ^= B < 0;
+  ASSERT(!rem[1] && "bigInteger, word division overflow");
+  bigInteger__shrink(a);
 }
 void bigInteger_mmodi(bigInteger *a, const int c) {
-  word r = bigInteger__division(a, c);
-  bigInteger_set_int(a, CAST(int)r * -1 * (c < 0));
+  word r = bigInteger_modi(*a, c);
+  bigInteger_set_words(a, a->neg ^ (c < 0), &r, 1);
 }
 void bigInteger_mpowi(bigInteger *a, uint b) {
   bigInteger r = bigInteger_from_int(1);

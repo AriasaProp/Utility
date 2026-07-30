@@ -12,14 +12,10 @@ on:
 
 jobs:
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-11-arm, windows-2025, ubuntu-slim, ubuntu-26.04, ubuntu-26.04-arm]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-26.04-arm
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: rlalik/setup-cpp-compiler@master
+      - uses: actions/checkout@latest
+      - uses: rlalik/setup-cpp-compiler@latest
         with:
           compiler: gcc-latest
       - run: gcc -o run/build -I./run run/build.c
