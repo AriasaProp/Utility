@@ -44,7 +44,7 @@ typedef struct {
 
 static const File_Exe QExecs = {
   .name =  "qtest",
-  .srcs = (const char *[]) {
+  .srcs = CLIT(const char *[]) {
     TEST_SRCS,
     "test/qtest.c",
     NULL
@@ -53,14 +53,14 @@ static const File_Exe QExecs = {
 static const File_Exe Test_Execs[] = {
   {
     .name = "rand",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "test/math/rand_test.c",
       NULL
     }
   },{
     .name = "complex",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/math/complex.c",
       "test/math/complex_test.c",
@@ -68,7 +68,7 @@ static const File_Exe Test_Execs[] = {
     }
   },{
     .name = "matrix",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/math/matrix.c",
       "test/math/matrix_test.c",
@@ -76,7 +76,7 @@ static const File_Exe Test_Execs[] = {
     }
   },{
     .name = "bigInteger",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/math/bigInteger.c",
       "test/math/bigInteger_test.c",
@@ -84,7 +84,7 @@ static const File_Exe Test_Execs[] = {
     }
   },{
     .name = "sort",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/algorithm/sort.c",
       "test/algorithm/sort_test.c",
@@ -92,7 +92,7 @@ static const File_Exe Test_Execs[] = {
     }
   },{
     .name = "hash",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/algorithm/hash.c",
       "test/algorithm/hash_test.c",
@@ -100,7 +100,7 @@ static const File_Exe Test_Execs[] = {
     }
   },{
     .name = "image",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       TEST_SRCS,
       "main/algorithm/hash.c",
       "main/stb/local.c",
@@ -115,7 +115,7 @@ static const File_Exe Test_Execs[] = {
 static const File_Exe Benchmark_Execs[] = {
   {
     .name = "bigInteger",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       BENCHMARK_SRCS,
       "main/math/bigInteger.c",
       "benchmark/math/bigInteger_benchmark.c",
@@ -123,7 +123,7 @@ static const File_Exe Benchmark_Execs[] = {
     }
   },{
     .name = "sort",
-    .srcs = (const char *[]) {
+    .srcs = CLIT(const char *[]) {
       BENCHMARK_SRCS,
       "main/algorithm/sort.c",
       "benchmark/algorithm/sort_benchmark.c",
