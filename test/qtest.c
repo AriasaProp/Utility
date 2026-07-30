@@ -1,31 +1,17 @@
 #include "util/console_out.h"
 #include "common.h"
-
-typedef struct {
-	iter cap, count;
-} foo;
-
-#define reserve(a, l) do {\
-	if ((a)->cap < ((a)->count + (l))) {\
-		(a)->cap = ((a)->count + (l));\
-  	PRINT_INF("count: %zu!\n", a->count);\
-		(a)->cap = ((a)->cap & ~3) + !!((a)->cap & 3);\
-	}\
-  PRINT_INF("count: %zu!\n", a->count);\
-  PRINT_INF("l: " #l "!\n");\
-	(a)->count += (l);\
-  PRINT_INF("count: %zu!\n", a->count);\
-} while(0)
+#include <byteswap.h>
 
 int main() {
   PRINT_INF("Hello, QTest!\n");
+  int i = 0xfedcba98, j;
+  j = i;
+  util_memflip(&j, 4);
   
-  foo *f = CAST(foo*)util_alloca(sizeof(foo));
-  util_memset(f, 0, sizeof(foo));
-  f->count = 1;
-  reserve(f, 12);
-  PRINT_INF("cap %zu!\n", f->cap);
-  PRINT_INF("count %zu!\n", f->count);
+  PRINT_INF("initial %x\n", i);
+  PRINT_INF("bswap   %x\n", bswap_32(i));
+  PRINT_INF("bltn    %x\n", __builtin_bswap32(i));
+  PRINT_INF("flip    %x\n", j);
   
   return 0;
 }

@@ -85,36 +85,30 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
     util_memcpy(W.b, str, i);
     str += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
-#ifndef BYTE_FLIP
-    W.i[ 0] = imath_flip32(W.i[ 0]);
-    W.i[ 1] = imath_flip32(W.i[ 1]);
-    W.i[ 2] = imath_flip32(W.i[ 2]);
-    W.i[ 3] = imath_flip32(W.i[ 3]);
-    W.i[ 4] = imath_flip32(W.i[ 4]);
-    W.i[ 5] = imath_flip32(W.i[ 5]);
-    W.i[ 6] = imath_flip32(W.i[ 6]);
-    W.i[ 7] = imath_flip32(W.i[ 7]);
-    W.i[ 8] = imath_flip32(W.i[ 8]);
-    W.i[ 9] = imath_flip32(W.i[ 9]);
-    W.i[10] = imath_flip32(W.i[10]);
-    W.i[11] = imath_flip32(W.i[11]);
-    W.i[12] = imath_flip32(W.i[12]);
-    W.i[13] = imath_flip32(W.i[13]);
     if (i < CHUNK_KUOTA) {
-      // put 64 bit length in reverse order from other so, no swap
-      W.i[14] = imath_flip32(l <<  3);
-      W.i[15] = imath_flip32(l >> 29);
-    } else {
-      W.i[14] = imath_flip32(W.i[14]);
-      W.i[15] = imath_flip32(W.i[15]);
-    }
-#else
-    if (i < CHUNK_KUOTA) {
+    	util_memset(W.b + i, 0, CHUNK_KUOTA - i);
       // put 64 bit length in reverse order from other so, no swap
       W.i[14] = l <<  3;
       W.i[15] = l >> 29;
-    }
+      W.i[16] = 0;
+    } else util_memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
+#ifndef BYTE_FLIP
+		W.i[0] = imath_flip32(W.i[0]);
+		W.i[1] = imath_flip32(W.i[1]);
+		W.i[2] = imath_flip32(W.i[2]);
+		W.i[3] = imath_flip32(W.i[3]);
+		W.i[4] = imath_flip32(W.i[4]);
+		W.i[5] = imath_flip32(W.i[5]);
+		W.i[6] = imath_flip32(W.i[6]);
+		W.i[7] = imath_flip32(W.i[7]);
+		W.i[8] = imath_flip32(W.i[8]);
+		W.i[9] = imath_flip32(W.i[9]);
+		W.i[10] = imath_flip32(W.i[10]);
+		W.i[11] = imath_flip32(W.i[11]);
+		W.i[12] = imath_flip32(W.i[12]);
+		W.i[13] = imath_flip32(W.i[13]);
+		W.i[14] = imath_flip32(W.i[14]);
+		W.i[15] = imath_flip32(W.i[15]);
 #endif // BYTE_FLIP
     // initialize
     util_memcpy (digest, out, DIGEST_BYTE);
@@ -218,16 +212,16 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
     SIG_TOP( 9); SIG_BOT(0xeb86d391,21);
 #undef SIG_TOP
 #undef SIG_BOT
-    out[0] += digest[0];
-    out[1] += digest[1];
-    out[2] += digest[2];
-    out[3] += digest[3];
+		out[0] += digest[0];
+		out[1] += digest[1];
+		out[2] += digest[2];
+		out[3] += digest[3];
   } while (i >= CHUNK_KUOTA);
 #ifndef BYTE_FLIP
-  out[0] = imath_flip32(out[0]);
-  out[1] = imath_flip32(out[1]);
-  out[2] = imath_flip32(out[2]);
-  out[3] = imath_flip32(out[3]);
+	out[0] = imath_flip32(out[0]);
+	out[1] = imath_flip32(out[1]);
+	out[2] = imath_flip32(out[2]);
+	out[3] = imath_flip32(out[3]);
 #endif // BYTE_FLIP
 #undef DIGEST
 #undef CHUNK

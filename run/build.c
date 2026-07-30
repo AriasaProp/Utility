@@ -6,7 +6,6 @@
 #include "help.h"
 
 #define NOB_IMPLEMENTATION
-#define NOB_TEMP_CAPACITY 1024*1024
 #include "nob.h"
 
 #define  BIN_DIR           "bin"
@@ -377,9 +376,9 @@ static bool status_group(Task *task) {
   return true;
 }
 static bool test_group(Task *task) {
-  Flags compile_flags = {0};
   size_t i, j;
   bool result;
+  Flags compile_flags = {0};
   da_append_many(&compile_flags,
 #if defined(_MSC_VER) && !defined(__clang__)                   
     ((const char*[]){"/Od", "/Zi", "/I.\test"}), 3
@@ -420,9 +419,9 @@ static bool benchmark_group(Task *task) {
   bool result;
   da_append_many(&compile_flags,
 #if defined(_MSC_VER) && !defined(__clang__)                   
-    ((const char*[]){"/O3", "/I.\test", "-I./benchmark"}), 3
+    (CLIT(const char*[]){"/O3", "/I.\test", "-I./benchmark"}), 3
 #else
-    ((const char*[]){"-O3", "-I./test", "-I./benchmark"}), 3
+    (CLIT(const char*[]){"-O3", "-I./test", "-I./benchmark"}), 3
 #endif
   );
   if (!task->count) {
@@ -557,7 +556,7 @@ static int obj_compile(const char *in, const Flags flags) {
         nob_cc_output(&cmd, out);
         cmd_append(&cmd,
     #if defined(_MSC_VER) && !defined(__clang__)
-          "/MMD", "/std:c11", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
+          "/MMD", "/std:c23", "/TP", "/WX", "/W4", "/nologo", "/D_CRT_SECURE_NO_WARNINGS", "/I.\main",
     #  ifdef NO_STDMATH
           "/DNO_STDMATH",
     #  endif // NO_STDMATH
@@ -565,7 +564,7 @@ static int obj_compile(const char *in, const Flags flags) {
           "/fp:fast", "/DFASTER_MATH",
     #  endif // FAST_MATH
     #else
-          "-MMD", "-std=c11", "-Werror", "-Wall", "-I./main",
+          "-MMD", "-std=c23", "-Werror", "-Wall", "-I./main",
     #  ifdef NO_STDMATH
           "-DNO_STDMATH",
     #  endif // NO_STDMATH
