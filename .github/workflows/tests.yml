@@ -14,8 +14,8 @@ jobs:
   test:
     runs-on: ubuntu-26.04-arm
     steps:
-      - uses: actions/checkout@latest
-      - uses: rlalik/setup-cpp-compiler@latest
+      - uses: actions/checkout@master
+      - uses: rlalik/setup-cpp-compiler@master
         with:
           compiler: gcc-latest
       - run: gcc -o run/build -I./run run/build.c
