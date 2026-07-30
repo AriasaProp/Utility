@@ -812,16 +812,16 @@ void bigInteger_append_dstring(dstring *str, const bigInteger a) {
   util_memcpy(aw, a.items, bytes);
   do {
     rmr = 0;
-    for(i = ac; i--; ){
-      current = a.items[i];
+    for(i = ac; i--; ) {
+      current = aw[i];
       rmr <<= WORD_HALF_BITS;
       rmr |= current >> WORD_HALF_BITS;
-      a.items[i] = rmr / 10;
+      aw[i] = rmr / 10;
       rmr %= 10;
       rmr <<= WORD_HALF_BITS;
       rmr |= current & WORD_HALF_MASK;
-      a.items[i] <<= WORD_HALF_BITS;
-      a.items[i] |= rmr / 10;
+      aw[i] <<= WORD_HALF_BITS;
+      aw[i] |= rmr / 10;
       rmr %= 10;
     }
     dstring_append_char(str, '0' + CAST(char)rmr);
