@@ -29,7 +29,7 @@
   #define M_LN2_INV  1.4426950408890f // 1/ln(2)
 
 #endif // NO_STDMATH
-#ifdef __GNUC__
+#ifdef __GLIBC__
 #  include <byteswap.h>
 #endif
 #include <stdarg.h>
@@ -619,29 +619,29 @@ ubyte imath_flip8(ubyte x) {
 ushrt imath_flip16(ushrt x) {
 #if BLTN(__builtin_bswap16)
   return __builtin_bswap16(x);
-#elif defined(__GNUC__)
+#elif defined(__GLIBC__)
   return bswap_16(x);
 #else
-	return NAIVE_FLIP(x,1,1);
+	return NAIVE_FLIP(x,8,8);
 #endif
 } 
 uint32 imath_flip32(uint32 x) {
 #if BLTN(__builtin_bswap32)
   return __builtin_bswap32(x);
-#elif defined(__GNUC__)
+#elif defined(__GLIBC__)
   return bswap_32(x);
 #else
-	util_memflip(&x, 4);
+	util_memflip(&x, sizeof(uint32));
 	return x;
 #endif
 }
 uint64 imath_flip64(uint64 x) {
 #if BLTN(__builtin_bswap64)
   return __builtin_bswap64(x);
-#elif defined(__GNUC__)
+#elif defined(__GLIBC__)
   return bswap_64(x);
 #else
-	util_memflip(&x, 8);
+	util_memflip(&x, sizeof(uint64));
 	return x;
 #endif
 }

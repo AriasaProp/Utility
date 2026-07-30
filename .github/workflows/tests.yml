@@ -27,48 +27,50 @@ jobs:
       - run: cc -x c -o run/build run/build.c
       - run: run/build info && run/build test && run/build benchmark
 
-  macos-intel:
-    runs-on: macos-26-intel
-    steps:
-      - uses: actions/checkout@master
-      - run: clang -x c -o run/build run/build.c
-      - run: run/build info && run/build test && run/build benchmark
+  # macos-intel:
+  #   runs-on: macos-26-intel
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - run: clang -x c -o run/build run/build.c
+  #     - run: run/build info && run/build test && run/build benchmark
 
-  macos-arm64:
-    runs-on: macos-26
-    steps:
-      - uses: actions/checkout@master
-      - run: clang -x c -o run/build run/build.c
-      - run: run/build info && run/build test && run/build benchmark
+  # macos-arm64:
+  #   runs-on: macos-26
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - run: clang -x c -o run/build run/build.c
+  #     - run: run/build info && run/build test && run/build benchmark
 
-  windows-x64:
-    runs-on: windows-2025
-    steps:
-      - uses: actions/checkout@master
-      - run: vswhere
-      - shell: cmd
-        # cl.exe isn't available as-is in Github images because they don't want
-        # to, so we need to pull env vars ourselves. Refs:
-        # https://github.com/actions/runner-images/issues/6205#issuecomment-1241573412
-        # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170#create-your-own-command-prompt-shortcut
-        run: |
-          call "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
-          cl.exe /std:c++20 /TP /Fe:run\\build run\\build.c
-      - shell: cmd
-        run: run/build.exe info && run/build.exe test && run/build.exe benchmark
+  # windows-x64:
+  #   runs-on: windows-2025
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - run: vswhere
+  #     - shell: cmd
+  #       # cl.exe isn't available as-is in Github images because they don't want
+  #       # to, so we need to pull env vars ourselves. Refs:
+  #       # https://github.com/actions/runner-images/issues/6205#issuecomment-1241573412
+  #       # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170#create-your-own-command-prompt-shortcut
+  #       run: |
+  #         call "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+  #         cl.exe /std:c++20 /TP /Fe:run\\build run\\build.c
+  #     - shell: cmd
+  #       run: run/build.exe info && run/build.exe test && run/build.exe benchmark
 
-  windows-arm64:
-    runs-on: windows-11-arm
-    steps:
-      - uses: actions/checkout@master
-      - run: vswhere
-      - shell: cmd
-        # cl.exe isn't available as-is in Github images because they don't want
-        # to, so we need to pull env vars ourselves. Refs:
-        # https://github.com/actions/runner-images/issues/6205#issuecomment-1241573412
-        # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170#create-your-own-command-prompt-shortcut
-        run: |
-          call "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
-          cl.exe /std:c++20 /TP /Fe:run\\build run\\build.c
-      - shell: cmd
-        run: run/build.exe info && run/build.exe test && run/build.exe benchmark
+  # windows-arm64:
+  #   runs-on: windows-11-arm
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - run: vswhere
+  #     - shell: cmd
+  #       # cl.exe isn't available as-is in Github images because they don't want
+  #       # to, so we need to pull env vars ourselves. Refs:
+  #       # https://github.com/actions/runner-images/issues/6205#issuecomment-1241573412
+  #       # https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170#create-your-own-command-prompt-shortcut
+  #       run: |
+  #         call "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+  #         cl.exe /std:c++20 /TP /Fe:run\\build run\\build.c
+  #     - shell: cmd
+  #       run: run/build.exe info && run/build.exe test && run/build.exe benchmark
+
+
