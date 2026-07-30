@@ -18,7 +18,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
     goto main_ret;
   }
   const char *input[] = {
-    NULL,
+    "",
     "Hello World",
     "The quick brown fox jumps over the lazy dog",
   };
@@ -117,7 +117,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
   printf(GREEN"Success\n"RESET);
   goto main_ret;
 main_err:
-  printf(RED"Err %s \n"RESET, str);
+  printf(RED" Err %s \n"RESET, str);
   dstring_clean(str);
   if (i) PRINT_ERR("NULL");
   else PRINT_ERR("\"%s\"", input[i]);
