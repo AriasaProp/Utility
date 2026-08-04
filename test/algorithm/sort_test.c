@@ -8,7 +8,7 @@
 // some sorting algorithm need more optimization
 // it's too slow for builtin qsort
 // #define DATA_SIZE   123860
-#define DATA_SIZE   50
+#define DATA_SIZE   40
 #define DATA_BYTES  (DATA_SIZE * sizeof(STYPE))
 
 typedef void (*sort_funct)(void*, iter, iter, compare_funct);
@@ -38,7 +38,8 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 //     printf(" %.1f -",(CAST(float*)data_r)[j]);
 //   printf("\n");
   const struct {
-    const char *name; sort_funct srt;
+    const char *name;
+    sort_funct srt;
   } sort_algo[] = {
   	{ .name = "Quick{b}", .srt = qsort,},
 #if DATA_SIZE < 410

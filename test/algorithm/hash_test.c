@@ -4,7 +4,7 @@
 
 
 int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
-  PRINT_INF("Hash test is"
+  PRINT_INF("Hash test is "
 #ifdef BYTE_FLIP
 		"(byte_flip) "
 #endif // BYTE_FLIP
@@ -123,7 +123,7 @@ main_err:
   else PRINT_ERR("\"%s\"", input[i]);
   dstring_clean(str);
   hash_ubyte_append_dstring(&str, resA, n);
-  printf("->%s\n", str);
+  printf("-> %s\n", str);
   dstring_clean(str);
   hash_ubyte_append_dstring(&str, resB, n);
   PRINT_ERR("Expt:%s\n", str);

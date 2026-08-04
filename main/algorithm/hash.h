@@ -19,6 +19,14 @@
 #include "common.h"
 #include "array/dstring.h"
 
+#if (defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)) || \
+    (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)) || \
+    defined(MANUAL_CHECK_LITTLE_ENDIAN)
+  #define BYTE_FLIP
+#else
+  #error "Need byte order manual check and define with MANUAL_CHECK_LITTLE_ENDIAN"
+#endif
+
 #define HASH128_IN_BYTES  16
 #define HASH160_IN_BYTES  20
 #define HASH224_IN_BYTES  28

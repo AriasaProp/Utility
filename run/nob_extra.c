@@ -27,10 +27,10 @@ bool nob_mkdir_rec(const char *path) {
       return true;
     case ENOTDIR:
     case ENOENT: {
-    	size_t point = nob_temp_save();
+    	size_t point = temp_save();
       bool res = nob_mkdir_rec(nob_temp_dir_name(path));
       res &= nob_mkdir_rec(path);
-      nob_temp_rewind(point);
+      temp_rewind(point);
       return res;
     }
     default:

@@ -12,6 +12,13 @@
 #include "common.h"
 #include "array/dstring.h"
 
+enum : int {
+	BigInteger_Zero            = 0,
+	BigInteger_Odd             = 1 << 0,
+	BigInteger_Prime           = 1 << 1,
+	BigInteger_DefinedProperty = 3,
+};
+
 #ifdef __SIZEOF_INT128__
 	typedef uint128 word;
 #else
@@ -42,6 +49,8 @@ void bigInteger_zero(bigInteger*);
 void bigInteger_free(bigInteger*);
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
 int bigInteger_cmp (const bigInteger, const bigInteger);
+// get number property on bigInteger by define what you looking for
+void bigInteger_property (const bigInteger,int*);
 // return division result, save reminder on nominator
 void bigInteger_div_mod(bigInteger*, const bigInteger, bigInteger*);
 
@@ -65,6 +74,7 @@ bigInteger bigInteger_muladd(const bigInteger, const bigInteger, const bigIntege
 bigInteger bigInteger_mulsub(const bigInteger, const bigInteger, const bigInteger);
 bigInteger bigInteger_div  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mod  (const bigInteger, const bigInteger);
+bigInteger bigInteger_factorial(const uint);
 // modification operate no error should be occure
 void bigInteger_mredc (bigInteger*);
 void bigInteger_mincr (bigInteger*);

@@ -613,7 +613,7 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     util_memfree(zlib);
     SIGN;
   }
-  stbiw__write_smalln(s, (uint32[]){0, 0x444e4549, 0x826042ae}, 12);
+  stbiw__write_smalln(s, CLIT(uint32[]){0, 0x444e4549, 0x826042ae}, 12);
   stbiw__write_flush(s);
 #undef WRCB
 #undef WRCRC32

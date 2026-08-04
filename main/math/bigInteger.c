@@ -293,6 +293,49 @@ int bigInteger_cmp(const bigInteger a, const bigInteger b) {
   if (!ret) ret = bigInteger__cmp(a, b) * (1 - 2 * a.neg);
   return ret;
 }
+static bool word__isPrime (word a) {
+	if (a < 2) return false;
+	if (a == 2) return true;
+	if (!(a & 1)) return false;
+	word end = (a >> (util_bitlead(a) / 2)) & 1; // need approx sqrt integer
+	for (word i = 3; i < end; i += 2) {
+		if (a == i) return true;
+		if (!(a % i)) return false;
+	}
+	return true;
+}
+void bigInteger_property (const bigInteger a, int *p) {
+	if (!p || !*p) return;
+	int res = 0;
+	if (a.count) {
+		// is odd
+		if (*p & (BigInteger_Odd | BigInteger_Prime)) {
+			res |= BigInteger_Odd * (a.items[0] & 1);
+		}
+		// is prime
+		if (*p & BigInteger_Prime) {
+			if (a.count == 1) {
+				res |= BigInteger_Prime * word__isPrime(a.items[0]);
+			} else if (res & BigInteger_Odd) { // filter even number
+				bigInteger end = bigInteger_sqrt(a);
+				end.items[0] |= 1;
+				bigInteger curr = bigInteger_from_int(3), mod = {0};
+				while (bigInteger_cmp(end, curr) > 0) {
+					bigInteger_set (&mod, a);
+					bigInteger_mmod(&mod, curr);
+					bigInteger__shrink(&mod);
+					if (!mod.count) break;
+					bigInteger_maddi(&curr, 2);
+				}
+				res |= (mod.count != 0) * BigInteger_Prime;
+				bigInteger_free(&end);
+				bigInteger_free(&mod);
+				bigInteger_free(&curr);
+			}
+		}
+	}
+	*p = res;
+}
 // return division result, save reminder on nominator
 void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	bigInteger__shrink(a);
@@ -611,6 +654,55 @@ bigInteger bigInteger_mod(const bigInteger a, const bigInteger b) {
 	}
 	return rem;
 }
+/* n! = 1 * 2 * 3 * 4 * ..... * n
+ * not yet
+ * n! = 1 * 3 * 5 * 7 * ..... * last odd n
+ *      2 * 4 * 6 * 8 * ..... * last even n
+ * n! = 1 * 3 * 5 * 7 * ..... * 
+ *      1 * 3 * 5 * 7 * ..... * (last odd n /2)  * 2**(n/2)
+ *      1 * 3 * 5 * 7 * ..... * (last odd n /4)  * 2**(n/4)
+ *      1 * 3 * 5 * 7 * ..... * (last odd n /8)  * 2**(n/8)
+ *      1 * 3 * 5 * 7 * ..... * (last odd n /16)  * 2**(n/16)
+ *      1 * 2 * 3 * 4 * ..... * (last odd n /4)  * 2**(n/4)
+ *
+ *
+ *
+ */
+bigInteger bigInteger_factorial(uint b) {
+	bigInteger ret = bigInteger_from_int(1);
+  iter shf = 0, j;
+	word i, yhi, ylo, xhi, xlo, carry[3], temp;
+	while (b) {
+	  for (i = 3; i <= b; i += 2) {
+	    yhi = i >> WORD_HALF_BITS;
+	    ylo = i  & WORD_HALF_MASK;
+	    util_memset(carry, 0, 3 * WORD_BYTES);
+	    for (j = 0; j < ret.count; ++j) {
+	      xhi = ret.items[j] >> WORD_HALF_BITS;
+	      xlo = ret.items[j] &  WORD_HALF_MASK;
+	      ret.items[j] *= i;
+	      carry[0] = (ret.items[j] += carry[0]) < carry[0];
+	      carry[2] = (ylo * xlo) >> WORD_HALF_BITS;
+	      temp = ylo * xhi;
+	      carry[1] = (carry[2] += temp) < temp;
+	      temp = yhi * xlo;
+	      carry[1] += (carry[2] += temp) < temp;
+	      carry[2] >>= WORD_HALF_BITS;
+	      carry[1] <<= WORD_HALF_BITS;
+	      carry[0] += carry[2];
+	      carry[0] += carry[1];
+	      temp = yhi * xhi;
+	      carry[0] += temp;
+	    }
+	    if (carry[0]) darray_append(&ret, carry[0]);
+    }
+    b >>= 1;
+    shf += b;
+	}
+  bigInteger_mshfli(&ret, shf);
+  bigInteger__shrink(&ret);
+	return ret;
+}
 // modification operate no error should be occure
 void bigInteger_mredc(bigInteger *a) {
   bigInteger__abit(a, true);
@@ -648,7 +740,7 @@ void bigInteger_mmuli(bigInteger *a, const int B) {
   }
   if (carry[0]) darray_append(a, carry[0]);
   else bigInteger__shrink(a);
-} 
+}
 void bigInteger_mdivi(bigInteger *a, const int B) {
   const word b = CAST(word)imath_iabs(B);
   word rem[2] = {0}, c;
