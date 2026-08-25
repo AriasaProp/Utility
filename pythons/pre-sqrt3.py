@@ -2,16 +2,21 @@ import sys
 sys.set_int_max_str_digits(99999)
 
 LIM=2**31-1
-A=1
-B=2
+A=83
+B=48
 C=1
 N=1
-M=0
+M=12
 while A < LIM:
   N+=2
+  M+=6
   C*=N
-  M+=4
   A=A*M+C
+  B*=M
+  N+=2
+  M+=6
+  C*=N
+  A=A*M-C
   B*=M
 
 def gcd(x, y):
@@ -23,14 +28,15 @@ def gcd(x, y):
     y = t
   return x
 
-r = gcd(gcd(A, B), C)
+r = gcd(gcd(A, B), abs(C))
 A = A // r
 B = B // r
 C = C // r
-print("* a = ", int(A))
-print("* b = ", int(B))
-print("* c = ", int(C))
-print("* n = ", N)
-print("* m = ", M)
+print(" * √3 = ", (A/B))
+print(" * a = ", int(A))
+print(" * b = ", int(B))
+print(" * c = ", int(C))
+print(" * n = ", N)
+print(" * m = ", M)
 
 # print(f"GCD of {a}, {b}, and {c} \nis: {result}")

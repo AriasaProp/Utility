@@ -85,7 +85,7 @@ static void stbiw__write3(stbi__write_context *s, ubyte a, ubyte b, ubyte c) {
 static void stbiw__write_smalln(stbi__write_context *s, const void *x, ubyte n) {
   if ((iter)s->buf_used + n > sizeof(s->buffer))
     stbiw__write_flush(s);
-  util_memcpy(s->buffer + s->buf_used, x, n);
+  memcpy(s->buffer + s->buf_used, x, n);
   s->buf_used += n;
 }
 
@@ -387,7 +387,7 @@ static bool stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, 
     return false;
   else {
     // Each component is stored separately. Allocate scratch space for full output scanline.
-    ubyte *scratch = (ubyte *)util_malloc(x * 4);
+    ubyte *scratch = (ubyte *)malloc(x * 4);
     int i, len;
     char buffer[128];
     char header[] = "#?RADIANCE\n# Written by stb_image_write.h\nFORMAT=32-bit_rle_rgbe\n";
@@ -408,7 +408,7 @@ static bool stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, 
 #endif // VERTICALLY_FLIP
       stbiw__write_hdr_scanline(s, x, comp, scratch, data + comp * x * Y);
     }
-    util_memfree(scratch);
+    free(scratch);
     return true;
   }
 }
@@ -442,7 +442,7 @@ static inline void stbiw__encode_png_line(const ubyte *pixels, int w, int h, int
   int i;
   switch (mapping[filter_type + (y != 0) * 5]) {
   case 0:
-    util_memcpy(line_buffer, z, w * n);
+    memcpy(line_buffer, z, w * n);
     break;
   case 1:
     for (i = 0; i < n; ++i)
@@ -589,7 +589,7 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     const ubyte *pixels = (const ubyte *)data;
     iter stride_bytes = x * n, i, j;
     int best_filter, est, zlen;
-    ubyte *filt = CAST(ubyte*)util_malloc((stride_bytes + 1) * y);
+    ubyte *filt = CAST(ubyte*)malloc((stride_bytes + 1) * y);
     if (!filt) return false;
     for (i = 0; i < y; ++i) {
       // Estimate the best filter by running through all of them:
@@ -604,13 +604,13 @@ bool stbi_write_png_core(stbi__write_context *s, int x, int y, int n, const void
     }
     // add compression level
     ubyte *zlib = zlib_encode(filt, (stride_bytes + 1) * y, &zlen, 0);
-    util_memfree(filt);
+    free(filt);
     if (!zlib) return false;
     HEAD("IDAT", zlen);
     stbiw__write_flush(s);
     s->func(s->context, zlib, zlen);
     hash_crc32_appends(&crc, zlib, zlen);
-    util_memfree(zlib);
+    free(zlib);
     SIGN;
   }
   stbiw__write_smalln(s, CLIT(uint32[]){0, 0x444e4549, 0x826042ae}, 12);
@@ -965,25 +965,25 @@ static bool stbi_write_jpg_core(stbi__write_context *s, int width, int height, i
 // most static
 
 static void image_io_write(void *usr, void *data, iter size) {
-  file_write(data, size, CAST(FILE*)usr);
+  fwrite(data, size, CAST(FILE*)usr);
 }
 static void image_mem_write(void *usr, void *data, iter size) {
   image_file *imf = CAST(image_file*)usr;
   while (imf->cap < (imf->len + size)) {
     imf->cap <<= 2;
-    imf->data = CAST(ubyte*)util_realloc(imf->data, imf->cap);
+    imf->data = CAST(ubyte*)realloc(imf->data, imf->cap);
   }
-  util_memcpy(imf->data + imf->len, data, size);
+  memcpy(imf->data + imf->len, data, size);
   imf->len += size;
 }
 // global
 
 bool image_write_opt(char const *filename,const image_bitmap bitmap, image_file_format format, image_file_opt opt) {
   bool r = false;
-  FILE *f = file_open(filename, "wb");
+  FILE *f = fopen(filename, "wb");
   if (f) {
     r = image_write_to_func_opt(image_io_write, CAST(void *)f, bitmap, format, opt);
-    file_close(f);
+    fclose(f);
   } else {
     stb_set_error("Fail to open file!");
   }
@@ -993,20 +993,20 @@ image_file image_write_to_mem_opt(const image_bitmap bitmap, image_file_format f
   image_file imf = {
     .len = 0,
     .cap = 2048,
-    .data = CAST(ubyte*)util_malloc(2048),
+    .data = CAST(ubyte*)malloc(2048),
   };
   if (imf.data) {
     if (image_write_to_func_opt(image_mem_write, CAST(void *)&imf, bitmap, format, opt)) {
-      imf.data = CAST(ubyte*)util_realloc(imf.data, imf.len);
+      imf.data = CAST(ubyte*)realloc(imf.data, imf.len);
       imf.cap = imf.len;
     } else {
-      util_memfree(CAST(void*)imf.data);
+      free(CAST(void*)imf.data);
       stb_set_error("Failure!");
-      util_memset(&imf, 0, sizeof(imf));
+      memset(&imf, 0, sizeof(imf));
     }
   } else {
     stb_set_error("Failure!");
-    util_memset(&imf, 0, sizeof(imf));
+    memset(&imf, 0, sizeof(imf));
   }
   return imf;
 }

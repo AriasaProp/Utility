@@ -1,6 +1,6 @@
 #ifndef help_msg
 #define help_msg "\n"\
-  "Usage: run/nob <command> [group|kind] [flags]\n"\
+  "Usage: run/build <command> [group|kind] [flags]\n"\
   "   COMMAND\tDescription\n"\
   "h[elp]     show this message.\n"\
   "c[lean]    clean generated binary [group] files/folders or all.\n"\

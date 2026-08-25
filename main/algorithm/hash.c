@@ -70,21 +70,21 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
   static const uint32 H[DIGEST] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
   union { ubyte b[CHUNK_ALL_BYTE]; uint32 i[CHUNK + 1]; } W = {0};
   uint32 digest[DIGEST + 1];
-  util_memcpy (out, H, DIGEST_BYTE);
+  memcpy (out, H, DIGEST_BYTE);
   iter i, k = l;
   do {
     i = MIN(k, CHUNK_BYTE);
     k -= i;
-    util_memcpy(W.b, str, i);
+    memcpy(W.b, str, i);
     str += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
     if (i < CHUNK_KUOTA) {
-    	util_memset(W.b + i, 0, CHUNK_KUOTA - i);
+    	memset(W.b + i, 0, CHUNK_KUOTA - i);
       // put 64 bit length in reverse order from other so, no swap
       W.i[14] = l <<  3;
       W.i[15] = l >> 29;
       W.i[16] = 0;
-    } else util_memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
+    } else memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
 #ifndef BYTE_FLIP
 		W.i[0] = imath_flip32(W.i[0]);
 		W.i[1] = imath_flip32(W.i[1]);
@@ -104,13 +104,13 @@ void hash_md5(uint32 *out, const char *str, uint64 l) {
 		W.i[15] = imath_flip32(W.i[15]);
 #endif // BYTE_FLIP
     // initialize
-    util_memcpy (digest, out, DIGEST_BYTE);
+    memcpy (digest, out, DIGEST_BYTE);
     // main
 #define SIG_BOT(K,S) do {\
   digest[4] += K; \
   digest[4] += digest[0];\
   digest[0] = digest[3];\
-  util_memmove(digest + 2, digest + 1, sizeof(uint32) * 2);\
+  memmove(digest + 2, digest + 1, sizeof(uint32) * 2);\
   digest[1] += imath_rotl32(digest[4], S);\
 } while(0)
 #define SIG_TOP(I) do {\
@@ -240,15 +240,15 @@ void hash_sha1(uint32 *out, const char *str, uint64 l) {
   static const uint32 H[DIGEST] = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0};
   union { ubyte b[CHUNK_ALL_BYTE]; uint32 i[CHUNK + 1]; } W = {0};
   uint32 digest[DIGEST + 1];
-  util_memcpy (out, H, DIGEST_BYTE);
+  memcpy (out, H, DIGEST_BYTE);
   iter i, k = l;
   do {
     i = MIN(k, CHUNK_BYTE);
     k -= i;
-    util_memcpy(W.b, str, i);
+    memcpy(W.b, str, i);
     str += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
+    memset(W.b + i, 0, CHUNK_ALL_BYTE - i);
 #ifdef BYTE_FLIP
     W.i[ 0] = imath_flip32(W.i[ 0]);
     W.i[ 1] = imath_flip32(W.i[ 1]);
@@ -273,7 +273,7 @@ void hash_sha1(uint32 *out, const char *str, uint64 l) {
       W.i[14] = l >> 29;
     }
     // initialize
-    util_memcpy (digest, out, DIGEST_BYTE);
+    memcpy (digest, out, DIGEST_BYTE);
     // main
 #define CHUNK16(I) do {\
   digest[5] = digest[1] & digest[2]; \
@@ -303,7 +303,7 @@ void hash_sha1(uint32 *out, const char *str, uint64 l) {
   digest[2] = imath_rotr32(digest[1], 2);\
   digest[1] = digest[0];\
   digest[0] = digest[5];\
-  util_memcpy(W.i, W.i + 1, CHUNK_BYTE);\
+  memcpy(W.i, W.i + 1, CHUNK_BYTE);\
 } while(0)
 #define CORE_START do {\
   digest[5] = digest[1] & digest[2]; \
@@ -430,18 +430,18 @@ void hash_sha224(uint32 *out, const char *input, uint64 l) {
   static const uint32 H[DIGEST] = {0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4};
   union {ubyte b[CHUNK_ALL_BYTE]; uint32 i[CHUNK + 1]; } W = {0};
   uint32 digest[DIGEST + 1] = {0};
-  util_memcpy (out, H, DIGEST_BYTE);
+  memcpy (out, H, DIGEST_BYTE);
   iter i, k = l;
   do {
     // reset digest
-    util_memcpy (digest, H, DIGEST_BYTE);
+    memcpy (digest, H, DIGEST_BYTE);
     // put input to chunk W
     i = MIN (k, CHUNK_BYTE);
     k -= i;
-    util_memcpy (W.b, input, i);
+    memcpy (W.b, input, i);
     input += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset (W.b + i, 0, CHUNK_ALL_BYTE - i);
+    memset (W.b + i, 0, CHUNK_ALL_BYTE - i);
     // flip chunk W
 #ifdef BYTE_FLIP
     W.i[ 0] = imath_flip32(W.i[ 0]);
@@ -481,7 +481,7 @@ void hash_sha224(uint32 *out, const char *input, uint64 l) {
 	digest[0] += digest[8]; \
 } while(0)
 #define SIG_TOP(I) do { \
-	util_memmove(digest + 1, digest, DIGEST_BYTE); \
+	memmove(digest + 1, digest, DIGEST_BYTE); \
 	digest[0] = imath_rotr32(digest[5], 6); \
 	digest[0] ^= imath_rotr32(digest[5], 11); \
 	digest[0] ^= imath_rotr32(digest[5], 25); \
@@ -507,7 +507,7 @@ void hash_sha224(uint32 *out, const char *input, uint64 l) {
 	W.i[16] += digest[8];\
 	W.i[16] += W.i[9];\
 	digest[0] += W.i[16];\
-	util_memcpy(W.i, W.i + 1, CHUNK_BYTE);\
+	memcpy(W.i, W.i + 1, CHUNK_BYTE);\
   SIG_BOT;\
 } while (0)
     // with salsa
@@ -565,19 +565,19 @@ void hash_sha256(uint32 *out, const char *input, uint64 l) {
   
   union {ubyte b[CHUNK_ALL_BYTE]; uint32 i[CHUNK + 1]; } W = {0};
   uint32 digest[DIGEST + 1] = {0};
-  util_memcpy (out, H, DIGEST_BYTE);
+  memcpy (out, H, DIGEST_BYTE);
 
   iter i, k = l;
   do {
     // reset digest
-    util_memcpy (digest, H, DIGEST_BYTE);
+    memcpy (digest, H, DIGEST_BYTE);
     // put input to chunk W
     i = MIN (k, CHUNK_BYTE);
     k -= i;
-    util_memcpy (W.b, input, i);
+    memcpy (W.b, input, i);
     input += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset (W.b + i, 0, CHUNK_ALL_BYTE - i);
+    memset (W.b + i, 0, CHUNK_ALL_BYTE - i);
     // flip chunk W
 #ifdef BYTE_FLIP
     W.i[ 0] = imath_flip32(W.i[ 0]);
@@ -624,7 +624,7 @@ void hash_sha256(uint32 *out, const char *input, uint64 l) {
 	digest[0] += digest[8]; \
 } while(0)
 #define SIG_TOP(I) do { \
-	util_memmove(digest + 1, digest, DIGEST_BYTE); \
+	memmove(digest + 1, digest, DIGEST_BYTE); \
 	digest[0] = imath_rotr32(digest[5], 6); \
 	digest[0] ^= imath_rotr32(digest[5], 11); \
 	digest[0] ^= imath_rotr32(digest[5], 25); \
@@ -650,7 +650,7 @@ void hash_sha256(uint32 *out, const char *input, uint64 l) {
 	W.i[16] += digest[8];\
 	W.i[16] += W.i[9];\
 	digest[0] += W.i[16];\
-	util_memcpy(W.i, W.i + 1, CHUNK_BYTE);\
+	memcpy(W.i, W.i + 1, CHUNK_BYTE);\
   SIG_BOT;\
 } while (0)
     // with salsa
@@ -711,18 +711,18 @@ void hash_sha384(uint64 *out, const char *input, uint64 l) {
   union {ubyte b[CHUNK_ALL_BYTE]; uint64 i[CHUNK + 1]; } W = {0};
   uint64 digest[DIGEST + 1] = {0};
   // init
-  util_memcpy (out, H, OUT_BYTE);
+  memcpy (out, H, OUT_BYTE);
   iter i, k = l;
   do {
     // reset digest
-    util_memcpy (digest, H, DIGEST_BYTE);
+    memcpy (digest, H, DIGEST_BYTE);
     // put input to chunk W
     i = MIN (k, CHUNK_BYTE);
     k -= i;
-    util_memcpy (W.b, input, i);
+    memcpy (W.b, input, i);
     input += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset (W.b + i, 0, (CHUNK_ALL_BYTE - i));
+    memset (W.b + i, 0, (CHUNK_ALL_BYTE - i));
     // flip chunk W
 #ifdef BYTE_FLIP
     W.i[ 0] = imath_flip64(W.i[ 0]);
@@ -767,7 +767,7 @@ void hash_sha384(uint64 *out, const char *input, uint64 l) {
 	digest[0] += digest[8]; \
 } while(0)
 #define SIG_TOP(I) do { \
-	util_memmove(digest + 1, digest, DIGEST_BYTE); \
+	memmove(digest + 1, digest, DIGEST_BYTE); \
 	digest[0] = imath_rotr64(digest[5], 14); \
 	digest[0] ^= imath_rotr64(digest[5], 18); \
 	digest[0] ^= imath_rotr64(digest[5], 41); \
@@ -797,7 +797,7 @@ void hash_sha384(uint64 *out, const char *input, uint64 l) {
 	W.i[16] += digest[8];\
 	W.i[16] += W.i[9];\
 	digest[0] += W.i[16];\
-	util_memcpy(W.i, W.i + 1, CHUNK_BYTE);\
+	memcpy(W.i, W.i + 1, CHUNK_BYTE);\
   SIG_BOT;\
 } while (0)
     // with salsa
@@ -878,19 +878,19 @@ void hash_sha512(uint64 *out, const char *input, uint64 l) {
   union {ubyte b[CHUNK_ALL_BYTE]; uint64 i[CHUNK + 1]; } W = {0};
   uint64 digest[DIGEST + 1] = {0};
   // init
-  util_memcpy (out, H, DIGEST_BYTE);
+  memcpy (out, H, DIGEST_BYTE);
 
   iter i, k = l;
   do {
     // reset digest
-    util_memcpy (digest, H, DIGEST_BYTE);
+    memcpy (digest, H, DIGEST_BYTE);
     // put input to chunk W
     i = MIN (k, CHUNK_BYTE);
     k -= i;
-    util_memcpy (W.b, input, i);
+    memcpy (W.b, input, i);
     input += i;
     if (i < CHUNK_BYTE) W.b[i++] = 0x80; // add last 1 bit
-    util_memset (W.b + i, 0, (CHUNK_ALL_BYTE - i));
+    memset (W.b + i, 0, (CHUNK_ALL_BYTE - i));
     // flip chunk W
 #ifdef BYTE_FLIP
     W.i[ 0] = imath_flip64(W.i[ 0]);
@@ -935,7 +935,7 @@ void hash_sha512(uint64 *out, const char *input, uint64 l) {
 	digest[0] += digest[8]; \
 } while(0)
 #define SIG_TOP(I) do { \
-	util_memmove(digest + 1, digest, DIGEST_BYTE); \
+	memmove(digest + 1, digest, DIGEST_BYTE); \
 	digest[0] = imath_rotr64(digest[5], 14); \
 	digest[0] ^= imath_rotr64(digest[5], 18); \
 	digest[0] ^= imath_rotr64(digest[5], 41); \
@@ -965,7 +965,7 @@ void hash_sha512(uint64 *out, const char *input, uint64 l) {
 	W.i[16] += digest[8];\
 	W.i[16] += W.i[9];\
 	digest[0] += W.i[16];\
-	util_memcpy(W.i, W.i + 1, CHUNK_BYTE);\
+	memcpy(W.i, W.i + 1, CHUNK_BYTE);\
   SIG_BOT;\
 } while (0)
     // with salsa

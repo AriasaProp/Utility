@@ -13,17 +13,20 @@
 #include "array/dstring.h"
 
 enum : int {
-	BigInteger_Zero            = 0,
+	BigInteger_None            = 0,
 	BigInteger_Odd             = 1 << 0,
 	BigInteger_Prime           = 1 << 1,
 	BigInteger_DefinedProperty = 3,
 };
 
-#ifdef __SIZEOF_INT128__
-	typedef uint128 word;
+#ifdef __SIZEOF_INT256__
+typedef uint256 word;
+#elif defined(__SIZEOF_INT128__)
+typedef uint128 word;
 #else
-	typedef uint64 word;
+typedef uint64 word;
 #endif
+
 typedef struct {
   bool neg;
   word *items;
@@ -47,6 +50,8 @@ bigInteger bigInteger_dup (const bigInteger);
 void bigInteger_move(bigInteger*,bigInteger*);
 void bigInteger_zero(bigInteger*);
 void bigInteger_free(bigInteger*);
+// allocate memory
+void bigInteger_reserve(bigInteger*,iter);
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
 int bigInteger_cmp (const bigInteger, const bigInteger);
 // get number property on bigInteger by define what you looking for
@@ -75,6 +80,8 @@ bigInteger bigInteger_mulsub(const bigInteger, const bigInteger, const bigIntege
 bigInteger bigInteger_div  (const bigInteger, const bigInteger);
 bigInteger bigInteger_mod  (const bigInteger, const bigInteger);
 bigInteger bigInteger_factorial(const uint);
+// return biggest common divisor
+bigInteger bigInteger_gcd(const bigInteger*, iter);
 // modification operate no error should be occure
 void bigInteger_mredc (bigInteger*);
 void bigInteger_mincr (bigInteger*);
@@ -95,6 +102,9 @@ void bigInteger_mmuladd(bigInteger*, const bigInteger, const bigInteger);
 void bigInteger_mmulsub(bigInteger*, const bigInteger, const bigInteger);
 void bigInteger_mdiv  (bigInteger*, const bigInteger);
 void bigInteger_mmod  (bigInteger*, const bigInteger);
+// divide input to their biggest common factor
+void bigInteger_mgcd(bigInteger*, const bigInteger*, iter);
+void bigInteger_msimply(bigInteger*, iter);
 // print out
 void bigInteger_append_dstring(dstring*, const bigInteger);
 

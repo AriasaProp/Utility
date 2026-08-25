@@ -8,7 +8,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 #define TRY_P        0x10000
   dstring qstr = NULL;
   UNUSED(qstr);
-  float *prob = CAST(float*)util_calloc(sizeof(iter), ALL_POSSIBLE + 1);
+  float *prob = CAST(float*)calloc(sizeof(iter), ALL_POSSIBLE + 1);
   iter i, j;
   float p1 = 1.0f / CAST(float)TRY;
   for (i = 0; i < TRY;)
@@ -18,6 +18,6 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   for (i = 0; i <= ALL_POSSIBLE; ++i)
     entropy -= prob[i] * imath_log2(prob[i]);
   PRINT_INF("Random Test, entropy %08.4f done!.\n", entropy);
-  util_memfree(prob);
+  free(prob);
   return EXIT_SUCCESS;
 }

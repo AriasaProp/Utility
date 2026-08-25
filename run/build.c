@@ -4,6 +4,7 @@
 #include "nob_extra.c"
 #include "config.h"
 #include "help.h"
+#include "info.h"
 
 #define NOB_IMPLEMENTATION
 #include "nob.h"
@@ -156,9 +157,9 @@ typedef struct {
 } Task;
 
 // group function
-static void info_ask(void);
 static bool clean_group(Task*);
 static bool status_group(Task*);
+static bool qtest_group(Task*);
 static bool test_group(Task*);
 static bool benchmark_group(Task*);
 // root function
@@ -204,16 +205,14 @@ int main(int argc, char **argv) {
   } else {
     CASE_ACT("h","help") {
       printf (help_msg);
+    } else CASE_ACT("i","info") {
+      printf (info_msg);
     } else CASE_ACT("c","clean") {
       da_remove_first_item(&task);
       if (!clean_group(&task)) ret = EXIT_FAILURE;
     } else CASE_ACT("s","status") {
       da_remove_first_item(&task);
       if (!status_group(&task)) ret = EXIT_FAILURE;
-    } else CASE_ACT("i","info") {
-      da_remove_first_item(&task);
-      // info print out
-      info_ask();
     } else if (!strcmp(da_first(&task), "test")) {
       da_remove_first_item(&task);
       if (!test_group(&task)) ret = EXIT_FAILURE;
@@ -221,16 +220,8 @@ int main(int argc, char **argv) {
       da_remove_first_item(&task);
       if (!benchmark_group(&task)) ret = EXIT_FAILURE;
     } else if (!strcmp(da_first(&task), "qtest")) {
-      nob_log(NOB_INFO, "Compile & running %s", QExecs.name);
-      const char *out = temp_sprintf(BIN_DIR"/%s", QExecs.name);
-      bool result = exec_compile(out, QExecs.srcs, CLIT(const char*[]){
-#ifdef _MSC_VER
-    		"/Od", "/Zi", "/I.\test",
-#else                   
-    		"-O0", "-ggdb", "-I./test",
-#endif
-      	NULL}) && exec_run(out);
-      if (!result) ret = EXIT_FAILURE;
+      da_remove_first_item(&task);
+      if (!qtest_group(&task)) ret = EXIT_FAILURE;
     } else {
       nob_log(NOB_ERROR, "%s option doesn't exists.\n", da_first(&task));
       printf (help_msg);
@@ -244,71 +235,6 @@ int main(int argc, char **argv) {
   return ret;
 }
 
-static void info_ask(void) {
-  // Informasi OS
-#if defined(_WIN64)
-  nob_log(NOB_INFO, "OS: Windows 64-bit");
-#elif defined(_WIN32)
-  nob_log(NOB_INFO, "OS: Windows 32-bit");
-#elif defined(__linux__)
-  nob_log(NOB_INFO, "OS: Linux");
-#elif defined(__APPLE__) && defined(__MACH__)
-  nob_log(NOB_INFO, "OS: macOS");
-#elif defined(__unix__)
-  nob_log(NOB_INFO, "OS: Unix");
-#else
-  nob_log(NOB_INFO, "OS: Unknown");
-#endif
-  // Informasi compiler
-#if defined(__clang__)
-  nob_log(NOB_INFO, "Compiler: Clang %d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
-#elif defined(__GNUC__) || defined(__GNUG__)
-  nob_log(NOB_INFO, "Compiler: GCC %d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
-#elif defined(_MSC_VER)
-  nob_log(NOB_INFO, "Compiler: MSVC %d", _MSC_VER);
-#else
-  nob_log(NOB_INFO, "Compiler: Unknown");
-#endif
-
-  // Informasi arsitektur
-  nob_log(NOB_INFO, "Architecture: "
-#if defined(__x86_64__) || defined(_M_X64)
-  	"x86_64 (64-bit)"
-#elif defined(__i386) || defined(_M_IX86)
-  	"x86 (32-bit)"
-#elif defined(__aarch64__)
-  	"ARM64 (64-bit)"
-#elif defined(__arm__) || defined(_M_ARM)
-  	"ARM (32-bit)"
-#else
-		"Unknown"
-#endif
-	);
-  // Informasi byte order
-#ifdef BYTE_ORDER
-  nob_log(NOB_INFO, "Byte order: "
-#  if BYTE_ORDER == LITTLE_ENDIAN
-		"Little"
-#  else
-		"Big"
-#  endif // BYTE_ORDER
-		" Endian (BYTE_ORDER)");
-#elif defined(__BYTE_ORDER__)
-  nob_log(NOB_INFO, "Byte order: "
-#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  	"Little"
-#  else
-  	"Big"
-#  endif // __BYTE_ORDER__
-		" Endian (__BYTE_ORDER__)");
-#else
-  {
-    unsigned int x = 1;
-    char *c = (char*)&x;
-  	nob_log(NOB_INFO, "Byte order: %s Endian (Manual)", *c == 1 ? "Little" : "Big");
-  }
-#endif
-}
 static bool clean_group(Task *task) {
   size_t i, j;
 	int clean;
@@ -385,6 +311,19 @@ static bool status_group(Task *task) {
   }
   temp_rewind(j);
   return true;
+}
+static bool qtest_group(Task *task) {
+  static const char *compile_flags[] = {
+#ifdef _MSC_VER
+		"/Od", "/Zi", "/I.\test",
+#else                   
+		"-O0", "-ggdb", "-I./test",
+#endif
+  	NULL
+  };
+  nob_log(NOB_INFO, "Compile & running %s", QExecs.name);
+  const char *out = temp_sprintf(BIN_DIR"/%s", QExecs.name);
+  return exec_compile(out, QExecs.srcs, compile_flags) && exec_run(out);
 }
 static bool test_group(Task *task) {
   size_t i, j;

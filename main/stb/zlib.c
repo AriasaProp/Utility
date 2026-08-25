@@ -46,8 +46,8 @@ static int zlib__zbuild_huffman(zlib__zhuffman *z, const ubyte *sizelist, int nu
   int code, next_code[16], sizes[17];
 
   // DEFLATE spec for generating codes
-  util_memset(sizes, 0, sizeof(sizes));
-  util_memset(z->fast, 0, sizeof(z->fast));
+  memset(sizes, 0, sizeof(sizes));
+  memset(z->fast, 0, sizeof(z->fast));
   for (i = 0; i < num; ++i)
     ++sizes[sizelist[i]];
   sizes[0] = 0;
@@ -194,7 +194,7 @@ static int zlib__zexpand(zlib__zbuf *z, byte *zout, int n) {
       return zlib__err("outofmem : Out of memory");
     limit *= 2;
   }
-  q = (byte *)util_realloc(z->zout_start, limit);
+  q = (byte *)realloc(z->zout_start, limit);
   UNUSED(old_limit);
   if (q == NULL)
     return zlib__err("outofmem : Out of memory");
@@ -286,7 +286,7 @@ static bool zlib__compute_huffman_codes(zlib__zbuf *a) {
   int hclen = zlib__zreceive(a, 4) + 4;
   int ntot = hlit + hdist;
 
-  util_memset(codelength_sizes, 0, sizeof(codelength_sizes));
+  memset(codelength_sizes, 0, sizeof(codelength_sizes));
   for (i = 0; i < hclen; ++i) {
     int s = zlib__zreceive(a, 3);
     codelength_sizes[length_dezigzag[i]] = (ubyte)s;
@@ -317,7 +317,7 @@ static bool zlib__compute_huffman_codes(zlib__zbuf *a) {
       }
       if (ntot - n < c)
         return zlib__err("bad codelengths");
-      util_memset(lencodes + n, fill, c);
+      memset(lencodes + n, fill, c);
       n += c;
     }
   }
@@ -440,7 +440,7 @@ static bool zlib__do_zlib(zlib__zbuf *a, byte *obuf, int olen, int exp, int pars
 }
 byte *zlib_decode_malloc_guesssize(const byte *buffer, int len, int initial_size, int *outlen) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(initial_size);
+  byte *p = (byte *)malloc(initial_size);
   if (p == NULL)
     return NULL;
   a.zbuffer = (ubyte *)buffer;
@@ -450,7 +450,7 @@ byte *zlib_decode_malloc_guesssize(const byte *buffer, int len, int initial_size
       *outlen = (int)(a.zout - a.zout_start);
     return a.zout_start;
   } else {
-    util_memfree(a.zout_start);
+    free(a.zout_start);
     return NULL;
   }
 }
@@ -459,7 +459,7 @@ byte *zlib_decode_malloc(byte const *buffer, int len, int *outlen) {
 }
 byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, int initial_size, int *outlen, int parse_header) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(initial_size);
+  byte *p = (byte *)malloc(initial_size);
   if (p == NULL)
     return NULL;
   a.zbuffer = (ubyte *)buffer;
@@ -469,7 +469,7 @@ byte *zlib_decode_malloc_guesssize_headerflag(const byte *buffer, int len, int i
       *outlen = (int)(a.zout - a.zout_start);
     return a.zout_start;
   } else {
-    util_memfree(a.zout_start);
+    free(a.zout_start);
     return NULL;
   }
 }
@@ -484,7 +484,7 @@ int zlib_decode_buffer(byte *obuffer, int olen, byte const *ibuffer, int ilen) {
 }
 byte *zlib_decode_noheader_malloc(byte const *buffer, int len, int *outlen) {
   zlib__zbuf a;
-  byte *p = (byte *)util_malloc(16384);
+  byte *p = (byte *)malloc(16384);
   if (p == NULL)
     return NULL;
   a.zbuffer = (ubyte *)buffer;
@@ -494,7 +494,7 @@ byte *zlib_decode_noheader_malloc(byte const *buffer, int len, int *outlen) {
       *outlen = (int)(a.zout - a.zout_start);
     return a.zout_start;
   } else {
-    util_memfree(a.zout_start);
+    free(a.zout_start);
     return NULL;
   }
 }
@@ -520,7 +520,7 @@ int zlib_decode_noheader_buffer(byte *obuffer, int olen, const byte *ibuffer, in
 
 #define zlib__sbpush(a, v) (zlib__sbmaybegrow(a, 1), (a)[zlib__sbn(a)++] = (v))
 #define zlib__sbcount(a)   ((a) ? zlib__sbn(a) : 0)
-#define zlib__sbfree(a)    ((a) ? util_memfree(zlib__sbraw(a)), 0 : 0)
+#define zlib__sbfree(a)    ((a) ? free(zlib__sbraw(a)), 0 : 0)
 
 static void *zlib__sbgrowf(void **arr, int increment, int itemsize) {
   int m = *arr ? 2 * zlib__sbm(*arr) + increment : increment + 1;
@@ -592,7 +592,7 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
   uint bitbuf = 0;
   int i, j, bitcount = 0;
   ubyte *out = NULL;
-  ubyte ***hash_table = (ubyte ***)util_malloc(zlib__ZHASH * sizeof(ubyte **));
+  ubyte ***hash_table = (ubyte ***)malloc(zlib__ZHASH * sizeof(ubyte **));
   if (hash_table == NULL)
     return NULL;
   if (quality < 5)
@@ -624,7 +624,7 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
     }
     // when hash table entry is too long, delete half the entries
     if (hash_table[h] && zlib__sbn(hash_table[h]) == 2 * quality) {
-      util_memmove(hash_table[h], hash_table[h] + quality, sizeof(hash_table[h][0]) * quality);
+      memmove(hash_table[h], hash_table[h] + quality, sizeof(hash_table[h][0]) * quality);
       zlib__sbn(hash_table[h]) = quality;
     }
     zlib__sbpush(hash_table[h], data + i);
@@ -674,7 +674,7 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
 
   for (i = 0; i < zlib__ZHASH; ++i)
     (void)zlib__sbfree(hash_table[i]);
-  util_memfree(hash_table);
+  free(hash_table);
 
   // store uncompressed instead if compression was worse
   if (zlib__sbn(out) > data_len + 2 + ((data_len + 32766) / 32767) * 5) {
@@ -688,7 +688,7 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
       zlib__sbpush(out, (ubyte)(blocklen >> 8));
       zlib__sbpush(out, (ubyte)(~blocklen)); // NLEN
       zlib__sbpush(out, (ubyte)(~blocklen >> 8));
-      util_memcpy(out + zlib__sbn(out), data + j, blocklen);
+      memcpy(out + zlib__sbn(out), data + j, blocklen);
       zlib__sbn(out) += blocklen;
       j += blocklen;
     }
@@ -716,6 +716,6 @@ ubyte *zlib_encode(ubyte *data, int data_len, int *out_len, int quality) {
   }
   *out_len = zlib__sbn(out);
   // make returned pointer freeable
-  util_memmove(zlib__sbraw(out), out, *out_len);
+  memmove(zlib__sbraw(out), out, *out_len);
   return CAST(ubyte*)zlib__sbraw(out);
 }

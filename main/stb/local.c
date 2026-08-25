@@ -7,7 +7,7 @@
 static char err_msg[STB_ERROR_MSG_LEN] = {0};
 
 void stb_clean_error() {
-  util_memset(err_msg, 0, STB_ERROR_MSG_LEN);
+  memset(err_msg, 0, STB_ERROR_MSG_LEN);
 }
 const char *stb_get_error() {
   return err_msg;

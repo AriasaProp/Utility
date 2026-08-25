@@ -15,7 +15,35 @@
 #define WORD_HALF_BITS (WORD_BITS >> 1)
 #define WORD_HALF_MASK (((word)-1) >> WORD_HALF_BITS)
 
+#ifdef __SIZEOF_INT128__
+typedef uint64 hword;
+#else
+typedef uint32 hword;
+#endif
+
 /** private function **/
+static void bigInteger__cstr(bigInteger *a, const char *c) {
+  // read sign
+  c += (a->neg = (*c == '-'));
+  // read digits
+  word temp, carry[2];
+  hword *chi = CAST(hword*)carry;
+  word *center = CAST(word*)(chi + 1);
+  chi += 3;
+  while (*c >= '0' && *c <= '9') {
+    carry[0] = *c - '0';
+    darray_foreach(word, i, a) {
+      temp = (*i & WORD_HALF_MASK) * 10;
+      carry[1] = (carry[0] += temp) < temp;
+      temp = (*i >> WORD_HALF_BITS) * 10;
+      chi[0] += (center[0] += temp) < temp;
+      *i = carry[0];
+      carry[0] = carry[1];
+    }
+    if (carry[0]) darray_append(a, carry[0]);
+    c++;
+  }
+}
 /*
 static word bigInteger__wordadd(word *a, const iter an, const word *b, const iter bn) {
   word c = 0;
@@ -92,6 +120,11 @@ static void bigInteger__abit(bigInteger *a, bool sub) {
  * a + b   => ~c + 1
  *
  *
+ *   1111
+ *   1111
+ *
+ *  11110
+ *
  */
 static void bigInteger__sumi(bigInteger *a, const int B, const bool sub) {
 	darray_atleast(a, 1);
@@ -139,44 +172,95 @@ static void bigInteger__Sum (bigInteger *a, const bigInteger b, const bool sub) 
 }
 
 /*
- *  a*b - d
- *  a*b - (B - D)
- *  a*b - B + D
+ *  (a*b + d)        √
+ *
+ *  a*b - d      x
+ *  a*b - (B - ~d)
+ *  a*b - B + ~d
+ *  (a*b + ~d) - B √
  * Borrow
- * Degate
+ *
+ * common
+ *           ( x )( y )
+ *           ( a )( b )
+ * -------------------
+ *           (  b  y  )
+ * (  a  x  )
+ *      (  b  x  )
+ *      (  a  y  )
+ * karatsuba
+ * (   ax   )(   by   )
+ *      (    c   )
+ * c => (x+y)*(a+b)-((ax)+(by))
+ * big X
+ *         (   a  ) -> (   A  )
+ *         (   b  ) -> (   B  )
+ * ----------------------------
+ * (b  - A)(  AB  )
+ *
+ * common X
+ * ∆ * £ => 
+ *
+ *
+ *
+ *                    (  x )(  y )
+ *                    (  a )(  b )
+ *          ----------------------
+ *        (    AX    )(    BY    )
+ *  (     P    )(     Q    )
+ *              (    BX    )
+ *              (    AY    )
+ *        (     R    )
+ *        (     S    )
+ *
+ * P => x-A ? a-X
+ * Q => y-B ? b-Y
+ * R => x-B ? b-X
+ * S => y-A ? a-Y
  *
  */
+ 
 static bigInteger bigInteger__MultiplySum(const bigInteger a, const bigInteger b,const bigInteger d, const bool sub) {
   bigInteger c = bigInteger_dup(d);
   darray_atleast(&c, a.count + b.count);
   c.neg = a.neg ^ b.neg;
   iter x,y,z;
   bool borrow = d.neg ^ c.neg ^ sub;
-  word xhi,xlo,yhi,ylo,carry[3] = {0},temp;
-  if (borrow) // borrow
-  	for (x = 0, carry[0] = 1; x < c.count; ++x)
-  		carry[0]&=!(c.items[x] = ~c.items[x] + carry[0]);
+  word xhi,xlo,ytemp, temp, carry[2] = {0};
+  hword *hcarry = CAST(hword*)carry;
+  word  *scarry = CAST(word *)(hcarry + 1);
+  hcarry += 3;
+  if (borrow) for (x = 0, temp = 1; x < c.count; ++x)
+  	temp &= 0 == (c.items[x] = ~c.items[x] + temp);
+  
   for (x = 0; x < a.count; ++x) {
     xhi = a.items[x]>> WORD_HALF_BITS;
     xlo = a.items[x] & WORD_HALF_MASK;
+    carry[0] = carry[1] = 0;
     for (y = 0; y < b.count; ++y) {
-      yhi = b.items[y]>> WORD_HALF_BITS;
-      ylo = b.items[y] & WORD_HALF_MASK;
       z = x + y;
-      carry[0] = (c.items[z] += carry[0]) < carry[0];
-      temp = a.items[x] * b.items[y];
-      carry[0]+= (c.items[z] += temp) < temp;
-      carry[2] = (ylo * xlo) >> WORD_HALF_BITS;
-      temp = ylo * xhi;
-      carry[1] = (carry[2] += temp) < temp;
-      temp = yhi * xlo;
-      carry[1]+= (carry[2] += temp) < temp;
-      carry[2]>>= WORD_HALF_BITS;
-      carry[1]<<= WORD_HALF_BITS;
-      
-      carry[0] += carry[2];
-      carry[0] += carry[1];
-      temp = yhi * xhi;
+      // load c to carry
+      temp = c.items[z];
+      carry[1] = (carry[0] += temp) < temp;
+      // get b low
+      ytemp = b.items[y] & WORD_HALF_MASK;
+      // add low multiplication to carry
+      temp = xlo * ytemp;
+      carry[1] += (carry[0] += temp) < temp;
+      // add x multiplication to carry
+      temp = xhi * ytemp;
+      *hcarry+= (*scarry += temp) < temp;
+      // get b hi
+      ytemp = b.items[y]>> WORD_HALF_BITS;
+      // add x multiplication to carry
+      temp = xlo * ytemp;
+      *hcarry+= (*scarry += temp) < temp;
+      // load carry to c
+      c.items[z] = carry[0];
+      // load carry1 to carry0
+      carry[0] = carry[1];
+      // add high multiplication to carry
+      temp = xhi * ytemp;
       carry[0] += temp;
     }
     for (z = x + y; carry[0] && (z < c.count); ++z)
@@ -186,8 +270,8 @@ static bigInteger bigInteger__MultiplySum(const bigInteger a, const bigInteger b
     	else darray_append(&c, carry[0]);
   	}
   }
-  if (borrow) for (x = 0,carry[0] = 1; x < c.count; ++x)
-    carry[0]&=!(c.items[x] = ~c.items[x] + carry[0]);
+  if (borrow) for (x = 0,temp = 1; x < c.count; ++x)
+    temp &= !(c.items[x] = ~c.items[x] + temp);
 	c.neg ^= borrow;
   bigInteger__shrink(&c);
   return c;
@@ -195,30 +279,7 @@ static bigInteger bigInteger__MultiplySum(const bigInteger a, const bigInteger b
 // initialization
 bigInteger bigInteger_from_cstr(const char *c) {
   bigInteger ret = {0};
-  // read sign
-  if (*c == '-') ret.neg |= 1, c++;
-  else ret.neg &= 0;
-  // read digits
-  word carry[3] = {0}, temp;
-  while (*c) {
-    carry[0] = *c - '0';
-    if (carry[0] >= 10) break;
-    darray_foreach(word, i, &ret) {
-      carry[2] = *i & WORD_HALF_MASK;
-      carry[1] = *i>> WORD_HALF_BITS;
-      *i *= 10;
-      carry[0] = (*i += carry[0]) < carry[0];
-      carry[2] = (10 * carry[2]) >> WORD_HALF_BITS;
-      temp = 10 * carry[1];
-      carry[1] = (carry[2] += temp) < temp;
-      carry[2] >>= WORD_HALF_BITS;
-      carry[1] <<= WORD_HALF_BITS;
-      carry[0] += carry[2];
-      carry[0] += carry[1];
-    }
-    if (carry[0]) darray_append(&ret, carry[0]);
-    c++;
-  }
+  bigInteger__cstr(&ret, c);
   return ret;
 }
 bigInteger bigInteger_from_int(const int in) {
@@ -234,30 +295,7 @@ void bigInteger_set_words(bigInteger *a, bool neg, const word *w, iter i) {
 }
 void bigInteger_set_cstr(bigInteger *a, const char *c) {
   darray_clean(a);
-  // read sign
-  if (*c == '-') a->neg |= 1, c++;
-  else a->neg &= 0;
-  // read digits
-  word carry[3] = {0}, temp;
-  while (*c) {
-    carry[0] = *c - '0';
-    if (carry[0] >= 10) break;
-    darray_foreach(word, i, a) {
-      carry[2] = *i & WORD_HALF_MASK;
-      carry[1] = *i>> WORD_HALF_BITS;
-      *i *= 10;
-      carry[0] = (*i += carry[0]) < carry[0];
-      carry[2] = (10 * carry[2]) >> WORD_HALF_BITS;
-      temp = 10 * carry[1];
-      carry[1] = (carry[2] += temp) < temp;
-      carry[2] >>= WORD_HALF_BITS;
-      carry[1] <<= WORD_HALF_BITS;
-      carry[0] += carry[2];
-      carry[0] += carry[1];
-    }
-    if (carry[0]) darray_append(a, carry[0]);
-    c++;
-  }
+  bigInteger__cstr(a, c);
 }
 void bigInteger_set_int(bigInteger *a, const int in) {
   a->neg = (in < 0);
@@ -286,6 +324,10 @@ inline void bigInteger_zero(bigInteger *x) {
 }
 inline void bigInteger_free(bigInteger *x) {
   darray_free(x);
+}
+// allocate memory
+void bigInteger_reserve(bigInteger *x, iter n) {
+  darray_reserve(x, n);
 }
 // compare 2 bigInteger, which 0 is equal, -1 left smaller, 1 left bigger  
 int bigInteger_cmp(const bigInteger a, const bigInteger b) {
@@ -676,7 +718,7 @@ bigInteger bigInteger_factorial(uint b) {
 	  for (i = 3; i <= b; i += 2) {
 	    yhi = i >> WORD_HALF_BITS;
 	    ylo = i  & WORD_HALF_MASK;
-	    util_memset(carry, 0, 3 * WORD_BYTES);
+	    memset(carry, 0, 3 * WORD_BYTES);
 	    for (j = 0; j < ret.count; ++j) {
 	      xhi = ret.items[j] >> WORD_HALF_BITS;
 	      xlo = ret.items[j] &  WORD_HALF_MASK;
@@ -702,6 +744,12 @@ bigInteger bigInteger_factorial(uint b) {
   bigInteger_mshfli(&ret, shf);
   bigInteger__shrink(&ret);
 	return ret;
+}
+// return great common divisor
+bigInteger bigInteger_gcd(const bigInteger *N, iter n) {
+  bigInteger x = {0};
+  bigInteger_mgcd(&x, N, n);
+  return x;
 }
 // modification operate no error should be occure
 void bigInteger_mredc(bigInteger *a) {
@@ -790,7 +838,7 @@ void bigInteger_mshfli(bigInteger *a, const uint i) {
   iter word_shift = i / WORD_BITS;
   if (word_shift) {
     darray_reserve(a, a->count + word_shift);
-    util_memmove(a->items + word_shift, a->items, a->count * sizeof(word));
+    memmove(a->items + word_shift, a->items, a->count * sizeof(word));
     a->count += word_shift;
   }
 }
@@ -798,7 +846,7 @@ void bigInteger_mshfri(bigInteger *a, const uint i) {
   iter word_shift = i / WORD_BITS;
   if (word_shift) {
     a->count -= word_shift;
-    util_memcpy(a->items, a->items + word_shift, a->count * sizeof(word));
+    memcpy(a->items, a->items + word_shift, a->count * sizeof(word));
   }
   iter bit_shift = i % WORD_BITS;
   if (bit_shift) {
@@ -894,14 +942,52 @@ void bigInteger_mmod(bigInteger *a, const bigInteger b) {
   bigInteger_move(a, &rem);
 }
 
+// set to biggest common factor
+void bigInteger_mgcd(bigInteger *x, const bigInteger *N, iter n) {
+  bigInteger_zero(x);
+  bigInteger y = {0};
+  for (iter i = 0; i < n; ++i) {
+    darray_copy(&y, N + i);
+    for (int loop = 1; loop && y.count;) {
+      switch ((loop = bigInteger__cmp(*x, y))) {
+        case 1:
+  #if 1
+        // euclid
+          bigInteger_mmod(x, y);
+  #else
+        // dijkstra
+          bigInteger_msub(x, y);
+          break;
+  #endif
+        case -1:
+          darray_swap(x, &y);
+          break;
+        case 0: break; // x and y are equal
+        default: ASSERT("Unreachable in bigInteger gcd");
+      }
+    }
+  }
+  bigInteger_free(&y);
+}
+// divide input to their biggest common factor
+void bigInteger_msimply(bigInteger *N, iter n) {
+  bigInteger d = {0};
+  bigInteger_mgcd(&d, CAST(const bigInteger*)N, n);
+  for (iter i = 0; i < n; ++i) {
+    bigInteger_mdiv(N + i, d);
+	  bigInteger__shrink(N + i);
+  }
+  bigInteger_free(&d);
+}
+
 // print out
 void bigInteger_append_dstring(dstring *str, const bigInteger a) {
   iter ac = a.count, bytes = WORD_BYTES * ac, i;
-  word rmr, current, *aw = CAST(word*)util_malloc(bytes);
+  word rmr, current, *aw = CAST(word*)malloc(bytes);
   iter dstring_old = dstring_len(*str);
   // predict each word decimal, log10(2) ~> 1/3
   dstring_reserve(str, dstring_old + 1 + ac * WORD_BITS / 3);
-  util_memcpy(aw, a.items, bytes);
+  memcpy(aw, a.items, bytes);
   do {
     rmr = 0;
     for(i = ac; i--; ) {
@@ -919,7 +1005,7 @@ void bigInteger_append_dstring(dstring *str, const bigInteger a) {
     dstring_append_char(str, '0' + CAST(char)rmr);
     ac -= (ac && !aw[ac - 1]);
   } while (ac);
-  util_memfree(aw);
+  free(aw);
   if (a.neg) dstring_append_char(str, '-');
   util_memflip(*str + dstring_old, dstring_len(*str) - dstring_old);
 }

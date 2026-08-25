@@ -13,6 +13,8 @@
 #include <limits.h> // INT_MAX
 #include <stdlib.h>
 #include <stdarg.h>
+#include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -21,6 +23,34 @@
 // ================================
 //  Global Macro & Primitive Redefinition
 // ================================
+#if defined(__ARM_NEON) || defined(__NEON__)
+#  include <arm_neon.h>
+#endif
+#ifdef _MSC_VER
+#  include <intrin.h>
+#endif
+#if defined(__AVX__) || defined(__AVX2__) || defined(__AVX512F__)
+#  include <immintrin.h>    // AVX and later
+#endif
+#ifdef __SSE4_2__
+#  include <nmmintrin.h>    // SSE 4.2
+#endif
+#ifdef __SSE4_1__
+#  include <smmintrin.h>    // SSE 4.1
+#endif
+#ifdef __SSSE3__
+#  include <tmmintrin.h>    // SSSE3
+#endif
+#ifdef __SSE3__
+#  include <pmmintrin.h>    // SSE3
+#endif
+#ifdef __SSE2__
+#  include <emmintrin.h>    // SSE2
+#endif
+#ifdef __SSE__
+#  include <xmmintrin.h>    // SSE
+#endif
+
 
 #if (defined(_MSC_VER) && _MSC_VER < 1600) /*|| defined(__SYMBIAN32__) */
   typedef          __int8   byte;
@@ -31,6 +61,14 @@
   typedef unsigned __int16 	ushrt;
   typedef unsigned __int32 	uint32;
   typedef unsigned __int64 	uint64;
+  #ifdef __SIZEOF_INT256__
+  typedef          __int256 	int256;
+  typedef unsigned __int256 	uint256;
+	#endif
+  #ifdef __SIZEOF_INT128__
+  typedef          __int128  int128;
+  typedef unsigned __int128  uint128;
+	#endif
   typedef unsigned __int64 	iter;
   
 #else
@@ -44,7 +82,12 @@
   typedef uint16_t 	ushrt;
   typedef uint32_t 	uint32;
   typedef uint64_t 	uint64;
+  #ifdef __SIZEOF_INT256__
+  typedef __int256_t 	  int256;
+  typedef __uint256_t 	uint256;
+	#endif
   #ifdef __SIZEOF_INT128__
+  typedef __int128_t 	  int128;
   typedef __uint128_t 	uint128;
 	#endif
   typedef size_t    iter;
@@ -61,7 +104,7 @@ typedef unsigned long long ullong;
 #define STRINGIFY(X)          PRIVATE_STRINGIFY(X)
 #define STACK_ARR_LEN(X)      (sizeof((X)) / sizeof((X)[0]))
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
   #if defined(_WIN32) || defined(WIN32)
     #ifndef _CRT_SECURE_NO_WARNINGS
       #define _CRT_SECURE_NO_WARNINGS
@@ -77,20 +120,17 @@ typedef unsigned long long ullong;
   #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          0
 	#define SIMD_ALIGN(type, name) __declspec(align(16)) type name
-#elif defined(__GNUC__)
+  #define ALIGN(N)     __declspec(align(N))
+  #define PACKED(type) __pragma(pack(push, 1)) type __pragma(pack(pop))
+#elif defined(__GNUC__) || defined(__clang__)
   #define CDECL            /* no translate */
   #define UNUSED(x)        ((void)x)
   #define UNUSED_ARG(x)    __attribute__((unused)) x
   #define NONNULL_ARG(x)   __attribute__((nonnull)) x
   #define BLTN(x)          __has_builtin(x)
 	#define SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
-#elif defined(__clang__)
-  #define CDECL            /* no translate */
-  #define UNUSED(x)        ((void)x)
-  #define UNUSED_ARG(x)    __attribute__((unused)) x
-  #define NONNULL_ARG(x)   __attribute__((nonnull)) x
-  #define BLTN(x)          __has_builtin(x)
-	#define SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
+  #define ALIGN(N)     __attribute__((aligned(N)))
+  #define PACKED(type) __attribute__((packed)) type
 #else /* Unknown compiler */
   #error "Not ready for this compiler"
 #endif
@@ -129,6 +169,8 @@ typedef unsigned long long ullong;
 
 #define MIN(X,Y)  (((X) < (Y)) ? (X) : (Y))
 #define MAX(X,Y)  (((X) > (Y)) ? (X) : (Y))
+#define CLAMP(min, X, max)  MAX(min, MIN(max, X))
+#define BETWEEN(min, X, max)  ((X) >= (min) && (X) <= (max))
 
 #ifdef __cplusplus
   #define CLIT(T) T
@@ -146,44 +188,21 @@ int convert_wchar_to_utf8(char *, iter, const wchar_t *);
 
 /* ================================
  *  Standar Utility Functions
- *  just bridge of memory access + modification
  * ================================
  */
-void *util_alloca (iter);
-void *util_malloc (iter);
-void *util_calloc (iter,iter);
-void *util_realloc(void*,iter);
-void  util_memfree(void*);
 void  util_memswap(void*,void*,iter);
 void  util_memflip(void*,iter);
-void  util_memcpy (void*,const void*,iter);
-int   util_memcmp (const void*,const void*,iter);
-void  util_memmove(void*,void*,iter);
-void  util_memset (void*,int,iter);
-iter  util_strlen (const char*);
-char *util_strncpy(char*, const char*, iter);
-char *util_strcpy (char*, const char*);
 iter  util_clz(ulong);
+iter  util_ctz(ulong);
 iter  util_bitlead(ulong);
-
-/* ================================
- *  File Functions
- * ================================
- */
-FILE *file_open  (const char*,const char*);
-void  file_rewind(FILE*);
-int   file_read  (void*,iter, FILE*);
-void  file_seek  (int, FILE*);
-int   file_write (const void*,iter, FILE*);
-bool  file_eof   (FILE*);
-void  file_close (FILE*);
 
 
 /* ================================
  *  IMath Functions
  * ================================
  */
-uint   imath_iabs  (int);
+ int   imath_iabs  (int);
+uint   imath_uabs  (int);
 float  imath_fabs  (float);
 bool   imath_isnormal(float);
 float  imath_fmax  (float, float);

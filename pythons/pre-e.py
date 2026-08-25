@@ -1,17 +1,14 @@
 import sys
 sys.set_int_max_str_digits(99999)
-LIM=2**31-1
-A=2
+
+A=1
 B=1
-C=2
+C=1
 N=0
-M=1
-while A < LIM:
+while N < 9:
   N+=1
-  C*=N
-  M+=2
-  A=A*M+C
-  B*=M
+  A=A*N+C
+  B*=N
 
 def gcd(x, y):
   if x == 0:
@@ -22,14 +19,13 @@ def gcd(x, y):
     y = t
   return x
 
-print("* π = ", A/B)
-r = gcd(gcd(A, B), C)
-print("* r = ", r)
-A = A // r
-B = B // r
-C = C // r
+print("* e = ", A/B)
+# r = gcd(gcd(A, B), C)
+# print("* r = ", r)
+# A = A // r
+# B = B // r
+# C = C // r
 print("  * a = ", int(A))
 print("  * b = ", int(B))
 print("  * c = ", int(C))
 print("  * n = ", N)
-print("  * m = ", M)

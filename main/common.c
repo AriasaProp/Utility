@@ -14,7 +14,7 @@
 #define STRING_CAP_MASK  3
 
 
-#if !defined(NO_STDMATH)
+#ifndef NO_STDMATH
   #include <math.h>
 #else
   #define M_PI_INV   0.3183098861838f // 1/π
@@ -32,21 +32,15 @@
 #ifdef __GLIBC__
 #  include <byteswap.h>
 #endif
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-#include <stddef.h>
-// #include <string.h>
-#include <time.h>
-#include <alloca.h>
 // #define FASTER_MATH //  no use when STD_MATH defined
 #if defined(_WIN32) || defined(_WIN64)
-  #include <intrin.h>
-  #pragma intrinsic(__rdtsc)
+#  pragma intrinsic(__rdtsc)
 // win32/64 wide character support
 int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
   return WideCharToMultiByte(65001 /* UTF8 */, 0, input, -1, buffer, (int)bufferlen, NULL, NULL);
 }
+#else
+#  include <time.h>
 #endif
 
 #define CHAR_WHITESPACE ' '
@@ -56,41 +50,7 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
  *  Standar Utility Function
  * ================================
  */
-void *util_alloca(iter bytes) {
-#if BLTN(__builtin_alloca)
-  return __builtin_alloca(bytes);
-#else
-  return alloca(bytes);
-#endif
-}
-void *util_malloc(iter bytes) {
-#if BLTN(__builtin_malloc)
-  return __builtin_malloc(bytes);
-#else
-  return malloc(bytes);
-#endif
-}
-void *util_calloc(iter n, iter bytes) {
-#if BLTN(__builtin_calloc)
-  return __builtin_calloc(n, bytes);
-#else
-  return calloc(n, bytes);
-#endif
-}
-void *util_realloc(void *a, iter bytes) {
-#if BLTN(__builtin_realloc)
-  return __builtin_realloc(a, bytes);
-#else
-  return realloc(a, bytes);
-#endif
-}
-void util_memfree(void *p) {
-#if BLTN(__builtin_free)
-  __builtin_free(p);
-#else
-  free(p);
-#endif
-}
+ 
 void util_memswap(void *a, void *b, iter bytes) {
   if (a == b) return;
   byte *A = CAST(byte*)a, *B = CAST(byte*)b;
@@ -108,62 +68,21 @@ void util_memflip(void *a, iter n) {
     A[i] ^= A[j];
   }
 }
-void util_memcpy (void *dst, const void *src,iter bytes) {
-#if BLTN(__builtin_memcpy)
-  __builtin_memcpy(dst,src,bytes);
-#else
-  memcpy(dst,src,bytes);
-#endif
-}
-int util_memcmp (const void *a, const void *b,iter bytes) {
-#if BLTN(__builtin_memcmp)
-  return __builtin_memcmp(a,b,bytes);
-#else
-  return memcmp(a,b,bytes);
-#endif
-}
-void util_memmove(void *dst, void *src,iter bytes) {
-#if BLTN(__builtin_memmove)
-  __builtin_memmove(dst,src,bytes);
-#else
-  memmove(dst,src,bytes);
-#endif
-}
-void util_memset(void *dst, int src, iter bytes) {
-#if BLTN(__builtin_memset)
-  __builtin_memset(dst,src,bytes);
-#else
-  memset(dst,src,bytes);
-#endif
-}
-iter util_strlen(const char *str) {
-#if BLTN(__builtin_strlen)
-  return str ? __builtin_strlen(str) : 0;
-#else
-  return str ? strlen(str) : 0;
-#endif
-}
-
-char *util_strncpy(char *dst, const char *src, iter n) {
-#if BLTN(__builtin_strncpy)
-  return __builtin_strncpy(dst, src, n);
-#else
-  return strncpy(dst, src, n);
-#endif
-}
-char *util_strcpy (char *dst, const char *src) {
-#if BLTN(__builtin_strcpy)
-  return __builtin_strcpy(dst, src);
-#else
-  return strcpy(dst, src);
-#endif
-}
 iter util_clz(ulong x) {
 #if BLTN(__builtin_clzl)
   return __builtin_clzl(x);
 #else
   iter r = sizeof(ulong) * 8;
   while (x) --r, x >>= 1;
+  return r;
+#endif
+}
+iter util_ctz(ulong x) {
+#if BLTN(__builtin_ctzl)
+  return __builtin_ctzl(x);
+#else
+  iter r = sizeof(ulong) * 8;
+  while (x) --r, x <<= 1;
   return r;
 #endif
 }
@@ -175,49 +94,6 @@ iter util_bitlead(ulong x) {
   while (x) ++r, x >>= 1;
   return r;
 #endif
-}
-
-/* ================================
- *  File Functions
- * ================================
- */
-inline FILE *file_open(const char *filename, const char *mode) {
-  FILE *f;
-#if defined(_WIN32) && defined(STBIW_WINDOWS_UTF8)
-  wchar_t wMode[64];
-  wchar_t wFilename[1024];
-  if (0 == MultiByteToWideChar(65001 /* UTF8 */, 0, filename, -1, wFilename, sizeof(wFilename)/sizeof(*wFilename))) return 0;
-  if (0 == MultiByteToWideChar(65001 /* UTF8 */, 0, mode, -1, wMode, sizeof(wMode)/sizeof(*wMode))) return 0;
-  #if defined(_MSC_VER) && _MSC_VER >= 1400
-  if (0 != _wfopen_s(&f, wFilename, wMode)) f = 0;
-  #else
-  f = _wfopen(wFilename, wMode);
-  #endif
-  #elif defined(_MSC_VER) && _MSC_VER >= 1400
-  if (0 != fopen_s(&f, filename, mode))
-    f=0;
-  #else
-  f = fopen(filename, mode);
-  #endif
-  return f;
-}
-inline void file_rewind(FILE *file) {
-  rewind(file);
-}
-inline int file_read(void *buffer, iter n, FILE *file) {
-  return fread(buffer, 1, n, file);
-}
-inline void file_seek(int n, FILE *file) {
-  fseek(file, n, SEEK_CUR);
-}
-inline int file_write(const void *buffer,iter n, FILE *file) {
-  return fwrite(buffer, 1, n, file);
-}
-inline bool file_eof(FILE *file) {
-  return feof(file) || ferror(file);
-}
-inline void file_close(FILE *file) {
-  fclose(file);
 }
 
 /* ================================
@@ -241,17 +117,26 @@ static inline float imath__cosine_wave(float x) {
 }
 #endif // builtin trig
 
-inline uint imath_iabs (int a) {
+inline int imath_iabs (int a) {
 #if BLTN(__builtin_abs)
   return __builtin_abs(a);
-#elif // libc
+#else // libc
   return abs(a);
+#endif // builtin
+}
+inline uint imath_uabs (int a) {
+#if BLTN(__builtin_uabs)
+  return __builtin_uabs(a);
+#elif defined(_ISOC2Y_SOURCE) // libc
+  return uabs(a);
+#else
+  return CAST(uint) imath_iabs(a);
 #endif // builtin
 }
 
 inline bool imath_isnormal(float a) {
-#if !defined(NO_STDMATH)
-  return !!isnormal(a);
+#ifndef NO_STDMATH
+  return isnormal(a);
 #else
   return (*(CAST(int*)&a) & 0x7fe00000) != 0x7fe00000;
 #endif // builtin
@@ -396,8 +281,7 @@ inline float imath_acos(float x) {
     *i = 0x7f800000; // NAN 
   } else {
     x *= imath_fma(0.3333333333333f, imath_fabs(x), 0.1666666666667f);
-    x *= -M_PI;
-    x -= M_PI_HALF;
+    x = imath_fma(x, -M_PI, -M_PI_HALF);
   }
   return x;
 #endif // builtin

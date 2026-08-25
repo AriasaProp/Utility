@@ -49,14 +49,14 @@ static int           matrix__data_eq(const float *a, const float *b, iter s) {
 }
 static inline float *matrix__datadup(const matrix r) {
   iter bytes = mat__bytes(&r);
-  float *ret = CAST(float*)util_malloc(bytes);
-  util_memcpy(ret, r.data, bytes);
+  float *ret = CAST(float*)malloc(bytes);
+  memcpy(ret, r.data, bytes);
   return ret;
 }
 
 // initialize
 matrix matrix_idt(iter cols,iter rows) {
-  matrix r = (matrix){cols, rows, CAST(float*)util_calloc(sizeof(float), cols*rows)};
+  matrix r = (matrix){cols, rows, CAST(float*)calloc(sizeof(float), cols*rows)};
   for(iter i = 0, j = MIN(cols,rows); i < j; ++i) mat__idx(&r,i,i) = 1.0;
   return r;
 }
@@ -64,25 +64,25 @@ inline matrix matrix_dup(const matrix a) {
   return (matrix){a.cols, a.rows, matrix__datadup(a)};
 }
 inline void matrix_move(matrix *a, matrix *b) {
-  a->data = CAST(float*)util_realloc(a->data, mat__bytes(b));
-  util_memcpy(a->data, b->data, FZ * mat__size(b));
+  a->data = CAST(float*)realloc(a->data, mat__bytes(b));
+  memcpy(a->data, b->data, FZ * mat__size(b));
   a->cols = b->cols;
   a->rows = b->rows;
   matrix_free(b);
 }
 void matrix_midt(matrix *r) {
-  util_memset(r->data, 0, mat__bytes(r));
+  memset(r->data, 0, mat__bytes(r));
   for(iter i = 0, j = MIN(r->cols,r->rows); i < j; ++i) mat__idx(r,i,i) = 1.0;
 }
 inline void matrix_set(matrix *a, const matrix b) {
   a->cols = b.cols;
   a->rows = b.rows;
-  a->data = CAST(float*)util_realloc(a->data, mat__bytes(&b));
+  a->data = CAST(float*)realloc(a->data, mat__bytes(&b));
 }
 // free
 void matrix_free(matrix *r) {
-  util_memfree(r->data);
-  util_memset(r, 0, sizeof(matrix));
+  free(r->data);
+  memset(r, 0, sizeof(matrix));
 }
 inline iter matrix_size (const matrix a) {
   return a.cols * a.rows;
@@ -114,7 +114,7 @@ float matrix_det(const matrix r) {
 matrix matrix_minor(const matrix a, iter i, iter j) {
   matrix r = {.cols = a.cols - 1, .rows = a.rows - 1};
   if (!mat__empty(&r)) {
-    r.data = CAST(float*)util_malloc(mat__bytes(&r));
+    r.data = CAST(float*)malloc(mat__bytes(&r));
     mat__foreach2D(&a, x, y) {
       if (x == i || y == j) continue;
       mat__idx(&r, x - (x > i), y - (y > j)) = mat__idx(&a, x, y);
@@ -123,12 +123,12 @@ matrix matrix_minor(const matrix a, iter i, iter j) {
   return r;
 }
 matrix matrix_trn (const matrix r) {
-  matrix d = {r.cols, r.rows, CAST(float*)util_malloc(mat__bytes(&r))};
+  matrix d = {r.cols, r.rows, CAST(float*)malloc(mat__bytes(&r))};
   mat__foreach2D(&d,i,j) mat__idx(&d, j, i) = mat__idx(&r, i, j);
   return d;
 }
 matrix matrix_cof (const matrix r) {
-  matrix d = {r.cols, r.rows, CAST(float*)util_malloc(mat__bytes(&r))};
+  matrix d = {r.cols, r.rows, CAST(float*)malloc(mat__bytes(&r))};
   mat__foreach2D(&d,i,j) {
     matrix m = matrix_minor(r,i,j);
     mat__idx(&d,i,j) = matrix_det(m) * (1 - 2*((j&1)^(i&1)));
@@ -141,7 +141,7 @@ matrix matrix_adj (const matrix r) {
   matrix d = {0};
   // is non square matrix can do adjoint?
   if (matrix__squared(r)) {
-    d = (matrix){r.cols, r.rows, CAST(float*)util_malloc(mat__bytes(&r))};
+    d = (matrix){r.cols, r.rows, CAST(float*)malloc(mat__bytes(&r))};
     mat__foreach2D(&d,i,j) {
       matrix m = matrix_minor(r,i,j);
       mat__idx(&d,j,i) = matrix_det(m);
@@ -157,22 +157,22 @@ matrix matrix_inv (const matrix r) {
   return d;
 }
 matrix matrix_mulf(const matrix a, float s) {
-  matrix r = {a.cols, a.rows, CAST(float*)util_malloc(mat__bytes(&a))};
+  matrix r = {a.cols, a.rows, CAST(float*)malloc(mat__bytes(&a))};
   mat__foreach(&r,i) r.data[i] = a.data[i] * s;
   return r;
 }
 matrix matrix_divf(const matrix a, float s) {
-  matrix r = {a.cols, a.rows, CAST(float*)util_malloc(mat__bytes(&a))};
+  matrix r = {a.cols, a.rows, CAST(float*)malloc(mat__bytes(&a))};
   mat__foreach(&r,i) r.data[i] = a.data[i] / s;
   return r;
 }
 matrix matrix_add (const matrix a, const matrix b) {
-  matrix r = {a.cols, a.rows, CAST(float*)util_malloc(mat__bytes(&a))};
+  matrix r = {a.cols, a.rows, CAST(float*)malloc(mat__bytes(&a))};
   mat__foreach(&r,i) r.data[i] = a.data[i] + b.data[i];
   return r;
 }
 matrix matrix_sub (const matrix a, const matrix b) {
-  matrix r = {a.cols, a.rows, CAST(float*)util_malloc(mat__bytes(&a))};
+  matrix r = {a.cols, a.rows, CAST(float*)malloc(mat__bytes(&a))};
   mat__foreach(&r,i) r.data[i] = a.data[i] - b.data[i];
   return r;
 }
@@ -181,7 +181,7 @@ matrix matrix_mul (const matrix a,const matrix b) {
   if (a.cols == b.rows) {
     d.cols = b.cols;
     d.rows = a.rows;
-    d.data = CAST(float*) util_calloc(FZ, mat__size(&d));
+    d.data = CAST(float*) calloc(FZ, mat__size(&d));
     mat__foreach2D(&a,i,j)
       mat__foreachCol(&b, k)
         mat__idx(&d, k, i) += mat__idx(&a, j, i) * mat__idx(&b, k, j);

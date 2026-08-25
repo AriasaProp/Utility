@@ -20,18 +20,18 @@
 #define darray_reserve(a, need) do { \
   if ((need) <= (a)->cap) break; \
   (a)->cap = ((need) & ~darray_roundMask) + darray_roundSize * !!((need) & darray_roundMask); \
-  (a)->items = util_realloc((a)->items, (a)->cap * sizeof(*(a)->items)); \
+  (a)->items = realloc((a)->items, (a)->cap * sizeof(*(a)->items)); \
   ASSERT((a)->items && "Fail to allocate heap"); \
 } while (0)
 #define darray_atleast(a, z) do { \
   if ((a)->count >= (z)) break;\
   darray_reserve((a), (z)); \
-  util_memset((a)->items + (a)->count, 0, ((z)-(a)->count) * sizeof(*(a)->items)); \
+  memset((a)->items + (a)->count, 0, ((z)-(a)->count) * sizeof(*(a)->items)); \
   (a)->count = (z); \
 } while (0)
 #define darray_copy(a,b) do {\
   darray_reserve((a),(b)->count);\
-  util_memcpy((a)->items, (b)->items, (b)->count * sizeof(*(a)->items)); \
+  memcpy((a)->items, (b)->items, (b)->count * sizeof(*(a)->items)); \
   (a)->count = (b)->count; \
 } while (0)
 #define darray_append(a, item) do { \
@@ -39,13 +39,13 @@
   (a)->items[(a)->count++] = (item); \
 } while (0)
 #define darray_free(a) do {\
-  if ((a)->items) util_memfree((a)->items);\
-  util_memset((a), 0, sizeof(*a)); \
+  if ((a)->items) free((a)->items);\
+  memset((a), 0, sizeof(*a)); \
 } while (0)
 #define darray_clean(a) (a)->count = 0
 #define darray_appends(a, b, l) do { \
   darray_reserve((a), (a)->count + (l)); \
-  util_memcpy((a)->items + (a)->count, (b), (l)*sizeof(*(a)->items)); \
+  memcpy((a)->items + (a)->count, (b), (l)*sizeof(*(a)->items)); \
   (a)->count += (l); \
 } while (0)
 #define darray_index(a, i) (a)->items[(ASSERT((i) < (a)->count), (i))]
@@ -55,10 +55,22 @@
 #define darray_remove(a, j) do { \
   ASSERT((j) < (a)->count); \
   if ((j) < --(a)->count) \
-    util_memcpy(&(a)->items[(j)], &(a)->items[(j) + 1], (a)->count - (j));\
+    memcpy(&(a)->items[(j)], &(a)->items[(j) + 1], (a)->count - (j));\
 } while(0)
-#define darray_foreach(T, it, a) for (T *it = (a)->items, *__end = (a)->items + (a)->count; it < __end; ++it)
+#define darray_swap(a, b) do { \
+  if (!(a)->count && !(b)->count) break; \
+  iter max = MAX((a)->count, (b)->count); \
+  darray_reserve((a), max); \
+  darray_reserve((b), max); \
+  util_memswap((a)->items, (b)->items, sizeof(*(a)->items) * max); \
+  (a)->count ^= (b)->count;\
+  (b)->count ^= (a)->count;\
+  (a)->count ^= (b)->count;\
+} while(0)
+#define darray_foreach(T, it, a) for (T *it = (a)->items, *__end = CAST(T*)(a)->items + (a)->count; it < __end; ++it)
 #define darray_rforeach(T, it, a) for (T *it = (a)->items + (a)->count; (it--) > (a)->items; )
+#define darray_foreach_cast(T, it, a) for (T *it = CAST(T*)(a)->items, *__end = CAST(T*)(a)->items + (a)->count; it < __end; ++it)
+#define darray_rforeach_cast(T, it, a) for (T *it = CAST(T*)(a)->items + (a)->count; (it--) > (a)->items; )
 
 
 

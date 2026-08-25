@@ -17,7 +17,7 @@ typedef struct {iter cap, count; } dstring_head;
 
 static inline dstring_head *dstring__get_head(dstring str) {
   if (str) return (CAST(dstring_head*)str) - 1;
-  return CAST(dstring_head*)util_calloc(sizeof(dstring_head), 1);
+  return CAST(dstring_head*)calloc(sizeof(dstring_head), 1);
 }
 static inline dstring dstring__get_string(dstring_head *sh) {
   return CAST(dstring) (!sh ? NULL : (sh + 1));
@@ -25,7 +25,7 @@ static inline dstring dstring__get_string(dstring_head *sh) {
 static inline dstring_head *dstring__reserve(dstring_head *sh, iter need) {
   need = (need & ~DSTRING_CAP_MASK) + DSTRING_CAP_ROUND * !!(need & DSTRING_CAP_MASK);
   if (!sh || (sh->cap < need)) {
-    sh = CAST(dstring_head*) util_realloc(sh, need + sizeof(dstring_head));
+    sh = CAST(dstring_head*) realloc(sh, need + sizeof(dstring_head));
     ASSERT(sh && "string fail to allocate");
     sh->cap = need;
   }
@@ -42,7 +42,7 @@ inline void dstring_append_cstr(dstring *str, const char *cstr, iter len) {
   dstring_head *sh = dstring__get_head(*str);
   sh = dstring__reserve(sh, sh->count + len + 1);
   *str = dstring__get_string(sh);
-  util_memcpy(*str + sh->count, cstr, len);
+  memcpy(*str + sh->count, cstr, len);
   // may memcpy end with null?
   (*str)[sh->count += len] = 0;
 }
@@ -63,7 +63,7 @@ inline void dstring_append(dstring *str, const char *fmt, ...) {
 }
 bool dstring_equal(const dstring a,const dstring b) {
 	const iter l = dstring_len(a);
-	return (dstring_len(b) == l) && !util_memcmp(a,b,l);
+	return (dstring_len(b) == l) && !memcmp(a,b,l);
 }
 inline void dstring_reserve(dstring *str, iter sz) {
   *str = dstring__get_string(dstring__reserve(dstring__get_head(*str), sz + 1));
@@ -79,7 +79,7 @@ inline void dstring_clean(dstring str) {
   *(CAST(char*)str) = 0;
 }
 inline void dstring_free (dstring *str) {
-  util_memfree(dstring__get_head(*str));
+  free(dstring__get_head(*str));
   *str = NULL;
 }
 
