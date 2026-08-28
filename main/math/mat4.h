@@ -7,8 +7,8 @@
  * 
  * *****************************************************************************/
 
-#ifndef _MATRIX_MATH_INCLUDED_
-#define _MATRIX_MATH_INCLUDED_
+#ifndef _MATRIX4_MATH_INCLUDED_
+#define _MATRIX4_MATH_INCLUDED_
 
 #include "common.h"
 #include "array/dstring.h"
@@ -68,4 +68,4 @@ void mat4_append_dstring(dstring*,const mat4);
 }
 #endif // __cplusplus
 
-#endif //_MATRIX_MATH_INCLUDED_
+#endif //_MATRIX4_MATH_INCLUDED_

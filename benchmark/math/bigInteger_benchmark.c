@@ -7,33 +7,40 @@
 #include <pthread.h>
 #include <fcntl.h>
 
+iter largest_alloc = 0;
+
 // #define E_ONLY
 // #define SQRT3_ONLY
 // #define SQRT2_ONLY
 // #define PI_ONLY
+// #define PHI_ONLY
 
 // duration limit each test
-#define TIME 3
+#define TIME 4
 // undef UPDATE_RATE for info
 // #define UPDATE_RATE 0.75
 #define CACHE 6
 
 // static const iter BIG_TENS = sizeof(word) * 8;
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(PHI_ONLY))
 static void init_e   (bigInteger*);
 static char extract_e(bigInteger*);
 #endif
-#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 static void init_sqrt2   (bigInteger*);
 static char extract_sqrt2(bigInteger*);
 #endif
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 static void init_sqrt3   (bigInteger*);
 static char extract_sqrt3(bigInteger*);
 #endif
-#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 static void init_pi   (bigInteger*);
 static char extract_pi(bigInteger*);
+#endif
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+static void init_phi   (bigInteger*);
+static char extract_phi(bigInteger*);
 #endif
 
 int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
@@ -43,7 +50,7 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   bool errflag = false;
   iter i, cnt, max_read, current_read;
   for (i = 0; i < CACHE; ++i)
-    bigInteger_reserve(state + i, 1);
+    bigInteger_reserve(state + i, 4092 >> (i << 2));
 #define REPORT_STR 32
 #define MAX_DIGITS 2*1024
   char exc, file_digits[MAX_DIGITS], report_str[REPORT_STR] = {0};
@@ -60,17 +67,20 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
 		void (*init)(bigInteger*);
 		char (*extract)(bigInteger*);
 	} trsc[] = {
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(PHI_ONLY))
 		{.id = "  e  ", .file = "data/math/eDigits.txt" , .init = init_e    , .extract = extract_e    },
 #endif
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+		{.id =" phi ", .file = "data/math/phiDigits.txt", .init = init_phi  , .extract = extract_phi  },
+#endif
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 		{.id = "  √3 ", .file = "data/math/√3Digits.txt", .init = init_sqrt3, .extract = extract_sqrt3},
 #endif
-#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 		{.id = "  √2 ", .file = "data/math/√2Digits.txt", .init = init_sqrt2, .extract = extract_sqrt2},
 #endif
-#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
-		{.id = "  pi ", .file = "data/math/piDigits.txt", .init = init_pi   , .extract = extract_pi   },
+#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
+		{.id = "  π  ", .file = "data/math/piDigits.txt", .init = init_pi   , .extract = extract_pi   },
 #endif
 	};
 	for (i = 0; !errflag && (i < STACK_ARR_LEN(trsc)); ++i) {
@@ -138,10 +148,9 @@ end:
 	  cnt += state[i].cap;
 	  bigInteger_free(state + i);
 	}
-	
 	{
 	  char uns[3] = {'B',0,0};
-	  float amount = CAST(float)cnt;
+	  float amount = CAST(float)cnt * sizeof(word);
 	  if (amount > 1024.0f) {
 	    amount /= 1024.0f;
 	    uns[0] = 'k';
@@ -167,7 +176,7 @@ end:
   return result;
 }
 
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(PHI_ONLY))
 /*
  *        1
  * e =>  -----
@@ -208,74 +217,58 @@ char extract_e(bigInteger *state) {
 }
 #endif
 
-#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
-/*
- *  (4 + 3)     3 * 5 * (12 + 7)     3 * 5 * 7 * 9 * (20 + 11)
- * --------- + ------------------ + --------------------------
- *   2 * 4       2 * 4 * 8 * 12      2 * 4 * 8 * 12 * 16 * 20
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+/*              1      √5
+ * phi       = --- + -----
+ *              2      2
+ *              1     1     1     1 * -1     1 * -1 * -3
+ * binomial => --- + --- + --- + -------- + ------------- + ...
+ *              2     1     8     8 * 16     8 * 16 * 24
+ *             13     1 * -1     1 * -1 * -3
+ *          => --- + -------- + ------------- + ...
+ *              8     8 * 16     8 * 16 * 24
  *
- *  a     c * n
- * --- + ------
- *  b     b * m
- *
- *  a * m     c * n
- * ------- + --------
- *  b * m     b * m
- *
- *  am + cn
- * -----------
- *   b * m   
- *
- * n => 3 + 2
- * m => 4 + 4
- *
- * 0 -> 1
- * a = 1
- * b = 2
+ * a = 13
+ * b = 8
  * c = 1
  * n = 1
- * m = 0
- * 32 -> 33
- * a =  23605555
- * b =  16777216
- * c =  109395
- * n =  17
- * m =  32
+ * m = 8
+ *
+ * a =  54292217
+ * b =  33554432
+ * c =  33
+ * n =  -11
+ * m =  56
  */
-void init_sqrt2(bigInteger *state) {
-  bigInteger_set_int(state    , 23605555); // a
-  bigInteger_set_int(state + 1, 16777216); // b
-  bigInteger_set_int(state + 2, 109395); // c
-  bigInteger_set_int(state + 3, 17); // n
-  bigInteger_set_int(state + 4, 32); // m
+void init_phi(bigInteger *state) {
+  bigInteger_set_int(state    , 54292217);
+  bigInteger_set_int(state + 1, 33554432);
+  bigInteger_set_int(state + 2, 33);
+  bigInteger_set_int(state + 3, -11);
+  bigInteger_set_int(state + 4, 56);
 }
-char extract_sqrt2(bigInteger *state) {
-  // √2 term has low dexponential grow precision
-  // need more term for digit generated
+char extract_phi(bigInteger *state) {
+  // phi term 
   do {
-	  bigInteger_maddi(state + 3, 2);
-	  bigInteger_maddi(state + 4, 4);
-	  bigInteger_mmul(state + 2, state[3]);
-	  bigInteger_mmuladd(state, state[4], state[2]);
-	  bigInteger_mmul(state + 1, state[4]);
+    bigInteger_msubi(state + 3, 2);										 // n -= 2
+    bigInteger_mmul(state + 2, state[3]);					 // c *= n
+    bigInteger_maddi(state + 4, 8);								   // m += 8
+    bigInteger_mmuladd(state, state[4], state[2]); // a = a * m + c
+    bigInteger_mmul(state + 1, state[4]);					 // b *= m
   } while (state[1].count <= state[2].count);
   // extract
-	bigInteger_set(state + 5, state[0]);
-	bigInteger_div_mod(state + 5, state[1], state);
+  bigInteger_set    (state + 5, state[0]);
+  bigInteger_div_mod(state + 5, state[1], state);
   // 10 base
-	bigInteger_mmuli (state + 0, 5);
-  bigInteger_mshfri(state + 1, 1);
-  bigInteger_mmuli (state + 2, 5);
+  bigInteger_mmuli (state    , 5);				 // a *= 5
+  bigInteger_mshfri(state + 1, 1);				 // b /= 2
+  bigInteger_mmuli (state + 2, 5);				 // c *= 5
   // simplify
-  // bigInteger_mgcd(state + 6, state   , 3);
-  // bigInteger_mdiv(state + 0, state[6]);
-  // bigInteger_mdiv(state + 1, state[6]);
-  // bigInteger_mdiv(state + 2, state[6]);
-  return state[5].count ? state[5].items[0] : 0;
+	return state[5].count ? (char) state[5].items[0] : 0;
 }
 #endif
 
-#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT2_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 /*
  *  3     3 * 1     3 * 1 * -1     3 * 1 * -1 * -3     3 * 1 * -1 * -3 * -5
  * --- + ------- + ------------ + ----------------- + ----------------------
@@ -355,7 +348,74 @@ char extract_sqrt3(bigInteger *state) {
 }
 #endif
 
-#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY))
+#if !(defined(PI_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
+/*
+ *  (4 + 3)     3 * 5 * (12 + 7)     3 * 5 * 7 * 9 * (20 + 11)
+ * --------- + ------------------ + --------------------------
+ *   2 * 4       2 * 4 * 8 * 12      2 * 4 * 8 * 12 * 16 * 20
+ *
+ *  a     c * n
+ * --- + ------
+ *  b     b * m
+ *
+ *  a * m     c * n
+ * ------- + --------
+ *  b * m     b * m
+ *
+ *  am + cn
+ * -----------
+ *   b * m   
+ *
+ * n => 3 + 2
+ * m => 4 + 4
+ *
+ * 0 -> 1
+ * a = 1
+ * b = 2
+ * c = 1
+ * n = 1
+ * m = 0
+ * 32 -> 33
+ * a =  23605555
+ * b =  16777216
+ * c =  109395
+ * n =  17
+ * m =  32
+ */
+void init_sqrt2(bigInteger *state) {
+  bigInteger_set_int(state    , 23605555); // a
+  bigInteger_set_int(state + 1, 16777216); // b
+  bigInteger_set_int(state + 2, 109395); // c
+  bigInteger_set_int(state + 3, 17); // n
+  bigInteger_set_int(state + 4, 32); // m
+}
+char extract_sqrt2(bigInteger *state) {
+  // √2 term has low dexponential grow precision
+  // need more term for digit generated
+  do {
+	  bigInteger_maddi(state + 3, 2);
+	  bigInteger_maddi(state + 4, 4);
+	  bigInteger_mmul(state + 2, state[3]);
+	  bigInteger_mmuladd(state, state[4], state[2]);
+	  bigInteger_mmul(state + 1, state[4]);
+  } while (state[1].count <= state[2].count);
+  // extract
+	bigInteger_set(state + 5, state[0]);
+	bigInteger_div_mod(state + 5, state[1], state);
+  // 10 base
+	bigInteger_mmuli (state + 0, 5);
+  bigInteger_mshfri(state + 1, 1);
+  bigInteger_mmuli (state + 2, 5);
+  // simplify
+  // bigInteger_mgcd(state + 6, state   , 3);
+  // bigInteger_mdiv(state + 0, state[6]);
+  // bigInteger_mdiv(state + 1, state[6]);
+  // bigInteger_mdiv(state + 2, state[6]);
+  return state[5].count ? state[5].items[0] : 0;
+}
+#endif
+
+#if !(defined(SQRT2_ONLY) || defined(SQRT3_ONLY) || defined(E_ONLY) || defined(PHI_ONLY))
 /*
  *      2(n!)
  * £ ----------
@@ -415,6 +475,7 @@ char extract_pi(bigInteger *state) {
 	return state[5].count ? (char) state[5].items[0] : 0;
 }
 #endif
+
 /*
  * π = 4*arctan(1)
  * π = 8*arctan(1/(1+√2))
