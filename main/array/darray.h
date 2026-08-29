@@ -19,8 +19,7 @@
 
 #define darray_reserve(a, need) do { \
   if ((need) <= (a)->cap) break; \
-  (a)->cap = ((need) & ~darray_roundMask) + darray_roundSize * !!((need) & darray_roundMask); \
-  (a)->items = realloc((a)->items, (a)->cap * sizeof(*(a)->items)); \
+  (a)->items = realloc((a)->items, ((a)->cap = (need)) * sizeof(*(a)->items)); \
   ASSERT((a)->items && "Fail to allocate heap"); \
 } while (0)
 #define darray_atleast(a, z) do { \
@@ -35,7 +34,7 @@
   (a)->count = (b)->count; \
 } while (0)
 #define darray_append(a, item) do { \
-  darray_reserve((a), (a)->count + 1); \
+  darray_reserve((a), (((a)->count + 1) & ~darray_roundMask) + darray_roundSize); \
   (a)->items[(a)->count++] = (item); \
 } while (0)
 #define darray_free(a) do {\
@@ -44,7 +43,7 @@
 } while (0)
 #define darray_clean(a) (a)->count = 0
 #define darray_appends(a, b, l) do { \
-  darray_reserve((a), (a)->count + (l)); \
+  darray_reserve((a), (((a)->count + (l)) & ~darray_roundMask) + darray_roundSize); \
   memcpy((a)->items + (a)->count, (b), (l)*sizeof(*(a)->items)); \
   (a)->count += (l); \
 } while (0)

@@ -182,6 +182,7 @@ extern "C" {
 #endif // __cplusplus
 
 #ifdef _WIN32
+#include <windows.h>
 int convert_wchar_to_utf8(char *, iter, const wchar_t *);
 #endif // _WIN32
 

@@ -402,10 +402,6 @@ void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	    }
 	    if (c1) darray_append(rem, c1);
 	    a->items[j] <<= 1;
-	    /*
-	    if (rem->count < blen || (rem->count == blen && bigInteger__cmpa(rem->items, b.items, blen) < 0)) continue;
-	    c = bigInteger__wordsub(rem->items, rem->count, b.items, blen);
-	    */
 	    if (rem->count < blen) continue;
 	    if (rem->count == blen) {
 			  for (k = blen; k-- && (rem->items[k] == b.items[k]); ) ;
@@ -414,9 +410,9 @@ void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	    c = 0, k = 0;
 		  while (k < blen) {
 		    c1 = rem->items[k];
-		    c = (rem->items[k] -= c) > c1;
+		    c  =(rem->items[k] -= c) > c1;
 		    c1 = rem->items[k];
-		    c+= (rem->items[k] -= b.items[k]) > c1;
+		    c +=(rem->items[k] -= b.items[k]) > c1;
 		    ++k;
 		  }
 		  while (c && (k < rem->count)) {

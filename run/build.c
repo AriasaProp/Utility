@@ -29,7 +29,7 @@ typedef struct {
 
 #define COMMON_SRC      "main/common.c"
 #define TEST_SRCS       COMMON_SRC, "main/array/dstring.c"
-#define BENCHMARK_SRCS  TEST_SRCS, "benchmark/util/profiling.c"
+#define BENCHMARK_SRCS  TEST_SRCS, "benchmark/util/profiling.c", "benchmark/util/contask.c"
 typedef enum {
   Exec_Invalid = 0,
   Exec_QTest,
@@ -165,7 +165,7 @@ static bool benchmark_group(Task*);
 // root function
 static bool exec_run(const char *);
 static int  obj_compile(const char*, const char**);
-static bool exec_compile(const char*, const char**,const char**);
+static bool exec_compile(const char*, const char**,const char**,const char**);
 static bool walk_dir_cleanup(Walk_Entry);
 
 int main(int argc, char **argv) {
@@ -323,7 +323,7 @@ static bool qtest_group(Task *task) {
   };
   nob_log(NOB_INFO, "Compile & running %s", QExecs.name);
   const char *out = temp_sprintf(BIN_DIR"/%s", QExecs.name);
-  return exec_compile(out, QExecs.srcs, compile_flags) && exec_run(out);
+  return exec_compile(out, QExecs.srcs, compile_flags, NULL) && exec_run(out);
 }
 static bool test_group(Task *task) {
   size_t i, j;
@@ -343,7 +343,7 @@ static bool test_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
       j = temp_save();
       const char *out = temp_sprintf(TEST_DIR"/%s_test", Test_Execs[i].name);
-      result &= exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      result &= exec_compile(out, Test_Execs[i].srcs, compile_flags, NULL) && exec_run(out);
       temp_rewind(j);
     }
   } else {
@@ -354,7 +354,7 @@ static bool test_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Test_Execs[i].name);
       j = temp_save();
       const char *out = temp_sprintf(TEST_DIR"/%s_test", Test_Execs[i].name);
-      result = exec_compile(out, Test_Execs[i].srcs, compile_flags) && exec_run(out);
+      result = exec_compile(out, Test_Execs[i].srcs, compile_flags, NULL) && exec_run(out);
       temp_rewind(j);
     } else {
       nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
@@ -365,6 +365,13 @@ static bool test_group(Task *task) {
 static bool benchmark_group(Task *task) {
   size_t i, j;
   bool result;
+  const char *linker_flags[] = {
+#ifdef _MSC_VER
+#else
+		"-lpthread",
+#endif
+		NULL
+  };
   const char *compile_flags[] = {
 #ifdef _MSC_VER
     "/O3", "/I.\test", "/I.\benchmark",
@@ -380,7 +387,7 @@ static bool benchmark_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
       j = temp_save();
       const char *out = temp_sprintf(BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
-      result &= exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      result &= exec_compile(out, Benchmark_Execs[i].srcs, compile_flags, linker_flags) && exec_run(out);
       temp_rewind(j);
     }
   } else {
@@ -393,7 +400,7 @@ static bool benchmark_group(Task *task) {
       nob_log(NOB_INFO, "Compile & running %s", Benchmark_Execs[i].name);
       j = temp_save();
       const char *out = temp_sprintf(BENCHMARK_DIR"/%s_benchmark", Benchmark_Execs[i].name);
-      result = exec_compile(out, Benchmark_Execs[i].srcs, compile_flags) && exec_run(out);
+      result = exec_compile(out, Benchmark_Execs[i].srcs, compile_flags, linker_flags) && exec_run(out);
       temp_rewind(j);
     } else {
       nob_log(NOB_ERROR, "Unknown test of %s", da_first(task));
@@ -421,7 +428,7 @@ static bool exec_run(const char *exec) {
 #endif
   return true;
 }
-static bool exec_compile(const char *out, const char **srcs, const char **flags) {
+static bool exec_compile(const char *out, const char **srcs, const char **flags, const char **lflags) {
   size_t point = temp_save(), i, j;
   // exec need rebuild ?
   {
@@ -458,6 +465,7 @@ static bool exec_compile(const char *out, const char **srcs, const char **flags)
    "-lm",
 # endif
   );
+  if (lflags) for (i = 0; lflags[i]; ++i) cmd_append(&cmd, lflags[i]);
 #endif
 	temp_rewind(point);
   return cmd_run(&cmd);
@@ -467,8 +475,7 @@ static int obj_compile(const char *in, const char **flags) {
   size_t point = temp_save(), j, k;
   const char *out = temp_sprintf(OBJ_DIR"/%s.o", in);
   int res = (actionFlags & ActionFlags_ForceBuild);
-  if (res < 1)
-  	res = !file_exists(out);
+  if (res < 1) res = !file_exists(out);
   if (res < 1) {
     // load dependencies
     const char *depen_file = temp_sprintf(OBJ_DIR"/%s.d", in);
