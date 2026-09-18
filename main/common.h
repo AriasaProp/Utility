@@ -93,6 +93,7 @@
   typedef size_t    iter;
 #endif
 
+typedef long double        ldouble;
 typedef long long          llong;
 typedef unsigned int       uint;
 typedef unsigned long      ulong;
@@ -193,6 +194,8 @@ int convert_wchar_to_utf8(char *, iter, const wchar_t *);
  */
 void  util_memswap(void*,void*,iter);
 void  util_memflip(void*,iter);
+void  util_memrotl(void*,iter,iter);
+void  util_memrotr(void*,iter,iter);
 iter  util_clz(ulong);
 iter  util_ctz(ulong);
 iter  util_bitlead(ulong);
@@ -238,22 +241,6 @@ int32  imath_rotl32(int32, const iter);
 int64  imath_rotl64(int64, const iter);
 int32  imath_rotr32(int32, const iter);
 int64  imath_rotr64(int64, const iter);
-
-#define RAND_CAST(T) T imath_rand_##T (void);
-RAND_CAST(byte);
-RAND_CAST(shrt);
-RAND_CAST(int32);
-RAND_CAST(int64);
-RAND_CAST(int);
-RAND_CAST(long);
-RAND_CAST(ubyte);
-RAND_CAST(ushrt);
-RAND_CAST(uint32);
-RAND_CAST(uint64);
-RAND_CAST(uint);
-RAND_CAST(ulong);
-#undef RAND_CAST
-float imath_rand_float();
 
 #ifdef __cplusplus
 }

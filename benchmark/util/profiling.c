@@ -2,6 +2,7 @@
 #include <time.h>
 
 
+#define MIN_IN_NS  60000000000
 #define SEC_IN_NS   1000000000
 #define  MS_IN_NS      1000000
 #define  US_IN_NS         1000
@@ -41,9 +42,10 @@ void  profiling_append_as_time2 (dstring *str, pr_time s) {
   if (count < 2) dstring_append(str, "%03luns", s);
 }
 void  profiling_append_as_time  (dstring *str, pr_time s) {
-  if (s > SEC_IN_NS) dstring_append(str, "%lu s", s / SEC_IN_NS);
-  else if (s > MS_IN_NS) dstring_append(str, "%03lums", s / MS_IN_NS);
-  else if (s > US_IN_NS) dstring_append(str, "%03luus", s / US_IN_NS);
+  if (s >= MIN_IN_NS) dstring_append(str, "%03lu M", s / MIN_IN_NS);
+  else if (s >= SEC_IN_NS) dstring_append(str, "%03lu s", s / SEC_IN_NS);
+  else if (s >= MS_IN_NS) dstring_append(str, "%03lums", s / MS_IN_NS);
+  else if (s >= US_IN_NS) dstring_append(str, "%03luus", s / US_IN_NS);
   else dstring_append(str, "%03luns", s);
 }
 double profiling_as_dsec(pr_time s) { return (double)s / SEC_IN_NS; }

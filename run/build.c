@@ -52,13 +52,6 @@ static const File_Exe QExecs = {
 };
 static const File_Exe Test_Execs[] = {
   {
-    .name = "rand",
-    .srcs = CLIT(const char *[]) {
-      TEST_SRCS,
-      "test/math/rand_test.c",
-      NULL
-    }
-  },{
     .name = "complex",
     .srcs = CLIT(const char *[]) {
       TEST_SRCS,
@@ -417,11 +410,17 @@ static bool exec_run(const char *exec) {
     nob_log(NOB_INFO, "how to debug on other platform? just run without debug");
 #endif
   }
+  // cmd timing start
+  int64_t nt = nanos_since_unspecified_epoch();
   cmd_append(&cmd, exec);
   if (!cmd_run(&cmd)) {
     delete_file(exec);
     return false;
   }
+  // cmd timimg end
+  char ut[2];
+  long double cal = nanos_unit(nanos_since_unspecified_epoch() - nt, ut, ut + 1);
+  nob_log(NOB_INFO, "time passed : %06.2Lf%s", cal, ut);
 #ifdef __linux__
   if (actionFlags & ActionFlags_DebugRun)
     delete_file(exec);

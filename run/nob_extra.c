@@ -41,9 +41,27 @@ bool nob_mkdir_rec(const char *path) {
   return true;
 }
 
+long double nob_nanos_unit(int64_t atime, char *c1, char *c2) {
+  long double cal = NOB_DECLTYPE_CAST(long double)atime;
+  size_t i;
+  for (i = 0; cal >= 1000.0 && i < 3; ++i) {
+    cal /= 1000.0;
+  }
+  *c2 = 's';
+  *c1 = "num "[i];
+  if (i > 3) {
+    for (i = 0; cal >= 60.0 && i < 3; ++i) {
+      cal /= 60.0;
+    }
+    *c2 = "sMHD"[i];
+  }
+  return cal;
+}
+
 #ifndef NOB_EXTRA_STRIP_PREFIX_GUARD_
 #define NOB_EXTRA_STRIP_PREFIX_GUARD_
   #ifndef NOB_UNSTRIP_PREFIX
+  	#define nanos_unit nob_nanos_unit
   	#define mkdir_rec nob_mkdir_rec
   	#define da_remove_first_item nob_da_remove_first_item
 	#endif

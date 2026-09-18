@@ -1,17 +1,15 @@
-#include <stdio.h>
-
+#include "common.h"
 #include "math/matrix.h"
 #include "util/console_out.h"
-#include "common.h"
 #include "array/dstring.h"
 
 #define TEST 10000
 
-static float rander() {
-  return CAST(float)imath_rand_shrt() * 0.01f;
+static float rander(void) {
+  return CAST(float)(rand() % (RAND_MAX >> 3)) * 1e-8f;
 }
-static ubyte matrix_rdim() {
-  return imath_rand_ubyte() % 5 + 2;
+static ubyte matrix_rdim(void) {
+  return (CAST(ubyte)rand() % 5) + 2;
 }
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {

@@ -8,10 +8,10 @@ int main (int UNUSED_ARG(argc), char **UNUSED_ARG(argv)) {
   PRINT_INF("BigInteger Test is ");
 #define COMMON_TEST 179
 #define MAX_RNDI 16
-#define RAND_S  CAST(bool)(imath_rand_ubyte()&1)
-#define RAND_C  CAST(iter)((imath_rand_uint() % MAX_RNDI) + 1)
-#define RAND_W  CAST(word)(imath_rand_uint() + imath_rand_uint())
-#define RAND_I  imath_rand_int()
+#define RAND_S  CAST(bool)(rand() & 1)
+#define RAND_C  CAST(iter)((rand() % MAX_RNDI) + 1)
+#define RAND_W  CAST(word)rand() + CAST(word)rand()
+#define RAND_I  rand()
   int result = EXIT_FAILURE, oprB;
   bigInteger state[CACHE] = {0};
   dstring qstr = NULL;

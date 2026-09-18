@@ -5,8 +5,8 @@
 
 #define TEST 10000
 
-static float rander() {
-  return CAST(float)imath_rand_shrt() * 0.01f;
+static float rander(void) {
+  return CAST(float)(rand() % (RAND_MAX >> 3)) * 1e-8f;
 }
 
 int main (int UNUSED_ARG(argc), char ** UNUSED_ARG(argv)) {

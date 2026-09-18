@@ -12,7 +12,7 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
   iter i, j, n;
   dstring str = NULL;
   int ret = EXIT_FAILURE;
-  ubyte *resA = CAST(ubyte*)util_malloc(HASH512_IN_BYTES * 2);
+  ubyte *resA = CAST(ubyte*)malloc(HASH512_IN_BYTES * 2);
   if (!resA) {
     PRINT_ERR("Memory allocation fail!");
     goto main_ret;
@@ -30,9 +30,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "9E107D9D372BB6826BD81D3542A419D6",
     };
     for (i = 0, j = STACK_ARR_LEN(input), n = HASH128_IN_BYTES; i < j; ++i) {
-      hash_md5(CAST(uint32*)resA, input[i], util_strlen(input[i]));
+      hash_md5(CAST(uint32*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
-      if (util_memcmp(resA, resB, n)) {
+      if (memcmp(resA, resB, n)) {
         dstring_append(&str, "md5");
         goto main_err;
       }
@@ -45,9 +45,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12",
     };
     for (i = 0, j = STACK_ARR_LEN(input), n = HASH160_IN_BYTES; i < j; ++i) {
-      hash_sha1(CAST(uint32*)resA, input[i], util_strlen(input[i]));
+      hash_sha1(CAST(uint32*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
-      if (util_memcmp(resA, resB, n)) {
+      if (memcmp(resA, resB, n)) {
         dstring_append(&str, "sha1");
         goto main_err;
       }
@@ -60,9 +60,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "730E109BD7A8A32B1CB9D9A09AA2325D2430587DDBC0C38BAD911525",
     };
     for (i = 0, j = STACK_ARR_LEN(input), n = HASH224_IN_BYTES; i < j; ++i) {
-      hash_sha224(CAST(uint32*)resA, input[i], util_strlen(input[i]));
+      hash_sha224(CAST(uint32*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
-      if (util_memcmp(resA, resB, n)) {
+      if (memcmp(resA, resB, n)) {
         dstring_append(&str, "sha224");
         goto main_err;
       }
@@ -75,9 +75,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "D7A8FBB307D7809469CA9ABCB0082E4F8D5651E46D3CDB762D02D0BF37C9E592",
     };
     for (i = 0, j = STACK_ARR_LEN(input), n = HASH256_IN_BYTES; i < j; ++i) {
-      hash_sha256(CAST(uint32*)resA, input[i], util_strlen(input[i]));
+      hash_sha256(CAST(uint32*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
-      if (util_memcmp(resA, resB, n)) {
+      if (memcmp(resA, resB, n)) {
         dstring_append(&str, "sha256");
         goto main_err;
       }
@@ -90,9 +90,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "CA737F1014A48F4C0B6DD43CB177B0AFD9E5169367544C494011E3317DBF9A509CB1E5DC1E85A941BBEE3D7F2AFBC9B1",
     };
     for (i = 0, j = STACK_ARR_LEN(input), n = HASH384_IN_BYTES; i < j; ++i) {
-      hash_sha384(CAST(uint64*)resA, input[i], util_strlen(input[i]));
+      hash_sha384(CAST(uint64*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], n);
-      if (util_memcmp(resA, resB, n)) {
+      if (memcmp(resA, resB, n)) {
         dstring_append(&str, "sha384");
         goto main_err;
       }
@@ -105,9 +105,9 @@ int main(int UNUSED_ARG(c), char **UNUSED_ARG(v)) {
       "07E547D9586F6A73F73FBAC0435ED76951218FB7D0C8D788A309D785436BBB642E93A252A954F23912547D1E8A3B5ED6E1BFD7097821233FA0538F3DB854FEE6",
     };
     for (i = 0, j = STACK_ARR_LEN(input); i < j; ++i) {
-      hash_sha512(CAST(uint64*)resA, input[i], util_strlen(input[i]));
+      hash_sha512(CAST(uint64*)resA, input[i], strlen(input[i]));
       hash_cstr_to_ubyte(resB, output[i], HASH512_IN_BYTES);
-      if (util_memcmp(resA, resB, HASH512_IN_BYTES)) {
+      if (memcmp(resA, resB, HASH512_IN_BYTES)) {
         dstring_append(&str, "sha512");
         goto main_err;
       }
@@ -128,7 +128,7 @@ main_err:
   hash_ubyte_append_dstring(&str, resB, n);
   PRINT_ERR("Expt:%s\n", str);
 main_ret:
-  util_memfree(resA);
+  free(resA);
   dstring_free(&str);
   return ret;
 }

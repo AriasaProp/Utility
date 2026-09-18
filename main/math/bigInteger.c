@@ -44,20 +44,13 @@ static void bigInteger__cstr(bigInteger *a, const char *c) {
     c++;
   }
 }
-/*
-static word bigInteger__wordadd(word *a, const iter an, const word *b, const iter bn) {
-  word c = 0;
+static word bigInteger__addw(word *a, word b, const iter n) {
   iter i = 0;
-  while (i < bn) {
-    c = (a[i] += c) < c;
-    c+= (a[i] += b[i]) < b[i];
+  while ((i < n) && (b = (a[i] += b) < b))
     ++i;
-  }
-  while (c && (i < an))
-    c = (a[i++] += c) < c;
-  return c;
+  return b;
 }
-*/
+/*
 static word bigInteger__wordsub(word *a, const iter an, const word *b, const iter bn) {
   word c = 0, t;
   iter i = 0;
@@ -74,9 +67,31 @@ static word bigInteger__wordsub(word *a, const iter an, const word *b, const ite
   }
   return c;
 }
+*/
 static void bigInteger__shrink(bigInteger *a) {
   while(a->count && !darray_last(a)) --(a->count);
   if (!a->count) a->neg = false;
+}
+static void bigInteger__shiftlow(bigInteger *v, const ubyte shft, const word start, bool left) {
+  ASSERT(shft < WORD_BITS && "bigInteger__shiftlow doing shift less than word bytes");
+  word a = 0, b = start;
+  if (left) {
+    darray_foreach(word, vs, v) {
+      a = *vs;
+      *vs <<= shft;
+      *vs |= b;
+      b = a >> (WORD_BITS - shft);
+    }
+    if (b) darray_append(v, b);
+  } else {
+    darray_rforeach(word, vs, v) {
+      a = *vs;
+      *vs >>= shft;
+      *vs |= b;
+      b = a << (WORD_BITS - shft);
+    }
+    bigInteger__shrink(v);
+  }
 }
 static int bigInteger__cmpa(const word *a, const word *b, iter i) {
   //  +1 mean a is greater, -1 mean a is less, 0 mean equal
@@ -99,16 +114,43 @@ static void bigInteger__abit(bigInteger *a, bool sub) {
   // just do a single bit
   word *i = a->items, *j = i + a->count;
   const bool sgn = a->neg ^ sub;
-  bool carry = true;
-  while (i < j) if (
-  	( sgn && !(carry = !((*(i++))--))) ||
-  	(!sgn && !(carry = !(++(*(i++)))))
-  ) break;
-  if (carry) {
-  	darray_append (a, carry);
+  while ((i < j) && !(sgn && (*i)--) && (sgn || !++(*i)))
+    ++i;
+  if (i >= j) {
+  	darray_append (a, 1);
   	a->neg ^= sgn;
   }
   bigInteger__shrink(a);
+}
+static bool bigInteger__subConditional(bigInteger *a, const bigInteger b) {
+  switch(bigInteger__cmp(*a, b)) {
+    default:
+      ASSERT("Unreachable bigInteger subtract conditional");
+      return false;
+    case -1:
+      return false;
+    case 0:
+      bigInteger_zero(a);
+      return true;
+    case 1:
+      break;
+  }
+  word c = 0, t;
+  iter i = 0;
+  while (i < b.count) {
+    t = a->items[i];
+    c = (a->items[i] -= c) > t;
+    t = a->items[i];
+    c+= (a->items[i] -= b.items[i]) > t;
+    ++i;
+  }
+  while (c && (i < a->count)) {
+    t = a->items[i];
+    c = (a->items[i] -= c) > t;
+    ++i;
+  }
+  bigInteger__shrink(a);
+  return true;
 }
 /*
  * a + b   =>      a    - b
@@ -134,8 +176,7 @@ static void bigInteger__sumi(bigInteger *a, const int B, const bool sub) {
 	if (borrow)
   	for (i = 0, c = true; i < a->count; ++i)
       c &= !(a->items[i] = ~a->items[i] + c);
-  for (i = 0; b && (i < a->count); ++i)
-    b = (a->items[i] += b) < b;
+  b = bigInteger__addw(a->items, b, a->count);
   if (borrow) {
   	if (b) a->neg ^= true;
   	else for (i = 0, c = true; i < a->count; ++i)
@@ -263,8 +304,8 @@ static bigInteger bigInteger__MultiplySum(const bigInteger a, const bigInteger b
       temp = xhi * ytemp;
       carry[0] += temp;
     }
-    for (z = x + y; carry[0] && (z < c.count); ++z)
-      carry[0] = (c.items[z] += carry[0]) < carry[0];
+    z = x + y;
+    carry[0] = bigInteger__addw(c.items + z, carry[0], c.count - z);
     if (carry[0]) {
     	if (borrow) borrow = false;
     	else darray_append(&c, carry[0]);
@@ -381,8 +422,8 @@ void bigInteger_property (const bigInteger a, int *p) {
 // return division result, save reminder on nominator
 void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	bigInteger__shrink(a);
-  word c, c1, d;
-  iter i, j, k;
+  word c;
+  iter i, j;
   iter blen = b.count;
   while (blen && !b.items[blen-1]) --blen;
 	bigInteger_zero(rem);
@@ -391,38 +432,11 @@ void bigInteger_div_mod(bigInteger *a, const bigInteger b, bigInteger *rem) {
 	darray_appends(rem, a->items + j, i);
 	a->count = j;
 	while (j--) {
-		d = a->items[j];
+		c = a->items[j];
 		for (i = WORD_BITS; i--;) {
-	    c1 = (d >> i) & 1;
-	    for (k = 0; k < rem->count; ++k) {
-	      c = rem->items[k];
-	      rem->items[k] <<= 1;
-	      rem->items[k] |= c1;
-	      c1 = (c >> (WORD_BITS - 1)) & 1;
-	    }
-	    if (c1) darray_append(rem, c1);
+	    bigInteger__shiftlow(rem, 1, (c >> i) & 1, true);
 	    a->items[j] <<= 1;
-	    if (rem->count < blen) continue;
-	    if (rem->count == blen) {
-			  for (k = blen; k-- && (rem->items[k] == b.items[k]); ) ;
-			  if (k < blen && rem->items[k] < b.items[k]) continue;
-	    }
-	    c = 0, k = 0;
-		  while (k < blen) {
-		    c1 = rem->items[k];
-		    c  =(rem->items[k] -= c) > c1;
-		    c1 = rem->items[k];
-		    c +=(rem->items[k] -= b.items[k]) > c1;
-		    ++k;
-		  }
-		  while (c && (k < rem->count)) {
-		    c1 = rem->items[k];
-		    c = (rem->items[k] -= c) > c1;
-		    ++k;
-		  }
-	    bigInteger__shrink(rem);
-		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
-	    a->items[j] |= 1;
+	    a->items[j] |= bigInteger__subConditional(rem, b);
 	  }
 	}
 	a->neg ^= b.neg;
@@ -523,13 +537,11 @@ bigInteger bigInteger_pow2(const bigInteger a) {
       temp = xhi * yhi;
       carry[1] += (carry[0] += temp) < temp;
     }
-    for (z = x + y; carry[0] && (z < c.count); ++z) {
-      carry[0] = (c.items[z] += carry[0]) < carry[0];
-    }
+    z = x + y;
+    carry[0] = bigInteger__addw(c.items + z, carry[0], c.count - z);
     if (carry[0]) darray_append(&c, carry[0]);
-    for (z = x + y + 1; carry[1] && (z < c.count); ++z) {
-      carry[1] = (c.items[z] += carry[1]) < carry[1];
-    }
+    z = x + y + 1;
+    carry[1] = bigInteger__addw(c.items + z, carry[1], c.count - z);
     if (carry[1]) darray_append(&c, carry[1]);
   }
   c.neg = false;
@@ -539,7 +551,6 @@ bigInteger bigInteger_pow2(const bigInteger a) {
 bigInteger bigInteger_sqrt(const bigInteger a) {
   bigInteger res = {0};
   bigInteger rem = {0};
-  word carry, carry1;
   iter i = 0;
   if (a.count) {
     i = util_bitlead(darray_last(&a));
@@ -550,38 +561,14 @@ bigInteger bigInteger_sqrt(const bigInteger a) {
   while (i) { 
     i -= 2;
     // extract 2 binary from source A
-    carry1 = (a.items[i / WORD_BITS] >> (i % WORD_BITS)) & 3;
     // remaining shift left 2 append source A
-    darray_foreach(word, remi, &rem) {
-      carry = *remi;
-      *remi <<= 2;
-      *remi |= carry1;
-      carry1 = carry >> (WORD_BITS - 2);
-    }
-    if (carry1) darray_append(&rem, carry1);
+    bigInteger__shiftlow(&rem, 2, (a.items[i / WORD_BITS] >> (i % WORD_BITS)) & 3, true);
     // result shift 2 left
-    carry1 = 1;
-    darray_foreach(word, resi, &res) {
-      carry = *resi;
-      *resi <<= 2;
-      *resi |= carry1;
-      carry1 = carry >> (WORD_BITS - 2);
-    }
-    if (carry1) darray_append(&res, carry1);
+    bigInteger__shiftlow(&res, 2, 1, true);
     // compare result test with remaining
-    if (bigInteger__cmp (rem, res) >= 0) {
-      carry = bigInteger__wordsub(rem.items, rem.count, res.items, res.count);
-      ASSERT(!carry && "sqrt rem less than res!");
-      res.items[0] |= 2;
-    }
+    res.items[0] |= 2 * bigInteger__subConditional (&rem, res);
     // shift 1 right to get pure result
-    carry1 = 0;
-    darray_rforeach(word, resi, &res) {
-      carry = *resi;
-      *resi >>= 1;
-      *resi |= carry1;
-      carry1 = carry << (WORD_BITS - 1);
-    }
+    bigInteger__shiftlow(&res, 1, 0, false);
   }
   bigInteger_free(&rem);
   bigInteger__shrink(&res);
@@ -624,8 +611,8 @@ bigInteger bigInteger_mul(const bigInteger a, const bigInteger b) {
       temp = yhi * xhi;
       carry[0] += temp;
     }
-    for (z = x + y; carry[0] && (z < c.count); ++z)
-      carry[0] = (c.items[z] += carry[0]) < carry[0];
+    z = x + y;
+    carry[0] = bigInteger__addw(c.items + z, carry[0], c.count - z);
     if (carry[0]) darray_append(&c, carry[0]);
   }
   c.neg = a.neg ^ b.neg;
@@ -644,50 +631,20 @@ bigInteger bigInteger_div(const bigInteger a, const bigInteger b) {
   return res;
 }
 bigInteger bigInteger_mod(const bigInteger a, const bigInteger b) {
-  word c, c1, d;
-  iter i, j, k;
+  word c;
+  iter i, j;
   iter blen = b.count, alen = a.count;
-  while (alen && !a.items[alen-1]) --alen;
-  while (blen && !b.items[blen-1]) --blen;
+  while (alen && !a.items[alen - 1]) --alen;
+  while (blen && !b.items[blen - 1]) --blen;
   bigInteger rem = {0};
 	i = MIN(alen, MAX(1, blen) - 1);
 	j = alen - i;
 	darray_appends(&rem, a.items + j, i);
 	while (j--) {
-		d = a.items[j];
+		c = a.items[j];
 		for (i = WORD_BITS; i--;) {
-	    c1 = (d >> i) & 1;
-	    for (k = 0; k < rem.count; ++k) {
-	      c = rem.items[k];
-	      rem.items[k] <<= 1;
-	      rem.items[k] |= c1;
-	      c1 = (c >> (WORD_BITS - 1)) & 1;
-	    }
-	    if (c1) darray_append(&rem, c1);
-	    /*
-	    if (rem.count < blen || (rem.count == blen && bigInteger__cmpa(rem.items, b.items, blen) < 0)) continue;
-	    c = bigInteger__wordsub(rem.items, rem.count, b.items, blen);
-	    */
-	    if (rem.count < blen) continue;
-	    if (rem.count == blen) {
-			  for (k = blen; k-- && (rem.items[k] == b.items[k]); ) ;
-			  if (k < blen && rem.items[k] < b.items[k]) continue;
-	    }
-	    c = 0, k = 0;
-		  while (k < blen) {
-		    c1 = rem.items[k];
-		    c = (rem.items[k] -= c) > c1;
-		    c1 = rem.items[k];
-		    c+= (rem.items[k] -= b.items[k]) > c1;
-		    ++k;
-		  }
-		  while (c && (k < rem.count)) {
-		    c1 = rem.items[k];
-		    c = (rem.items[k] -= c) > c1;
-		    ++k;
-		  }
-	    bigInteger__shrink(&rem);
-		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
+	    bigInteger__shiftlow(&rem, 1, (c >> i) & 1, true);
+	    bigInteger__subConditional(&rem, b);
 	  }
 	}
 	return rem;
@@ -820,17 +777,7 @@ void bigInteger_mpowi(bigInteger *a, uint b) {
   bigInteger_move(a, &r);
 }
 void bigInteger_mshfli(bigInteger *a, const uint i) {
-  iter bit_shift = i % WORD_BITS;
-  if (bit_shift) {
-    word carry = 0, c;
-    darray_foreach(word, ia, a) {
-      c = *ia;
-      *ia <<= bit_shift;
-      *ia |= carry;
-      carry = c >> (WORD_BITS - bit_shift);
-    }
-    if (carry) darray_append(a, carry);
-  }
+  bigInteger__shiftlow(a, i % WORD_BITS, 0, true);
   iter word_shift = i / WORD_BITS;
   if (word_shift) {
     darray_reserve(a, a->count + word_shift);
@@ -844,17 +791,7 @@ void bigInteger_mshfri(bigInteger *a, const uint i) {
     a->count -= word_shift;
     memcpy(a->items, a->items + word_shift, a->count * sizeof(word));
   }
-  iter bit_shift = i % WORD_BITS;
-  if (bit_shift) {
-    word carry = 0, c;
-    darray_rforeach(word, ia, a) {
-      c = *ia;
-      *ia >>= bit_shift;
-      *ia |= carry;
-      carry = c << (WORD_BITS - bit_shift);
-    }
-    bigInteger__shrink(a);
-  }
+  bigInteger__shiftlow(a, i % WORD_BITS, 0, false);
 }
 void bigInteger_mpow2(bigInteger *a) {
   bigInteger r = bigInteger_pow2(*a);
@@ -883,8 +820,8 @@ void bigInteger_mmulsub(bigInteger *a, const bigInteger b, const bigInteger c) {
   bigInteger_move(a, &r);
 }
 void bigInteger_mdiv(bigInteger *a, const bigInteger b) {
-  word c, c1, d;
-  iter i, j, k;
+  word c;
+  iter i, j;
   iter blen = b.count;
   while (blen && !b.items[blen-1]) --blen;
 	bigInteger__shrink(a);
@@ -894,39 +831,11 @@ void bigInteger_mdiv(bigInteger *a, const bigInteger b) {
 	darray_appends(&rem, a->items + j, i);
 	a->count = j;
 	while (j--) {
-		d = a->items[j];
+		c = a->items[j];
 		for (i = WORD_BITS; i--;) {
-	    c1 = (d >> i) & 1;
-	    for (k = 0; k < rem.count; ++k) {
-	      c = rem.items[k];
-	      rem.items[k] <<= 1;
-	      rem.items[k] |= c1;
-	      c1 = (c >> (WORD_BITS - 1)) & 1;
-	    }
-	    if (c1) darray_append(&rem, c1);
+	    bigInteger__shiftlow(&rem, 1, (c >> i) & 1, true);
 	    a->items[j] <<= 1;
-	    if (rem.count < blen) continue;
-	    if (rem.count == blen) {
-			  for (k = blen; k-- && (rem.items[k] == b.items[k]); ) ;
-			  if (k < blen && rem.items[k] < b.items[k]) continue;
-	    }
-	    // c = bigInteger__wordsub(rem.items, rem.count, b.items, blen);
-	    c = 0, k = 0;
-		  while (k < blen) {
-		    c1 = rem.items[k];
-		    c = (rem.items[k] -= c) > c1;
-		    c1 = rem.items[k];
-		    c+= (rem.items[k] -= b.items[k]) > c1;
-		    ++k;
-		  }
-		  while (c && (k < rem.count)) {
-		    c1 = rem.items[k];
-		    c = (rem.items[k] -= c) > c1;
-		    ++k;
-		  }
-		  bigInteger__shrink(&rem);
-		  ASSERT(!c && "bigInteger div_mod: subtract result borrow");
-	    a->items[j] |= 1;
+	    a->items[j] |= bigInteger__subConditional(&rem, b);
 	  }
 	}
 	a->neg ^= b.neg;

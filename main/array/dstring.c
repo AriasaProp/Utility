@@ -17,7 +17,10 @@ typedef struct {iter cap, count; } dstring_head;
 
 static inline dstring_head *dstring__get_head(dstring str) {
   if (str) return (CAST(dstring_head*)str) - 1;
-  return CAST(dstring_head*)calloc(sizeof(dstring_head), 1);
+  dstring_head *sh = CAST(dstring_head*)calloc(sizeof(dstring_head) + DSTRING_CAP_ROUND, 1);
+  ASSERT(sh && "string fail to allocate");
+  sh->cap = DSTRING_CAP_ROUND;
+  return sh;
 }
 static inline dstring dstring__get_string(dstring_head *sh) {
   return CAST(dstring) (!sh ? NULL : (sh + 1));
@@ -79,7 +82,7 @@ inline void dstring_clean(dstring str) {
   *(CAST(char*)str) = 0;
 }
 inline void dstring_free (dstring *str) {
-  free(dstring__get_head(*str));
+  free(CAST(void*)dstring__get_head(*str));
   *str = NULL;
 }
 

@@ -9,10 +9,6 @@
 
 #include "common.h"
 
-// should be exponent of 2
-#define STRING_CAP_ROUND 4
-#define STRING_CAP_MASK  3
-
 
 #ifndef NO_STDMATH
   #include <math.h>
@@ -50,23 +46,41 @@ int convert_wchar_to_utf8(char *buffer, iter bufferlen, const wchar_t *input) {
  *  Standar Utility Function
  * ================================
  */
- 
+
+
+
 void util_memswap(void *a, void *b, iter bytes) {
-  if (a == b) return;
-  byte *A = CAST(byte*)a, *B = CAST(byte*)b;
-  for (iter i = 0; i < bytes; ++i) {
-    A[i] ^= B[i];
-    B[i] ^= A[i];
-    A[i] ^= B[i];
-  }
+  void *c = alloca(bytes);
+  memcpy(c, a, bytes);
+  memcpy(a, b, bytes);
+  memcpy(b, c, bytes);
 }
 void util_memflip(void *a, iter n) {
-  byte *A = CAST(byte*)a;
-  for (iter i = 0, j = n - 1; i < j; ++i, --j) {
-    A[i] ^= A[j];
-    A[j] ^= A[i];
-    A[i] ^= A[j];
+  byte *A = CAST(byte*)a, *B = A + n - 1;
+  while (A < B) {
+    *A ^= *B;
+    *B ^= *A;
+    *A ^= *B;
+    ++A, --B;
   }
+}
+void util_memrotr(void *a, iter n, iter l) {
+  l %= n;
+  const iter r = n - l;
+  byte *A = CAST(byte*)a;
+  void *c = alloca(l);
+  memcpy(c, A + r, l);
+  memmove(A + l, A, r);
+  memcpy(A, c, l);
+}
+void util_memrotl(void *a, iter n, iter r) {
+  r %= n;
+  const iter l = n - r;
+  byte *A = CAST(byte*)a;
+  void *c = alloca(r);
+  memcpy(c, A, r);
+  memcpy(A, A + r, l);
+  memcpy(A + l, c, r);
 }
 iter util_clz(ulong x) {
 #if BLTN(__builtin_clzl)
@@ -565,32 +579,6 @@ int64 imath_rotr64(int64 x, const iter n) {
   return CAST(int64)NAIVE_FLIP(x,(-n&63),n);
 #endif
 }
-#define RAND_VARIANT(T) inline T imath_rand_##T (void) { \
-  T r = CAST(T)rand();\
-  return r ^ (CAST(T)CAST(long)&r);\
-}
-
-RAND_VARIANT(byte)
-RAND_VARIANT(shrt)
-RAND_VARIANT(int32)
-RAND_VARIANT(int64)
-RAND_VARIANT(int)
-RAND_VARIANT(long)
-RAND_VARIANT(ubyte)
-RAND_VARIANT(ushrt)
-RAND_VARIANT(uint32)
-RAND_VARIANT(uint64)
-RAND_VARIANT(uint)
-RAND_VARIANT(ulong)
-
-#undef RAND_VARIANT
-inline float imath_rand_float(void) {
-  union { float f; int i; } U;
-  do { U.i = imath_rand_int();
-  } while (!imath_isnormal(U.f));
-  return U.f;
-}
-
 
 
 

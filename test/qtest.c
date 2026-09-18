@@ -1,100 +1,84 @@
 #include "util/console_out.h"
 #include "common.h"
-#include "array/dstring.h"
 
+int cmp (int *i, int *j) { return (*i > *j) - (*i < *j); }
 
-static ulong cstr_to_word(const char *str, ulong *ret) {
-   word base = 0;
-#ifdef __ARM_NEON
-#  ifdef __aarch64_
-  ubyte res[16], mask[16];
-  // may return 16 digits decimal
-  uint8x16_t digits = vld1q_u8(CAST(const ubyte *)str);
-  uint8x16_t vzero = vdupq_n_u8(CAST(const ubyte)'0');
-  uint8x16_t vmax = vmaxq_u8(digits, vzero);
-  vmax = vceqq_u8(vmax, digits);
-  uint8x16_t vmin = vdupq_n_u8(CAST(const ubyte)'9');
-  vmin = vminq_u8(digits, vmin);
-  vmin = vceqq_u8(vmin, digits);
-  digits = vsubq_u8(digits, vzero);
-  uint8x16_t vres = vandq_u8(vmax, vmin);
-  digits = vandq_u8(digits, vres);
-  vst1q_u8(mask, vres);
-  base = 1;
-  for (iter i = 0; i < 16; ++i) {
-    if (mask[i] == 0xff) base *= 10;
-    else break;
+int main(int argc, char **argv) {
+  iter m;
+  int t;
+  int data[10] = {8,0,7,4,1,3,9,2,5,6};
+  PRINT_INF("[Data]:");
+  for (m = 0; m < 10; ++m)
+    printf(" %d", data[m]);
+  printf("\n");
+  int *start = data, *end = data + 10;
+  int o; // order
+  int *i, *j; // point
+  int *a, *b, *p;
+  while (start < end) {
+    // left
+    o = 0;
+    a = start;
+    i = start, j = i;
+    while (++j < end && (
+      ( o && ((o * cmp(i, j)) >= 0)) ||
+      (!o && ((o = cmp(i, j)) || true))
+    )) i = j;
+    PRINT_INF("[ar%02d]:", o);
+    for (p = start; p <= i; ++p)
+      printf(" %d", *p);
+    printf("\n");
+    if (start > data) {
+      int *J = i;
+      // merge
+      if (o < 0) { // ascending
+        start -= 1;
+        while (i > start && start >= data) {
+          if (cmp(i, start) < 0) {
+            t = *start;
+            memcpy(start, start + 1, (i - start) * sizeof(int));
+            *i = t;
+            --start;
+          }
+          --i;
+        }
+      } else { // descending
+        while (start <= i) { // go next
+          a = b = start;
+          while (a > data && cmp(a - 1, b) > 0) // go prev
+            a -= 1;
+          if (a < b) {
+            t = *b;
+            memmove(a + 1, a, (b - a) * sizeof(int));
+            *a = t;
+            PRINT_INF("[rotl]:");
+            for (p = a; p <= b; ++p)
+              printf(" %d", *p);
+            printf("\n");
+          }
+          ++start;
+        }
+      }
+      PRINT_INF("[Mr%02d]:", o);
+      for (p = data; p <= J; ++p)
+        printf(" %d", *p);
+      printf("\n");
+    } else if (o > 0) { // reverse descending order
+      a = start, b = i;
+      while (a < b) {
+        t = *a, *a = *b, *b = t;
+        ++a, --b;
+      }
+      PRINT_INF("[ro%02d]:", o);
+      for (p = start; p <= i; ++p)
+        printf(" %d", *p);
+      printf("\n");
+    }
+    start = j;
   }
-  if (base == 1) {
-    *ret = 0;
-    return 0;
-  }
-#  else
-  ubyte res[8], mask[8];
-  // may return 8 digits decimal
-  uint8x8_t digits = vld1_u8(CAST(const ubyte *)str);
-  uint8x8_t vzero = vdup_n_u8(CAST(const ubyte)'0');
-  uint8x8_t vmax = vmax_u8(digits, vzero);
-  vmax = vceq_u8(vmax, digits);
-  uint8x8_t vmin = vdup_n_u8(CAST(const ubyte)'9');
-  vmin = vmin_u8(digits, vmin);
-  vmin = vceq_u8(vmin, digits);
-  uint8x8_t vres = vand_u8(vmax, vmin);
-  vst1_u8(mask, vres);
-  base = 1;
-  for (iter i = 0; i < 8; ++i) {
-    if (mask[i] == 0xff) base *= 10;
-    else break;
-  }
-  if (base == 1) {
-    *ret = 0;
-    return 0;
-  }
-#  endif
-#elif defined(__AVX2__)
-  // may return 32 digits decimal
-  __m256i digits = _mm256_loadu_si256((const __m256i *)str);
-  __m256i vmax = _mm256_set1_epi8('0');
-  vmax = _mm256_max_epu8(digits, vmax);
-  vmax = _mm256_cmpeq_epi8(vmax, digits);
-  __m256i vmin = _mm256_set1_epi8('9');
-  vmin = _mm256_min_epu8(digits, vmin);
-  vmin = _mm256_cmpeq_epi8(vmin, digits);
-  __m256i valid = _mm256_and_si256(vmax, vmin);
-  int mask = _mm_movemask_epi8(_mm256_extracti128_si256(valid, 0));
-  mask |= _mm_movemask_epi8(_mm256_extracti128_si256(valid, 1)) << 16;
-  base = util_ctz(~mask);
-#elif defined(__AVX__) || defined(__SSE__)
-  // may return 16 digits decimal
-  __m128i digits = _mm_loadu_si128((const __m128i *)str);
-  __m128i vmax = _mm_set1_epi8('0');
-  vmax = _mm_max_epu8(digits, vmax);
-  vmax = _mm_cmpeq_epi8(vmax, digits);
-  __m128i vmin = _mm_set1_epi8('9');
-  vmin = _mm_min_epu8(digits, vmin);
-  vmin = _mm_cmpeq_epi8(vmin, digits);
-  __m128i valid = _mm_and_si128(vmax, vmin);
-  int mask = _mm_movemask_epi8(valid);
-  base = util_ctz(~mask);
-#else
-  char tstr[WORD_DECIMAL] = {0};
-  base = MIN(WORD_DECIMAL, strlen(str));
-  *ret = strtoull(tstr, NULL, 10);
-  if (*ret == ULLONG_MAX) return 0;
-#endif
-  return base;
-}
-
-
-int main() {
-  PRINT_INF("Hello, QTest!\n");
-  dstring S = NULL;
-  ulong uw;
-  dstring_append(&S, "%lu", imath_rand_ulong());
-  PRINT_INF("string %s\n", S);
-  iter r = cstr_to_word(S, &uw);
-  PRINT_INF("parsed %lu\n", uw);
-  PRINT_INF("based  %zu\n", r);
-  dstring_free(&S);
+  PRINT_INF("[Data]:");
+  for (m = 0; m < 10; ++m)
+    printf(" %d", data[m]);
+  printf("\n");
   return 0;
 }

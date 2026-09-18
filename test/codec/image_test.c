@@ -42,7 +42,7 @@ int main(int UNUSED_ARG(argc), char** UNUSED_ARG(argv)) {
     } \
     snprintf(filename, 255, "bin/%s." #F, Image_Test[i]); \
     wr = image_write(filename, ibitmap, ImageFile_##X, .quality = 100);\
-    util_memfree(ibitmap.data);\
+    free(ibitmap.data);\
     if (!wr) {\
       printf("fail rewrite %s!\n", filename);\
       printf("reason: %s!\n", stb_get_error());\
